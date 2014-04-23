@@ -385,18 +385,22 @@ public class ifsys extends Applet
 
     public void mouseReleased(MouseEvent mouseevent)
     {
+        setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
     }
 
     public void mouseEntered(MouseEvent mouseevent)
     {
+        setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
     }
 
     public void mouseExited(MouseEvent mouseevent)
     {
+        setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
     }
 
     public void mouseDragged(MouseEvent mouseevent)
     {
+        setCursor (Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         pointx[pointselected] = mouseevent.getX();
         pointy[pointselected] = mouseevent.getY();
         updateCenter();
