@@ -67,14 +67,12 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="364" column="31" selection-start="13318" selection-end="13318" vertical-scroll-proportion="0.36935166" vertical-offset="2583" max-vertical-offset="7939">
+            <state line="232" column="19" selection-start="7547" selection-end="7547" vertical-scroll-proportion="0.1021611" vertical-offset="3144" max-vertical-offset="9962">
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="class#mainthread#0;class#ifsys#0" expanded="false" />
                 <element signature="method#ifsys#0;class#ifsys#0" expanded="false" />
                 <element signature="method#distance2#0;class#ifsys#0" expanded="false" />
-                <element signature="method#start#0;class#ifsys#0" expanded="false" />
-                <element signature="method#settopreset#0;class#ifsys#0" expanded="false" />
                 <element signature="method#update#0;class#ifsys#0" expanded="false" />
               </folding>
             </state>
@@ -101,8 +99,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="332" />
-    <option name="y" value="14" />
+    <option name="x" value="360" />
+    <option name="y" value="15" />
     <option name="width" value="1103" />
     <option name="height" value="984" />
   </component>
@@ -348,6 +346,11 @@
     </configuration>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SliceManager">
+    <option name="analysisUIOptions">
+      <AnalysisUIOptions />
+    </option>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="da14c4c2-1ed2-4d59-881b-204899097f15" name="Default" comment="" />
@@ -357,7 +360,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="332" y="14" width="1103" height="984" extended-state="0" />
+    <frame x="360" y="15" width="1103" height="984" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -414,8 +417,6 @@
             <element signature="class#mainthread#0;class#ifsys#0" expanded="false" />
             <element signature="method#ifsys#0;class#ifsys#0" expanded="false" />
             <element signature="method#distance2#0;class#ifsys#0" expanded="false" />
-            <element signature="method#start#0;class#ifsys#0" expanded="false" />
-            <element signature="method#settopreset#0;class#ifsys#0" expanded="false" />
             <element signature="method#update#0;class#ifsys#0" expanded="false" />
           </folding>
         </state>
@@ -423,14 +424,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="364" column="31" selection-start="13318" selection-end="13318" vertical-scroll-proportion="0.36935166" vertical-offset="2583" max-vertical-offset="7939">
+        <state line="232" column="19" selection-start="7547" selection-end="7547" vertical-scroll-proportion="0.1021611" vertical-offset="3144" max-vertical-offset="9962">
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="class#mainthread#0;class#ifsys#0" expanded="false" />
             <element signature="method#ifsys#0;class#ifsys#0" expanded="false" />
             <element signature="method#distance2#0;class#ifsys#0" expanded="false" />
-            <element signature="method#start#0;class#ifsys#0" expanded="false" />
-            <element signature="method#settopreset#0;class#ifsys#0" expanded="false" />
             <element signature="method#update#0;class#ifsys#0" expanded="false" />
           </folding>
         </state>

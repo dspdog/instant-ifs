@@ -60,6 +60,7 @@ public class ifsys extends Applet
 
     public void start()
     {
+        setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         addMouseListener(this);
         addMouseMotionListener(this);
         addKeyListener(this);
@@ -231,24 +232,15 @@ public class ifsys extends Applet
         rg.drawImage(createImage(new MemoryImageSource(screenwidth, screenheight, pixels, 0, screenwidth)), 0, 0, screenwidth, screenheight, this);
         if(!hidden)
         {
-            rg.setColor(Color.black);
-            rg.drawString("Point " + String.valueOf(pointselected + 1), 4, 16);
-            rg.drawString("X: " + String.valueOf((double)(int)(pointx[pointselected] * 1000D) / 1000D), 4, 31);
-            rg.drawString("Y: " + String.valueOf((double)(int)(pointy[pointselected] * 1000D) / 1000D), 4, 46);
-            rg.drawString("Scale: " + String.valueOf((double)((int)(((pointrotation[pointselected] / pi) * 180D + 36000000D) % 360D) * 1000) / 1000D), 4, 61);
-            rg.drawString("Rotation: " + String.valueOf((double)(int)((((pointrotation[pointselected] / pi) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 75);
-            rg.drawString("Iterations: " + String.valueOf(itertotal), 4, screenheight - 6);
-            rg.drawString("Sensitivity: " + String.valueOf((double)(int)(movesize * 1000D) / 1000D), 4, screenheight - 21);
-            rg.drawString("Samples: " + String.valueOf(sampletotal), 4, screenheight - 36);
             rg.setColor(Color.white);
             rg.drawString("Point " + String.valueOf(pointselected + 1), 5, 15);
             rg.drawString("X: " + String.valueOf((double)(int)(pointx[pointselected] * 1000D) / 1000D), 5, 30);
             rg.drawString("Y: " + String.valueOf((double)(int)(pointy[pointselected] * 1000D) / 1000D), 5, 45);
-            rg.drawString("Scale: " + String.valueOf((double)(int)(pointscale[pointselected] * 1000D) / 1000D), 5, 60);
-            rg.drawString("Rotation: " + String.valueOf((double)(int)((((pointrotation[pointselected] / pi) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 75);
-            rg.drawString("Iterations: " + String.valueOf(itertotal), 5, screenheight - 7);
-            rg.drawString("Sensitivity: " + String.valueOf((double)(int)(movesize * 1000D) / 1000D), 4, screenheight - 22);
-            rg.drawString("Samples: " + String.valueOf(sampletotal), 4, screenheight - 37);
+            rg.drawString("Scale (;' [] -=): " + String.valueOf((double)(int)(pointscale[pointselected] * 1000D) / 1000D), 5, 60);
+            rg.drawString("Rotation (kl op 90): " + String.valueOf((double)(int)((((pointrotation[pointselected] / pi) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 75);
+            rg.drawString("Iterations (. /): " + String.valueOf(itertotal), 5, screenheight - 7);
+            rg.drawString("Sensitivity (1-6): " + String.valueOf((double)(int)(movesize * 1000D) / 1000D), 4, screenheight - 22);
+            rg.drawString("Samples (nm): " + String.valueOf(sampletotal), 4, screenheight - 37);
         }
         gr.drawImage(render, 0, 0, screenwidth, screenheight, this);
     }
@@ -561,37 +553,7 @@ public class ifsys extends Applet
     {
         int x = 0;
         int y = 0;
-        if(arg0.getKeyChar() == ' ' && pointnumber > 0)
-        {
-            for(int a = pointselected; a < pointnumber; a++)
-            {
-                pointx[a] = pointx[a + 1];
-                pointy[a] = pointy[a + 1];
-                pointscale[a] = pointscale[a + 1];
-                pointrotation[a] = pointrotation[a + 1];
-            }
 
-            pointx[pointnumber] = 0.0D;
-            pointy[pointnumber] = 0.0D;
-            pointscale[pointnumber] = 0.5D;
-            pointrotation[pointnumber] = 0.0D;
-            pointnumber--;
-            if(pointnumber != 0)
-            {
-                for(int a = 0; a < pointnumber; a++)
-                {
-                    x = (int)((double)x + pointx[a]);
-                    y = (int)((double)y + pointy[a]);
-                }
-
-                centerx = x / pointnumber;
-                centery = y / pointnumber;
-            } else
-            {
-                centerx = pointx[0];
-                centery = pointy[0];
-            }
-        }
         if(arg0.getKeyChar() == '/')
             itertotal++;
         if(arg0.getKeyChar() == '.' && itertotal > 1)
