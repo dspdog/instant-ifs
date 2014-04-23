@@ -66,7 +66,7 @@ public class ifsys extends Applet
         render = createImage(screenwidth, screenheight);
         rg = render.getGraphics();
         presetstring = getParameter("preset");
-        preset = Integer.parseInt(presetstring);
+        preset = 1;//Integer.parseInt(presetstring);
         clearframe();
         settopreset();
         game.start();
