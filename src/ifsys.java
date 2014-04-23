@@ -352,7 +352,8 @@ public class ifsys extends Applet
 
 
         startDragDist = distance2(arg0.getX() - pointx[pointselected], arg0.getY() - pointy[pointselected]);
-        startDragAngle = Math.atan2(arg0.getX() - pointx[pointselected], arg0.getY() - pointy[pointselected]);
+        startDragAngle = pointrotation[pointselected] + Math.atan2(arg0.getX() - pointx[pointselected], arg0.getY() - pointy[pointselected]);
+        startDragScale = pointscale[pointselected];
 
         requestFocus();
         updateCenter();
@@ -401,7 +402,7 @@ public class ifsys extends Applet
         else if(mousemode == 3){ //right click to rotate point
             setCursor (Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
             pointrotation[pointselected] = pi * 2 - (Math.atan2(mouseevent.getX() - pointx[pointselected], mouseevent.getY() - pointy[pointselected])- startDragAngle);
-            pointscale[pointselected] = 0.5*distance2(mouseevent.getX() - pointx[pointselected], mouseevent.getY() - pointy[pointselected])/startDragDist;
+            pointscale[pointselected] = startDragScale*distance2(mouseevent.getX() - pointx[pointselected], mouseevent.getY() - pointy[pointselected])/startDragDist;
 
             updateCenter();
             clearframe();
@@ -616,6 +617,7 @@ public class ifsys extends Applet
     int mousemode;
     double startDragDist;
     double startDragAngle;
+    double startDragScale;
 
     double pointx[];
     double pointy[];
