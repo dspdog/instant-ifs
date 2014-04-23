@@ -33,8 +33,8 @@ public class ifsys extends Applet
         quit = false;
         hidden = false;
         hidden2 = false;
-        screenwidth = 640;
-        screenheight = 480;
+        screenwidth = 1024;
+        screenheight = 1024;
         pixels = new int[screenwidth * screenheight];
         pi = 3.1415926535897931D;
         pi2 = pi / 2D;
@@ -339,6 +339,7 @@ public class ifsys extends Applet
 
     public void mousePressed(MouseEvent arg0)
     {
+       /*
         int x = 0;
         int y = 0;
         if(arg0.getButton() == 1)
@@ -358,7 +359,36 @@ public class ifsys extends Applet
             pointnumber++;
         }
         clearframe();
-        gamefunc();
+        gamefunc();*/
+        mousex = arg0.getX();
+        mousey = arg0.getY();
+        double olddist = 1000D;
+        for(int a = 0; a < pointnumber; a++)
+        {
+            double currentdist = distance2((double)mousex - pointx[a], (double)mousey - pointy[a]);
+            if(currentdist < olddist)
+            {
+                olddist = currentdist;
+                pointselected = a;
+            }
+        }
+
+        requestFocus();
+        updateCenter();
+    }
+
+    public void updateCenter(){
+        int x = 0;
+        int y = 0;
+
+        for(int a = 0; a < pointnumber; a++)
+        {
+            x = (int)((double)x + pointx[a]);
+            y = (int)((double)y + pointy[a]);
+        }
+
+        centerx = x / (pointnumber);
+        centery = y / (pointnumber);
     }
 
     public void mouseReleased(MouseEvent mouseevent)
@@ -375,24 +405,16 @@ public class ifsys extends Applet
 
     public void mouseDragged(MouseEvent mouseevent)
     {
+        pointx[pointselected] = mouseevent.getX();
+        pointy[pointselected] = mouseevent.getY();
+        updateCenter();
+        clearframe();
+        gamefunc();
     }
 
     public void mouseMoved(MouseEvent arg0)
     {
-        mousex = arg0.getX();
-        mousey = arg0.getY();
-        double olddist = 1000D;
-        for(int a = 0; a < pointnumber; a++)
-        {
-            double currentdist = distance2((double)mousex - pointx[a], (double)mousey - pointy[a]);
-            if(currentdist < olddist)
-            {
-                olddist = currentdist;
-                pointselected = a;
-            }
-        }
 
-        requestFocus();
     }
 
     public void keyTyped(KeyEvent keyevent)
