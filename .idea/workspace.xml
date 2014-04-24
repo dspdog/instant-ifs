@@ -67,20 +67,10 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="104" column="0" selection-start="2672" selection-end="2672" vertical-scroll-proportion="1.0463378" vertical-offset="1068" max-vertical-offset="6273">
+            <state line="69" column="0" selection-start="1608" selection-end="1608" vertical-scroll-proportion="0.5194401" vertical-offset="839" max-vertical-offset="6936">
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#start#0;class#ifsys#0" expanded="false" />
-                <element signature="method#settopreset#0;class#ifsys#0" expanded="false" />
-                <element signature="method#mouseClicked#0;class#ifsys#0" expanded="false" />
-                <element signature="method#mousePressed#0;class#ifsys#0" expanded="false" />
-                <element signature="method#mouseReleased#0;class#ifsys#0" expanded="false" />
-                <element signature="method#mouseEntered#0;class#ifsys#0" expanded="false" />
-                <element signature="method#mouseExited#0;class#ifsys#0" expanded="false" />
-                <element signature="method#mouseMoved#0;class#ifsys#0" expanded="false" />
-                <element signature="method#keyTyped#0;class#ifsys#0" expanded="false" />
-                <element signature="method#focusGained#0;class#ifsys#0" expanded="false" />
-                <element signature="method#focusLost#0;class#ifsys#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -106,8 +96,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-1124" />
-    <option name="y" value="164" />
+    <option name="x" value="-1302" />
+    <option name="y" value="133" />
     <option name="width" value="1095" />
     <option name="height" value="984" />
   </component>
@@ -385,7 +375,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1124" y="164" width="1095" height="984" extended-state="0" />
+    <frame x="-1302" y="133" width="1095" height="984" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -393,6 +383,7 @@
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297062" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3295325" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -408,7 +399,6 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1927024" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
     </layout>
@@ -440,16 +430,6 @@
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#start#0;class#ifsys#0" expanded="false" />
-            <element signature="method#settopreset#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseClicked#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mousePressed#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseReleased#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseEntered#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseExited#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseMoved#0;class#ifsys#0" expanded="false" />
-            <element signature="method#keyTyped#0;class#ifsys#0" expanded="false" />
-            <element signature="method#focusGained#0;class#ifsys#0" expanded="false" />
-            <element signature="method#focusLost#0;class#ifsys#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -460,16 +440,6 @@
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#start#0;class#ifsys#0" expanded="false" />
-            <element signature="method#settopreset#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseClicked#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mousePressed#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseReleased#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseEntered#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseExited#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseMoved#0;class#ifsys#0" expanded="false" />
-            <element signature="method#keyTyped#0;class#ifsys#0" expanded="false" />
-            <element signature="method#focusGained#0;class#ifsys#0" expanded="false" />
-            <element signature="method#focusLost#0;class#ifsys#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -480,36 +450,16 @@
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#start#0;class#ifsys#0" expanded="false" />
-            <element signature="method#settopreset#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseClicked#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mousePressed#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseReleased#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseEntered#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseExited#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseMoved#0;class#ifsys#0" expanded="false" />
-            <element signature="method#keyTyped#0;class#ifsys#0" expanded="false" />
-            <element signature="method#focusGained#0;class#ifsys#0" expanded="false" />
-            <element signature="method#focusLost#0;class#ifsys#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="104" column="0" selection-start="2672" selection-end="2672" vertical-scroll-proportion="1.0463378" vertical-offset="1068" max-vertical-offset="6273">
+        <state line="69" column="0" selection-start="1608" selection-end="1608" vertical-scroll-proportion="0.5194401" vertical-offset="839" max-vertical-offset="6936">
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#start#0;class#ifsys#0" expanded="false" />
-            <element signature="method#settopreset#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseClicked#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mousePressed#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseReleased#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseEntered#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseExited#0;class#ifsys#0" expanded="false" />
-            <element signature="method#mouseMoved#0;class#ifsys#0" expanded="false" />
-            <element signature="method#keyTyped#0;class#ifsys#0" expanded="false" />
-            <element signature="method#focusGained#0;class#ifsys#0" expanded="false" />
-            <element signature="method#focusLost#0;class#ifsys#0" expanded="false" />
           </folding>
         </state>
       </provider>
