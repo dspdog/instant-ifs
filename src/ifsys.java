@@ -25,10 +25,7 @@ public class ifsys extends Applet
 
     //point vars
         ifsShape shape;
-        int pointsInUse;
         int pointselected;
-        double centerx;
-        double centery;
 
     //drag vars
         int mousemode; //current mouse button
@@ -59,15 +56,11 @@ public class ifsys extends Applet
         mousemode = 0;
 
         shape = new ifsShape();
-
-        pointsInUse = 0;
-        centerx = screenwidth / 2;
-        centery = screenheight / 2;
     }
 
     public void findSelectedPoint(){
         double olddist = 1000D;
-        for(int a = 0; a < pointsInUse; a++)
+        for(int a = 0; a < shape.pointsInUse; a++)
         {
             double currentdist = distance2((double)mousex - shape.pts[a].x, (double)mousey - shape.pts[a].y);
             if(currentdist < olddist){
@@ -78,18 +71,18 @@ public class ifsys extends Applet
     }
 
     public void addPoint(){
-        shape.pts[pointsInUse].x = mousex;
-        shape.pts[pointsInUse].y = mousey;
-        shape.pts[pointsInUse].scale = 0.5D;
-        shape.pts[pointsInUse].rotation = 0.0D;
-        pointsInUse++;
-        updateCenter();
+        shape.pts[shape.pointsInUse].x = mousex;
+        shape.pts[shape.pointsInUse].y = mousey;
+        shape.pts[shape.pointsInUse].scale = 0.5D;
+        shape.pts[shape.pointsInUse].rotation = 0.0D;
+        shape.pointsInUse++;
+        shape.updateCenter();
         clearframe();
         gamefunc();
     }
 
     public void deletePoint(){
-        for(int a = pointselected; a < pointsInUse; a++){
+        for(int a = pointselected; a < shape.pointsInUse; a++){
             shape.pts[a].x = shape.pts[a + 1].x;
             shape.pts[a].y = shape.pts[a + 1].y;
 
@@ -97,34 +90,16 @@ public class ifsys extends Applet
             shape.pts[a].rotation = shape.pts[a + 1].rotation;
         }
 
-        shape.pts[pointsInUse].x = 0.0D;
-        shape.pts[pointsInUse].y = 0.0D;
+        shape.pts[shape.pointsInUse].x = 0.0D;
+        shape.pts[shape.pointsInUse].y = 0.0D;
 
-        shape.pts[pointsInUse].scale = 0.5D;
-        shape.pts[pointsInUse].rotation = 0.0D;
-        pointsInUse--;
+        shape.pts[shape.pointsInUse].scale = 0.5D;
+        shape.pts[shape.pointsInUse].rotation = 0.0D;
+        shape.pointsInUse--;
 
-        updateCenter();
+        shape.updateCenter();
         clearframe();
         gamefunc();
-    }
-
-    public void updateCenter(){
-        double x = 0;
-        double y = 0;
-
-        if(pointsInUse != 0){
-            for(int a = 0; a < pointsInUse; a++){
-                x += shape.pts[a].x;
-                y +=  shape.pts[a].y;
-            }
-
-            centerx = x / pointsInUse;
-            centery = y / pointsInUse;
-        } else{
-            centerx = shape.pts[0].x;
-            centery = shape.pts[0].y;
-        }
     }
 
     public class mainthread extends Thread{
@@ -144,11 +119,31 @@ public class ifsys extends Applet
 
     public class ifsShape{
         public ifsPt pts[];
+        public double centerx, centery;
+        public int pointsInUse;
 
         public ifsShape(){
+            pointsInUse = 0;
             pts = new ifsPt[maxPoints];
             for(int a=0; a< maxPoints; a++){
                 pts[a] = new ifsPt();
+            }
+        }
+
+        public void updateCenter(){
+            double x = 0, y = 0;
+
+            if(pointsInUse != 0){
+                for(int a = 0; a < pointsInUse; a++){
+                    x += pts[a].x;
+                    y +=  pts[a].y;
+                }
+
+                centerx = x / pointsInUse;
+                centery = y / pointsInUse;
+            } else{
+                centerx = pts[0].x;
+                centery = pts[0].y;
             }
         }
 
@@ -165,7 +160,6 @@ public class ifsys extends Applet
                 y = 0D;
                 scale = 0.5D;
                 rotation = 0.0D;
-
                 degrees = 0D;
                 radius = 1D;
             }
@@ -193,7 +187,7 @@ public class ifsys extends Applet
     public void settopreset(){
         switch(preset){
         case 1: // '\001'
-            pointsInUse = 3;
+            shape.pointsInUse = 3;
             iterations = 9;
             sampletotal = 500;
             shape.pts[0].x = 320D;
@@ -207,7 +201,7 @@ public class ifsys extends Applet
             shape.pts[2].scale = 0.5D;
             break;
         }
-        updateCenter();
+        shape.updateCenter();
     }
 
     public void update(Graphics gr){
@@ -235,20 +229,20 @@ public class ifsys extends Applet
     }
 
     public void gamefunc(){
-        for(int a = 0; a < pointsInUse; a++){
-            shape.pts[a].degrees = Math.atan2(shape.pts[a].x - centerx, shape.pts[a].y - centery);
-            shape.pts[a].radius = distance2(shape.pts[a].x - centerx, shape.pts[a].y - centery);
+        for(int a = 0; a < shape.pointsInUse; a++){
+            shape.pts[a].degrees = Math.atan2(shape.pts[a].x - shape.centerx, shape.pts[a].y - shape.centery);
+            shape.pts[a].radius = distance2(shape.pts[a].x - shape.centerx, shape.pts[a].y - shape.centery);
         }
 
-        if(pointsInUse != 0){
+        if(shape.pointsInUse != 0){
             for(int a = 0; a < sampletotal; a++){
-                int c = (int)(Math.random() * (double) pointsInUse);
+                int c = (int)(Math.random() * (double) shape.pointsInUse);
                 double dx = shape.pts[c].x;
                 double dy = shape.pts[c].y;
                 double e = 1.0D;
                 double extra = shape.pts[c].rotation;
                 for(int d = 1; d < iterations; d++){
-                    c = (int)(Math.random() * (double) pointsInUse);
+                    c = (int)(Math.random() * (double) shape.pointsInUse);
                     e *= shape.pts[c].scale;
                     extra += shape.pts[c].rotation;
                     dx += Math.cos((pi2 - shape.pts[c].degrees) + extra) * shape.pts[c].radius * e;
@@ -267,7 +261,7 @@ public class ifsys extends Applet
             }
 
             if(!ptsHidden){
-                for(int a = 0; a < pointsInUse; a++){
+                for(int a = 0; a < shape.pointsInUse; a++){
                    drawPtDot(a);
                 }
             }
@@ -326,7 +320,7 @@ public class ifsys extends Applet
             startDragScale = shape.pts[pointselected].scale;
 
             requestFocus();
-            updateCenter();
+            shape.updateCenter();
         }
     }
 
@@ -355,7 +349,7 @@ public class ifsys extends Applet
             shape.pts[pointselected].scale = startDragScale*distance2(e.getX() - shape.pts[pointselected].x, e.getY() - shape.pts[pointselected].y)/startDragDist;
         }
 
-        updateCenter();
+        shape.updateCenter();
         clearframe();
         gamefunc();
     }
@@ -371,15 +365,15 @@ public class ifsys extends Applet
         if(e.getKeyChar() == '-')
             shape.pts[pointselected].scale *= 0.98999999999999999D;
         if(e.getKeyChar() == ']'){
-            for(int a = 0; a < pointsInUse; a++)
+            for(int a = 0; a < shape.pointsInUse; a++)
                 shape.pts[a].scale *= 1.01D;
 
         }
         if(e.getKeyChar() == '['){
-            for(int a = 0; a < pointsInUse; a++)
+            for(int a = 0; a < shape.pointsInUse; a++)
                 shape.pts[a].scale *= 0.98999999999999999D;
         }
-        updateCenter();
+        shape.updateCenter();
         clearframe();
         gamefunc();
     }
