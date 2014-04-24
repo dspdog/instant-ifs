@@ -145,6 +145,12 @@ public class ifsys extends Applet
         }
     }
 
+    public class ifsShape{
+        public ifsShape(){
+
+        }
+    }
+
     public class ifsPt{
         public double x;
         public double y;
