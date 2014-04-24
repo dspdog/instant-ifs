@@ -15,17 +15,15 @@ public class ifsys extends Applet
     int pixels[];
     Image render;
     Graphics rg;
-    double pi;
-    double pi2;
+
     int mousex;
     int mousey;
     int sampletotal;
     int iterations;
     int maxPoints;
 
-    //point vars
-        ifsShape shape;
-        int pointselected;
+    ifsShape shape;
+    int pointselected;
 
     //drag vars
         int mousemode; //current mouse button
@@ -48,14 +46,13 @@ public class ifsys extends Applet
         screenwidth = 1024;
         screenheight = 1024;
         pixels = new int[screenwidth * screenheight];
-        pi = 3.1415926535897931D;
-        pi2 = pi / 2D;
+
         sampletotal = 1000;
         iterations = 10;
         maxPoints = 100;
         mousemode = 0;
 
-        shape = new ifsShape();
+        shape = new ifsShape(maxPoints);
     }
 
     public void findSelectedPoint(){
@@ -85,82 +82,7 @@ public class ifsys extends Applet
         }
     }
 
-    public class ifsShape{
-        public ifsPt pts[];
-        public double centerx, centery;
-        public int pointsInUse;
 
-        public ifsShape(){
-            pointsInUse = 0;
-            pts = new ifsPt[maxPoints];
-            for(int a=0; a< maxPoints; a++){
-                pts[a] = new ifsPt();
-            }
-        }
-
-        public void addPoint(double x, double y){
-            pts[pointsInUse].x = x;
-            pts[pointsInUse].y = y;
-            pts[pointsInUse].scale = 0.5D;
-            pts[pointsInUse].rotation = 0.0D;
-            pointsInUse++;
-            updateCenter();
-        }
-
-        public void deletePoint(int selectedPoint){
-            for(int a = selectedPoint; a < pointsInUse; a++){
-                pts[a].x = pts[a + 1].x;
-                pts[a].y = pts[a + 1].y;
-
-                pts[a].scale = pts[a + 1].scale;
-                pts[a].rotation = pts[a + 1].rotation;
-            }
-
-            pts[pointsInUse].x = 0.0D;
-            pts[pointsInUse].y = 0.0D;
-
-            pts[pointsInUse].scale = 0.5D;
-            pts[pointsInUse].rotation = 0.0D;
-            pointsInUse--;
-
-            updateCenter();
-        }
-
-        void updateCenter(){
-            double x = 0, y = 0;
-
-            if(pointsInUse != 0){
-                for(int a = 0; a < pointsInUse; a++){
-                    x += pts[a].x;
-                    y +=  pts[a].y;
-                }
-
-                centerx = x / pointsInUse;
-                centery = y / pointsInUse;
-            } else{
-                centerx = pts[0].x;
-                centery = pts[0].y;
-            }
-        }
-
-        class ifsPt{
-            public double x;
-            public double y;
-            public double scale;
-            public double degrees;
-            public double radius;
-            public double rotation;
-
-            public ifsPt(){
-                x = 0D;
-                y = 0D;
-                scale = 0.5D;
-                rotation = 0.0D;
-                degrees = 0D;
-                radius = 1D;
-            }
-        }
-    }
 
     public double distance2(double x2, double y2){
         return Math.sqrt(x2 * x2 + y2 * y2);
@@ -212,7 +134,7 @@ public class ifsys extends Applet
             rg.drawString("X: " + String.valueOf((double)(int)(shape.pts[pointselected].x * 1000D) / 1000D), 5, 30);
             rg.drawString("Y: " + String.valueOf((double)(int)(shape.pts[pointselected].y * 1000D) / 1000D), 5, 45);
             rg.drawString("Scale (;' [] -=): " + String.valueOf((double)(int)(shape.pts[pointselected].scale * 1000D) / 1000D), 5, 60);
-            rg.drawString("Rotation (kl op 90): " + String.valueOf((double)(int)((((shape.pts[pointselected].rotation / pi) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 75);
+            rg.drawString("Rotation (kl op 90): " + String.valueOf((double)(int)((((shape.pts[pointselected].rotation / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 75);
             rg.drawString("Iterations (. /): " + String.valueOf(iterations), 5, screenheight - 7);
             rg.drawString("Samples (nm): " + String.valueOf(sampletotal), 4, screenheight - 37);
         }
@@ -241,8 +163,8 @@ public class ifsys extends Applet
                     c = (int)(Math.random() * (double) shape.pointsInUse);
                     e *= shape.pts[c].scale;
                     extra += shape.pts[c].rotation;
-                    dx += Math.cos((pi2 - shape.pts[c].degrees) + extra) * shape.pts[c].radius * e;
-                    dy += Math.sin((pi2 - shape.pts[c].degrees) + extra) * shape.pts[c].radius * e;
+                    dx += Math.cos((Math.PI/2D - shape.pts[c].degrees) + extra) * shape.pts[c].radius * e;
+                    dy += Math.sin((Math.PI/2D - shape.pts[c].degrees) + extra) * shape.pts[c].radius * e;
                 }
 
                 if(dx > (double)(screenwidth - 1))
@@ -345,7 +267,7 @@ public class ifsys extends Applet
         }
         else if(mousemode == 3){ //right click to rotate point
             setCursor (Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
-            shape.pts[pointselected].rotation = pi * 2 - (Math.atan2(e.getX() - shape.pts[pointselected].x, e.getY() - shape.pts[pointselected].y)- startDragAngle);
+            shape.pts[pointselected].rotation = Math.PI * 2 - (Math.atan2(e.getX() - shape.pts[pointselected].x, e.getY() - shape.pts[pointselected].y)- startDragAngle);
             shape.pts[pointselected].scale = startDragScale*distance2(e.getX() - shape.pts[pointselected].x, e.getY() - shape.pts[pointselected].y)/startDragDist;
         }
 
