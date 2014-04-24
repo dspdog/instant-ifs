@@ -39,13 +39,22 @@ class ifsShape{
         updateCenter();
     }
 
+    void updateRadiusDegrees(){
+        for(int a = 0; a < pointsInUse; a++){
+            pts[a].degrees = Math.atan2(pts[a].x - centerx, pts[a].y - centery);
+            pts[a].radius = distance(pts[a].x - centerx, pts[a].y - centery);
+        }
+    }
+
     void updateCenter(){
         double x = 0, y = 0;
+
+        updateRadiusDegrees();
 
         if(pointsInUse != 0){
             for(int a = 0; a < pointsInUse; a++){
                 x += pts[a].x;
-                y +=  pts[a].y;
+                y += pts[a].y;
             }
 
             centerx = x / pointsInUse;
@@ -54,5 +63,28 @@ class ifsShape{
             centerx = pts[0].x;
             centery = pts[0].y;
         }
+    }
+
+    public void setToPreset(int preset){
+        switch(preset){
+            case 1: // '\001'
+                pointsInUse = 3;
+                pts[0].x = 320D;
+                pts[0].y = 160D;
+                pts[0].scale = 0.5D;
+                pts[1].x = 420D;
+                pts[1].y = 160D + 100D * Math.sqrt(3D);
+                pts[1].scale = 0.5D;
+                pts[2].x = 220D;
+                pts[2].y = 160D + 100D * Math.sqrt(3D);
+                pts[2].scale = 0.5D;
+                break;
+        }
+        updateCenter();
+        updateCenter(); //TODO why does this need to be called twice? (center doenst update right otherwise...)
+    }
+
+    public double distance(double x2, double y2){
+        return Math.sqrt(x2 * x2 + y2 * y2);
     }
 }
