@@ -6,39 +6,47 @@ import java.awt.image.MemoryImageSource;
 public class ifsys extends Applet
     implements MouseListener, MouseMotionListener, KeyListener, FocusListener
 {
-    public class mainthread extends Thread
-    {
+    mainthread game;
+    boolean quit;
+    boolean hidden;
+    boolean hidden2;
+    int screenwidth;
+    int screenheight;
+    int pixels[];
+    Image render;
+    Graphics rg;
+    double pi;
+    double pi2;
+    int mousex;
+    int mousey;
+    int sampletotal;
+    int itertotal;
+    int pointtotal;
 
-        public void run()
-        {
-            while(!quit) 
-                try
-                {
-                    gamefunc();
-                    repaint();
-                    sleep(1L);
-                }
-                catch(InterruptedException interruptedexception) { }
-        }
+    //drag vars
+        int mousemode; //current mouse button
+        double startDragX;
+        double startDragY;
+        double startDragPX;
+        double startDragPY;
+        double startDragDist;
+        double startDragAngle;
+        double startDragScale;
 
-        public mainthread()
-        {
-        }
-    }
+    //point vars
+        double pointx[];
+        double pointy[];
+        double pointscale[];
+        double pointdegrees[];
+        double pointradius[];
+        double pointrotation[];
+        int pointnumber;
+        int pointselected;
+        double centerx;
+        double centery;
 
-    public class ifsPt
-    {
-        double x;
-        double y;
-        double scale;
-        double degrees;
-        double radius;
-        double rotation;
-
-        public ifsPt()
-        {
-        }
-    }
+    String presetstring;
+    int preset;
 
     public ifsys()
     {
@@ -51,8 +59,8 @@ public class ifsys extends Applet
         pixels = new int[screenwidth * screenheight];
         pi = 3.1415926535897931D;
         pi2 = pi / 2D;
-        sampletotal = 100;
-        itertotal = 8;
+        sampletotal = 1000;
+        itertotal = 10;
         pointtotal = 100;
 
         mousemode = 0;
@@ -68,13 +76,88 @@ public class ifsys extends Applet
         centery = screenheight / 2;
     }
 
-    public double distance2(double x2, double y2)
-    {
+    public void addPoint(){
+        pointx[pointnumber] = mousex;
+        pointy[pointnumber] = mousey;
+        pointscale[pointnumber] = 0.5D;
+        pointrotation[pointnumber] = 0.0D;
+        pointnumber++;
+        updateCenter();
+        clearframe();
+        gamefunc();
+    }
+
+    public void deletePoint(){
+        int x = 0;
+        int y = 0;
+        for(int a = pointselected; a < pointnumber; a++){
+            pointx[a] = pointx[a + 1];
+            pointy[a] = pointy[a + 1];
+            pointscale[a] = pointscale[a + 1];
+            pointrotation[a] = pointrotation[a + 1];
+        }
+
+        pointx[pointnumber] = 0.0D;
+        pointy[pointnumber] = 0.0D;
+        pointscale[pointnumber] = 0.5D;
+        pointrotation[pointnumber] = 0.0D;
+        pointnumber--;
+
+        updateCenter();
+        clearframe();
+        gamefunc();
+    }
+
+    public void updateCenter(){
+        double x = 0;
+        double y = 0;
+
+        if(pointnumber != 0){
+            for(int a = 0; a < pointnumber; a++){
+                x += pointx[a];
+                y +=  pointy[a];
+            }
+
+            centerx = x / pointnumber;
+            centery = y / pointnumber;
+        } else{
+            centerx = pointx[0];
+            centery = pointy[0];
+        }
+    }
+
+    public class mainthread extends Thread{
+        public void run(){
+            while(!quit) 
+                try{
+                    gamefunc();
+                    repaint();
+                    sleep(1L);
+                }
+                catch(InterruptedException interruptedexception) { }
+        }
+
+        public mainthread(){
+        }
+    }
+
+    public class ifsPt{
+        double x;
+        double y;
+        double scale;
+        double degrees;
+        double radius;
+        double rotation;
+
+        public ifsPt(){
+        }
+    }
+
+    public double distance2(double x2, double y2){
         return Math.sqrt(x2 * x2 + y2 * y2);
     }
 
-    public void start()
-    {
+    public void start(){
         setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -88,10 +171,8 @@ public class ifsys extends Applet
         game.start();
     }
 
-    public void settopreset()
-    {
-        switch(preset)
-        {
+    public void settopreset(){
+        switch(preset){
         case 1: // '\001'
             pointnumber = 3;
             itertotal = 9;
@@ -237,16 +318,13 @@ public class ifsys extends Applet
         }
     }
 
-    public void update(Graphics gr)
-    {
+    public void update(Graphics gr){
         paint(gr);
     }
 
-    public void paint(Graphics gr)
-    {
+    public void paint(Graphics gr){
         rg.drawImage(createImage(new MemoryImageSource(screenwidth, screenheight, pixels, 0, screenwidth)), 0, 0, screenwidth, screenheight, this);
-        if(!hidden)
-        {
+        if(!hidden){
             rg.setColor(Color.white);
             rg.drawString("Point " + String.valueOf(pointselected + 1), 5, 15);
             rg.drawString("X: " + String.valueOf((double)(int)(pointx[pointselected] * 1000D) / 1000D), 5, 30);
@@ -259,28 +337,20 @@ public class ifsys extends Applet
         gr.drawImage(render, 0, 0, screenwidth, screenheight, this);
     }
 
-    public void clearframe()
-    {
+    public void clearframe(){
         for(int a = 0; a < screenwidth * screenheight; a++)
             pixels[a] = 0xff000000;
-
     }
 
-    public void gamefunc()
-    {
-        int pointx1 = 0;
-        int pointy1 = 0;
+    public void gamefunc(){
         double e = 1.0D;
-        for(int a = 0; a < pointnumber; a++)
-        {
+        for(int a = 0; a < pointnumber; a++){
             pointdegrees[a] = Math.atan2(pointx[a] - centerx, pointy[a] - centery);
             pointradius[a] = distance2(pointx[a] - centerx, pointy[a] - centery);
         }
 
-        if(pointnumber != 0)
-        {
-            for(int a = 0; a < sampletotal; a++)
-            {
+        if(pointnumber != 0){
+            for(int a = 0; a < sampletotal; a++){
                 int c = (int)(Math.random() * (double)pointnumber);
                 double dx = pointx[c];
                 double dy = pointy[c];
@@ -310,41 +380,43 @@ public class ifsys extends Applet
             {
                 for(int a = 0; a < pointnumber; a++)
                 {
-                    pointx1 = (int)pointx[a];
-                    pointy1 = (int)pointy[a];
-                    if(pointx1 > screenwidth - 2)
-                        pointx1 = screenwidth - 2;
-                    if(pointy1 > screenheight - 2)
-                        pointy1 = screenheight - 2;
-                    if(pointx1 < 0)
-                        pointx1 = 0;
-                    if(pointy1 < 0)
-                        pointy1 = 0;
-                    if(a == pointselected)
-                    {
-                        pixels[pointx1 + pointy1 * screenwidth] = 0xff00ff00;
-                        pixels[pointx1 + 1 + pointy1 * screenwidth] = 0xff00ff00;
-                        pixels[pointx1 + (pointy1 + 1) * screenwidth] = 0xff00ff00;
-                        pixels[pointx1 + 1 + (pointy1 + 1) * screenwidth] = 0xff00ff00;
-                    } else
-                    {
-                        pixels[pointx1 + pointy1 * screenwidth] = 0xffff0000;
-                        pixels[pointx1 + 1 + pointy1 * screenwidth] = 0xffff0000;
-                        pixels[pointx1 + (pointy1 + 1) * screenwidth] = 0xffff0000;
-                        pixels[pointx1 + 1 + (pointy1 + 1) * screenwidth] = 0xffff0000;
-                    }
+                   drawDot(a);
                 }
 
             }
         }
     }
 
-    public void mouseClicked(MouseEvent mouseevent)
-    {
+    public void drawDot(int pointIndex){
+        int pointx1 = (int)pointx[pointIndex];
+        int pointy1 = (int)pointy[pointIndex];
+        if(pointx1 > screenwidth - 2)
+            pointx1 = screenwidth - 2;
+        if(pointy1 > screenheight - 2)
+            pointy1 = screenheight - 2;
+        if(pointx1 < 0)
+            pointx1 = 0;
+        if(pointy1 < 0)
+            pointy1 = 0;
+        if(pointIndex == pointselected)
+        {
+            pixels[pointx1 + pointy1 * screenwidth] = 0xff00ff00;
+            pixels[pointx1 + 1 + pointy1 * screenwidth] = 0xff00ff00;
+            pixels[pointx1 + (pointy1 + 1) * screenwidth] = 0xff00ff00;
+            pixels[pointx1 + 1 + (pointy1 + 1) * screenwidth] = 0xff00ff00;
+        } else
+        {
+            pixels[pointx1 + pointy1 * screenwidth] = 0xffff0000;
+            pixels[pointx1 + 1 + pointy1 * screenwidth] = 0xffff0000;
+            pixels[pointx1 + (pointy1 + 1) * screenwidth] = 0xffff0000;
+            pixels[pointx1 + 1 + (pointy1 + 1) * screenwidth] = 0xffff0000;
+        }
     }
 
-    public void mousePressed(MouseEvent arg0)
-    {
+    public void mouseClicked(MouseEvent mouseevent){
+    }
+
+    public void mousePressed(MouseEvent arg0){
         mousemode = arg0.getButton();
 
         mousex = arg0.getX();
@@ -380,120 +452,39 @@ public class ifsys extends Applet
         }
     }
 
-    public void addPoint(){
-        int x = 0;
-        int y = 0;
-        pointx[pointnumber] = mousex;
-        pointy[pointnumber] = mousey;
-        pointscale[pointnumber] = 0.5D;
-        pointrotation[pointnumber] = 0.0D;
-        for(int a = 0; a < pointnumber + 1; a++)
-        {
-            x = (int)((double)x + pointx[a]);
-            y = (int)((double)y + pointy[a]);
-        }
-
-        centerx = x / (pointnumber + 1);
-        centery = y / (pointnumber + 1);
-        pointnumber++;
-        clearframe();
-        gamefunc();
-    }
-
-    public void deletePoint(){
-        int x = 0;
-        int y = 0;
-        for(int a = pointselected; a < pointnumber; a++)
-        {
-            pointx[a] = pointx[a + 1];
-            pointy[a] = pointy[a + 1];
-            pointscale[a] = pointscale[a + 1];
-            pointrotation[a] = pointrotation[a + 1];
-        }
-
-        pointx[pointnumber] = 0.0D;
-        pointy[pointnumber] = 0.0D;
-        pointscale[pointnumber] = 0.5D;
-        pointrotation[pointnumber] = 0.0D;
-        pointnumber--;
-        if(pointnumber != 0)
-        {
-            for(int a = 0; a < pointnumber; a++)
-            {
-                x = (int)((double)x + pointx[a]);
-                y = (int)((double)y + pointy[a]);
-            }
-
-            centerx = x / pointnumber;
-            centery = y / pointnumber;
-        } else
-        {
-            centerx = pointx[0];
-            centery = pointy[0];
-        }
-        clearframe();
-        gamefunc();
-    }
-
-    public void updateCenter(){
-        int x = 0;
-        int y = 0;
-
-        for(int a = 0; a < pointnumber; a++)
-        {
-            x = (int)((double)x + pointx[a]);
-            y = (int)((double)y + pointy[a]);
-        }
-
-        centerx = x / (pointnumber);
-        centery = y / (pointnumber);
-    }
-
-    public void mouseReleased(MouseEvent mouseevent)
-    {
+    public void mouseReleased(MouseEvent mouseevent){
         setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         mousemode = 0;
     }
 
-    public void mouseEntered(MouseEvent mouseevent)
-    {
+    public void mouseEntered(MouseEvent mouseevent){
         setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
     }
 
-    public void mouseExited(MouseEvent mouseevent)
-    {
+    public void mouseExited(MouseEvent mouseevent){
         setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
     }
 
-    public void mouseDragged(MouseEvent mouseevent)
-    {
+    public void mouseDragged(MouseEvent mouseevent){
         if(mousemode == 1){ //left click to move a point
             setCursor (Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
             pointx[pointselected] = startDragPX + (mouseevent.getX() - startDragX);
             pointy[pointselected] = startDragPY + (mouseevent.getY() - startDragY);
-            updateCenter();
-            clearframe();
-            gamefunc();
         }
         else if(mousemode == 3){ //right click to rotate point
             setCursor (Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
             pointrotation[pointselected] = pi * 2 - (Math.atan2(mouseevent.getX() - pointx[pointselected], mouseevent.getY() - pointy[pointselected])- startDragAngle);
             pointscale[pointselected] = startDragScale*distance2(mouseevent.getX() - pointx[pointselected], mouseevent.getY() - pointy[pointselected])/startDragDist;
-
-            updateCenter();
-            clearframe();
-            gamefunc();
         }
 
+        updateCenter();
+        clearframe();
+        gamefunc();
     }
 
-    public void mouseMoved(MouseEvent arg0)
-    {
-
+    public void mouseMoved(MouseEvent arg0){
     }
-
-    public void keyTyped(KeyEvent keyevent)
-    {
+    public void keyTyped(KeyEvent keyevent){
     }
 
     public void keyPressed(KeyEvent arg0)
@@ -552,9 +543,6 @@ public class ifsys extends Applet
 
     public void keyReleased(KeyEvent arg0)
     {
-        int x = 0;
-        int y = 0;
-
         if(arg0.getKeyChar() == '/')
             itertotal++;
         if(arg0.getKeyChar() == '.' && itertotal > 1)
@@ -571,54 +559,8 @@ public class ifsys extends Applet
         gamefunc();
     }
 
-    public void focusGained(FocusEvent focusevent)
-    {
+    public void focusGained(FocusEvent focusevent){
     }
-
-    public void focusLost(FocusEvent focusevent)
-    {
+    public void focusLost(FocusEvent focusevent){
     }
-
-    mainthread game;
-    boolean quit;
-    boolean hidden;
-    boolean hidden2;
-    int screenwidth;
-    int screenheight;
-    int pixels[];
-    Image render;
-    Graphics rg;
-    double pi;
-    double pi2;
-    int mousex;
-    int mousey;
-    int sampletotal;
-    int itertotal;
-    int pointtotal;
-
-    int mousemode;
-
-    //drag vars
-        double startDragX;
-        double startDragY;
-        double startDragPX;
-        double startDragPY;
-        double startDragDist;
-        double startDragAngle;
-        double startDragScale;
-
-    //point vars
-        double pointx[];
-        double pointy[];
-        double pointscale[];
-        double pointdegrees[];
-        double pointradius[];
-        double pointrotation[];
-        int pointnumber;
-        int pointselected;
-        double centerx;
-        double centery;
-
-    String presetstring;
-    int preset;
 }
