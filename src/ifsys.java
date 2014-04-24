@@ -68,6 +68,18 @@ public class ifsys extends Applet
         centery = screenheight / 2;
     }
 
+    public void findSelectedPoint(){
+        double olddist = 1000D;
+        for(int a = 0; a < pointnumber; a++)
+        {
+            double currentdist = distance2((double)mousex - pts[a].x, (double)mousey - pts[a].y);
+            if(currentdist < olddist){
+                olddist = currentdist;
+                pointselected = a;
+            }
+        }
+    }
+
     public void addPoint(){
         pts[pointnumber].x = mousex;
         pts[pointnumber].y = mousey;
@@ -142,13 +154,13 @@ public class ifsys extends Applet
         public double rotation;
 
         public ifsPt(){
-            this.x = 0D;
-            this.y = 0D;
-            this.scale = 0.5D;
-            this.rotation = 0.0D;
+            x = 0D;
+            y = 0D;
+            scale = 0.5D;
+            rotation = 0.0D;
 
-            this.degrees = 0D;
-            this.radius = 1D;
+            degrees = 0D;
+            radius = 1D;
         }
     }
 
@@ -281,21 +293,14 @@ public class ifsys extends Applet
     public void mouseClicked(MouseEvent mouseevent){
     }
 
+
+
     public void mousePressed(MouseEvent arg0){
         mousemode = arg0.getButton();
 
         mousex = arg0.getX();
         mousey = arg0.getY();
-        double olddist = 1000D;
-        for(int a = 0; a < pointnumber; a++)
-        {
-            double currentdist = distance2((double)mousex - pts[a].x, (double)mousey - pts[a].y);
-            if(currentdist < olddist)
-            {
-                olddist = currentdist;
-                pointselected = a;
-            }
-        }
+        findSelectedPoint();
 
         if(arg0.getClickCount()==2){
             if(mousemode == 1){ //add point w/ double click
@@ -317,29 +322,29 @@ public class ifsys extends Applet
         }
     }
 
-    public void mouseReleased(MouseEvent mouseevent){
+    public void mouseReleased(MouseEvent e){
         setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         mousemode = 0;
     }
 
-    public void mouseEntered(MouseEvent mouseevent){
+    public void mouseEntered(MouseEvent e){
         setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
     }
 
-    public void mouseExited(MouseEvent mouseevent){
+    public void mouseExited(MouseEvent e){
         setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
     }
 
-    public void mouseDragged(MouseEvent mouseevent){
+    public void mouseDragged(MouseEvent e){
         if(mousemode == 1){ //left click to move a point
             setCursor (Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-            pts[pointselected].x = startDragPX + (mouseevent.getX() - startDragX);
-            pts[pointselected].y = startDragPY + (mouseevent.getY() - startDragY);
+            pts[pointselected].x = startDragPX + (e.getX() - startDragX);
+            pts[pointselected].y = startDragPY + (e.getY() - startDragY);
         }
         else if(mousemode == 3){ //right click to rotate point
             setCursor (Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
-            pts[pointselected].rotation = pi * 2 - (Math.atan2(mouseevent.getX() - pts[pointselected].x, mouseevent.getY() - pts[pointselected].y)- startDragAngle);
-            pts[pointselected].scale = startDragScale*distance2(mouseevent.getX() - pts[pointselected].x, mouseevent.getY() - pts[pointselected].y)/startDragDist;
+            pts[pointselected].rotation = pi * 2 - (Math.atan2(e.getX() - pts[pointselected].x, e.getY() - pts[pointselected].y)- startDragAngle);
+            pts[pointselected].scale = startDragScale*distance2(e.getX() - pts[pointselected].x, e.getY() - pts[pointselected].y)/startDragDist;
         }
 
         updateCenter();
@@ -347,24 +352,22 @@ public class ifsys extends Applet
         gamefunc();
     }
 
-    public void mouseMoved(MouseEvent arg0){
+    public void mouseMoved(MouseEvent e){
     }
-    public void keyTyped(KeyEvent keyevent){
+    public void keyTyped(KeyEvent e){
     }
 
-    public void keyPressed(KeyEvent arg0){
-        if(arg0.getKeyChar() == '=')
+    public void keyPressed(KeyEvent e){
+        if(e.getKeyChar() == '=')
             pts[pointselected].scale *= 1.01D;
-        if(arg0.getKeyChar() == '-')
+        if(e.getKeyChar() == '-')
             pts[pointselected].scale *= 0.98999999999999999D;
-        if(arg0.getKeyChar() == ']')
-        {
+        if(e.getKeyChar() == ']'){
             for(int a = 0; a < pointnumber; a++)
                 pts[a].scale *= 1.01D;
 
         }
-        if(arg0.getKeyChar() == '[')
-        {
+        if(e.getKeyChar() == '['){
             for(int a = 0; a < pointnumber; a++)
                 pts[a].scale *= 0.98999999999999999D;
         }
@@ -373,18 +376,18 @@ public class ifsys extends Applet
         gamefunc();
     }
 
-    public void keyReleased(KeyEvent arg0){
-        if(arg0.getKeyChar() == '/')
+    public void keyReleased(KeyEvent e){
+        if(e.getKeyChar() == '/')
             iterations++;
-        if(arg0.getKeyChar() == '.' && iterations > 1)
+        if(e.getKeyChar() == '.' && iterations > 1)
             iterations--;
-        if(arg0.getKeyChar() == 'h')
+        if(e.getKeyChar() == 'h')
             infoHidden = !infoHidden;
-        if(arg0.getKeyChar() == 'g')
+        if(e.getKeyChar() == 'g')
             ptsHidden = !ptsHidden;
-        if(arg0.getKeyChar() == 'm')
+        if(e.getKeyChar() == 'm')
             sampletotal += 100;
-        if(arg0.getKeyChar() == 'n' && sampletotal > 1)
+        if(e.getKeyChar() == 'n' && sampletotal > 1)
             sampletotal -= 100;
         clearframe();
         gamefunc();
