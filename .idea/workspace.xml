@@ -67,7 +67,7 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="63" column="3" selection-start="1471" selection-end="1471" vertical-scroll-proportion="0.5754277" vertical-offset="701" max-vertical-offset="6358">
+            <state line="62" column="50" selection-start="1467" selection-end="1467" vertical-scroll-proportion="-7.5686593" vertical-offset="5739" max-vertical-offset="6358">
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#start#0;class#ifsys#0" expanded="false" />
@@ -482,7 +482,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="63" column="3" selection-start="1471" selection-end="1471" vertical-scroll-proportion="0.5754277" vertical-offset="701" max-vertical-offset="6358">
+        <state line="62" column="50" selection-start="1467" selection-end="1467" vertical-scroll-proportion="-7.5686593" vertical-offset="5739" max-vertical-offset="6358">
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#start#0;class#ifsys#0" expanded="false" />

@@ -70,38 +70,6 @@ public class ifsys extends Applet
         }
     }
 
-    public void addPoint(){
-        shape.pts[shape.pointsInUse].x = mousex;
-        shape.pts[shape.pointsInUse].y = mousey;
-        shape.pts[shape.pointsInUse].scale = 0.5D;
-        shape.pts[shape.pointsInUse].rotation = 0.0D;
-        shape.pointsInUse++;
-        shape.updateCenter();
-        clearframe();
-        gamefunc();
-    }
-
-    public void deletePoint(){
-        for(int a = pointselected; a < shape.pointsInUse; a++){
-            shape.pts[a].x = shape.pts[a + 1].x;
-            shape.pts[a].y = shape.pts[a + 1].y;
-
-            shape.pts[a].scale = shape.pts[a + 1].scale;
-            shape.pts[a].rotation = shape.pts[a + 1].rotation;
-        }
-
-        shape.pts[shape.pointsInUse].x = 0.0D;
-        shape.pts[shape.pointsInUse].y = 0.0D;
-
-        shape.pts[shape.pointsInUse].scale = 0.5D;
-        shape.pts[shape.pointsInUse].rotation = 0.0D;
-        shape.pointsInUse--;
-
-        shape.updateCenter();
-        clearframe();
-        gamefunc();
-    }
-
     public class mainthread extends Thread{
         public void run(){
             while(!quit) 
@@ -130,7 +98,35 @@ public class ifsys extends Applet
             }
         }
 
-        public void updateCenter(){
+        public void addPoint(double x, double y){
+            pts[pointsInUse].x = x;
+            pts[pointsInUse].y = y;
+            pts[pointsInUse].scale = 0.5D;
+            pts[pointsInUse].rotation = 0.0D;
+            pointsInUse++;
+            updateCenter();
+        }
+
+        public void deletePoint(int selectedPoint){
+            for(int a = selectedPoint; a < pointsInUse; a++){
+                pts[a].x = pts[a + 1].x;
+                pts[a].y = pts[a + 1].y;
+
+                pts[a].scale = pts[a + 1].scale;
+                pts[a].rotation = pts[a + 1].rotation;
+            }
+
+            pts[pointsInUse].x = 0.0D;
+            pts[pointsInUse].y = 0.0D;
+
+            pts[pointsInUse].scale = 0.5D;
+            pts[pointsInUse].rotation = 0.0D;
+            pointsInUse--;
+
+            updateCenter();
+        }
+
+        void updateCenter(){
             double x = 0, y = 0;
 
             if(pointsInUse != 0){
@@ -306,9 +302,13 @@ public class ifsys extends Applet
 
         if(arg0.getClickCount()==2){
             if(mousemode == 1){ //add point w/ double click
-                addPoint();
+                shape.addPoint(mousex, mousey);
+                clearframe();
+                gamefunc();
             }else if(mousemode == 3){ //remove point w/ double right click
-                deletePoint();
+                shape.deletePoint(pointselected);
+                clearframe();
+                gamefunc();
             }
         }else{
             startDragX = arg0.getX();
