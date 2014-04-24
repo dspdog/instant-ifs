@@ -67,10 +67,9 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="350" column="0" selection-start="12208" selection-end="12208" vertical-scroll-proportion="0.49173555" vertical-offset="5389" max-vertical-offset="10710">
+            <state line="422" column="19" selection-start="14512" selection-end="14512" vertical-scroll-proportion="1.0909091" vertical-offset="6612" max-vertical-offset="12104">
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="class#mainthread#0;class#ifsys#0" expanded="false" />
                 <element signature="method#update#0;class#ifsys#0" expanded="false" />
               </folding>
             </state>
@@ -97,8 +96,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="526" />
-    <option name="y" value="108" />
+    <option name="x" value="779" />
+    <option name="y" value="85" />
     <option name="width" value="822" />
     <option name="height" value="787" />
   </component>
@@ -376,7 +375,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="526" y="108" width="822" height="787" extended-state="0" />
+    <frame x="779" y="85" width="822" height="787" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -430,7 +429,6 @@
         <state line="406" column="25" selection-start="14164" selection-end="14164" vertical-scroll-proportion="0.0" vertical-offset="6902" max-vertical-offset="10540">
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="class#mainthread#0;class#ifsys#0" expanded="false" />
             <element signature="method#update#0;class#ifsys#0" expanded="false" />
           </folding>
         </state>
@@ -441,7 +439,6 @@
         <state line="17" column="30" selection-start="439" selection-end="439" vertical-scroll-proportion="0.0" vertical-offset="289" max-vertical-offset="10931">
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="class#mainthread#0;class#ifsys#0" expanded="false" />
             <element signature="method#update#0;class#ifsys#0" expanded="false" />
           </folding>
         </state>
@@ -449,10 +446,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="350" column="0" selection-start="12208" selection-end="12208" vertical-scroll-proportion="0.49173555" vertical-offset="5389" max-vertical-offset="10710">
+        <state line="422" column="19" selection-start="14512" selection-end="14512" vertical-scroll-proportion="1.0909091" vertical-offset="6612" max-vertical-offset="12104">
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="class#mainthread#0;class#ifsys#0" expanded="false" />
             <element signature="method#update#0;class#ifsys#0" expanded="false" />
           </folding>
         </state>

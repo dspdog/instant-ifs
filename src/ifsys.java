@@ -26,7 +26,6 @@ public class ifsys extends Applet
         }
     }
 
-
     public ifsys()
     {
         game = new mainthread();
@@ -349,16 +348,79 @@ public class ifsys extends Applet
             }
         }
 
-        startDragX = arg0.getX();
-        startDragY = arg0.getY();
-        startDragPX = pointx[pointselected];
-        startDragPY = pointy[pointselected];
-        startDragDist = distance2(arg0.getX() - pointx[pointselected], arg0.getY() - pointy[pointselected]);
-        startDragAngle = pointrotation[pointselected] + Math.atan2(arg0.getX() - pointx[pointselected], arg0.getY() - pointy[pointselected]);
-        startDragScale = pointscale[pointselected];
+        if(arg0.getClickCount()==2){
+            if(mousemode == 1){ //add point w/ double click
+                addPoint();
+            }else if(mousemode == 3){ //remove point w/ double right click
+                deletePoint();
+            }
+        }else{
+            startDragX = arg0.getX();
+            startDragY = arg0.getY();
+            startDragPX = pointx[pointselected];
+            startDragPY = pointy[pointselected];
+            startDragDist = distance2(arg0.getX() - pointx[pointselected], arg0.getY() - pointy[pointselected]);
+            startDragAngle = pointrotation[pointselected] + Math.atan2(arg0.getX() - pointx[pointselected], arg0.getY() - pointy[pointselected]);
+            startDragScale = pointscale[pointselected];
 
-        requestFocus();
-        updateCenter();
+            requestFocus();
+            updateCenter();
+        }
+    }
+
+    public void addPoint(){
+        int x = 0;
+        int y = 0;
+        pointx[pointnumber] = mousex;
+        pointy[pointnumber] = mousey;
+        pointscale[pointnumber] = 0.5D;
+        pointrotation[pointnumber] = 0.0D;
+        for(int a = 0; a < pointnumber + 1; a++)
+        {
+            x = (int)((double)x + pointx[a]);
+            y = (int)((double)y + pointy[a]);
+        }
+
+        centerx = x / (pointnumber + 1);
+        centery = y / (pointnumber + 1);
+        pointnumber++;
+        clearframe();
+        gamefunc();
+    }
+
+    public void deletePoint(){
+        int x = 0;
+        int y = 0;
+        for(int a = pointselected; a < pointnumber; a++)
+        {
+            pointx[a] = pointx[a + 1];
+            pointy[a] = pointy[a + 1];
+            pointscale[a] = pointscale[a + 1];
+            pointrotation[a] = pointrotation[a + 1];
+        }
+
+        pointx[pointnumber] = 0.0D;
+        pointy[pointnumber] = 0.0D;
+        pointscale[pointnumber] = 0.5D;
+        pointrotation[pointnumber] = 0.0D;
+        pointnumber--;
+        if(pointnumber != 0)
+        {
+            for(int a = 0; a < pointnumber; a++)
+            {
+                x = (int)((double)x + pointx[a]);
+                y = (int)((double)y + pointy[a]);
+            }
+
+            centerx = x / pointnumber;
+            centery = y / pointnumber;
+        } else
+        {
+            centerx = pointx[0];
+            centery = pointy[0];
+        }
+        clearframe();
+        gamefunc();
     }
 
     public void updateCenter(){
@@ -640,4 +702,7 @@ public class ifsys extends Applet
     double movesize;
     String presetstring;
     int preset;
+
+
+
 }
