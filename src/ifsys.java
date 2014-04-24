@@ -26,6 +26,20 @@ public class ifsys extends Applet
         }
     }
 
+    public class ifsPt
+    {
+        double x;
+        double y;
+        double scale;
+        double degrees;
+        double radius;
+        double rotation;
+
+        public ifsPt()
+        {
+        }
+    }
+
     public ifsys()
     {
         game = new mainthread();
@@ -52,7 +66,6 @@ public class ifsys extends Applet
         pointnumber = 0;
         centerx = screenwidth / 2;
         centery = screenheight / 2;
-        movesize = 1.0D;
     }
 
     public double distance2(double x2, double y2)
@@ -241,7 +254,6 @@ public class ifsys extends Applet
             rg.drawString("Scale (;' [] -=): " + String.valueOf((double)(int)(pointscale[pointselected] * 1000D) / 1000D), 5, 60);
             rg.drawString("Rotation (kl op 90): " + String.valueOf((double)(int)((((pointrotation[pointselected] / pi) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 75);
             rg.drawString("Iterations (. /): " + String.valueOf(itertotal), 5, screenheight - 7);
-            rg.drawString("Sensitivity (1-6): " + String.valueOf((double)(int)(movesize * 1000D) / 1000D), 4, screenheight - 22);
             rg.drawString("Samples (nm): " + String.valueOf(sampletotal), 4, screenheight - 37);
         }
         gr.drawImage(render, 0, 0, screenwidth, screenheight, this);
@@ -488,48 +500,7 @@ public class ifsys extends Applet
     {
         double x = 0.0D;
         double y = 0.0D;
-        if(arg0.getKeyChar() == '0')
-            pointrotation[pointselected] += 0.050000000000000003D * movesize;
-        if(arg0.getKeyChar() == '9')
-            pointrotation[pointselected] -= 0.050000000000000003D * movesize;
-        if(arg0.getKeyChar() == 'p')
-        {
-            for(int a = 0; a < pointnumber; a++)
-                pointrotation[a] += 0.050000000000000003D * movesize;
 
-        }
-        if(arg0.getKeyChar() == 'o')
-        {
-            for(int a = 0; a < pointnumber; a++)
-                pointrotation[a] -= 0.050000000000000003D * movesize;
-
-        }
-        if(arg0.getKeyChar() == 'l')
-        {
-            for(int a = 0; a < pointnumber; a++)
-            {
-                double degrees = Math.atan2(pointx[a] - centerx, pointy[a] - centery);
-                double radius = distance2(pointx[a] - centerx, pointy[a] - centery);
-                double dx = Math.cos((pi / 2D - degrees) + 0.050000000000000003D * movesize) * radius + centerx;
-                double dy = Math.sin((pi / 2D - degrees) + 0.050000000000000003D * movesize) * radius + centery;
-                pointx[a] = dx;
-                pointy[a] = dy;
-            }
-
-        }
-        if(arg0.getKeyChar() == 'k')
-        {
-            for(int a = 0; a < pointnumber; a++)
-            {
-                double degrees = Math.atan2(pointx[a] - centerx, pointy[a] - centery);
-                double radius = distance2(pointx[a] - centerx, pointy[a] - centery);
-                double dx = Math.cos(pi / 2D - degrees - 0.050000000000000003D * movesize) * radius + centerx;
-                double dy = Math.sin(pi / 2D - degrees - 0.050000000000000003D * movesize) * radius + centery;
-                pointx[a] = dx;
-                pointy[a] = dy;
-            }
-
-        }
         if(arg0.getKeyChar() == '\'')
         {
             for(int a = 0; a < pointnumber; a++)
@@ -572,50 +543,9 @@ public class ifsys extends Applet
                 pointscale[a] *= 0.98999999999999999D;
 
         }
-        if(arg0.getKeyChar() == 'e')
-            movesize *= 1.01D;
-        if(arg0.getKeyChar() == 'q')
-            movesize *= 0.98999999999999999D;
-        if(arg0.getKeyChar() == 'a')
-            pointx[pointselected] -= 2D * movesize;
-        if(arg0.getKeyChar() == 'd')
-            pointx[pointselected] += 2D * movesize;
-        if(arg0.getKeyChar() == 's')
-            pointy[pointselected] += 2D * movesize;
-        if(arg0.getKeyChar() == 'w')
-            pointy[pointselected] -= 2D * movesize;
-        if(arg0.getKeyChar() == 'A')
-        {
-            for(int a = 0; a < pointnumber; a++)
-                pointx[a] -= 2D * movesize;
 
-        }
-        if(arg0.getKeyChar() == 'D')
-        {
-            for(int a = 0; a < pointnumber; a++)
-                pointx[a] += 2D * movesize;
 
-        }
-        if(arg0.getKeyChar() == 'W')
-        {
-            for(int a = 0; a < pointnumber; a++)
-                pointy[a] -= 2D * movesize;
-
-        }
-        if(arg0.getKeyChar() == 'S')
-        {
-            for(int a = 0; a < pointnumber; a++)
-                pointy[a] += 2D * movesize;
-
-        }
-        for(int a = 0; a < pointnumber; a++)
-        {
-            x += pointx[a];
-            y += pointy[a];
-        }
-
-        centerx = x / (double)pointnumber;
-        centery = y / (double)pointnumber;
+        updateCenter();
         clearframe();
         gamefunc();
     }
@@ -633,18 +563,6 @@ public class ifsys extends Applet
             hidden = !hidden;
         if(arg0.getKeyChar() == 'g')
             hidden2 = !hidden2;
-        if(arg0.getKeyChar() == '1')
-            movesize = 0.01D;
-        if(arg0.getKeyChar() == '2')
-            movesize = 0.10000000000000001D;
-        if(arg0.getKeyChar() == '3')
-            movesize = 0.5D;
-        if(arg0.getKeyChar() == '4')
-            movesize = 1.0D;
-        if(arg0.getKeyChar() == '5')
-            movesize = 2D;
-        if(arg0.getKeyChar() == '6')
-            movesize = 5D;
         if(arg0.getKeyChar() == 'm')
             sampletotal += 100;
         if(arg0.getKeyChar() == 'n' && sampletotal > 1)
@@ -689,20 +607,18 @@ public class ifsys extends Applet
         double startDragAngle;
         double startDragScale;
 
-    double pointx[];
-    double pointy[];
-    double pointscale[];
-    double pointdegrees[];
-    double pointradius[];
-    double pointrotation[];
-    int pointnumber;
-    int pointselected;
-    double centerx;
-    double centery;
-    double movesize;
+    //point vars
+        double pointx[];
+        double pointy[];
+        double pointscale[];
+        double pointdegrees[];
+        double pointradius[];
+        double pointrotation[];
+        int pointnumber;
+        int pointselected;
+        double centerx;
+        double centery;
+
     String presetstring;
     int preset;
-
-
-
 }
