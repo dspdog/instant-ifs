@@ -8,8 +8,8 @@ public class ifsys extends Applet
 {
     mainthread game;
     boolean quit;
-    boolean hidden;
-    boolean hidden2;
+    boolean infoHidden;
+    boolean ptsHidden;
     int screenwidth;
     int screenheight;
     int pixels[];
@@ -20,8 +20,15 @@ public class ifsys extends Applet
     int mousex;
     int mousey;
     int sampletotal;
-    int itertotal;
-    int pointtotal;
+    int iterations;
+    int maxPoints;
+
+    //point vars
+        ifsPt pts[];
+        int pointnumber;
+        int pointselected;
+        double centerx;
+        double centery;
 
     //drag vars
         int mousemode; //current mouse button
@@ -33,34 +40,26 @@ public class ifsys extends Applet
         double startDragAngle;
         double startDragScale;
 
-    ifsPt pts[];
-
-    //point vars
-        int pointnumber;
-        int pointselected;
-        double centerx;
-        double centery;
-
     String presetstring;
     int preset;
 
     public ifsys(){
         game = new mainthread();
         quit = false;
-        hidden = false;
-        hidden2 = false;
+        infoHidden = false;
+        ptsHidden = false;
         screenwidth = 1024;
         screenheight = 1024;
         pixels = new int[screenwidth * screenheight];
         pi = 3.1415926535897931D;
         pi2 = pi / 2D;
         sampletotal = 1000;
-        itertotal = 10;
-        pointtotal = 100;
+        iterations = 10;
+        maxPoints = 100;
         mousemode = 0;
 
-        pts = new ifsPt[pointtotal];
-        for(int a=0; a<pointtotal; a++){
+        pts = new ifsPt[maxPoints];
+        for(int a=0; a< maxPoints; a++){
             pts[a] = new ifsPt();
         }
 
@@ -175,7 +174,7 @@ public class ifsys extends Applet
         switch(preset){
         case 1: // '\001'
             pointnumber = 3;
-            itertotal = 9;
+            iterations = 9;
             sampletotal = 500;
             pts[0].x = 320D;
             pts[0].y = 160D;
@@ -197,14 +196,14 @@ public class ifsys extends Applet
 
     public void paint(Graphics gr){
         rg.drawImage(createImage(new MemoryImageSource(screenwidth, screenheight, pixels, 0, screenwidth)), 0, 0, screenwidth, screenheight, this);
-        if(!hidden){
+        if(!infoHidden){
             rg.setColor(Color.white);
             rg.drawString("Point " + String.valueOf(pointselected + 1), 5, 15);
             rg.drawString("X: " + String.valueOf((double)(int)(pts[pointselected].x * 1000D) / 1000D), 5, 30);
             rg.drawString("Y: " + String.valueOf((double)(int)(pts[pointselected].y * 1000D) / 1000D), 5, 45);
             rg.drawString("Scale (;' [] -=): " + String.valueOf((double)(int)(pts[pointselected].scale * 1000D) / 1000D), 5, 60);
             rg.drawString("Rotation (kl op 90): " + String.valueOf((double)(int)((((pts[pointselected].rotation / pi) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 75);
-            rg.drawString("Iterations (. /): " + String.valueOf(itertotal), 5, screenheight - 7);
+            rg.drawString("Iterations (. /): " + String.valueOf(iterations), 5, screenheight - 7);
             rg.drawString("Samples (nm): " + String.valueOf(sampletotal), 4, screenheight - 37);
         }
         gr.drawImage(render, 0, 0, screenwidth, screenheight, this);
@@ -216,7 +215,6 @@ public class ifsys extends Applet
     }
 
     public void gamefunc(){
-        double e = 1.0D;
         for(int a = 0; a < pointnumber; a++){
             pts[a].degrees = Math.atan2(pts[a].x - centerx, pts[a].y - centery);
             pts[a].radius = distance2(pts[a].x - centerx, pts[a].y - centery);
@@ -227,10 +225,9 @@ public class ifsys extends Applet
                 int c = (int)(Math.random() * (double)pointnumber);
                 double dx = pts[c].x;
                 double dy = pts[c].y;
-                e = 1.0D;
+                double e = 1.0D;
                 double extra = pts[c].rotation;
-                for(int d = 1; d < itertotal; d++)
-                {
+                for(int d = 1; d < iterations; d++){
                     c = (int)(Math.random() * (double)pointnumber);
                     e *= pts[c].scale;
                     extra += pts[c].rotation;
@@ -249,7 +246,7 @@ public class ifsys extends Applet
                 pixels[(int)dx + (int)dy * screenwidth] = -1;
             }
 
-            if(!hidden2){
+            if(!ptsHidden){
                 for(int a = 0; a < pointnumber; a++){
                    drawPtDot(a);
                 }
@@ -378,13 +375,13 @@ public class ifsys extends Applet
 
     public void keyReleased(KeyEvent arg0){
         if(arg0.getKeyChar() == '/')
-            itertotal++;
-        if(arg0.getKeyChar() == '.' && itertotal > 1)
-            itertotal--;
+            iterations++;
+        if(arg0.getKeyChar() == '.' && iterations > 1)
+            iterations--;
         if(arg0.getKeyChar() == 'h')
-            hidden = !hidden;
+            infoHidden = !infoHidden;
         if(arg0.getKeyChar() == 'g')
-            hidden2 = !hidden2;
+            ptsHidden = !ptsHidden;
         if(arg0.getKeyChar() == 'm')
             sampletotal += 100;
         if(arg0.getKeyChar() == 'n' && sampletotal > 1)
