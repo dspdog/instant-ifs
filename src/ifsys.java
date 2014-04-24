@@ -36,10 +36,6 @@ public class ifsys extends Applet
     ifsPt pts[];
 
     //point vars
-        double pointscale[];
-        double pointdegrees[];
-        double pointradius[];
-        double pointrotation[];
         int pointnumber;
         int pointselected;
         double centerx;
@@ -68,11 +64,6 @@ public class ifsys extends Applet
             pts[a] = new ifsPt();
         }
 
-        pointscale = new double[pointtotal];
-        pointdegrees = new double[pointtotal];
-        pointradius = new double[pointtotal];
-        pointrotation = new double[pointtotal];
-
         pointnumber = 0;
         centerx = screenwidth / 2;
         centery = screenheight / 2;
@@ -81,8 +72,8 @@ public class ifsys extends Applet
     public void addPoint(){
         pts[pointnumber].x = mousex;
         pts[pointnumber].y = mousey;
-        pointscale[pointnumber] = 0.5D;
-        pointrotation[pointnumber] = 0.0D;
+        pts[pointnumber].scale = 0.5D;
+        pts[pointnumber].rotation = 0.0D;
         pointnumber++;
         updateCenter();
         clearframe();
@@ -94,15 +85,15 @@ public class ifsys extends Applet
             pts[a].x = pts[a + 1].x;
             pts[a].y = pts[a + 1].y;
 
-            pointscale[a] = pointscale[a + 1];
-            pointrotation[a] = pointrotation[a + 1];
+            pts[a].scale = pts[a + 1].scale;
+            pts[a].rotation = pts[a + 1].rotation;
         }
 
         pts[pointnumber].x = 0.0D;
         pts[pointnumber].y = 0.0D;
 
-        pointscale[pointnumber] = 0.5D;
-        pointrotation[pointnumber] = 0.0D;
+        pts[pointnumber].scale = 0.5D;
+        pts[pointnumber].rotation = 0.0D;
         pointnumber--;
 
         updateCenter();
@@ -188,13 +179,13 @@ public class ifsys extends Applet
             sampletotal = 500;
             pts[0].x = 320D;
             pts[0].y = 160D;
-            pointscale[0] = 0.5D;
+            pts[0].scale = 0.5D;
             pts[1].x = 420D;
             pts[1].y = 160D + 100D * Math.sqrt(3D);
-            pointscale[1] = 0.5D;
+            pts[1].scale = 0.5D;
             pts[2].x = 220D;
             pts[2].y = 160D + 100D * Math.sqrt(3D);
-            pointscale[2] = 0.5D;
+            pts[2].scale = 0.5D;
             break;
         }
         updateCenter();
@@ -211,8 +202,8 @@ public class ifsys extends Applet
             rg.drawString("Point " + String.valueOf(pointselected + 1), 5, 15);
             rg.drawString("X: " + String.valueOf((double)(int)(pts[pointselected].x * 1000D) / 1000D), 5, 30);
             rg.drawString("Y: " + String.valueOf((double)(int)(pts[pointselected].y * 1000D) / 1000D), 5, 45);
-            rg.drawString("Scale (;' [] -=): " + String.valueOf((double)(int)(pointscale[pointselected] * 1000D) / 1000D), 5, 60);
-            rg.drawString("Rotation (kl op 90): " + String.valueOf((double)(int)((((pointrotation[pointselected] / pi) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 75);
+            rg.drawString("Scale (;' [] -=): " + String.valueOf((double)(int)(pts[pointselected].scale * 1000D) / 1000D), 5, 60);
+            rg.drawString("Rotation (kl op 90): " + String.valueOf((double)(int)((((pts[pointselected].rotation / pi) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 75);
             rg.drawString("Iterations (. /): " + String.valueOf(itertotal), 5, screenheight - 7);
             rg.drawString("Samples (nm): " + String.valueOf(sampletotal), 4, screenheight - 37);
         }
@@ -227,8 +218,8 @@ public class ifsys extends Applet
     public void gamefunc(){
         double e = 1.0D;
         for(int a = 0; a < pointnumber; a++){
-            pointdegrees[a] = Math.atan2(pts[a].x - centerx, pts[a].y - centery);
-            pointradius[a] = distance2(pts[a].x - centerx, pts[a].y - centery);
+            pts[a].degrees = Math.atan2(pts[a].x - centerx, pts[a].y - centery);
+            pts[a].radius = distance2(pts[a].x - centerx, pts[a].y - centery);
         }
 
         if(pointnumber != 0){
@@ -237,14 +228,14 @@ public class ifsys extends Applet
                 double dx = pts[c].x;
                 double dy = pts[c].y;
                 e = 1.0D;
-                double extra = pointrotation[c];
+                double extra = pts[c].rotation;
                 for(int d = 1; d < itertotal; d++)
                 {
                     c = (int)(Math.random() * (double)pointnumber);
-                    e *= pointscale[c];
-                    extra += pointrotation[c];
-                    dx += Math.cos((pi2 - pointdegrees[c]) + extra) * pointradius[c] * e;
-                    dy += Math.sin((pi2 - pointdegrees[c]) + extra) * pointradius[c] * e;
+                    e *= pts[c].scale;
+                    extra += pts[c].rotation;
+                    dx += Math.cos((pi2 - pts[c].degrees) + extra) * pts[c].radius * e;
+                    dy += Math.sin((pi2 - pts[c].degrees) + extra) * pts[c].radius * e;
                 }
 
                 if(dx > (double)(screenwidth - 1))
@@ -277,14 +268,12 @@ public class ifsys extends Applet
             pointx1 = 0;
         if(pointy1 < 0)
             pointy1 = 0;
-        if(pointIndex == pointselected)
-        {
+        if(pointIndex == pointselected){
             pixels[pointx1 + pointy1 * screenwidth] = 0xff00ff00;
             pixels[pointx1 + 1 + pointy1 * screenwidth] = 0xff00ff00;
             pixels[pointx1 + (pointy1 + 1) * screenwidth] = 0xff00ff00;
             pixels[pointx1 + 1 + (pointy1 + 1) * screenwidth] = 0xff00ff00;
-        } else
-        {
+        } else{
             pixels[pointx1 + pointy1 * screenwidth] = 0xffff0000;
             pixels[pointx1 + 1 + pointy1 * screenwidth] = 0xffff0000;
             pixels[pointx1 + (pointy1 + 1) * screenwidth] = 0xffff0000;
@@ -323,8 +312,8 @@ public class ifsys extends Applet
             startDragPX = pts[pointselected].x;
             startDragPY = pts[pointselected].y;
             startDragDist = distance2(arg0.getX() - pts[pointselected].x, arg0.getY() - pts[pointselected].y);
-            startDragAngle = pointrotation[pointselected] + Math.atan2(arg0.getX() - pts[pointselected].x, arg0.getY() - pts[pointselected].y);
-            startDragScale = pointscale[pointselected];
+            startDragAngle = pts[pointselected].rotation + Math.atan2(arg0.getX() - pts[pointselected].x, arg0.getY() - pts[pointselected].y);
+            startDragScale = pts[pointselected].scale;
 
             requestFocus();
             updateCenter();
@@ -352,8 +341,8 @@ public class ifsys extends Applet
         }
         else if(mousemode == 3){ //right click to rotate point
             setCursor (Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
-            pointrotation[pointselected] = pi * 2 - (Math.atan2(mouseevent.getX() - pts[pointselected].x, mouseevent.getY() - pts[pointselected].y)- startDragAngle);
-            pointscale[pointselected] = startDragScale*distance2(mouseevent.getX() - pts[pointselected].x, mouseevent.getY() - pts[pointselected].y)/startDragDist;
+            pts[pointselected].rotation = pi * 2 - (Math.atan2(mouseevent.getX() - pts[pointselected].x, mouseevent.getY() - pts[pointselected].y)- startDragAngle);
+            pts[pointselected].scale = startDragScale*distance2(mouseevent.getX() - pts[pointselected].x, mouseevent.getY() - pts[pointselected].y)/startDragDist;
         }
 
         updateCenter();
@@ -366,31 +355,28 @@ public class ifsys extends Applet
     public void keyTyped(KeyEvent keyevent){
     }
 
-    public void keyPressed(KeyEvent arg0)
-    {
+    public void keyPressed(KeyEvent arg0){
         if(arg0.getKeyChar() == '=')
-            pointscale[pointselected] *= 1.01D;
+            pts[pointselected].scale *= 1.01D;
         if(arg0.getKeyChar() == '-')
-            pointscale[pointselected] *= 0.98999999999999999D;
+            pts[pointselected].scale *= 0.98999999999999999D;
         if(arg0.getKeyChar() == ']')
         {
             for(int a = 0; a < pointnumber; a++)
-                pointscale[a] *= 1.01D;
+                pts[a].scale *= 1.01D;
 
         }
         if(arg0.getKeyChar() == '[')
         {
             for(int a = 0; a < pointnumber; a++)
-                pointscale[a] *= 0.98999999999999999D;
-
+                pts[a].scale *= 0.98999999999999999D;
         }
         updateCenter();
         clearframe();
         gamefunc();
     }
 
-    public void keyReleased(KeyEvent arg0)
-    {
+    public void keyReleased(KeyEvent arg0){
         if(arg0.getKeyChar() == '/')
             itertotal++;
         if(arg0.getKeyChar() == '.' && itertotal > 1)
@@ -407,8 +393,6 @@ public class ifsys extends Applet
         gamefunc();
     }
 
-    public void focusGained(FocusEvent focusevent){
-    }
-    public void focusLost(FocusEvent focusevent){
-    }
+    public void focusGained(FocusEvent focusevent){}
+    public void focusLost(FocusEvent focusevent){}
 }
