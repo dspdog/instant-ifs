@@ -43,7 +43,6 @@ public class ifsys extends Applet
         pointtotal = 100;
 
         mousemode = 0;
-        startDragDist = 100;
 
         pointx = new double[pointtotal];
         pointy = new double[pointtotal];
@@ -350,7 +349,10 @@ public class ifsys extends Applet
             }
         }
 
-
+        startDragX = arg0.getX();
+        startDragY = arg0.getY();
+        startDragPX = pointx[pointselected];
+        startDragPY = pointy[pointselected];
         startDragDist = distance2(arg0.getX() - pointx[pointselected], arg0.getY() - pointy[pointselected]);
         startDragAngle = pointrotation[pointselected] + Math.atan2(arg0.getX() - pointx[pointselected], arg0.getY() - pointy[pointselected]);
         startDragScale = pointscale[pointselected];
@@ -393,8 +395,8 @@ public class ifsys extends Applet
     {
         if(mousemode == 1){ //left click to move a point
             setCursor (Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-            pointx[pointselected] = mouseevent.getX();
-            pointy[pointselected] = mouseevent.getY();
+            pointx[pointselected] = startDragPX + (mouseevent.getX() - startDragX);
+            pointy[pointselected] = startDragPY + (mouseevent.getY() - startDragY);
             updateCenter();
             clearframe();
             gamefunc();
@@ -615,9 +617,15 @@ public class ifsys extends Applet
     int pointtotal;
 
     int mousemode;
-    double startDragDist;
-    double startDragAngle;
-    double startDragScale;
+
+    //drag vars
+        double startDragX;
+        double startDragY;
+        double startDragPX;
+        double startDragPY;
+        double startDragDist;
+        double startDragAngle;
+        double startDragScale;
 
     double pointx[];
     double pointy[];
