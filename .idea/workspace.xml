@@ -67,7 +67,7 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="69" column="0" selection-start="1603" selection-end="1603" vertical-scroll-proportion="-2.2208397" vertical-offset="2601" max-vertical-offset="6324">
+            <state line="146" column="0" selection-start="3534" selection-end="3534" vertical-scroll-proportion="-0.18506998" vertical-offset="2601" max-vertical-offset="6324">
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#start#0;class#ifsys#0" expanded="false" />
@@ -99,8 +99,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="379" />
-    <option name="y" value="43" />
+    <option name="x" value="359" />
+    <option name="y" value="45" />
     <option name="width" value="1095" />
     <option name="height" value="984" />
   </component>
@@ -378,7 +378,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="379" y="43" width="1095" height="984" extended-state="0" />
+    <frame x="359" y="45" width="1095" height="984" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -468,7 +468,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="0" selection-start="1603" selection-end="1603" vertical-scroll-proportion="-2.2208397" vertical-offset="2601" max-vertical-offset="6324">
+        <state line="146" column="0" selection-start="3534" selection-end="3534" vertical-scroll-proportion="-0.18506998" vertical-offset="2601" max-vertical-offset="6324">
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#start#0;class#ifsys#0" expanded="false" />

@@ -25,7 +25,7 @@ public class ifsys extends Applet
 
     //point vars
         ifsPt pts[];
-        int pointnumber;
+        int pointsInUse;
         int pointselected;
         double centerx;
         double centery;
@@ -63,14 +63,14 @@ public class ifsys extends Applet
             pts[a] = new ifsPt();
         }
 
-        pointnumber = 0;
+        pointsInUse = 0;
         centerx = screenwidth / 2;
         centery = screenheight / 2;
     }
 
     public void findSelectedPoint(){
         double olddist = 1000D;
-        for(int a = 0; a < pointnumber; a++)
+        for(int a = 0; a < pointsInUse; a++)
         {
             double currentdist = distance2((double)mousex - pts[a].x, (double)mousey - pts[a].y);
             if(currentdist < olddist){
@@ -81,18 +81,18 @@ public class ifsys extends Applet
     }
 
     public void addPoint(){
-        pts[pointnumber].x = mousex;
-        pts[pointnumber].y = mousey;
-        pts[pointnumber].scale = 0.5D;
-        pts[pointnumber].rotation = 0.0D;
-        pointnumber++;
+        pts[pointsInUse].x = mousex;
+        pts[pointsInUse].y = mousey;
+        pts[pointsInUse].scale = 0.5D;
+        pts[pointsInUse].rotation = 0.0D;
+        pointsInUse++;
         updateCenter();
         clearframe();
         gamefunc();
     }
 
     public void deletePoint(){
-        for(int a = pointselected; a < pointnumber; a++){
+        for(int a = pointselected; a < pointsInUse; a++){
             pts[a].x = pts[a + 1].x;
             pts[a].y = pts[a + 1].y;
 
@@ -100,12 +100,12 @@ public class ifsys extends Applet
             pts[a].rotation = pts[a + 1].rotation;
         }
 
-        pts[pointnumber].x = 0.0D;
-        pts[pointnumber].y = 0.0D;
+        pts[pointsInUse].x = 0.0D;
+        pts[pointsInUse].y = 0.0D;
 
-        pts[pointnumber].scale = 0.5D;
-        pts[pointnumber].rotation = 0.0D;
-        pointnumber--;
+        pts[pointsInUse].scale = 0.5D;
+        pts[pointsInUse].rotation = 0.0D;
+        pointsInUse--;
 
         updateCenter();
         clearframe();
@@ -116,14 +116,14 @@ public class ifsys extends Applet
         double x = 0;
         double y = 0;
 
-        if(pointnumber != 0){
-            for(int a = 0; a < pointnumber; a++){
+        if(pointsInUse != 0){
+            for(int a = 0; a < pointsInUse; a++){
                 x += pts[a].x;
                 y +=  pts[a].y;
             }
 
-            centerx = x / pointnumber;
-            centery = y / pointnumber;
+            centerx = x / pointsInUse;
+            centery = y / pointsInUse;
         } else{
             centerx = pts[0].x;
             centery = pts[0].y;
@@ -185,7 +185,7 @@ public class ifsys extends Applet
     public void settopreset(){
         switch(preset){
         case 1: // '\001'
-            pointnumber = 3;
+            pointsInUse = 3;
             iterations = 9;
             sampletotal = 500;
             pts[0].x = 320D;
@@ -227,20 +227,20 @@ public class ifsys extends Applet
     }
 
     public void gamefunc(){
-        for(int a = 0; a < pointnumber; a++){
+        for(int a = 0; a < pointsInUse; a++){
             pts[a].degrees = Math.atan2(pts[a].x - centerx, pts[a].y - centery);
             pts[a].radius = distance2(pts[a].x - centerx, pts[a].y - centery);
         }
 
-        if(pointnumber != 0){
+        if(pointsInUse != 0){
             for(int a = 0; a < sampletotal; a++){
-                int c = (int)(Math.random() * (double)pointnumber);
+                int c = (int)(Math.random() * (double) pointsInUse);
                 double dx = pts[c].x;
                 double dy = pts[c].y;
                 double e = 1.0D;
                 double extra = pts[c].rotation;
                 for(int d = 1; d < iterations; d++){
-                    c = (int)(Math.random() * (double)pointnumber);
+                    c = (int)(Math.random() * (double) pointsInUse);
                     e *= pts[c].scale;
                     extra += pts[c].rotation;
                     dx += Math.cos((pi2 - pts[c].degrees) + extra) * pts[c].radius * e;
@@ -259,7 +259,7 @@ public class ifsys extends Applet
             }
 
             if(!ptsHidden){
-                for(int a = 0; a < pointnumber; a++){
+                for(int a = 0; a < pointsInUse; a++){
                    drawPtDot(a);
                 }
             }
@@ -363,12 +363,12 @@ public class ifsys extends Applet
         if(e.getKeyChar() == '-')
             pts[pointselected].scale *= 0.98999999999999999D;
         if(e.getKeyChar() == ']'){
-            for(int a = 0; a < pointnumber; a++)
+            for(int a = 0; a < pointsInUse; a++)
                 pts[a].scale *= 1.01D;
 
         }
         if(e.getKeyChar() == '['){
-            for(int a = 0; a < pointnumber; a++)
+            for(int a = 0; a < pointsInUse; a++)
                 pts[a].scale *= 0.98999999999999999D;
         }
         updateCenter();
