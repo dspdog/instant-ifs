@@ -6,6 +6,13 @@ class ifsPt {
     public double radius;
     public double rotation;
 
+    public double savedx;
+    public double savedy;
+    public double savedscale;
+    public double saveddegrees;
+    public double savedradius;
+    public double savedrotation;
+
     public ifsPt(){
         x = 0D;
         y = 0D;
@@ -13,5 +20,14 @@ class ifsPt {
         rotation = 0.0D;
         degrees = 0D;
         radius = 1D;
+    }
+
+    public void saveState(){
+        savedx = x;
+        savedy = y;
+        savedscale = scale;
+        saveddegrees = degrees;
+        savedradius = radius;
+        savedrotation = rotation;
     }
 }

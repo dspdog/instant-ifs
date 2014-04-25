@@ -25,6 +25,8 @@ public class ifsys extends Applet
     ifsShape shape;
     int pointselected;
 
+    boolean ctrlDown;
+
     //drag vars
         int mousemode; //current mouse button
         double startDragX;
@@ -39,6 +41,7 @@ public class ifsys extends Applet
     int preset;
 
     public ifsys(){
+        ctrlDown=false;
         game = new mainthread();
         quit = false;
         infoHidden = false;
@@ -152,13 +155,23 @@ public class ifsys extends Applet
                 for(int a = 0; a < shape.pointsInUse; a++){
                    drawPtDot(a);
                 }
+                drawPtDot(-1);
             }
         }
     }
 
     public void drawPtDot(int pointIndex){
-        int pointx1 = (int)shape.pts[pointIndex].x;
-        int pointy1 = (int)shape.pts[pointIndex].y;
+        int pointx1;
+        int pointy1;
+
+        if(pointIndex==-1){//center pt
+            pointx1 = (int)shape.centerx;
+            pointy1 = (int)shape.centery;
+        }else{
+            pointx1 = (int)shape.pts[pointIndex].x;
+            pointy1 = (int)shape.pts[pointIndex].y;
+        }
+
         if(pointx1 > screenwidth - 2)
             pointx1 = screenwidth - 2;
         if(pointy1 > screenheight - 2)
@@ -172,11 +185,16 @@ public class ifsys extends Applet
             pixels[pointx1 + 1 + pointy1 * screenwidth] = 0xff00ff00;
             pixels[pointx1 + (pointy1 + 1) * screenwidth] = 0xff00ff00;
             pixels[pointx1 + 1 + (pointy1 + 1) * screenwidth] = 0xff00ff00;
-        } else{
+        } else if(pointIndex != -1){ //non selected non central pt
             pixels[pointx1 + pointy1 * screenwidth] = 0xffff0000;
             pixels[pointx1 + 1 + pointy1 * screenwidth] = 0xffff0000;
             pixels[pointx1 + (pointy1 + 1) * screenwidth] = 0xffff0000;
             pixels[pointx1 + 1 + (pointy1 + 1) * screenwidth] = 0xffff0000;
+        } else { //central pt
+            pixels[pointx1 + pointy1 * screenwidth] = 0xff00ffff;
+            pixels[pointx1 + 1 + pointy1 * screenwidth] = 0xff00ffff;
+            pixels[pointx1 + (pointy1 + 1) * screenwidth] = 0xff00ffff;
+            pixels[pointx1 + 1 + (pointy1 + 1) * screenwidth] = 0xff00ffff;
         }
     }
 
@@ -205,14 +223,24 @@ public class ifsys extends Applet
         }else{
             startDragX = arg0.getX();
             startDragY = arg0.getY();
-            startDragPX = shape.pts[pointselected].x;
-            startDragPY = shape.pts[pointselected].y;
-            startDragDist = shape.distance(arg0.getX() - shape.pts[pointselected].x, arg0.getY() - shape.pts[pointselected].y);
-            startDragAngle = shape.pts[pointselected].rotation + Math.atan2(arg0.getX() - shape.pts[pointselected].x, arg0.getY() - shape.pts[pointselected].y);
-            startDragScale = shape.pts[pointselected].scale;
+            shape.updateCenter();
+
+            if(ctrlDown){
+                shape.saveState();
+                startDragPX = shape.centerx;
+                startDragPY = shape.centery;
+                startDragDist = shape.distance(startDragX - shape.centerx, startDragY - shape.centery);
+                startDragAngle = 0 + Math.atan2(startDragX - shape.centerx, startDragY - shape.centery);
+                startDragScale = 1.0; //shape.pts[pointselected].scale;
+            }else{
+                startDragPX = shape.pts[pointselected].x;
+                startDragPY = shape.pts[pointselected].y;
+                startDragDist = shape.distance(startDragX - shape.pts[pointselected].x, startDragY - shape.pts[pointselected].y);
+                startDragAngle = shape.pts[pointselected].rotation + Math.atan2(startDragX - shape.pts[pointselected].x, startDragY - shape.pts[pointselected].y);
+                startDragScale = shape.pts[pointselected].scale;
+            }
 
             requestFocus();
-            shape.updateCenter();
         }
     }
 
@@ -230,15 +258,34 @@ public class ifsys extends Applet
     }
 
     public void mouseDragged(MouseEvent e){
-        if(mousemode == 1){ //left click to move a point
+        if(mousemode == 1){ //left click to move a point/set
             setCursor (Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-            shape.pts[pointselected].x = startDragPX + (e.getX() - startDragX);
-            shape.pts[pointselected].y = startDragPY + (e.getY() - startDragY);
+            if(ctrlDown){ //move the set -- need "startDragX" per pt
+                for(int i=0; i<shape.pointsInUse; i++){
+                    shape.pts[i].x = shape.pts[i].savedx + (e.getX() - startDragX);
+                    shape.pts[i].y = shape.pts[i].savedy + (e.getY() - startDragY);
+                }
+            }else{ //move a single point
+                shape.pts[pointselected].x = startDragPX + (e.getX() - startDragX);
+                shape.pts[pointselected].y = startDragPY + (e.getY() - startDragY);
+            }
         }
-        else if(mousemode == 3){ //right click to rotate point
+        else if(mousemode == 3){ //right click to rotate point/set
             setCursor (Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
-            shape.pts[pointselected].rotation = Math.PI * 2 - (Math.atan2(e.getX() - shape.pts[pointselected].x, e.getY() - shape.pts[pointselected].y)- startDragAngle);
-            shape.pts[pointselected].scale = startDragScale*shape.distance(e.getX() - shape.pts[pointselected].x, e.getY() - shape.pts[pointselected].y)/startDragDist;
+            double rotationDelta = (Math.atan2(e.getX() - shape.pts[pointselected].x, e.getY() - shape.pts[pointselected].y)- startDragAngle);
+            double scaleDelta = shape.distance(e.getX() - shape.pts[pointselected].x, e.getY() - shape.pts[pointselected].y)/startDragDist;
+
+            if(ctrlDown){ //rotate the set
+
+                for(int i=0; i<shape.pointsInUse; i++){
+                    shape.pts[i].x = shape.centerx + scaleDelta * shape.pts[i].savedradius*Math.cos(Math.PI / 2 - shape.pts[i].saveddegrees - rotationDelta);
+                    shape.pts[i].y = shape.centery + scaleDelta * shape.pts[i].savedradius*Math.sin(Math.PI / 2 - shape.pts[i].saveddegrees - rotationDelta);
+                }
+
+            }else{ //move a single point
+                shape.pts[pointselected].rotation = Math.PI * 2 - rotationDelta;
+                shape.pts[pointselected].scale = startDragScale*scaleDelta;
+            }
         }
 
         shape.updateCenter();
@@ -252,6 +299,8 @@ public class ifsys extends Applet
     }
 
     public void keyPressed(KeyEvent e){
+        if(e.getKeyCode()==KeyEvent.VK_CONTROL)
+            ctrlDown=true;
         if(e.getKeyChar() == '=')
             shape.pts[pointselected].scale *= 1.01D;
         if(e.getKeyChar() == '-')
@@ -271,6 +320,8 @@ public class ifsys extends Applet
     }
 
     public void keyReleased(KeyEvent e){
+        if(e.getKeyCode()==KeyEvent.VK_CONTROL)
+            ctrlDown=false;
         if(e.getKeyChar() == '/')
             iterations++;
         if(e.getKeyChar() == '.' && iterations > 1)

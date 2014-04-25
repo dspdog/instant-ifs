@@ -2,12 +2,21 @@ class ifsShape{
     public ifsPt pts[];
     public double centerx, centery;
     public int pointsInUse;
+    public boolean stateSaved;
 
     public ifsShape(int maxPoints){
+        stateSaved = false;
         pointsInUse = 0;
         pts = new ifsPt[maxPoints];
         for(int a=0; a< maxPoints; a++){
             pts[a] = new ifsPt();
+        }
+    }
+
+    public void saveState(){
+        for(int a = 0; a < pointsInUse; a++){
+            pts[a].saveState();
+            stateSaved=true;
         }
     }
 
