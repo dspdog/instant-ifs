@@ -8,24 +8,31 @@ public class ifsys extends Applet
 {
     mainthread game;
     boolean quit;
-    boolean infoHidden;
-    boolean ptsHidden;
     int screenwidth;
     int screenheight;
     int pixels[];
     Image render;
     Graphics rg;
+    long fps;
+    long framesThisSecond;
+    long oneSecondAgo;
 
-    int mousex;
-    int mousey;
-    int sampletotal;
-    int iterations;
-    int maxPoints;
+    //user params
+        boolean leavesHidden;
+        boolean trailsHidden;
+        boolean skeletonHidden;
+        boolean infoHidden;
+        boolean ptsHidden;
+        int sampletotal;
+        int iterations;
+        int pointselected;
+        boolean ctrlDown;
+        int mousex;
+        int mousey;
 
     ifsShape shape;
-    int pointselected;
-
-    boolean ctrlDown;
+    int maxPoints;
+    int maxLineLength;
 
     //drag vars
         int mousemode; //current mouse button
@@ -41,22 +48,26 @@ public class ifsys extends Applet
     int preset;
 
     public ifsys(){
+        oneSecondAgo =0;
+        framesThisSecond = 0;
         ctrlDown=false;
         game = new mainthread();
         quit = false;
+        skeletonHidden = true;
+        trailsHidden = true;
+        leavesHidden = false;
         infoHidden = false;
         ptsHidden = false;
         screenwidth = 1024;
         screenheight = 1024;
         pixels = new int[screenwidth * screenheight];
-
         sampletotal = 1000;
-        iterations = 10;
-        maxPoints = 100;
+        iterations = 9;
         mousemode = 0;
 
+        maxLineLength = screenwidth;
+        maxPoints = 100;
         shape = new ifsShape(maxPoints);
-
     }
 
     public void findSelectedPoint(){
@@ -105,6 +116,12 @@ public class ifsys extends Applet
     }
 
     public void paint(Graphics gr){
+        framesThisSecond++;
+        if(System.currentTimeMillis()- oneSecondAgo >=1000){
+            oneSecondAgo = System.currentTimeMillis();
+            fps= framesThisSecond;
+            framesThisSecond =0;
+        }
         rg.drawImage(createImage(new MemoryImageSource(screenwidth, screenheight, pixels, 0, screenwidth)), 0, 0, screenwidth, screenheight, this);
         if(!infoHidden){
             rg.setColor(Color.white);
@@ -115,6 +132,7 @@ public class ifsys extends Applet
             rg.drawString("Rotation: " + String.valueOf((double)(int)((((shape.pts[pointselected].rotation / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 75);
             rg.drawString("Iterations (. /): " + String.valueOf(iterations), 5, 90);
             rg.drawString("Samples (nm): " + String.valueOf(sampletotal), 4, 105);
+            rg.drawString("FPS " + String.valueOf(fps), 5, 120);
         }
         gr.drawImage(render, 0, 0, screenwidth, screenheight, this);
     }
@@ -124,31 +142,57 @@ public class ifsys extends Applet
             pixels[a] = 0xff000000;
     }
 
+    public void putPixel(double x, double y){
+        if(x > (double)(screenwidth - 1))
+            x = screenwidth - 1;
+        if(y > (double)(screenheight - 1))
+            y = screenheight - 1;
+        if(x < 0.0D)
+            x = 0.0D;
+        if(y < 0.0D)
+            y = 0.0D;
+        pixels[(int)x + (int)y * screenwidth] = -1;
+    }
+
+    public void putLine(double x0, double y0, double x1, double y1){
+        int steps = (int)shape.distance(x0-x1, y0-y1);
+        double dx, dy;
+
+        if(steps>maxLineLength){steps=maxLineLength;}
+
+        for(int i=0; i<steps; i++){
+            dx = x0 + i*(x1-x0)/steps;
+            dy = y0 + i*(y1-y0)/steps;
+            putPixel(dx, dy);
+        }
+    }
+
     public void gamefunc(){
         if(shape.pointsInUse != 0){
+
             for(int a = 0; a < sampletotal; a++){
                 int c = (int)(Math.random() * (double) shape.pointsInUse);
                 double dx = shape.pts[c].x;
                 double dy = shape.pts[c].y;
+                double _dx;
+                double _dy;
                 double e = 1.0D;
                 double extra = shape.pts[c].rotation;
                 for(int d = 1; d < iterations; d++){
                     c = (int)(Math.random() * (double) shape.pointsInUse);
                     e *= shape.pts[c].scale;
                     extra += shape.pts[c].rotation;
+                    _dx = dx;
+                    _dy = dy;
                     dx += Math.cos((Math.PI/2D - shape.pts[c].degrees) + extra) * shape.pts[c].radius * e;
                     dy += Math.sin((Math.PI/2D - shape.pts[c].degrees) + extra) * shape.pts[c].radius * e;
+                    if(!trailsHidden && d < iterations-1)
+                        putPixel(dx, dy);
+                    if(!skeletonHidden)
+                        putLine(_dx, _dy, dx, dy);
                 }
-
-                if(dx > (double)(screenwidth - 1))
-                    dx = screenwidth - 1;
-                if(dy > (double)(screenheight - 1))
-                    dy = screenheight - 1;
-                if(dx < 0.0D)
-                    dx = 0.0D;
-                if(dy < 0.0D)
-                    dy = 0.0D;
-                pixels[(int)dx + (int)dy * screenwidth] = -1;
+                if(!leavesHidden)
+                    putPixel(dx, dy);
             }
 
             if(!ptsHidden){
@@ -328,9 +372,15 @@ public class ifsys extends Applet
             iterations++;
         if(e.getKeyChar() == '.' && iterations > 1)
             iterations--;
-        if(e.getKeyChar() == 'h')
+        if(e.getKeyChar() == 'l')
+            leavesHidden = !leavesHidden;
+        if(e.getKeyChar() == 's')
+            skeletonHidden = !skeletonHidden;
+        if(e.getKeyChar() == 't')
+            trailsHidden = !trailsHidden;
+        if(e.getKeyChar() == 'i')
             infoHidden = !infoHidden;
-        if(e.getKeyChar() == 'g')
+        if(e.getKeyChar() == 'p')
             ptsHidden = !ptsHidden;
         if(e.getKeyChar() == 'm')
             sampletotal += 100;
