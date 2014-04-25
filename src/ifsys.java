@@ -18,6 +18,7 @@ public class ifsys extends Applet
     long oneSecondAgo;
 
     //user params
+        boolean framesHidden;
         boolean centerHidden;
         boolean leavesHidden;
         boolean trailsHidden;
@@ -54,6 +55,7 @@ public class ifsys extends Applet
         ctrlDown=false;
         game = new mainthread();
         quit = false;
+        framesHidden = true;
         centerHidden = false;
         spokesHidden = true;
         trailsHidden = true;
@@ -64,7 +66,7 @@ public class ifsys extends Applet
         screenheight = 1024;
         pixels = new int[screenwidth * screenheight];
         sampletotal = 1000;
-        iterations = 9;
+        iterations = 8;
         mousemode = 0;
 
         maxLineLength = screenwidth;
@@ -173,29 +175,56 @@ public class ifsys extends Applet
     public void gamefunc(){
         if(shape.pointsInUse != 0){
 
-            if(!spokesHidden && !centerHidden){ //center spokes
-                for(int a=0; a<shape.pointsInUse; a++){
-                    putLine(shape.centerx, shape.centery, shape.pts[a].x, shape.pts[a].y);
+            if(!centerHidden){
+                if(!spokesHidden){ //center spokes
+                    for(int a=0; a<shape.pointsInUse; a++){
+                        putLine(shape.centerx, shape.centery, shape.pts[a].x, shape.pts[a].y);
+                    }
+                }
+
+                if(!framesHidden){ //center outline
+                    for(int a=0; a<shape.pointsInUse; a++){
+                        int nextPt = (a+1)%shape.pointsInUse;
+                        putLine(shape.pts[a].x, shape.pts[a].y, shape.pts[nextPt].x, shape.pts[nextPt].y);
+                    }
                 }
             }
 
             for(int a = 0; a < sampletotal; a++){
                 int c = (int)(Math.random() * (double) shape.pointsInUse);
+                int nextPt = (c+1)%shape.pointsInUse;
                 double dx = shape.pts[c].x;
                 double dy = shape.pts[c].y;
-                double _dx;
-                double _dy;
+                double ndx = shape.pts[nextPt].x;
+                double ndy = shape.pts[nextPt].y;
+                double _dx, _ndx;
+                double _dy, _ndy;
                 double e = 1.0D;
+                double nextE = 1.0D;
                 double extra = shape.pts[c].rotation;
+                double nextExtra = shape.pts[c].rotation;
 
                 for(int d = 0; d < iterations; d++){
                     c = (int)(Math.random() * (double) shape.pointsInUse);
+                    nextPt = (c+1)%shape.pointsInUse;
+
+                    nextE = e*shape.pts[nextPt].scale;
+                    nextExtra = extra + shape.pts[nextPt].rotation;
+
                     e *= shape.pts[c].scale;
                     extra += shape.pts[c].rotation;
+
                     _dx = dx;
                     _dy = dy;
                     dx += Math.cos((Math.PI/2D - shape.pts[c].degrees) + extra) * shape.pts[c].radius * e;
                     dy += Math.sin((Math.PI/2D - shape.pts[c].degrees) + extra) * shape.pts[c].radius * e;
+
+                    if(!framesHidden){
+                        ndx = _dx + Math.cos((Math.PI/2D - shape.pts[nextPt].degrees) + nextExtra) * shape.pts[nextPt].radius * nextE;
+                        ndy = _dy + Math.sin((Math.PI/2D - shape.pts[nextPt].degrees) + nextExtra) * shape.pts[nextPt].radius * nextE;
+
+                        putLine(dx, dy, ndx, ndy);
+                    }
                     if(!trailsHidden && d < iterations-1)
                         putPixel(dx, dy);
                     if(!spokesHidden)
@@ -209,7 +238,7 @@ public class ifsys extends Applet
                 for(int a = 0; a < shape.pointsInUse; a++){
                    drawPtDot(a);
                 }
-                if(!centerHidden)
+                if(!centerHidden || ctrlDown)
                     drawPtDot(-1);
             }
         }
@@ -389,6 +418,8 @@ public class ifsys extends Applet
             spokesHidden = !spokesHidden;
         if(e.getKeyChar() == 'c')
             centerHidden = !centerHidden;
+        if(e.getKeyChar() == 'f')
+            framesHidden = !framesHidden;
         if(e.getKeyChar() == 't')
             trailsHidden = !trailsHidden;
         if(e.getKeyChar() == 'i')
