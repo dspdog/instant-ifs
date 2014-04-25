@@ -147,28 +147,35 @@ public class ifsys extends Applet
         }
     }
 
-    public void putPixel(double x, double y){
-        if(x > (double)(screenwidth - 1))
-            x = screenwidth - 1;
-        if(y > (double)(screenheight - 1))
-            y = screenheight - 1;
-        if(x < 0.0D)
-            x = 0.0D;
-        if(y < 0.0D)
-            y = 0.0D;
-        pixels[(int)x + (int)y * screenwidth] = -1; //TODO anti aliasing
+    public boolean putPixel(double x, double y){
+        if(x < (double)(screenwidth - 1) &&
+            y < (double)(screenheight - 1) &&
+            x > 0.0D && y > 0.0D){
+            pixels[(int)x + (int)y * screenwidth] = -1; //TODO anti aliasing
+            return true; //pixel is in screen bounds
+        }else{
+            return false; //pixel outside of screen bounds
+        }
+
     }
 
     public void putLine(double x0, double y0, double x1, double y1){
         double steps = (int)shape.distance(x0-x1, y0-y1);
         double dx, dy;
 
+        boolean startedInScreen = false;
+
         if(steps>maxLineLength){steps=maxLineLength;}
 
         for(int i=0; i<steps; i++){
             dx = x0 + i*(x1-x0)/steps;
             dy = y0 + i*(y1-y0)/steps;
-            putPixel(dx, dy);
+
+            if(putPixel(dx, dy)){ //stop drawing if pixel is outside bounds
+                startedInScreen = true;
+            }else{
+                if(startedInScreen)break;
+            };
         }
     }
 
@@ -195,10 +202,10 @@ public class ifsys extends Applet
                 int nextPt = (c+1)%shape.pointsInUse;
                 double dx = shape.pts[c].x;
                 double dy = shape.pts[c].y;
-                double ndx = shape.pts[nextPt].x;
-                double ndy = shape.pts[nextPt].y;
-                double _dx, _ndx;
-                double _dy, _ndy;
+                double ndx;
+                double ndy;
+                double _dx;
+                double _dy;
                 double e = 1.0D;
                 double nextE = 1.0D;
                 double extra = shape.pts[c].rotation;
