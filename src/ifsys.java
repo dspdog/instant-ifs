@@ -18,9 +18,10 @@ public class ifsys extends Applet
     long oneSecondAgo;
 
     //user params
+        boolean centerHidden;
         boolean leavesHidden;
         boolean trailsHidden;
-        boolean skeletonHidden;
+        boolean spokesHidden;
         boolean infoHidden;
         boolean ptsHidden;
         int sampletotal;
@@ -53,7 +54,8 @@ public class ifsys extends Applet
         ctrlDown=false;
         game = new mainthread();
         quit = false;
-        skeletonHidden = true;
+        centerHidden = false;
+        spokesHidden = true;
         trailsHidden = true;
         leavesHidden = false;
         infoHidden = false;
@@ -138,8 +140,9 @@ public class ifsys extends Applet
     }
 
     public void clearframe(){
-        for(int a = 0; a < screenwidth * screenheight; a++)
+        for(int a = 0; a < screenwidth * screenheight; a++){
             pixels[a] = 0xff000000;
+        }
     }
 
     public void putPixel(double x, double y){
@@ -151,11 +154,11 @@ public class ifsys extends Applet
             x = 0.0D;
         if(y < 0.0D)
             y = 0.0D;
-        pixels[(int)x + (int)y * screenwidth] = -1;
+        pixels[(int)x + (int)y * screenwidth] = -1; //TODO anti aliasing
     }
 
     public void putLine(double x0, double y0, double x1, double y1){
-        int steps = (int)shape.distance(x0-x1, y0-y1);
+        double steps = (int)shape.distance(x0-x1, y0-y1);
         double dx, dy;
 
         if(steps>maxLineLength){steps=maxLineLength;}
@@ -170,6 +173,12 @@ public class ifsys extends Applet
     public void gamefunc(){
         if(shape.pointsInUse != 0){
 
+            if(!spokesHidden && !centerHidden){ //center spokes
+                for(int a=0; a<shape.pointsInUse; a++){
+                    putLine(shape.centerx, shape.centery, shape.pts[a].x, shape.pts[a].y);
+                }
+            }
+
             for(int a = 0; a < sampletotal; a++){
                 int c = (int)(Math.random() * (double) shape.pointsInUse);
                 double dx = shape.pts[c].x;
@@ -178,7 +187,8 @@ public class ifsys extends Applet
                 double _dy;
                 double e = 1.0D;
                 double extra = shape.pts[c].rotation;
-                for(int d = 1; d < iterations; d++){
+
+                for(int d = 0; d < iterations; d++){
                     c = (int)(Math.random() * (double) shape.pointsInUse);
                     e *= shape.pts[c].scale;
                     extra += shape.pts[c].rotation;
@@ -188,7 +198,7 @@ public class ifsys extends Applet
                     dy += Math.sin((Math.PI/2D - shape.pts[c].degrees) + extra) * shape.pts[c].radius * e;
                     if(!trailsHidden && d < iterations-1)
                         putPixel(dx, dy);
-                    if(!skeletonHidden)
+                    if(!spokesHidden)
                         putLine(_dx, _dy, dx, dy);
                 }
                 if(!leavesHidden)
@@ -199,7 +209,8 @@ public class ifsys extends Applet
                 for(int a = 0; a < shape.pointsInUse; a++){
                    drawPtDot(a);
                 }
-                drawPtDot(-1);
+                if(!centerHidden)
+                    drawPtDot(-1);
             }
         }
     }
@@ -375,7 +386,9 @@ public class ifsys extends Applet
         if(e.getKeyChar() == 'l')
             leavesHidden = !leavesHidden;
         if(e.getKeyChar() == 's')
-            skeletonHidden = !skeletonHidden;
+            spokesHidden = !spokesHidden;
+        if(e.getKeyChar() == 'c')
+            centerHidden = !centerHidden;
         if(e.getKeyChar() == 't')
             trailsHidden = !trailsHidden;
         if(e.getKeyChar() == 'i')
