@@ -72,7 +72,7 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="197" column="0" selection-start="6314" selection-end="6314" vertical-scroll-proportion="1.1516035" vertical-offset="2903" max-vertical-offset="8415">
+            <state line="182" column="0" selection-start="5619" selection-end="5619" vertical-scroll-proportion="0.65597665" vertical-offset="2818" max-vertical-offset="8551">
               <folding />
             </state>
           </provider>
@@ -119,8 +119,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="511" />
-    <option name="y" value="25" />
+    <option name="x" value="520" />
+    <option name="y" value="107" />
     <option name="width" value="1070" />
     <option name="height" value="787" />
   </component>
@@ -405,8 +405,8 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="511" y="25" width="1070" height="787" extended-state="0" />
-    <editor active="false" />
+    <frame x="520" y="107" width="1070" height="787" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -558,7 +558,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="197" column="0" selection-start="6314" selection-end="6314" vertical-scroll-proportion="1.1516035" vertical-offset="2903" max-vertical-offset="8415">
+        <state line="182" column="0" selection-start="5619" selection-end="5619" vertical-scroll-proportion="0.65597665" vertical-offset="2818" max-vertical-offset="8551">
           <folding />
         </state>
       </provider>

@@ -173,7 +173,7 @@ public class ifsys extends Applet
         dataMax = 0;
     }
 
-    public boolean putPixel(double x, double y){
+    public boolean putPixel(double x, double y, boolean clamped){
 
         double decX, decY; //decimal parts of coordinates
 
@@ -186,10 +186,18 @@ public class ifsys extends Applet
 
             if(antiAliasing){
                 //each point contributes to 4 pixels
-                pixelsData[(int)(x) + (int)(y) * screenwidth]+=(1.0-decX)*(1.0-decY);
-                pixelsData[(int)(x+1) + (int)(y) * screenwidth]+=decX*(1.0-decY);
-                pixelsData[(int)(x) + (int)(y+1) * screenwidth]+=decY*(1.0-decX);
-                pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]+=decY*decX;
+                if(clamped){//line contributions are clamped not added
+                    pixelsData[(int)(x) + (int)(y) * screenwidth]=Math.max(dataMax*(1.0-decX)*(1.0-decY), pixelsData[(int)(x) + (int)(y) * screenwidth]);
+                    pixelsData[(int)(x+1) + (int)(y) * screenwidth]=Math.max(dataMax*decX*(1.0-decY),pixelsData[(int)(x+1) + (int)(y) * screenwidth]);
+                    pixelsData[(int)(x) + (int)(y+1) * screenwidth]=Math.max(dataMax*decY*(1.0-decX),pixelsData[(int)(x) + (int)(y+1) * screenwidth]);
+                    pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]=Math.max(dataMax*decY*decX,pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]);
+                }else{
+                    pixelsData[(int)(x) + (int)(y) * screenwidth]+=(1.0-decX)*(1.0-decY);
+                    pixelsData[(int)(x+1) + (int)(y) * screenwidth]+=decX*(1.0-decY);
+                    pixelsData[(int)(x) + (int)(y+1) * screenwidth]+=decY*(1.0-decX);
+                    pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]+=decY*decX;
+                }
+
 
                 if(dataMax<pixelsData[(int)x + (int)y * screenwidth]){dataMax = pixelsData[(int)x + (int)y * screenwidth];}
             }else{
@@ -215,7 +223,7 @@ public class ifsys extends Applet
             dx = x0 + i*(x1-x0)/steps;
             dy = y0 + i*(y1-y0)/steps;
 
-            if(putPixel(dx, dy)){ //stop drawing if pixel is outside bounds
+            if(putPixel(dx, dy, true)){ //stop drawing if pixel is outside bounds
                 startedInScreen = true;
             }else{
                 if(startedInScreen)break;
@@ -277,12 +285,12 @@ public class ifsys extends Applet
                         putLine(dx, dy, ndx, ndy);
                     }
                     if(!trailsHidden && d < iterations-1)
-                        putPixel(dx, dy);
+                        putPixel(dx, dy, false);
                     if(!spokesHidden)
                         putLine(_dx, _dy, dx, dy);
                 }
                 if(!leavesHidden)
-                    putPixel(dx, dy);
+                    putPixel(dx, dy, false);
             }
 
             if(!ptsHidden){
