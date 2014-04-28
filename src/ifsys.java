@@ -19,6 +19,9 @@ public class ifsys extends Applet
     long framesThisSecond;
     long oneSecondAgo;
 
+    long samplesThisFrame;
+    double samplesNeeded;
+
     //user params
         boolean framesHidden;
         boolean centerHidden;
@@ -53,6 +56,7 @@ public class ifsys extends Applet
     int preset;
 
     public ifsys(){
+        samplesThisFrame=0;
         oneSecondAgo =0;
         framesThisSecond = 0;
         ctrlDown=false;
@@ -73,7 +77,7 @@ public class ifsys extends Applet
         sampletotal = 1000;
         iterations = 8;
         mousemode = 0;
-
+        samplesNeeded = 1;
         maxLineLength = screenwidth;
         maxPoints = 100;
         shape = new ifsShape(maxPoints);
@@ -144,7 +148,8 @@ public class ifsys extends Applet
             rg.drawString("Rotation: " + String.valueOf((double)(int)((((shape.pts[pointselected].rotation / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 75);
             rg.drawString("Iterations (. /): " + String.valueOf(iterations), 5, 90);
             rg.drawString("Samples (nm): " + String.valueOf(sampletotal), 4, 105);
-            rg.drawString("FPS " + String.valueOf(fps), 5, 120);
+            rg.drawString("Expected Done %" + String.valueOf((int)Math.min(100*samplesThisFrame/samplesNeeded/Math.E, 100)), 5, 120); //TODO is dividing by E the right thing to do here?
+            rg.drawString("FPS " + String.valueOf(fps), 5, 135);
         }
         gr.drawImage(render, 0, 0, screenwidth, screenheight, this);
     }
@@ -169,12 +174,11 @@ public class ifsys extends Applet
             pixels[a] = 0xff000000;
             pixelsData[a] = 0;
         }
-
+        samplesThisFrame=0;
         dataMax = 0;
     }
 
-    public boolean putPixel(double x, double y, boolean clamped){
-
+    public boolean putPixel(double x, double y, boolean isPartOfLine){
         double decX, decY; //decimal parts of coordinates
 
         if(x < (double)(screenwidth - 1) &&
@@ -186,7 +190,7 @@ public class ifsys extends Applet
 
             if(antiAliasing){
                 //each point contributes to 4 pixels
-                if(clamped){//line contributions are clamped not added
+                if(isPartOfLine){//line contributions are clamped not added
                     pixelsData[(int)(x) + (int)(y) * screenwidth]=Math.max(dataMax*(1.0-decX)*(1.0-decY), pixelsData[(int)(x) + (int)(y) * screenwidth]);
                     pixelsData[(int)(x+1) + (int)(y) * screenwidth]=Math.max(dataMax*decX*(1.0-decY),pixelsData[(int)(x+1) + (int)(y) * screenwidth]);
                     pixelsData[(int)(x) + (int)(y+1) * screenwidth]=Math.max(dataMax*decY*(1.0-decX),pixelsData[(int)(x) + (int)(y+1) * screenwidth]);
@@ -197,11 +201,12 @@ public class ifsys extends Applet
                     pixelsData[(int)(x) + (int)(y+1) * screenwidth]+=decY*(1.0-decX);
                     pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]+=decY*decX;
                 }
-
-
                 if(dataMax<pixelsData[(int)x + (int)y * screenwidth]){dataMax = pixelsData[(int)x + (int)y * screenwidth];}
             }else{
                 pixelsData[(int)(x) + (int)(y) * screenwidth]=1;
+            }
+            if(!isPartOfLine){
+                samplesThisFrame++;
             }
 
             return true; //pixel is in screen bounds
@@ -219,6 +224,8 @@ public class ifsys extends Applet
 
         if(steps>maxLineLength){steps=maxLineLength;}
 
+        samplesThisFrame++;
+
         for(int i=0; i<steps; i++){
             dx = x0 + i*(x1-x0)/steps;
             dy = y0 + i*(y1-y0)/steps;
@@ -232,6 +239,9 @@ public class ifsys extends Applet
     }
 
     public void gamefunc(){
+
+        samplesNeeded = Math.pow(shape.pointsInUse, iterations);
+
         if(shape.pointsInUse != 0){
 
             if(!centerHidden){
