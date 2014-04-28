@@ -10,6 +10,8 @@ public class ifsys extends Applet
     boolean quit;
     int screenwidth;
     int screenheight;
+    double pixelsData[];
+    double dataMax = 0;
     int pixels[];
     Image render;
     Graphics rg;
@@ -21,6 +23,7 @@ public class ifsys extends Applet
         boolean framesHidden;
         boolean centerHidden;
         boolean leavesHidden;
+        boolean antiAliasing;
         boolean trailsHidden;
         boolean spokesHidden;
         boolean infoHidden;
@@ -55,6 +58,7 @@ public class ifsys extends Applet
         ctrlDown=false;
         game = new mainthread();
         quit = false;
+        antiAliasing = true;
         framesHidden = true;
         centerHidden = false;
         spokesHidden = true;
@@ -65,6 +69,7 @@ public class ifsys extends Applet
         screenwidth = 1024;
         screenheight = 1024;
         pixels = new int[screenwidth * screenheight];
+        pixelsData = new double[screenwidth * screenheight];
         sampletotal = 1000;
         iterations = 8;
         mousemode = 0;
@@ -126,6 +131,9 @@ public class ifsys extends Applet
             fps= framesThisSecond;
             framesThisSecond =0;
         }
+
+        generatePixels();
+
         rg.drawImage(createImage(new MemoryImageSource(screenwidth, screenheight, pixels, 0, screenwidth)), 0, 0, screenwidth, screenheight, this);
         if(!infoHidden){
             rg.setColor(Color.white);
@@ -141,17 +149,53 @@ public class ifsys extends Applet
         gr.drawImage(render, 0, 0, screenwidth, screenheight, this);
     }
 
-    public void clearframe(){
+    public void generatePixels(){
+        //System.out.println(dataMax);
+        double scaler = 255/dataMax;
+        int scaledColor = 0;
+
         for(int a = 0; a < screenwidth * screenheight; a++){
-            pixels[a] = 0xff000000;
+            int argb = 255;
+            scaledColor = (int)(scaler*pixelsData[a]);
+            argb = (argb << 8) + scaledColor;
+            argb = (argb << 8) + scaledColor;
+            argb = (argb << 8) + scaledColor;
+            pixels[a] = argb;
         }
     }
 
+    public void clearframe(){
+        for(int a = 0; a < screenwidth * screenheight; a++){
+            pixels[a] = 0xff000000;
+            pixelsData[a] = 0;
+        }
+
+        dataMax = 0;
+    }
+
     public boolean putPixel(double x, double y){
+
+        double decX, decY; //decimal parts of coordinates
+
         if(x < (double)(screenwidth - 1) &&
             y < (double)(screenheight - 1) &&
             x > 0.0D && y > 0.0D){
-            pixels[(int)x + (int)y * screenwidth] = -1; //TODO anti aliasing
+
+            decX = x - Math.floor(x);
+            decY = y - Math.floor(y);
+
+            if(antiAliasing){
+                //each point contributes to 4 pixels
+                pixelsData[(int)(x) + (int)(y) * screenwidth]+=(1.0-decX)*(1.0-decY);
+                pixelsData[(int)(x+1) + (int)(y) * screenwidth]+=decX*(1.0-decY);
+                pixelsData[(int)(x) + (int)(y+1) * screenwidth]+=decY*(1.0-decX);
+                pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]+=decY*decX;
+
+                if(dataMax<pixelsData[(int)x + (int)y * screenwidth]){dataMax = pixelsData[(int)x + (int)y * screenwidth];}
+            }else{
+                pixelsData[(int)(x) + (int)(y) * screenwidth]=1;
+            }
+
             return true; //pixel is in screen bounds
         }else{
             return false; //pixel outside of screen bounds
@@ -419,6 +463,8 @@ public class ifsys extends Applet
             iterations++;
         if(e.getKeyChar() == '.' && iterations > 1)
             iterations--;
+        if(e.getKeyChar() == 'a')
+            antiAliasing = !antiAliasing;
         if(e.getKeyChar() == 'l')
             leavesHidden = !leavesHidden;
         if(e.getKeyChar() == 's')
