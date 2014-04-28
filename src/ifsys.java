@@ -34,6 +34,8 @@ public class ifsys extends Applet
         int sampletotal;
         int iterations;
         int pointselected;
+
+        boolean shiftDown;
         boolean ctrlDown;
         int mousex;
         int mousey;
@@ -60,6 +62,7 @@ public class ifsys extends Applet
         oneSecondAgo =0;
         framesThisSecond = 0;
         ctrlDown=false;
+        shiftDown=false;
         game = new mainthread();
         quit = false;
         antiAliasing = true;
@@ -144,7 +147,7 @@ public class ifsys extends Applet
             rg.drawString("Point " + String.valueOf(pointselected + 1), 5, 15);
             rg.drawString("X: " + String.valueOf((double)(int)(shape.pts[pointselected].x * 1000D) / 1000D), 5, 30);
             rg.drawString("Y: " + String.valueOf((double)(int)(shape.pts[pointselected].y * 1000D) / 1000D), 5, 45);
-            rg.drawString("Scale ([] -=): " + String.valueOf((double)(int)(shape.pts[pointselected].scale * 1000D) / 1000D), 5, 60);
+            rg.drawString("Scale: " + String.valueOf((double)(int)(shape.pts[pointselected].scale * 1000D) / 1000D), 5, 60);
             rg.drawString("Rotation: " + String.valueOf((double)(int)((((shape.pts[pointselected].rotation / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 75);
             rg.drawString("Iterations (. /): " + String.valueOf(iterations), 5, 90);
             rg.drawString("Samples (nm): " + String.valueOf(sampletotal), 4, 105);
@@ -155,7 +158,6 @@ public class ifsys extends Applet
     }
 
     public void generatePixels(){
-        //System.out.println(dataMax);
         double scaler = 255/dataMax;
         int scaledColor = 0;
 
@@ -239,7 +241,6 @@ public class ifsys extends Applet
     }
 
     public void gamefunc(){
-
         samplesNeeded = Math.pow(shape.pointsInUse, iterations);
 
         if(shape.pointsInUse != 0){
@@ -307,7 +308,7 @@ public class ifsys extends Applet
                 for(int a = 0; a < shape.pointsInUse; a++){
                    drawPtDot(a);
                 }
-                if(!centerHidden || ctrlDown)
+                if(!centerHidden || ctrlDown || shiftDown)
                     drawPtDot(-1);
             }
         }
@@ -456,19 +457,12 @@ public class ifsys extends Applet
     public void keyPressed(KeyEvent e){
         if(e.getKeyCode()==KeyEvent.VK_CONTROL)
             ctrlDown=true;
+        if(e.getKeyCode()==KeyEvent.VK_SHIFT)
+            shiftDown=true;
         if(e.getKeyChar() == '=')
             shape.pts[pointselected].scale *= 1.01D;
         if(e.getKeyChar() == '-')
             shape.pts[pointselected].scale *= 0.98999999999999999D;
-        if(e.getKeyChar() == ']'){
-            for(int a = 0; a < shape.pointsInUse; a++)
-                shape.pts[a].scale *= 1.01D;
-
-        }
-        if(e.getKeyChar() == '['){
-            for(int a = 0; a < shape.pointsInUse; a++)
-                shape.pts[a].scale *= 0.98999999999999999D;
-        }
         shape.updateCenter();
         clearframe();
         gamefunc();
@@ -477,6 +471,8 @@ public class ifsys extends Applet
     public void keyReleased(KeyEvent e){
         if(e.getKeyCode()==KeyEvent.VK_CONTROL)
             ctrlDown=false;
+        if(e.getKeyCode()==KeyEvent.VK_SHIFT)
+            shiftDown=false;
         if(e.getKeyChar() == '/')
             iterations++;
         if(e.getKeyChar() == '.' && iterations > 1)
