@@ -34,6 +34,7 @@ public class ifsys extends Applet
         int sampletotal;
         int iterations;
         int pointselected;
+        ifsPt selectedPt;
 
         boolean shiftDown;
         boolean ctrlDown;
@@ -79,7 +80,7 @@ public class ifsys extends Applet
         pixels = new int[screenwidth * screenheight];
         pixelsData = new double[screenwidth * screenheight];
         sampletotal = 1000;
-        iterations = 8;
+        iterations = 10;
         mousemode = 0;
         samplesNeeded = 1;
         maxLineLength = screenwidth;
@@ -98,6 +99,7 @@ public class ifsys extends Applet
                 pointselected = a;
             }
         }
+        selectedPt = shape.pts[pointselected];
     }
 
     public class mainthread extends Thread{
@@ -148,14 +150,15 @@ public class ifsys extends Applet
         if(!infoHidden){
             rg.setColor(Color.white);
             rg.drawString("Point " + String.valueOf(pointselected + 1), 5, 15);
-            rg.drawString("X: " + String.valueOf((double)(int)(shape.pts[pointselected].x * 1000D) / 1000D), 5, 30);
-            rg.drawString("Y: " + String.valueOf((double)(int)(shape.pts[pointselected].y * 1000D) / 1000D), 5, 45);
-            rg.drawString("Scale: " + String.valueOf((double)(int)(shape.pts[pointselected].scale * 1000D) / 1000D), 5, 60);
-            rg.drawString("Rotation: " + String.valueOf((double)(int)((((shape.pts[pointselected].rotation / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 75);
-            rg.drawString("Iterations (. /): " + String.valueOf(iterations), 5, 90);
-            rg.drawString("Samples (nm): " + String.valueOf(sampletotal), 4, 105);
-            rg.drawString("Expected Done %" + String.valueOf((int)Math.min(100*samplesThisFrame/samplesNeeded/Math.E, 100)), 5, 120); //TODO is dividing by E the right thing to do here?
-            rg.drawString("FPS " + String.valueOf(fps), 5, 135);
+            rg.drawString("X: " + String.valueOf((double)(int)(selectedPt.x * 1000D) / 1000D), 5, 30);
+            rg.drawString("Y: " + String.valueOf((double)(int)(selectedPt.y * 1000D) / 1000D), 5, 45);
+            rg.drawString("Scale: " + String.valueOf((double)(int)(selectedPt.scale * 1000D) / 1000D), 5, 60);
+            rg.drawString("Rotation: " + String.valueOf((double)(int)((((selectedPt.rotation / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 75);
+            rg.drawString("Opacity: " + String.valueOf(selectedPt.opacity), 5, 90);
+            rg.drawString("Iterations (. /): " + String.valueOf(iterations), 5, 105);
+            rg.drawString("Samples (nm): " + String.valueOf(sampletotal), 4, 120);
+            rg.drawString("Expected Done %" + String.valueOf((int)Math.min(100*samplesThisFrame/samplesNeeded/Math.E, 100)), 5, 135); //TODO is dividing by E the right thing to do here?
+            rg.drawString("FPS " + String.valueOf(fps), 5, 150);
         }
         gr.drawImage(render, 0, 0, screenwidth, screenheight, this);
     }
@@ -183,7 +186,7 @@ public class ifsys extends Applet
         dataMax = 0;
     }
 
-    public boolean putPixel(double x, double y, boolean isPartOfLine){
+    public boolean putPixel(double x, double y, double a, boolean isPartOfLine){ //a = alpha
         double decX, decY; //decimal parts of coordinates
 
         if(x < (double)(screenwidth - 1) &&
@@ -196,15 +199,15 @@ public class ifsys extends Applet
             if(antiAliasing){
                 //each point contributes to 4 pixels
                 if(isPartOfLine){//line contributions are clamped not added
-                    pixelsData[(int)(x) + (int)(y) * screenwidth]=Math.max(dataMax*(1.0-decX)*(1.0-decY), pixelsData[(int)(x) + (int)(y) * screenwidth]);
-                    pixelsData[(int)(x+1) + (int)(y) * screenwidth]=Math.max(dataMax*decX*(1.0-decY),pixelsData[(int)(x+1) + (int)(y) * screenwidth]);
-                    pixelsData[(int)(x) + (int)(y+1) * screenwidth]=Math.max(dataMax*decY*(1.0-decX),pixelsData[(int)(x) + (int)(y+1) * screenwidth]);
-                    pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]=Math.max(dataMax*decY*decX,pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]);
+                    pixelsData[(int)(x) + (int)(y) * screenwidth]=Math.max(a*dataMax*(1.0-decX)*(1.0-decY), pixelsData[(int)(x) + (int)(y) * screenwidth]);
+                    pixelsData[(int)(x+1) + (int)(y) * screenwidth]=Math.max(a*dataMax*decX*(1.0-decY),pixelsData[(int)(x+1) + (int)(y) * screenwidth]);
+                    pixelsData[(int)(x) + (int)(y+1) * screenwidth]=Math.max(a*dataMax*decY*(1.0-decX),pixelsData[(int)(x) + (int)(y+1) * screenwidth]);
+                    pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]=Math.max(a*dataMax*decY*decX,pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]);
                 }else{
-                    pixelsData[(int)(x) + (int)(y) * screenwidth]+=(1.0-decX)*(1.0-decY);
-                    pixelsData[(int)(x+1) + (int)(y) * screenwidth]+=decX*(1.0-decY);
-                    pixelsData[(int)(x) + (int)(y+1) * screenwidth]+=decY*(1.0-decX);
-                    pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]+=decY*decX;
+                    pixelsData[(int)(x) + (int)(y) * screenwidth]+=a*(1.0-decX)*(1.0-decY);
+                    pixelsData[(int)(x+1) + (int)(y) * screenwidth]+=a*decX*(1.0-decY);
+                    pixelsData[(int)(x) + (int)(y+1) * screenwidth]+=a*decY*(1.0-decX);
+                    pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]+=a*decY*decX;
                 }
                 if(dataMax<pixelsData[(int)x + (int)y * screenwidth]){dataMax = pixelsData[(int)x + (int)y * screenwidth];}
             }else{
@@ -221,7 +224,7 @@ public class ifsys extends Applet
 
     }
 
-    public void putLine(double x0, double y0, double x1, double y1){
+    public void putLine(double x0, double y0, double x1, double y1, double alpha){ //TODO start/end alpha values?
         double steps = (int)shape.distance(x0-x1, y0-y1);
         double dx, dy;
 
@@ -235,7 +238,7 @@ public class ifsys extends Applet
             dx = x0 + i*(x1-x0)/steps;
             dy = y0 + i*(y1-y0)/steps;
 
-            if(putPixel(dx, dy, true)){ //stop drawing if pixel is outside bounds
+            if(putPixel(dx, dy, alpha, true)){ //stop drawing if pixel is outside bounds
                 startedInScreen = true;
             }else{
                 if(startedInScreen)break;
@@ -251,14 +254,14 @@ public class ifsys extends Applet
             if(!centerHidden){
                 if(!spokesHidden){ //center spokes
                     for(int a=0; a<shape.pointsInUse; a++){
-                        putLine(shape.centerx, shape.centery, shape.pts[a].x, shape.pts[a].y);
+                        putLine(shape.centerx, shape.centery, shape.pts[a].x, shape.pts[a].y, shape.pts[a].opacity);
                     }
                 }
 
                 if(!framesHidden){ //center outline
                     for(int a=0; a<shape.pointsInUse; a++){
                         int nextPt = (a+1)%shape.pointsInUse;
-                        putLine(shape.pts[a].x, shape.pts[a].y, shape.pts[nextPt].x, shape.pts[nextPt].y);
+                        putLine(shape.pts[a].x, shape.pts[a].y, shape.pts[nextPt].x, shape.pts[nextPt].y, shape.pts[nextPt].opacity);
                     }
                 }
             }
@@ -276,8 +279,10 @@ public class ifsys extends Applet
                 double nextE = 1.0D;
                 double extra = shape.pts[c].rotation;
                 double nextExtra = shape.pts[c].rotation;
+                double opacity = 1.0D;
 
                 for(int d = 0; d < iterations; d++){
+
                     c = (int)(Math.random() * (double) shape.pointsInUse);
                     nextPt = (c+1)%shape.pointsInUse;
 
@@ -286,6 +291,7 @@ public class ifsys extends Applet
 
                     e *= shape.pts[c].scale;
                     extra += shape.pts[c].rotation;
+                    opacity *= shape.pts[c].opacity;
 
                     _dx = dx;
                     _dy = dy;
@@ -296,15 +302,15 @@ public class ifsys extends Applet
                         ndx = _dx + Math.cos((Math.PI/2D - shape.pts[nextPt].degrees) + nextExtra) * shape.pts[nextPt].radius * nextE;
                         ndy = _dy + Math.sin((Math.PI/2D - shape.pts[nextPt].degrees) + nextExtra) * shape.pts[nextPt].radius * nextE;
 
-                        putLine(dx, dy, ndx, ndy);
+                        putLine(dx, dy, ndx, ndy, opacity); //TODO proper transparent lines?
                     }
                     if(!trailsHidden && d < iterations-1)
-                        putPixel(dx, dy, false);
+                        putPixel(dx, dy, shape.pts[c].opacity, false);
                     if(!spokesHidden)
-                        putLine(_dx, _dy, dx, dy);
+                        putLine(_dx, _dy, dx, dy, opacity);
                 }
                 if(!leavesHidden)
-                    putPixel(dx, dy, false);
+                    putPixel(dx, dy, opacity, false);
             }
 
             if(!ptsHidden){
@@ -360,14 +366,14 @@ public class ifsys extends Applet
 
 
 
-    public void mousePressed(MouseEvent arg0){
-        mousemode = arg0.getButton();
+    public void mousePressed(MouseEvent e){
+        mousemode = e.getButton();
 
-        mousex = arg0.getX();
-        mousey = arg0.getY();
+        mousex = e.getX();
+        mousey = e.getY();
         findSelectedPoint();
 
-        if(arg0.getClickCount()==2){
+        if(e.getClickCount()==2){
             if(mousemode == 1){ //add point w/ double click
                 shape.addPoint(mousex, mousey);
                 clearframe();
@@ -378,8 +384,8 @@ public class ifsys extends Applet
                 gamefunc();
             }
         }else{
-            startDragX = arg0.getX();
-            startDragY = arg0.getY();
+            startDragX = e.getX();
+            startDragY = e.getY();
             shape.updateCenter();
 
             if(ctrlDown || shiftDown){
@@ -388,13 +394,13 @@ public class ifsys extends Applet
                 startDragPY = shape.centery;
                 startDragDist = shape.distance(startDragX - shape.centerx, startDragY - shape.centery);
                 startDragAngle = 0 + Math.atan2(startDragX - shape.centerx, startDragY - shape.centery);
-                startDragScale = 1.0; //shape.pts[pointselected].scale;
+                startDragScale = 1.0;
             }else{
-                startDragPX = shape.pts[pointselected].x;
-                startDragPY = shape.pts[pointselected].y;
-                startDragDist = shape.distance(startDragX - shape.pts[pointselected].x, startDragY - shape.pts[pointselected].y);
-                startDragAngle = shape.pts[pointselected].rotation + Math.atan2(startDragX - shape.pts[pointselected].x, startDragY - shape.pts[pointselected].y);
-                startDragScale = shape.pts[pointselected].scale;
+                startDragPX = selectedPt.x;
+                startDragPY = selectedPt.y;
+                startDragDist = shape.distance(startDragX - selectedPt.x, startDragY - selectedPt.y);
+                startDragAngle = selectedPt.rotation + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
+                startDragScale = selectedPt.scale;
             }
 
             requestFocus();
@@ -423,8 +429,8 @@ public class ifsys extends Applet
                     shape.pts[i].y = shape.pts[i].savedy + (e.getY() - startDragY);
                 }
             }else{ //move a single point
-                shape.pts[pointselected].x = startDragPX + (e.getX() - startDragX);
-                shape.pts[pointselected].y = startDragPY + (e.getY() - startDragY);
+                selectedPt.x = startDragPX + (e.getX() - startDragX);
+                selectedPt.y = startDragPY + (e.getY() - startDragY);
             }
         }
         else if(mousemode == 3){ //right click to rotate point/set
@@ -447,11 +453,11 @@ public class ifsys extends Applet
                     shape.pts[i].scale = shape.pts[i].savedscale*scaleDelta;
                 }
             }else{ //move a single point
-                double rotationDelta = (Math.atan2(e.getX() - shape.pts[pointselected].x, e.getY() - shape.pts[pointselected].y)- startDragAngle);
-                double scaleDelta = shape.distance(e.getX() - shape.pts[pointselected].x, e.getY() - shape.pts[pointselected].y)/startDragDist;
+                double rotationDelta = (Math.atan2(e.getX() - selectedPt.x, e.getY() - selectedPt.y)- startDragAngle);
+                double scaleDelta = shape.distance(e.getX() - selectedPt.x, e.getY() - selectedPt.y)/startDragDist;
 
-                shape.pts[pointselected].rotation = Math.PI * 2 - rotationDelta;
-                shape.pts[pointselected].scale = startDragScale*scaleDelta;
+                selectedPt.rotation = Math.PI * 2 - rotationDelta;
+                selectedPt.scale = startDragScale*scaleDelta;
             }
         }
 
@@ -462,10 +468,36 @@ public class ifsys extends Applet
 
     public void mouseWheelMoved(MouseWheelEvent e) {
         mouseScroll += e.getWheelRotation();
+
+        if(e.getWheelRotation()>0){ //scroll down
+
+            if(shiftDown || ctrlDown){//decrease overall opacity if ctrl or shift down
+                for(int i=0; i<shape.pointsInUse; i++){
+                    shape.pts[i].opacity*=0.9;
+                }
+            }else{//decrease point opacity
+                selectedPt.opacity*=0.9;
+            }
+        }else{ //scroll up
+            if(shiftDown || ctrlDown){//increase overall opacity if ctrl or shift down
+                for(int i=0; i<shape.pointsInUse; i++){
+                    shape.pts[i].opacity*=1.1;
+                }
+            }else{//increase point opacity
+                selectedPt.opacity*=1.1;
+            }
+        }
+
+        clearframe();
+        gamefunc();
     }
 
     public void mouseMoved(MouseEvent e){
+        findSelectedPoint();
+        mousex = e.getX();
+        mousey = e.getY();
     }
+
     public void keyTyped(KeyEvent e){
     }
 
@@ -474,10 +506,6 @@ public class ifsys extends Applet
             ctrlDown=true;
         if(e.getKeyCode()==KeyEvent.VK_SHIFT)
             shiftDown=true;
-        if(e.getKeyChar() == '=')
-            shape.pts[pointselected].scale *= 1.01D;
-        if(e.getKeyChar() == '-')
-            shape.pts[pointselected].scale *= 0.98999999999999999D;
         shape.updateCenter();
         clearframe();
         gamefunc();

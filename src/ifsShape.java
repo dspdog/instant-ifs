@@ -25,6 +25,7 @@ class ifsShape{
         pts[pointsInUse].y = y;
         pts[pointsInUse].scale = 0.5D;
         pts[pointsInUse].rotation = 0.0D;
+        pts[pointsInUse].opacity = 1.0D;
         pointsInUse++;
         updateCenter();
     }
