@@ -12,6 +12,7 @@ public class ifsys extends Applet
     int screenheight;
     double pixelsData[];
     double dataMax = 0;
+    double gamma = 0;
     int pixels[];
     Image render;
     Graphics rg;
@@ -87,6 +88,7 @@ public class ifsys extends Applet
         maxPoints = 100;
         shape = new ifsShape(maxPoints);
         mouseScroll = 0;
+        gamma = 1.0D;
     }
 
     public void findSelectedPoint(){
@@ -159,6 +161,7 @@ public class ifsys extends Applet
             rg.drawString("Samples (nm): " + String.valueOf(sampletotal), 4, 120);
             rg.drawString("Expected Done %" + String.valueOf((int)Math.min(100*samplesThisFrame/samplesNeeded/Math.E, 100)), 5, 135); //TODO is dividing by E the right thing to do here?
             rg.drawString("FPS " + String.valueOf(fps), 5, 150);
+            rg.drawString("Gamma " + String.valueOf(gamma), 5, 165);
         }
         gr.drawImage(render, 0, 0, screenwidth, screenheight, this);
     }
@@ -209,7 +212,7 @@ public class ifsys extends Applet
                     pixelsData[(int)(x) + (int)(y+1) * screenwidth]+=a*decY*(1.0-decX);
                     pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]+=a*decY*decX;
                 }
-                if(dataMax<pixelsData[(int)x + (int)y * screenwidth]){dataMax = pixelsData[(int)x + (int)y * screenwidth];}
+                if(dataMax<pixelsData[(int)x + (int)y * screenwidth]/gamma){dataMax = pixelsData[(int)x + (int)y * screenwidth]/gamma;}
             }else{
                 pixelsData[(int)(x) + (int)(y) * screenwidth]=1;
             }
@@ -469,22 +472,19 @@ public class ifsys extends Applet
     public void mouseWheelMoved(MouseWheelEvent e) {
         mouseScroll += e.getWheelRotation();
 
-        if(e.getWheelRotation()>0){ //scroll down
+        double changeFactor = 0.9;
 
-            if(shiftDown || ctrlDown){//decrease overall opacity if ctrl or shift down
-                for(int i=0; i<shape.pointsInUse; i++){
-                    shape.pts[i].opacity*=0.9;
-                }
+        if(e.getWheelRotation()>0){ //scroll down
+            if(shiftDown || ctrlDown){//decrease gamma
+                gamma*=0.9;
             }else{//decrease point opacity
-                selectedPt.opacity*=0.9;
+                selectedPt.opacity*=changeFactor;
             }
         }else{ //scroll up
-            if(shiftDown || ctrlDown){//increase overall opacity if ctrl or shift down
-                for(int i=0; i<shape.pointsInUse; i++){
-                    shape.pts[i].opacity*=1.1;
-                }
+            if(shiftDown || ctrlDown){//increase gamma
+                gamma/=0.9;
             }else{//increase point opacity
-                selectedPt.opacity*=1.1;
+                selectedPt.opacity/=changeFactor;
             }
         }
 
