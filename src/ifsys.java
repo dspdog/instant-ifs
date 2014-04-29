@@ -379,7 +379,7 @@ public class ifsys extends Applet
             startDragY = arg0.getY();
             shape.updateCenter();
 
-            if(ctrlDown){
+            if(ctrlDown || shiftDown){
                 shape.saveState();
                 startDragPX = shape.centerx;
                 startDragPY = shape.centery;
@@ -434,6 +434,14 @@ public class ifsys extends Applet
                 for(int i=0; i<shape.pointsInUse; i++){
                     shape.pts[i].x = shape.centerx + scaleDelta * shape.pts[i].savedradius*Math.cos(Math.PI / 2 - shape.pts[i].saveddegrees - rotationDelta);
                     shape.pts[i].y = shape.centery + scaleDelta * shape.pts[i].savedradius*Math.sin(Math.PI / 2 - shape.pts[i].saveddegrees - rotationDelta);
+                }
+            }else if(shiftDown){ //rotate all points in unison
+                double rotationDelta = (Math.atan2(e.getX() - shape.centerx, e.getY() - shape.centery)- startDragAngle);
+                double scaleDelta = shape.distance(e.getX() - shape.centerx, e.getY() - shape.centery)/startDragDist;
+
+                for(int i=0; i<shape.pointsInUse; i++){
+                    shape.pts[i].rotation = shape.pts[i].savedrotation + (Math.PI * 2 - rotationDelta);
+                    shape.pts[i].scale = shape.pts[i].savedscale*scaleDelta;
                 }
             }else{ //move a single point
                 double rotationDelta = (Math.atan2(e.getX() - shape.pts[pointselected].x, e.getY() - shape.pts[pointselected].y)- startDragAngle);
