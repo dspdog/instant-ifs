@@ -72,7 +72,7 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="441" column="55" selection-start="16829" selection-end="16829" vertical-scroll-proportion="1.3169014" vertical-offset="7123" max-vertical-offset="8840">
+            <state line="461" column="0" selection-start="17729" selection-end="17729" vertical-scroll-proportion="0.6976744" vertical-offset="7657" max-vertical-offset="8959">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -121,8 +121,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="548" />
-    <option name="y" value="93" />
+    <option name="x" value="350" />
+    <option name="y" value="68" />
     <option name="width" value="1070" />
     <option name="height" value="787" />
   </component>
@@ -206,6 +206,8 @@
     <property name="dynamic.classpath" value="false" />
     <property name="restartRequiresConfirmation" value="true" />
     <property name="FullScreen" value="false" />
+    <property name="OverrideImplement.combined" value="true" />
+    <property name="OverrideImplement.overriding.sorted" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -407,7 +409,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="548" y="93" width="1070" height="787" extended-state="0" />
+    <frame x="350" y="68" width="1070" height="787" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -611,7 +613,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="441" column="55" selection-start="16829" selection-end="16829" vertical-scroll-proportion="1.3169014" vertical-offset="7123" max-vertical-offset="8840">
+        <state line="461" column="0" selection-start="17729" selection-end="17729" vertical-scroll-proportion="0.6976744" vertical-offset="7657" max-vertical-offset="8959">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

@@ -4,7 +4,7 @@ import java.awt.event.*;
 import java.awt.image.MemoryImageSource;
 
 public class ifsys extends Applet
-    implements MouseListener, MouseMotionListener, KeyListener, FocusListener
+    implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener
 {
     mainthread game;
     boolean quit;
@@ -39,6 +39,7 @@ public class ifsys extends Applet
         boolean ctrlDown;
         int mousex;
         int mousey;
+        int mouseScroll;
 
     ifsShape shape;
     int maxPoints;
@@ -84,6 +85,7 @@ public class ifsys extends Applet
         maxLineLength = screenwidth;
         maxPoints = 100;
         shape = new ifsShape(maxPoints);
+        mouseScroll = 0;
     }
 
     public void findSelectedPoint(){
@@ -117,6 +119,7 @@ public class ifsys extends Applet
         setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         addMouseListener(this);
         addMouseMotionListener(this);
+        addMouseWheelListener(this);
         addKeyListener(this);
         render = createImage(screenwidth, screenheight);
         rg = render.getGraphics();
@@ -455,6 +458,10 @@ public class ifsys extends Applet
         shape.updateCenter();
         clearframe();
         gamefunc();
+    }
+
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        mouseScroll += e.getWheelRotation();
     }
 
     public void mouseMoved(MouseEvent e){
