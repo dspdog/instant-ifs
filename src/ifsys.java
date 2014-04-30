@@ -40,6 +40,7 @@ public class ifsys extends Applet
 
         boolean shiftDown;
         boolean ctrlDown;
+        boolean altDown;
         int mousex;
         int mousey;
         int mouseScroll;
@@ -65,6 +66,7 @@ public class ifsys extends Applet
         samplesThisFrame=0;
         oneSecondAgo =0;
         framesThisSecond = 0;
+        altDown=false;
         ctrlDown=false;
         shiftDown=false;
         game = new mainthread();
@@ -528,6 +530,8 @@ public class ifsys extends Applet
     }
 
     public void keyPressed(KeyEvent e){
+        if(e.getKeyCode()==KeyEvent.VK_ALT)
+            altDown=true;
         if(e.getKeyCode()==KeyEvent.VK_CONTROL)
             ctrlDown=true;
         if(e.getKeyCode()==KeyEvent.VK_SHIFT)
@@ -538,6 +542,8 @@ public class ifsys extends Applet
     }
 
     public void keyReleased(KeyEvent e){
+        if(e.getKeyCode()==KeyEvent.VK_ALT)
+            altDown=false;
         if(e.getKeyCode()==KeyEvent.VK_CONTROL)
             ctrlDown=false;
         if(e.getKeyCode()==KeyEvent.VK_SHIFT)
