@@ -31,6 +31,7 @@ public class ifsys extends Applet
         boolean trailsHidden;
         boolean spokesHidden;
         boolean infoHidden;
+        boolean guidesHidden;
         boolean ptsHidden;
         int sampletotal;
         int iterations;
@@ -75,6 +76,7 @@ public class ifsys extends Applet
         trailsHidden = true;
         leavesHidden = false;
         infoHidden = false;
+        guidesHidden = false;
         ptsHidden = false;
         screenwidth = 1024;
         screenheight = 1024;
@@ -149,6 +151,30 @@ public class ifsys extends Applet
         generatePixels();
 
         rg.drawImage(createImage(new MemoryImageSource(screenwidth, screenheight, pixels, 0, screenwidth)), 0, 0, screenwidth, screenheight, this);
+        int circleWidth;
+
+        rg.setColor(Color.blue);
+        ifsPt thePt;
+
+        if(!guidesHidden)
+        for(int i=0;i<shape.pointsInUse;i++){
+            if(i==pointselected){
+                rg.setColor(Color.LIGHT_GRAY);
+            }else{
+                rg.setColor(Color.darkGray);
+            }
+            thePt = shape.pts[i];
+            circleWidth = (int)(thePt.scale*thePt.radius*2);
+            rg.drawOval((int)thePt.x-circleWidth/2, (int)thePt.y-circleWidth/2, circleWidth, circleWidth);
+            rg.drawLine((int)thePt.x, (int)thePt.y, (int)(thePt.x + Math.sin(thePt.degrees-thePt.rotation)*thePt.scale*thePt.radius),
+                                                    (int)(thePt.y + Math.cos(thePt.degrees-thePt.rotation)*thePt.scale*thePt.radius));
+            if(!centerHidden){
+                rg.setColor(Color.blue);
+                rg.drawLine((int)shape.centerx, (int)shape.centery, (int)(shape.centerx + Math.sin(thePt.degrees)*thePt.radius),
+                                                                    (int)(shape.centery + Math.cos(thePt.degrees)*thePt.radius));
+            }
+        }
+
         if(!infoHidden){
             rg.setColor(Color.white);
             rg.drawString("Point " + String.valueOf(pointselected + 1), 5, 15);
@@ -534,6 +560,8 @@ public class ifsys extends Applet
             trailsHidden = !trailsHidden;
         if(e.getKeyChar() == 'i')
             infoHidden = !infoHidden;
+        if(e.getKeyChar() == 'g')
+            guidesHidden = !guidesHidden;
         if(e.getKeyChar() == 'p')
             ptsHidden = !ptsHidden;
         if(e.getKeyChar() == 'm')

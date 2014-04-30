@@ -20,6 +20,14 @@ class ifsShape{
         }
     }
 
+    public double getAverageRadius(){
+        double total =0;
+        for(int i=0;i<this.pointsInUse;i++){
+            total+=this.pts[i].radius;
+        }
+        return total/this.pointsInUse;
+    }
+
     public void addPoint(double x, double y){
         pts[pointsInUse].x = x;
         pts[pointsInUse].y = y;
