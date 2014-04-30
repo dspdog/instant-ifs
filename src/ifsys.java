@@ -459,6 +459,9 @@ public class ifsys extends Applet
                     shape.pts[i].x = shape.pts[i].savedx + (e.getX() - startDragX);
                     shape.pts[i].y = shape.pts[i].savedy + (e.getY() - startDragY);
                 }
+            }else if(shiftDown){
+                //TODO offset the center...
+
             }else{ //move a single point
                 selectedPt.x = startDragPX + (e.getX() - startDragX);
                 selectedPt.y = startDragPY + (e.getY() - startDragY);
