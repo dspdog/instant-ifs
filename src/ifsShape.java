@@ -1,10 +1,11 @@
 class ifsShape{
     public ifsPt pts[];
-    public double centerx, centery;
+    public double centerx, centery, offsetx, offsety;
     public int pointsInUse;
     public boolean stateSaved;
 
     public ifsShape(int maxPoints){
+        offsetx=0; offsety=0;
         stateSaved = false;
         pointsInUse = 0;
         pts = new ifsPt[maxPoints];
@@ -81,6 +82,9 @@ class ifsShape{
             centerx = pts[0].x;
             centery = pts[0].y;
         }
+
+        centerx+=offsetx; //TODO rotation fix?
+        centery+=offsety;
     }
 
     public void setToPreset(int preset){

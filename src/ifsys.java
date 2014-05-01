@@ -462,6 +462,8 @@ public class ifsys extends Applet
             }else if(shiftDown){
                 //TODO offset the center...
 
+
+
             }else{ //move a single point
                 selectedPt.x = startDragPX + (e.getX() - startDragX);
                 selectedPt.y = startDragPY + (e.getY() - startDragY);
@@ -516,6 +518,13 @@ public class ifsys extends Applet
                 gamma/=0.9;
             }else{//increase point opacity
                 selectedPt.opacity/=changeFactor;
+
+                if(selectedPt.opacity>1){ //values above 1 break the line function so instead we reduce the other points for the same effect
+                    selectedPt.opacity=1.0D;
+                    for(int i=0; i<shape.pointsInUse; i++){
+                        shape.pts[i].opacity*=changeFactor;
+                    }
+                }
             }
         }
 
