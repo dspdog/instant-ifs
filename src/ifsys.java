@@ -55,6 +55,8 @@ public class ifsys extends Applet
         double startDragY;
         double startDragPX;
         double startDragPY;
+        double startDragOffsetX;
+        double startDragOffsetY;
         double startDragDist;
         double startDragAngle;
         double startDragScale;
@@ -423,6 +425,8 @@ public class ifsys extends Applet
                 shape.saveState();
                 startDragPX = shape.centerx;
                 startDragPY = shape.centery;
+                startDragOffsetX = shape.offsetx;
+                startDragOffsetY = shape.offsety;
                 startDragDist = shape.distance(startDragX - shape.centerx, startDragY - shape.centery);
                 startDragAngle = 0 + Math.atan2(startDragX - shape.centerx, startDragY - shape.centery);
                 startDragScale = 1.0;
@@ -461,9 +465,8 @@ public class ifsys extends Applet
                 }
             }else if(shiftDown){
                 //TODO offset the center...
-
-
-
+                shape.offsetx = startDragOffsetX + (e.getX() - startDragX);
+                shape.offsety = startDragOffsetY + (e.getY() - startDragY);
             }else{ //move a single point
                 selectedPt.x = startDragPX + (e.getX() - startDragX);
                 selectedPt.y = startDragPY + (e.getY() - startDragY);
