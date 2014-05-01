@@ -55,8 +55,8 @@ public class ifsys extends Applet
         double startDragY;
         double startDragPX;
         double startDragPY;
-        double startDragOffsetX;
-        double startDragOffsetY;
+        double startDragCenterX;
+        double startDragCenterY;
         double startDragDist;
         double startDragAngle;
         double startDragScale;
@@ -425,8 +425,6 @@ public class ifsys extends Applet
                 shape.saveState();
                 startDragPX = shape.centerx;
                 startDragPY = shape.centery;
-                startDragOffsetX = shape.offsetx;
-                startDragOffsetY = shape.offsety;
                 startDragDist = shape.distance(startDragX - shape.centerx, startDragY - shape.centery);
                 startDragAngle = 0 + Math.atan2(startDragX - shape.centerx, startDragY - shape.centery);
                 startDragScale = 1.0;
@@ -458,15 +456,16 @@ public class ifsys extends Applet
     public void mouseDragged(MouseEvent e){
         if(mousemode == 1){ //left click to move a point/set
             setCursor (Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-            if(ctrlDown){ //move the set -- need "startDragX" per pt
+            if(ctrlDown){
                 for(int i=0; i<shape.pointsInUse; i++){
                     shape.pts[i].x = shape.pts[i].savedx + (e.getX() - startDragX);
                     shape.pts[i].y = shape.pts[i].savedy + (e.getY() - startDragY);
                 }
-            }else if(shiftDown){
-                //TODO offset the center...
-                shape.offsetx = startDragOffsetX + (e.getX() - startDragX);
-                shape.offsety = startDragOffsetY + (e.getY() - startDragY);
+                shape.centerx = startDragPX + (e.getX() - startDragX);
+                shape.centery = startDragPY + (e.getY() - startDragY);
+            }else if(shiftDown){ //move the center
+                shape.centerx = startDragPX + (e.getX() - startDragX);
+                shape.centery = startDragPY + (e.getY() - startDragY);
             }else{ //move a single point
                 selectedPt.x = startDragPX + (e.getX() - startDragX);
                 selectedPt.y = startDragPY + (e.getY() - startDragY);
@@ -476,8 +475,8 @@ public class ifsys extends Applet
             setCursor (Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
 
             if(ctrlDown){ //rotate the set
-                double rotationDelta = (Math.atan2(e.getX() - shape.centerx, e.getY() - shape.centery)- startDragAngle);
-                double scaleDelta = shape.distance(e.getX() - shape.centerx, e.getY() - shape.centery)/startDragDist;
+                double rotationDelta = (Math.atan2(e.getX() - shape.centerx , e.getY() - shape.centery )- startDragAngle);
+                double scaleDelta = shape.distance(e.getX() - shape.centerx , e.getY() - shape.centery )/startDragDist;
 
                 for(int i=0; i<shape.pointsInUse; i++){
                     shape.pts[i].x = shape.centerx + scaleDelta * shape.pts[i].savedradius*Math.cos(Math.PI / 2 - shape.pts[i].saveddegrees - rotationDelta);

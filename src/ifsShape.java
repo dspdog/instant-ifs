@@ -2,10 +2,12 @@ class ifsShape{
     public ifsPt pts[];
     public double centerx, centery, offsetx, offsety;
     public int pointsInUse;
+    public boolean autoUpdateCenterEnabled;
     public boolean stateSaved;
 
     public ifsShape(int maxPoints){
         offsetx=0; offsety=0;
+        autoUpdateCenterEnabled =false;
         stateSaved = false;
         pointsInUse = 0;
         pts = new ifsPt[maxPoints];
@@ -19,14 +21,6 @@ class ifsShape{
             pts[a].saveState();
             stateSaved=true;
         }
-    }
-
-    public double getAverageRadius(){
-        double total =0;
-        for(int i=0;i<this.pointsInUse;i++){
-            total+=this.pts[i].radius;
-        }
-        return total/this.pointsInUse;
     }
 
     public void addPoint(double x, double y){
@@ -68,23 +62,30 @@ class ifsShape{
     void updateCenter(){
         double x = 0, y = 0;
 
-        updateRadiusDegrees();
+        if(autoUpdateCenterEnabled){
+            if(pointsInUse != 0){
+                for(int a = 0; a < pointsInUse; a++){
+                    x += pts[a].x;
+                    y += pts[a].y;
+                }
 
-        if(pointsInUse != 0){
-            for(int a = 0; a < pointsInUse; a++){
-                x += pts[a].x;
-                y += pts[a].y;
+                centerx = x / pointsInUse;
+                centery = y / pointsInUse;
+            } else{
+                centerx = pts[0].x;
+                centery = pts[0].y;
             }
-
-            centerx = x / pointsInUse;
-            centery = y / pointsInUse;
-        } else{
-            centerx = pts[0].x;
-            centery = pts[0].y;
         }
 
-        centerx+=offsetx; //TODO rotation fix?
-        centery+=offsety;
+        updateRadiusDegrees();
+    }
+
+    void updateCenterOnce(){
+        boolean oldState = autoUpdateCenterEnabled;
+
+        autoUpdateCenterEnabled =true;
+        updateCenter();
+        autoUpdateCenterEnabled =oldState;
     }
 
     public void setToPreset(int preset){
@@ -102,8 +103,7 @@ class ifsShape{
                 pts[2].scale = 0.5D;
                 break;
         }
-        updateCenter();
-        updateCenter(); //TODO why does this need to be called twice? (center doenst update right otherwise...)
+        updateCenterOnce();
     }
 
     public double distance(double x2, double y2){
