@@ -2,6 +2,7 @@ import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.MemoryImageSource;
+import java.net.URL;
 
 public class ifsys extends Applet
     implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener
@@ -155,6 +156,8 @@ public class ifsys extends Applet
         generatePixels();
 
         rg.drawImage(createImage(new MemoryImageSource(screenwidth, screenheight, pixels, 0, screenwidth)), 0, 0, screenwidth, screenheight, this);
+        rg.drawImage(getImage("rotate.gif"), getWidth()-50,0,50,50,this);
+
         int circleWidth;
 
         rg.setColor(Color.blue);
@@ -391,6 +394,20 @@ public class ifsys extends Applet
             pixels[pointx1 + 1 + pointy1 * screenwidth] = 0xff00ffff;
             pixels[pointx1 + (pointy1 + 1) * screenwidth] = 0xff00ffff;
             pixels[pointx1 + 1 + (pointy1 + 1) * screenwidth] = 0xff00ffff;
+        }
+    }
+
+
+    public Image getImage(String name)
+    {
+        try
+        {
+            URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
+            return getImage(theImgURL);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
