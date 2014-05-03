@@ -80,6 +80,20 @@ class ifsShape{
         updateRadiusDegrees();
     }
 
+    public int getNearestPtIndex(double x, double y){
+        double olddist = 1000D;
+        int ptSelected = -1;
+        for(int a = 0; a < this.pointsInUse; a++)
+        {
+            double currentdist = this.distance((double) x - this.pts[a].x, (double) y - this.pts[a].y);
+            if(currentdist < olddist){
+                olddist = currentdist;
+                ptSelected = a;
+            }
+        }
+        return ptSelected;
+    }
+
     void updateCenterOnce(){
         boolean oldState = autoUpdateCenterEnabled;
 

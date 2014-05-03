@@ -99,15 +99,7 @@ public class ifsys extends Applet
     }
 
     public void findSelectedPoint(){
-        double olddist = 1000D;
-        for(int a = 0; a < shape.pointsInUse; a++)
-        {
-            double currentdist = shape.distance((double) mousex - shape.pts[a].x, (double) mousey - shape.pts[a].y);
-            if(currentdist < olddist){
-                olddist = currentdist;
-                pointselected = a;
-            }
-        }
+        pointselected = shape.getNearestPtIndex(mousex, mousey);
         selectedPt = shape.pts[pointselected];
     }
 
