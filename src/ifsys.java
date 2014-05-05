@@ -82,9 +82,9 @@ public class ifsys extends Applet
         trailsHidden = true;
         leavesHidden = false;
         infoHidden = false;
+        imgSamples = false;
         guidesHidden = false;
         ptsHidden = false;
-        imgSamples = false;
         screenwidth = 1024;
         screenheight = 1024;
         pixels = new int[screenwidth * screenheight];
@@ -351,7 +351,7 @@ public class ifsys extends Applet
                         putPixel(dx, dy, shape.pts[randomIndex].opacity, false);
                     if(!spokesHidden)
                         putLine(_dx, _dy, dx, dy, cumulativeOpacity);
-                    if(!imgSamples)
+                    if(imgSamples)
                         putImgSample(dx, dy, cumulativeRotation, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex]);
                 }
                 if(!leavesHidden)
