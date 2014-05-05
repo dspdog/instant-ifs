@@ -32,6 +32,7 @@ public class ifsys extends Applet
         boolean trailsHidden;
         boolean spokesHidden;
         boolean infoHidden;
+        boolean imgSamples;
         boolean guidesHidden;
         boolean ptsHidden;
         int sampletotal;
@@ -83,6 +84,7 @@ public class ifsys extends Applet
         infoHidden = false;
         guidesHidden = false;
         ptsHidden = false;
+        imgSamples = false;
         screenwidth = 1024;
         screenheight = 1024;
         pixels = new int[screenwidth * screenheight];
@@ -252,6 +254,12 @@ public class ifsys extends Applet
 
     }
 
+    public void putImgSample(double x, double y, double cumulativeRotation, double cumulativeScale, ifsPt thePt){
+        //generate random polar coords
+        //modulate with image (mind the rotation!)
+        //put pixel
+    }
+
     public void putLine(double x0, double y0, double x1, double y1, double alpha){ //TODO start/end alpha values?
         double steps = (int)shape.distance(x0-x1, y0-y1);
         double dx, dy;
@@ -295,50 +303,52 @@ public class ifsys extends Applet
             }
 
             for(int a = 0; a < sampletotal; a++){
-                int c = (int)(Math.random() * (double) shape.pointsInUse);
-                int nextPt = (c+1)%shape.pointsInUse;
-                double dx = shape.pts[c].x;
-                double dy = shape.pts[c].y;
+                int randomIndex = (int)(Math.random() * (double) shape.pointsInUse);
+                int nextIndex = (randomIndex+1)%shape.pointsInUse;
+                double dx = shape.pts[randomIndex].x;
+                double dy = shape.pts[randomIndex].y;
                 double ndx;
                 double ndy;
                 double _dx;
                 double _dy;
-                double e = 1.0D;
-                double nextE = 1.0D;
-                double extra = shape.pts[c].rotation;
-                double nextExtra = shape.pts[c].rotation;
-                double opacity = 1.0D;
+                double cumulativeScale = 1.0D;
+                double nextCumulativeScale = 1.0D;
+                double cumulativeRotation = shape.pts[randomIndex].rotation;
+                double nextCumulativeRotation = shape.pts[randomIndex].rotation;
+                double cumulativeOpacity = 1.0D;
 
                 for(int d = 0; d < iterations; d++){
 
-                    c = (int)(Math.random() * (double) shape.pointsInUse);
-                    nextPt = (c+1)%shape.pointsInUse;
+                    randomIndex = (int)(Math.random() * (double) shape.pointsInUse);
+                    nextIndex = (randomIndex+1)%shape.pointsInUse;
 
-                    nextE = e*shape.pts[nextPt].scale;
-                    nextExtra = extra + shape.pts[nextPt].rotation;
+                    nextCumulativeScale = cumulativeScale*shape.pts[nextIndex].scale;
+                    nextCumulativeRotation = cumulativeRotation + shape.pts[nextIndex].rotation;
 
-                    e *= shape.pts[c].scale;
-                    extra += shape.pts[c].rotation;
-                    opacity *= shape.pts[c].opacity;
+                    cumulativeScale *= shape.pts[randomIndex].scale;
+                    cumulativeRotation += shape.pts[randomIndex].rotation;
+                    cumulativeOpacity *= shape.pts[randomIndex].opacity;
 
                     _dx = dx;
                     _dy = dy;
-                    dx += Math.cos((Math.PI/2D - shape.pts[c].degrees) + extra) * shape.pts[c].radius * e;
-                    dy += Math.sin((Math.PI/2D - shape.pts[c].degrees) + extra) * shape.pts[c].radius * e;
+                    dx += Math.cos((Math.PI/2D - shape.pts[randomIndex].degrees) + cumulativeRotation) * shape.pts[randomIndex].radius * cumulativeScale;
+                    dy += Math.sin((Math.PI/2D - shape.pts[randomIndex].degrees) + cumulativeRotation) * shape.pts[randomIndex].radius * cumulativeScale;
 
                     if(!framesHidden){
-                        ndx = _dx + Math.cos((Math.PI/2D - shape.pts[nextPt].degrees) + nextExtra) * shape.pts[nextPt].radius * nextE;
-                        ndy = _dy + Math.sin((Math.PI/2D - shape.pts[nextPt].degrees) + nextExtra) * shape.pts[nextPt].radius * nextE;
+                        ndx = _dx + Math.cos((Math.PI/2D - shape.pts[nextIndex].degrees) + nextCumulativeRotation) * shape.pts[nextIndex].radius * nextCumulativeScale;
+                        ndy = _dy + Math.sin((Math.PI/2D - shape.pts[nextIndex].degrees) + nextCumulativeRotation) * shape.pts[nextIndex].radius * nextCumulativeScale;
 
-                        putLine(dx, dy, ndx, ndy, opacity); //TODO proper transparent lines?
+                        putLine(dx, dy, ndx, ndy, cumulativeOpacity); //TODO proper transparent lines?
                     }
                     if(!trailsHidden && d < iterations-1)
-                        putPixel(dx, dy, shape.pts[c].opacity, false);
+                        putPixel(dx, dy, shape.pts[randomIndex].opacity, false);
                     if(!spokesHidden)
-                        putLine(_dx, _dy, dx, dy, opacity);
+                        putLine(_dx, _dy, dx, dy, cumulativeOpacity);
+                    if(!imgSamples)
+                        putImgSample(dx, dy, cumulativeRotation, cumulativeScale, shape.pts[randomIndex]);
                 }
                 if(!leavesHidden)
-                    putPixel(dx, dy, opacity, false);
+                    putPixel(dx, dy, cumulativeOpacity, false);
             }
 
             if(!ptsHidden){
@@ -405,8 +415,6 @@ public class ifsys extends Applet
 
     public void mouseClicked(MouseEvent mouseevent){
     }
-
-
 
     public void mousePressed(MouseEvent e){
         mousemode = e.getButton();
@@ -585,6 +593,8 @@ public class ifsys extends Applet
             centerHidden = !centerHidden;
         if(e.getKeyChar() == 'f')
             framesHidden = !framesHidden;
+        if(e.getKeyChar() == 'q')
+            imgSamples = !imgSamples;
         if(e.getKeyChar() == 't')
             trailsHidden = !trailsHidden;
         if(e.getKeyChar() == 'i')
