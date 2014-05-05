@@ -254,10 +254,17 @@ public class ifsys extends Applet
 
     }
 
-    public void putImgSample(double x, double y, double cumulativeRotation, double cumulativeScale, ifsPt thePt){
+    public void putImgSample(double x, double y, double cumulativeRotation, double cumulativeScale, double cumulativeOpacity, ifsPt thePt){
         //generate random polar coords
+        double imgWidth = 50; //getImage("rotate.gif").getWidth(this)
+        double randomAngle = Math.random()*Math.PI*2;
+        double randomRadius = Math.random()*imgWidth/2;
+
         //modulate with image (mind the rotation!)
+        double ptColor = 1.0*cumulativeOpacity;
+
         //put pixel
+        putPixel(x,y, ptColor, false);
     }
 
     public void putLine(double x0, double y0, double x1, double y1, double alpha){ //TODO start/end alpha values?
@@ -345,7 +352,7 @@ public class ifsys extends Applet
                     if(!spokesHidden)
                         putLine(_dx, _dy, dx, dy, cumulativeOpacity);
                     if(!imgSamples)
-                        putImgSample(dx, dy, cumulativeRotation, cumulativeScale, shape.pts[randomIndex]);
+                        putImgSample(dx, dy, cumulativeRotation, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex]);
                 }
                 if(!leavesHidden)
                     putPixel(dx, dy, cumulativeOpacity, false);
@@ -399,11 +406,8 @@ public class ifsys extends Applet
         }
     }
 
-
-    public Image getImage(String name)
-    {
-        try
-        {
+    public Image getImage(String name){
+        try{
             URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
             return getImage(theImgURL);
         }
