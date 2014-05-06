@@ -72,7 +72,7 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="303" column="0" selection-start="10878" selection-end="10878" vertical-scroll-proportion="0.5357737" vertical-offset="4829" max-vertical-offset="11441">
+            <state line="304" column="32" selection-start="10872" selection-end="10872" vertical-scroll-proportion="0.6166667" vertical-offset="4761" max-vertical-offset="11441">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -92,7 +92,7 @@
       <file leaf-file-name="ifsShape.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ifsShape.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="0" selection-start="484" selection-end="484" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2227">
+            <state line="57" column="28" selection-start="1606" selection-end="1655" vertical-scroll-proportion="0.0" vertical-offset="663" max-vertical-offset="2227">
               <folding />
             </state>
           </provider>
@@ -121,10 +121,10 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="497" />
-    <option name="y" value="34" />
-    <option name="width" value="975" />
-    <option name="height" value="967" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1696" />
+    <option name="height" value="1026" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -445,7 +445,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="497" y="34" width="975" height="967" extended-state="0" />
+    <frame x="-8" y="-8" width="1696" height="1026" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -465,8 +465,8 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.41293013" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2255814" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23571429" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21109901" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -861,13 +861,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ifsShape.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="0" selection-start="484" selection-end="484" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2227">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.7.0_51/src.zip!/java/applet/Applet.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="273" column="0" selection-start="8349" selection-end="8349" vertical-scroll-proportion="0.33333334" vertical-offset="3881" max-vertical-offset="9622">
@@ -882,9 +875,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/ifsShape.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="57" column="28" selection-start="1606" selection-end="1655" vertical-scroll-proportion="0.0" vertical-offset="663" max-vertical-offset="2227">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="303" column="0" selection-start="10878" selection-end="10878" vertical-scroll-proportion="0.5357737" vertical-offset="4829" max-vertical-offset="11441">
+        <state line="304" column="32" selection-start="10872" selection-end="10872" vertical-scroll-proportion="0.6166667" vertical-offset="4761" max-vertical-offset="11441">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

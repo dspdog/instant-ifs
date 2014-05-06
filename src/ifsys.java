@@ -295,18 +295,18 @@ public class ifsys extends Applet
     }
 
     public void putImgSample(double x, double y, double cumulativeRotation, double cumulativeScale, double cumulativeOpacity, ifsPt thePt){
-        //generate random polar coords
-        //double randomAngle = Math.random()*Math.PI*2.0-Math.PI;
-        //double randomRadius = Math.random()*sampleWidth-sampleWidth/2.0;
-
+        //generate random coords
         double sampleX = Math.random()*sampleWidth;
         double sampleY = Math.random()*sampleHeight;
 
-        double placedX = sampleX*cumulativeScale;
-        double placedY = sampleY*cumulativeScale;
-
-        //modulate with image (mind the rotation!)
+        //modulate with image
         double ptColor = getSampleValue(sampleX,  sampleY)*cumulativeOpacity;
+
+        //rotate/scale the point
+        double pointDegrees = Math.atan2(sampleX - sampleWidth/2, sampleY - sampleHeight/2)+cumulativeRotation+thePt.rotation;
+        double pointDist = shape.distance(sampleX - sampleWidth/2, sampleY - sampleHeight/2)*cumulativeScale*thePt.scale*thePt.radius/sampleWidth;
+        double placedX = Math.cos(pointDegrees)*pointDist;
+        double placedY = Math.sin(pointDegrees)*pointDist;
 
         //put pixel
         putPixel(x+placedX,y+placedY, ptColor, false);
