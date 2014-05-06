@@ -226,7 +226,7 @@ public class ifsys extends Applet
         dataMax = 0;
     }
 
-    public boolean putPixel(double x, double y, double a){ //a = alpha
+    public boolean putPixel(double x, double y, double alpha){ 
         double decX, decY; //decimal parts of coordinates
 
         if(x < (double)(screenwidth - 1) &&
@@ -239,10 +239,10 @@ public class ifsys extends Applet
             if(antiAliasing){
                 //each point contributes to 4 pixels
 
-                pixelsData[(int)(x) + (int)(y) * screenwidth]+=a*(1.0-decX)*(1.0-decY);
-                pixelsData[(int)(x+1) + (int)(y) * screenwidth]+=a*decX*(1.0-decY);
-                pixelsData[(int)(x) + (int)(y+1) * screenwidth]+=a*decY*(1.0-decX);
-                pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]+=a*decY*decX;
+                pixelsData[(int)(x) + (int)(y) * screenwidth]+=alpha*(1.0-decX)*(1.0-decY);
+                pixelsData[(int)(x+1) + (int)(y) * screenwidth]+=alpha*decX*(1.0-decY);
+                pixelsData[(int)(x) + (int)(y+1) * screenwidth]+=alpha*decY*(1.0-decX);
+                pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]+=alpha*decY*decX;
 
                 if(dataMax<pixelsData[(int)x + (int)y * screenwidth]/gamma){dataMax = pixelsData[(int)x + (int)y * screenwidth]/gamma;}
             }else{
@@ -388,7 +388,7 @@ public class ifsys extends Applet
                         ndx = _dx + Math.cos((Math.PI/2D - shape.pts[nextIndex].degrees) + nextCumulativeRotation) * shape.pts[nextIndex].radius * nextCumulativeScale;
                         ndy = _dy + Math.sin((Math.PI/2D - shape.pts[nextIndex].degrees) + nextCumulativeRotation) * shape.pts[nextIndex].radius * nextCumulativeScale;
 
-                        putLine(dx, dy, ndx, ndy, cumulativeOpacity); //TODO proper transparent lines?
+                        putLine(dx, dy, ndx, ndy, cumulativeOpacity/scaleDownMultiplier); //TODO proper transparent lines?
                     }
                     if(!trailsHidden && d < iterations-1)
                         putPixel(dx, dy, shape.pts[randomIndex].opacity);
