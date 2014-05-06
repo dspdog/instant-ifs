@@ -2,6 +2,7 @@ import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.MemoryImageSource;
+import java.awt.image.PixelGrabber;
 import java.net.URL;
 
 public class ifsys extends Applet
@@ -11,6 +12,11 @@ public class ifsys extends Applet
     boolean quit;
     int screenwidth;
     int screenheight;
+
+    int samplePixels[];
+    int sampleWidth;
+    int sampleHeight;
+
     double pixelsData[];
     double dataMax = 0;
     double gamma = 0;
@@ -80,17 +86,18 @@ public class ifsys extends Applet
         centerHidden = false;
         spokesHidden = true;
         trailsHidden = true;
-        leavesHidden = false;
+        leavesHidden = true;
         infoHidden = false;
-        imgSamples = false;
+        imgSamples = true;
         guidesHidden = false;
         ptsHidden = false;
         screenwidth = 1024;
         screenheight = 1024;
         pixels = new int[screenwidth * screenheight];
+        samplePixels = new int[screenwidth * screenheight];
         pixelsData = new double[screenwidth * screenheight];
         sampletotal = 1000;
-        iterations = 10;
+        iterations = 2;
         mousemode = 0;
         samplesNeeded = 1;
         maxLineLength = screenwidth;
@@ -133,6 +140,7 @@ public class ifsys extends Applet
         clearframe();
         game.start();
         shape.setToPreset(1);
+        setSampleImg("meerkat.jpg");
     }
 
     public void update(Graphics gr){
@@ -150,7 +158,7 @@ public class ifsys extends Applet
         generatePixels();
 
         rg.drawImage(createImage(new MemoryImageSource(screenwidth, screenheight, pixels, 0, screenwidth)), 0, 0, screenwidth, screenheight, this);
-        rg.drawImage(getImage("rotate.gif"), getWidth()-50,0,50,50,this);
+        rg.drawImage(loadImage("meerkat.jpg"), getWidth()-50,0,50,50,this);
 
         int circleWidth;
 
@@ -254,17 +262,54 @@ public class ifsys extends Applet
 
     }
 
+    public void setSampleImg(String filename){
+        Image image = loadImage("meerkat.jpg");
+
+        try {
+            PixelGrabber grabber =
+                    new PixelGrabber(image, 0, 0, -1, -1, false);
+
+            if (grabber.grabPixels()) {
+                sampleWidth = grabber.getWidth();
+                sampleHeight = grabber.getHeight();
+                samplePixels = (int[]) grabber.getPixels();
+
+                for(int i=0; i<sampleHeight*sampleWidth; i++){
+                    samplePixels[i] = samplePixels[i]&0xFF;
+                }
+
+                System.out.println(samplePixels[(int)(Math.random()*sampleWidth*sampleWidth)]);
+            }
+        }catch (InterruptedException e1) {
+            e1.printStackTrace();
+        }
+    }
+
+    public double getSampleValue(double x, double y){ //TODO bilinear filtering
+        int index = (int)x+sampleWidth*(int)y;
+        if(index < sampleWidth*sampleHeight && index>0){
+            return samplePixels[(int)x + (int)y*sampleWidth] / 255.0;
+        }else{
+            return 0;
+        }
+    }
+
     public void putImgSample(double x, double y, double cumulativeRotation, double cumulativeScale, double cumulativeOpacity, ifsPt thePt){
         //generate random polar coords
-        double imgWidth = 50; //getImage("rotate.gif").getWidth(this)
-        double randomAngle = Math.random()*Math.PI*2;
-        double randomRadius = Math.random()*imgWidth/2;
+        //double randomAngle = Math.random()*Math.PI*2.0-Math.PI;
+        //double randomRadius = Math.random()*sampleWidth-sampleWidth/2.0;
+
+        double sampleX = Math.random()*sampleWidth;
+        double sampleY = Math.random()*sampleHeight;
+
+        double placedX = sampleX*cumulativeScale;
+        double placedY = sampleY*cumulativeScale;
 
         //modulate with image (mind the rotation!)
-        double ptColor = 1.0*cumulativeOpacity;
+        double ptColor = getSampleValue(sampleX,  sampleY)*cumulativeOpacity;
 
         //put pixel
-        putPixel(x,y, ptColor, false);
+        putPixel(x+placedX,y+placedY, ptColor, false);
     }
 
     public void putLine(double x0, double y0, double x1, double y1, double alpha){ //TODO start/end alpha values?
@@ -406,9 +451,11 @@ public class ifsys extends Applet
         }
     }
 
-    public Image getImage(String name){
+    public Image loadImage(String name){
         try{
-            URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
+            //URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
+
+            URL theImgURL = new URL("file:/C:/Users/Labrats/Documents/GitHub/instant-ifs/img/" + name);
             return getImage(theImgURL);
         }
         catch(Exception e) {
