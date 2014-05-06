@@ -120,7 +120,9 @@ public class ifsys extends Applet
                     repaint();
                     sleep(1L);
                 }
-                catch(InterruptedException interruptedexception) { }
+                catch(InterruptedException e) {
+                    e.printStackTrace();
+                }
         }
 
         public mainthread(){
@@ -224,7 +226,7 @@ public class ifsys extends Applet
         dataMax = 0;
     }
 
-    public boolean putPixel(double x, double y, double a, boolean isPartOfLine){ //a = alpha
+    public boolean putPixel(double x, double y, double a){ //a = alpha
         double decX, decY; //decimal parts of coordinates
 
         if(x < (double)(screenwidth - 1) &&
@@ -236,24 +238,18 @@ public class ifsys extends Applet
 
             if(antiAliasing){
                 //each point contributes to 4 pixels
-                if(isPartOfLine){//line contributions are clamped not added
-                    pixelsData[(int)(x) + (int)(y) * screenwidth]=Math.max(a*dataMax*(1.0-decX)*(1.0-decY), pixelsData[(int)(x) + (int)(y) * screenwidth]);
-                    pixelsData[(int)(x+1) + (int)(y) * screenwidth]=Math.max(a*dataMax*decX*(1.0-decY),pixelsData[(int)(x+1) + (int)(y) * screenwidth]);
-                    pixelsData[(int)(x) + (int)(y+1) * screenwidth]=Math.max(a*dataMax*decY*(1.0-decX),pixelsData[(int)(x) + (int)(y+1) * screenwidth]);
-                    pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]=Math.max(a*dataMax*decY*decX,pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]);
-                }else{
-                    pixelsData[(int)(x) + (int)(y) * screenwidth]+=a*(1.0-decX)*(1.0-decY);
-                    pixelsData[(int)(x+1) + (int)(y) * screenwidth]+=a*decX*(1.0-decY);
-                    pixelsData[(int)(x) + (int)(y+1) * screenwidth]+=a*decY*(1.0-decX);
-                    pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]+=a*decY*decX;
-                }
+
+                pixelsData[(int)(x) + (int)(y) * screenwidth]+=a*(1.0-decX)*(1.0-decY);
+                pixelsData[(int)(x+1) + (int)(y) * screenwidth]+=a*decX*(1.0-decY);
+                pixelsData[(int)(x) + (int)(y+1) * screenwidth]+=a*decY*(1.0-decX);
+                pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]+=a*decY*decX;
+
                 if(dataMax<pixelsData[(int)x + (int)y * screenwidth]/gamma){dataMax = pixelsData[(int)x + (int)y * screenwidth]/gamma;}
             }else{
                 pixelsData[(int)(x) + (int)(y) * screenwidth]=1;
             }
-            if(!isPartOfLine){
-                samplesThisFrame++;
-            }
+
+            samplesThisFrame++;
 
             return true; //pixel is in screen bounds
         }else{
@@ -277,11 +273,9 @@ public class ifsys extends Applet
                 for(int i=0; i<sampleHeight*sampleWidth; i++){
                     samplePixels[i] = samplePixels[i]&0xFF;
                 }
-
-                System.out.println(samplePixels[(int)(Math.random()*sampleWidth*sampleWidth)]);
             }
-        }catch (InterruptedException e1) {
-            e1.printStackTrace();
+        }catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -294,13 +288,14 @@ public class ifsys extends Applet
         }
     }
 
-    public void putImgSample(double x, double y, double cumulativeRotation, double cumulativeScale, double cumulativeOpacity, ifsPt thePt){
+    public void putImgSample(double x, double y, double cumulativeRotation, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown){
         //generate random coords
         double sampleX = Math.random()*sampleWidth;
         double sampleY = Math.random()*sampleHeight;
 
         //modulate with image
-        double ptColor = getSampleValue(sampleX,  sampleY)*cumulativeOpacity;
+        double exposureAdjust = cumulativeScale*thePt.scale*thePt.radius;
+        double ptColor = getSampleValue(sampleX,  sampleY)*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
 
         //rotate/scale the point
         double pointDegrees = Math.atan2(sampleX - sampleWidth/2, sampleY - sampleHeight/2)+cumulativeRotation+thePt.rotation;
@@ -309,7 +304,7 @@ public class ifsys extends Applet
         double placedY = Math.sin(pointDegrees)*pointDist;
 
         //put pixel
-        putPixel(x+placedX,y+placedY, ptColor, false);
+        putPixel(x+placedX,y+placedY, ptColor);
     }
 
     public void putLine(double x0, double y0, double x1, double y1, double alpha){ //TODO start/end alpha values?
@@ -326,7 +321,7 @@ public class ifsys extends Applet
             dx = x0 + i*(x1-x0)/steps;
             dy = y0 + i*(y1-y0)/steps;
 
-            if(putPixel(dx, dy, alpha, true)){ //stop drawing if pixel is outside bounds
+            if(putPixel(dx, dy, alpha)){ //stop drawing if pixel is outside bounds
                 startedInScreen = true;
             }else{
                 if(startedInScreen)break;
@@ -369,7 +364,10 @@ public class ifsys extends Applet
                 double nextCumulativeRotation = shape.pts[randomIndex].rotation;
                 double cumulativeOpacity = 1.0D;
 
+                double scaleDownMultiplier = Math.pow(shape.pointsInUse,iterations-1); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
+
                 for(int d = 0; d < iterations; d++){
+                    scaleDownMultiplier/=shape.pointsInUse;
 
                     randomIndex = (int)(Math.random() * (double) shape.pointsInUse);
                     nextIndex = (randomIndex+1)%shape.pointsInUse;
@@ -393,14 +391,14 @@ public class ifsys extends Applet
                         putLine(dx, dy, ndx, ndy, cumulativeOpacity); //TODO proper transparent lines?
                     }
                     if(!trailsHidden && d < iterations-1)
-                        putPixel(dx, dy, shape.pts[randomIndex].opacity, false);
+                        putPixel(dx, dy, shape.pts[randomIndex].opacity);
                     if(!spokesHidden)
-                        putLine(_dx, _dy, dx, dy, cumulativeOpacity);
+                        putLine(_dx, _dy, dx, dy, cumulativeOpacity/scaleDownMultiplier);
                     if(imgSamples)
-                        putImgSample(dx, dy, cumulativeRotation, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex]);
+                        putImgSample(dx, dy, cumulativeRotation, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier);
                 }
                 if(!leavesHidden)
-                    putPixel(dx, dy, cumulativeOpacity, false);
+                    putPixel(dx, dy, cumulativeOpacity);
             }
 
             if(!ptsHidden){

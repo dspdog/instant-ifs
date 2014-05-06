@@ -72,7 +72,7 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="304" column="32" selection-start="10872" selection-end="10872" vertical-scroll-proportion="0.6166667" vertical-offset="4761" max-vertical-offset="11441">
+            <state line="394" column="37" selection-start="14665" selection-end="14665" vertical-scroll-proportion="0.6166667" vertical-offset="6291" max-vertical-offset="11407">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -445,7 +445,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1696" height="1026" extended-state="6" />
+    <frame x="-8" y="-8" width="1696" height="1026" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -459,7 +459,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3295325" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32901832" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32861805" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.11980831" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -884,7 +884,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="304" column="32" selection-start="10872" selection-end="10872" vertical-scroll-proportion="0.6166667" vertical-offset="4761" max-vertical-offset="11441">
+        <state line="394" column="37" selection-start="14665" selection-end="14665" vertical-scroll-proportion="0.6166667" vertical-offset="6291" max-vertical-offset="11407">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
