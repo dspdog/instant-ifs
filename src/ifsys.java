@@ -30,6 +30,8 @@ public class ifsys extends Applet
     long samplesThisFrame;
     double samplesNeeded;
 
+    Image sampleImage;
+
     //user params
         boolean framesHidden;
         boolean centerHidden;
@@ -41,6 +43,7 @@ public class ifsys extends Applet
         boolean imgSamples;
         boolean guidesHidden;
         boolean ptsHidden;
+        boolean invertColors;
         int sampletotal;
         int iterations;
         int pointselected;
@@ -91,6 +94,7 @@ public class ifsys extends Applet
         imgSamples = true;
         guidesHidden = false;
         ptsHidden = false;
+        invertColors = false;
         screenwidth = 1024;
         screenheight = 1024;
         pixels = new int[screenwidth * screenheight];
@@ -142,7 +146,7 @@ public class ifsys extends Applet
         clearframe();
         game.start();
         shape.setToPreset(1);
-        setSampleImg("meerkat.jpg");
+        setSampleImg("serp.jpg");
     }
 
     public void update(Graphics gr){
@@ -160,7 +164,7 @@ public class ifsys extends Applet
         generatePixels();
 
         rg.drawImage(createImage(new MemoryImageSource(screenwidth, screenheight, pixels, 0, screenwidth)), 0, 0, screenwidth, screenheight, this);
-        rg.drawImage(loadImage("meerkat.jpg"), getWidth()-50,0,50,50,this);
+        rg.drawImage(sampleImage, getWidth() - 50, 0, 50, 50, this);
 
         int circleWidth;
 
@@ -187,7 +191,7 @@ public class ifsys extends Applet
         }
 
         if(!infoHidden){
-            rg.setColor(Color.white);
+            rg.setColor(invertColors ? Color.black : Color.white);
             rg.drawString("Point " + String.valueOf(pointselected + 1), 5, 15);
             rg.drawString("X: " + String.valueOf((double)(int)(selectedPt.x * 1000D) / 1000D), 5, 30);
             rg.drawString("Y: " + String.valueOf((double)(int)(selectedPt.y * 1000D) / 1000D), 5, 45);
@@ -207,21 +211,40 @@ public class ifsys extends Applet
         double scaler = 255/dataMax;
         int scaledColor = 0;
 
-        for(int a = 0; a < screenwidth * screenheight; a++){
-            int argb = 255;
-            scaledColor = (int)(scaler*pixelsData[a]);
-            argb = (argb << 8) + scaledColor;
-            argb = (argb << 8) + scaledColor;
-            argb = (argb << 8) + scaledColor;
-            pixels[a] = argb;
+        if(invertColors){
+            for(int a = 0; a < screenwidth * screenheight; a++){
+                int argb = 255;
+                scaledColor = (int)(255-scaler*pixelsData[a]);
+                argb = (argb << 8) + scaledColor;
+                argb = (argb << 8) + scaledColor;
+                argb = (argb << 8) + scaledColor;
+                pixels[a] = argb;
+            }
+        }else{
+            for(int a = 0; a < screenwidth * screenheight; a++){
+                int argb = 255;
+                scaledColor = (int)(scaler*pixelsData[a]);
+                argb = (argb << 8) + scaledColor;
+                argb = (argb << 8) + scaledColor;
+                argb = (argb << 8) + scaledColor;
+                pixels[a] = argb;
+            }
         }
     }
 
     public void clearframe(){
-        for(int a = 0; a < screenwidth * screenheight; a++){
-            pixels[a] = 0xff000000;
-            pixelsData[a] = 0;
+        if(invertColors){
+            for(int a = 0; a < screenwidth * screenheight; a++){
+                pixels[a] = 0xffffffff;
+                pixelsData[a] = 1;
+            }
+        }else{
+            for(int a = 0; a < screenwidth * screenheight; a++){
+                pixels[a] = 0xff000000;
+                pixelsData[a] = 0;
+            }
         }
+
         samplesThisFrame=0;
         dataMax = 0;
     }
@@ -259,11 +282,11 @@ public class ifsys extends Applet
     }
 
     public void setSampleImg(String filename){
-        Image image = loadImage("meerkat.jpg");
+        sampleImage = loadImage(filename);
 
         try {
             PixelGrabber grabber =
-                    new PixelGrabber(image, 0, 0, -1, -1, false);
+                    new PixelGrabber(sampleImage, 0, 0, -1, -1, false);
 
             if (grabber.grabPixels()) {
                 sampleWidth = grabber.getWidth();
@@ -298,7 +321,7 @@ public class ifsys extends Applet
         double ptColor = getSampleValue(sampleX,  sampleY)*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
 
         //rotate/scale the point
-        double pointDegrees = Math.atan2(sampleX - sampleWidth/2, sampleY - sampleHeight/2)+cumulativeRotation+thePt.rotation;
+        double pointDegrees = Math.atan2(sampleX - sampleWidth/2, sampleY - sampleHeight/2)+cumulativeRotation+thePt.rotation-thePt.degrees;
         double pointDist = shape.distance(sampleX - sampleWidth/2, sampleY - sampleHeight/2)*cumulativeScale*thePt.scale*thePt.radius/sampleWidth;
         double placedX = Math.cos(pointDegrees)*pointDist;
         double placedY = Math.sin(pointDegrees)*pointDist;
@@ -451,9 +474,9 @@ public class ifsys extends Applet
 
     public Image loadImage(String name){
         try{
-            //URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
+            //URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);file:/C:/Users/Labrats/Documents/GitHub/
 
-            URL theImgURL = new URL("file:/C:/Users/Labrats/Documents/GitHub/instant-ifs/img/" + name);
+            URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
             return getImage(theImgURL);
         }
         catch(Exception e) {
@@ -652,10 +675,27 @@ public class ifsys extends Applet
             guidesHidden = !guidesHidden;
         if(e.getKeyChar() == 'p')
             ptsHidden = !ptsHidden;
+        if(e.getKeyChar() == 'v')
+            invertColors = !invertColors;
         if(e.getKeyChar() == 'm')
             sampletotal += 100;
         if(e.getKeyChar() == 'n' && sampletotal > 1)
             sampletotal -= 100;
+
+        if(e.getKeyChar() == '1')
+            shape.setToPreset(1);
+        if(e.getKeyChar() == '2')
+            shape.setToPreset(2);
+        if(e.getKeyChar() == '3')
+            shape.setToPreset(3);
+        if(e.getKeyChar() == '4')
+            shape.setToPreset(4);
+        if(e.getKeyChar() == '5')
+            shape.setToPreset(5);
+        if(e.getKeyChar() == '6')
+            shape.setToPreset(6);
+
+
         clearframe();
         gamefunc();
     }
