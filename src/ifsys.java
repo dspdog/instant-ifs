@@ -1,11 +1,11 @@
-import java.applet.Applet;
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.MemoryImageSource;
 import java.awt.image.PixelGrabber;
 import java.net.URL;
 
-public class ifsys extends Applet
+public class ifsys extends Panel
     implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener
 {
     mainthread game;
@@ -70,9 +70,11 @@ public class ifsys extends Applet
         double startDragScale;
 
     String presetstring;
+    boolean started;
     int preset;
 
     public ifsys(){
+        started=false;
         samplesThisFrame=0;
         oneSecondAgo =0;
         framesThisSecond = 0;
@@ -105,7 +107,31 @@ public class ifsys extends Applet
         shape = new ifsShape(maxPoints);
         mouseScroll = 0;
         gamma = 1.0D;
+        pointselected=-1;
     }
+
+    public static void main(String[] args) {
+        Frame f = new Frame();
+        f.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                System.exit(0);
+            };
+        });
+
+        ifsys is = new ifsys();
+        is.setSize(is.screenwidth, is.screenheight); // same size as defined in the HTML APPLET
+        f.add(is);
+        f.pack();
+        is.init();
+        f.setSize(is.screenwidth, is.screenheight + 20); // add 20, seems enough for the Frame title,
+        f.show();
+    }
+
+    public void init() {
+       // add(new Button("Real's"));
+        start();
+    }
+
 
     public void findSelectedPoint(){
         pointselected = shape.getNearestPtIndex(mousex, mousey);
@@ -137,12 +163,13 @@ public class ifsys extends Applet
         addKeyListener(this);
         render = createImage(screenwidth, screenheight);
         rg = render.getGraphics();
-        presetstring = getParameter("preset");
+       // presetstring = getParameter("preset");
         preset = 1;//Integer.parseInt(presetstring);
         clearframe();
         game.start();
         shape.setToPreset(1);
         setSampleImg("meerkat.jpg");
+        started = true;
     }
 
     public void update(Graphics gr){
@@ -160,7 +187,7 @@ public class ifsys extends Applet
         generatePixels();
 
         rg.drawImage(createImage(new MemoryImageSource(screenwidth, screenheight, pixels, 0, screenwidth)), 0, 0, screenwidth, screenheight, this);
-        rg.drawImage(loadImage("meerkat.jpg"), getWidth()-50,0,50,50,this);
+        rg.drawImage(loadImage("meerkat.jpg"), getWidth() - 50, 0, 50, 50, this);
 
         int circleWidth;
 
@@ -186,7 +213,7 @@ public class ifsys extends Applet
             }
         }
 
-        if(!infoHidden){
+        if(!infoHidden && pointselected>=0){
             rg.setColor(Color.white);
             rg.drawString("Point " + String.valueOf(pointselected + 1), 5, 15);
             rg.drawString("X: " + String.valueOf((double)(int)(selectedPt.x * 1000D) / 1000D), 5, 30);
@@ -200,6 +227,7 @@ public class ifsys extends Applet
             rg.drawString("FPS " + String.valueOf(fps), 5, 150);
             rg.drawString("Gamma " + String.valueOf(gamma), 5, 165);
         }
+
         gr.drawImage(render, 0, 0, screenwidth, screenheight, this);
     }
 
@@ -454,7 +482,7 @@ public class ifsys extends Applet
             //URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
 
             URL theImgURL = new URL("file:/C:/Users/Labrats/Documents/GitHub/instant-ifs/img/" + name);
-            return getImage(theImgURL);
+            return ImageIO.read(theImgURL);
         }
         catch(Exception e) {
             e.printStackTrace();
