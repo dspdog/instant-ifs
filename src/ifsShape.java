@@ -116,7 +116,104 @@ class ifsShape{
                 pts[2].y = 160D + 100D * Math.sqrt(3D);
                 pts[2].scale = 0.5D;
                 break;
+            case 2: // '\002'
+                pointsInUse = 4;
+                pts[0].x = 190D;
+                pts[0].y = 120D;
+                pts[0].scale = 0.33333333333333331D;
+                pts[1].x = 430D;
+                pts[1].y = 360D;
+                pts[1].scale = 0.33333333333333331D;
+                pts[2].x = 430D;
+                pts[2].y = 120D;
+                pts[2].scale = 0.33333333333333331D;
+                pts[3].x = 190D;
+                pts[3].y = 360D;
+                pts[3].scale = 0.33333333333333331D;
+                break;
+
+            case 3: // '\003'
+                pointsInUse = 8;
+                pts[0].x = 190D;
+                pts[0].y = 120D;
+                pts[0].scale = 0.33333333333333331D;
+                pts[1].x = 430D;
+                pts[1].y = 360D;
+                pts[1].scale = 0.33333333333333331D;
+                pts[2].x = 430D;
+                pts[2].y = 120D;
+                pts[2].scale = 0.33333333333333331D;
+                pts[3].x = 190D;
+                pts[3].y = 360D;
+                pts[3].scale = 0.33333333333333331D;
+                pts[4].x = 310D;
+                pts[4].y = 120D;
+                pts[4].scale = 0.33333333333333331D;
+                pts[5].x = 310D;
+                pts[5].y = 360D;
+                pts[5].scale = 0.33333333333333331D;
+                pts[6].x = 190D;
+                pts[6].y = 240D;
+                pts[6].scale = 0.33333333333333331D;
+                pts[7].x = 430D;
+                pts[7].y = 240D;
+                pts[7].scale = 0.33333333333333331D;
+                break;
+
+            case 4: // '\004'
+                pointsInUse = 2;
+                pts[0].x = 430D;
+                pts[0].y = 240D;
+                pts[0].scale = 0.33333333333333331D;
+                pts[1].x = 190D;
+                pts[1].y = 240D;
+                pts[1].scale = 0.33333333333333331D;
+                break;
+
+            case 5: // '\005'
+                pointsInUse = 7;
+                pts[0].x = Math.cos(0.0D) * 100D + (double)(1024 / 2);
+                pts[0].y = Math.sin(0.0D) * 100D + (double)(1024 / 2);
+                pts[0].scale = 0.33333333333333331D;
+                pts[1].x = Math.cos((60D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
+                pts[1].y = Math.sin((60D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
+                pts[1].scale = 0.33333333333333331D;
+                pts[2].x = Math.cos((120D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
+                pts[2].y = Math.sin((120D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
+                pts[2].scale = 0.33333333333333331D;
+                pts[3].x = Math.cos((180D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
+                pts[3].y = Math.sin((180D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
+                pts[3].scale = 0.33333333333333331D;
+                pts[4].x = Math.cos((240D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
+                pts[4].y = Math.sin((240D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
+                pts[4].scale = 0.33333333333333331D;
+                pts[5].x = Math.cos((300D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
+                pts[5].y = Math.sin((300D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
+                pts[5].scale = 0.33333333333333331D;
+                pts[6].x = 1024 / 2;
+                pts[6].y = 1024 / 2;
+                pts[6].scale = 0.33333333333333331D;
+                break;
+            case 6: // '\007'
+                pointsInUse = 5;
+                pts[0].x = 320D;
+                pts[0].y = 240D;
+                pts[0].scale = 0.33333333333333331D;
+                pts[1].x = 190D;
+                pts[1].y = 240D;
+                pts[1].scale = 0.33333333333333331D;
+                pts[2].x = 450D;
+                pts[2].y = 240D;
+                pts[2].scale = 0.33333333333333331D;
+                pts[3].x = 320D;
+                pts[3].y = 370D;
+                pts[3].scale = 0.33333333333333331D;
+                pts[4].x = 320D;
+                pts[4].y = 110D;
+                pts[4].scale = 0.33333333333333331D;
+                break;
         }
+
         updateCenterOnce();
     }
 
