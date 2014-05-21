@@ -57,6 +57,9 @@ public class ifsys extends Panel
         int mouseScroll;
 
     ifsShape shape;
+    double shapeArea;
+    double shapeAreaDelta;
+
     int maxPoints;
     int maxLineLength;
 
@@ -232,6 +235,10 @@ public class ifsys extends Panel
             rg.drawString("Expected Done %" + String.valueOf((int)Math.min(100*samplesThisFrame/samplesNeeded/Math.E, 100)), 5, 135); //TODO is dividing by E the right thing to do here?
             rg.drawString("FPS " + String.valueOf(fps), 5, 150);
             rg.drawString("Gamma " + String.valueOf(gamma), 5, 165);
+
+            rg.drawString("Area " + String.valueOf((int)shapeArea), 5, 195);
+            rg.drawString("AreaDelta " + String.valueOf((int)shapeAreaDelta), 5, 210);
+            rg.drawString("DataMax " + String.valueOf((int)dataMax), 5, 225);
         }
 
         gr.drawImage(render, 0, 0, screenwidth, screenheight, this);
@@ -239,6 +246,7 @@ public class ifsys extends Panel
 
     public void generatePixels(){
         double scaler = 255/dataMax;
+        double area = 0;
         int scaledColor = 0;
 
         if(invertColors){
@@ -249,6 +257,7 @@ public class ifsys extends Panel
                 argb = (argb << 8) + scaledColor;
                 argb = (argb << 8) + scaledColor;
                 pixels[a] = argb;
+                area+=scaler*pixelsData[a];
             }
         }else{
             for(int a = 0; a < screenwidth * screenheight; a++){
@@ -258,8 +267,12 @@ public class ifsys extends Panel
                 argb = (argb << 8) + scaledColor;
                 argb = (argb << 8) + scaledColor;
                 pixels[a] = argb;
+                area+=scaler*pixelsData[a];
             }
         }
+
+        shapeAreaDelta = area - shapeArea;
+        shapeArea = area;
     }
 
     public void clearframe(){
