@@ -216,8 +216,8 @@ public class ifsys extends Panel
                                                     (int)(thePt.y + Math.cos(thePt.degrees-thePt.rotation)*thePt.scale*thePt.radius));
             if(!centerHidden){
                 rg.setColor(Color.blue);
-                rg.drawLine((int)shape.centerx, (int)shape.centery, (int)(shape.centerx + Math.sin(thePt.degrees)*thePt.radius),
-                                                                    (int)(shape.centery + Math.cos(thePt.degrees)*thePt.radius));
+                rg.drawLine((int)shape.centerx, (int)shape.centery, (int)(shape.centerx + Math.sin(thePt.degrees)*thePt.radius*thePt.scale),
+                                                                    (int)(shape.centery + Math.cos(thePt.degrees)*thePt.radius*thePt.scale));
             }
         }
 
@@ -715,6 +715,10 @@ public class ifsys extends Panel
             infoHidden = !infoHidden;
         if(e.getKeyChar() == 'g')
             guidesHidden = !guidesHidden;
+        if(e.getKeyChar() == 'b'){
+            shape.autoScale = !shape.autoScale;
+            shape.updateCenter();
+        }
         if(e.getKeyChar() == 'p')
             ptsHidden = !ptsHidden;
         if(e.getKeyChar() == 'v')
