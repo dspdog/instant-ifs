@@ -1,4 +1,5 @@
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.MemoryImageSource;
@@ -132,10 +133,34 @@ public class ifsys extends Panel
         is.init();
         f.setSize(is.screenwidth, is.screenheight + 20); // add 20, seems enough for the Frame title,
         f.show();
+
+        MenuBar menuBar;
+        Menu fileMenu, renderMenu, shapeMenu, guidesMenu, viewMenu;
+        //MenuItem menuItem;
+        //CheckboxMenuItem cb;
+
+        menuBar = new MenuBar();
+        fileMenu = new Menu("File");
+        renderMenu = new Menu("Render");
+        shapeMenu = new Menu("Shape");
+        guidesMenu = new Menu("Guides");
+        viewMenu = new Menu("View");
+
+        //menuItem = new MenuItem("ok");
+        //cb = new CheckboxMenuItem("ok2");
+        //menu.add(menuItem);
+        //menu.add(cb);
+
+        menuBar.add(fileMenu);
+        menuBar.add(renderMenu);
+        menuBar.add(shapeMenu);
+        menuBar.add(guidesMenu);
+        menuBar.add(viewMenu);
+
+        f.setMenuBar(menuBar);
     }
 
     public void init() {
-       // add(new Button("Real's"));
         start();
     }
 
