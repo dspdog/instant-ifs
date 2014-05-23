@@ -7,7 +7,8 @@ import java.awt.image.PixelGrabber;
 import java.net.URL;
 
 public class ifsys extends Panel
-    implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener
+    implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener, ActionListener,
+        ItemListener
 {
     mainthread game;
     boolean quit;
@@ -136,8 +137,6 @@ public class ifsys extends Panel
 
         MenuBar menuBar;
         Menu fileMenu, renderMenu, shapeMenu, guidesMenu, viewMenu;
-        //MenuItem menuItem;
-        //CheckboxMenuItem cb;
 
         menuBar = new MenuBar();
         fileMenu = new Menu("File");
@@ -146,10 +145,68 @@ public class ifsys extends Panel
         guidesMenu = new Menu("Guides");
         viewMenu = new Menu("View");
 
-        //menuItem = new MenuItem("ok");
-        //cb = new CheckboxMenuItem("ok2");
-        //menu.add(menuItem);
-        //menu.add(cb);
+        //RENDER MENU
+            CheckboxMenuItem aaButton = new CheckboxMenuItem("Anti-Aliasing"); //anti-aliasing toggle
+            aaButton.setState(is.antiAliasing);
+            aaButton.addItemListener(is);
+            renderMenu.add(aaButton);
+
+            CheckboxMenuItem inButton = new CheckboxMenuItem("Invert"); //invert toggle
+            inButton.setState(is.invertColors);
+            inButton.addItemListener(is);
+            renderMenu.add(inButton);
+
+        //SHAPE MENU
+            CheckboxMenuItem autoScaleButton = new CheckboxMenuItem("AutoScale Points"); //autoscale toggle
+            autoScaleButton.setState(is.shape.autoScale);
+            autoScaleButton.addItemListener(is);
+            shapeMenu.add(autoScaleButton);
+
+            CheckboxMenuItem imgButton = new CheckboxMenuItem("Img Samples"); //img samples toggle
+            imgButton.setState(is.imgSamples);
+            imgButton.addItemListener(is);
+            shapeMenu.add(imgButton);
+
+            CheckboxMenuItem leavesButton = new CheckboxMenuItem("Leaves"); //leaves toggle
+            leavesButton.setState(!is.leavesHidden);
+            leavesButton.addItemListener(is);
+            shapeMenu.add(leavesButton);
+
+            CheckboxMenuItem spokesButton = new CheckboxMenuItem("Spokes"); //spokes toggle
+            spokesButton.setState(!is.spokesHidden);
+            spokesButton.addItemListener(is);
+            shapeMenu.add(spokesButton);
+
+            CheckboxMenuItem framesButton = new CheckboxMenuItem("Frames"); //frames toggle
+            framesButton.setState(!is.framesHidden);
+            framesButton.addItemListener(is);
+            shapeMenu.add(framesButton);
+
+            CheckboxMenuItem trailsButton = new CheckboxMenuItem("Point Trails"); //trails toggle
+            trailsButton.setState(!is.trailsHidden);
+            trailsButton.addItemListener(is);
+            shapeMenu.add(trailsButton);
+
+        //GUIDES MENU
+            CheckboxMenuItem infoButton = new CheckboxMenuItem("Info Box"); //info box toggle
+            infoButton.setState(!is.infoHidden);
+            infoButton.addItemListener(is);
+            guidesMenu.add(infoButton);
+
+            CheckboxMenuItem guidesButton = new CheckboxMenuItem("Scale Markers"); //scale markers toggle
+            guidesButton.setState(!is.guidesHidden);
+            guidesButton.addItemListener(is);
+            guidesMenu.add(guidesButton);
+
+            CheckboxMenuItem centerButton = new CheckboxMenuItem("Center"); //center view toggle
+            centerButton.setState(!is.centerHidden);
+            centerButton.addItemListener(is);
+            guidesMenu.add(centerButton);
+
+            CheckboxMenuItem ptButton = new CheckboxMenuItem("Point Markers"); //center view toggle
+            ptButton.setState(!is.ptsHidden);
+            ptButton.addItemListener(is);
+            guidesMenu.add(ptButton);
 
         menuBar.add(fileMenu);
         menuBar.add(renderMenu);
@@ -168,6 +225,33 @@ public class ifsys extends Panel
     public void findSelectedPoint(){
         pointselected = shape.getNearestPtIndex(mousex, mousey);
         selectedPt = shape.pts[pointselected];
+    }
+
+    public void actionPerformed(ActionEvent e) {
+
+    }
+
+    public void itemStateChanged(ItemEvent e) {
+        //RENDER MENU
+            if(e.getItem()=="Anti-Aliasing"){
+                antiAliasing = e.getStateChange()==1;
+            }
+            if(e.getItem()=="Invert"){
+                invertColors = e.getStateChange()==1;
+            }
+        //GUIDES MENU
+            if(e.getItem()=="Info Box"){
+                infoHidden = e.getStateChange()==2;
+            }
+            if(e.getItem()=="Scale Markers"){
+                guidesHidden = e.getStateChange()==2;
+            }
+            if(e.getItem()=="Center"){
+                centerHidden = e.getStateChange()==2;
+            }
+            if(e.getItem()=="Point Markers"){
+                ptsHidden = e.getStateChange()==2;
+            }
     }
 
     public class mainthread extends Thread{
@@ -722,32 +806,32 @@ public class ifsys extends Panel
             iterations++;
         if(e.getKeyChar() == '.' && iterations > 1)
             iterations--;
-        if(e.getKeyChar() == 'a')
-            antiAliasing = !antiAliasing;
+        //if(e.getKeyChar() == 'a')
+        //    antiAliasing = !antiAliasing;
         if(e.getKeyChar() == 'l')
             leavesHidden = !leavesHidden;
         if(e.getKeyChar() == 's')
             spokesHidden = !spokesHidden;
-        if(e.getKeyChar() == 'c')
-            centerHidden = !centerHidden;
+        //if(e.getKeyChar() == 'c')
+        //    centerHidden = !centerHidden;
         if(e.getKeyChar() == 'f')
             framesHidden = !framesHidden;
         if(e.getKeyChar() == 'q')
             imgSamples = !imgSamples;
         if(e.getKeyChar() == 't')
             trailsHidden = !trailsHidden;
-        if(e.getKeyChar() == 'i')
-            infoHidden = !infoHidden;
-        if(e.getKeyChar() == 'g')
-            guidesHidden = !guidesHidden;
+        //if(e.getKeyChar() == 'i')
+        //    infoHidden = !infoHidden;
+        //if(e.getKeyChar() == 'g')
+        //    guidesHidden = !guidesHidden;
         if(e.getKeyChar() == 'b'){
             shape.autoScale = !shape.autoScale;
             shape.updateCenter();
         }
-        if(e.getKeyChar() == 'p')
-            ptsHidden = !ptsHidden;
-        if(e.getKeyChar() == 'v')
-            invertColors = !invertColors;
+        //if(e.getKeyChar() == 'p')
+        //    ptsHidden = !ptsHidden;
+        //if(e.getKeyChar() == 'v')
+        //    invertColors = !invertColors;
         if(e.getKeyChar() == 'm')
             sampletotal += 100;
         if(e.getKeyChar() == 'n' && sampletotal > 1)
@@ -767,8 +851,8 @@ public class ifsys extends Panel
             shape.setToPreset(6);
 
 
-        clearframe();
-        gamefunc();
+        //clearframe();
+        //gamefunc();
     }
 
     public void focusGained(FocusEvent focusevent){}

@@ -72,7 +72,7 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="135" column="0" selection-start="3503" selection-end="3503" vertical-scroll-proportion="-0.061564058" vertical-offset="2264" max-vertical-offset="13226">
+            <state line="146" column="0" selection-start="3864" selection-end="3864" vertical-scroll-proportion="-0.2296173" vertical-offset="2552" max-vertical-offset="14654">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -121,8 +121,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="393" />
-    <option name="y" value="73" />
+    <option name="x" value="558" />
+    <option name="y" value="37" />
     <option name="width" value="975" />
     <option name="height" value="967" />
   </component>
@@ -445,7 +445,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="393" y="73" width="975" height="967" extended-state="0" />
+    <frame x="558" y="37" width="975" height="967" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -519,13 +519,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/ifsShape.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="57" column="28" selection-start="1606" selection-end="1655" vertical-scroll-proportion="0.0" vertical-offset="969" max-vertical-offset="2227">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="275" column="48" selection-start="9987" selection-end="9987" vertical-scroll-proportion="0.0" vertical-offset="4149" max-vertical-offset="11033">
@@ -897,9 +890,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.7.0_51/src.zip!/java/awt/event/ItemListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="46" column="17" selection-start="914" selection-end="914" vertical-scroll-proportion="0.5593705" vertical-offset="0" max-vertical-offset="699">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="135" column="0" selection-start="3503" selection-end="3503" vertical-scroll-proportion="-0.061564058" vertical-offset="2264" max-vertical-offset="13226">
+        <state line="146" column="0" selection-start="3864" selection-end="3864" vertical-scroll-proportion="-0.2296173" vertical-offset="2552" max-vertical-offset="14654">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
