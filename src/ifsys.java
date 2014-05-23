@@ -252,6 +252,25 @@ public class ifsys extends Panel
             if(e.getItem()=="Point Markers"){
                 ptsHidden = e.getStateChange()==2;
             }
+        //SHAPE MENU
+            if(e.getItem()=="AutoScale Points"){
+                shape.autoScale = e.getStateChange()==1;
+            }
+            if(e.getItem()=="Img Samples"){
+                imgSamples = e.getStateChange()==1;
+            }
+            if(e.getItem()=="Leaves"){
+                leavesHidden = e.getStateChange()==2;
+            }
+            if(e.getItem()=="Frames"){
+                framesHidden = e.getStateChange()==2;
+            }
+            if(e.getItem()=="Spokes"){
+                spokesHidden = e.getStateChange()==2;
+            }
+            if(e.getItem()=="Point Trails"){
+                spokesHidden = e.getStateChange()==2;
+            }
     }
 
     public class mainthread extends Thread{
@@ -808,26 +827,26 @@ public class ifsys extends Panel
             iterations--;
         //if(e.getKeyChar() == 'a')
         //    antiAliasing = !antiAliasing;
-        if(e.getKeyChar() == 'l')
-            leavesHidden = !leavesHidden;
-        if(e.getKeyChar() == 's')
-            spokesHidden = !spokesHidden;
+        //if(e.getKeyChar() == 'l')
+        //    leavesHidden = !leavesHidden;
+        //if(e.getKeyChar() == 's')
+        //    spokesHidden = !spokesHidden;
         //if(e.getKeyChar() == 'c')
         //    centerHidden = !centerHidden;
-        if(e.getKeyChar() == 'f')
-            framesHidden = !framesHidden;
-        if(e.getKeyChar() == 'q')
-            imgSamples = !imgSamples;
-        if(e.getKeyChar() == 't')
-            trailsHidden = !trailsHidden;
+        //if(e.getKeyChar() == 'f')
+        //    framesHidden = !framesHidden;
+        //if(e.getKeyChar() == 'q')
+        //    imgSamples = !imgSamples;
+        //if(e.getKeyChar() == 't')
+        //    trailsHidden = !trailsHidden;
         //if(e.getKeyChar() == 'i')
         //    infoHidden = !infoHidden;
         //if(e.getKeyChar() == 'g')
         //    guidesHidden = !guidesHidden;
-        if(e.getKeyChar() == 'b'){
-            shape.autoScale = !shape.autoScale;
-            shape.updateCenter();
-        }
+        //if(e.getKeyChar() == 'b'){
+        //    shape.autoScale = !shape.autoScale;
+        //    shape.updateCenter();
+        //}
         //if(e.getKeyChar() == 'p')
         //    ptsHidden = !ptsHidden;
         //if(e.getKeyChar() == 'v')

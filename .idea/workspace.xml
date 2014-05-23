@@ -72,7 +72,7 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="146" column="0" selection-start="3864" selection-end="3864" vertical-scroll-proportion="-0.2296173" vertical-offset="2552" max-vertical-offset="14654">
+            <state line="827" column="35" selection-start="31252" selection-end="31252" vertical-scroll-proportion="0.9850249" vertical-offset="13399" max-vertical-offset="14977">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -121,8 +121,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="558" />
-    <option name="y" value="37" />
+    <option name="x" value="419" />
+    <option name="y" value="54" />
     <option name="width" value="975" />
     <option name="height" value="967" />
   </component>
@@ -445,7 +445,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="558" y="37" width="975" height="967" extended-state="0" />
+    <frame x="419" y="54" width="975" height="967" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -899,7 +899,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="146" column="0" selection-start="3864" selection-end="3864" vertical-scroll-proportion="-0.2296173" vertical-offset="2552" max-vertical-offset="14654">
+        <state line="827" column="35" selection-start="31252" selection-end="31252" vertical-scroll-proportion="0.9850249" vertical-offset="13399" max-vertical-offset="14977">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
