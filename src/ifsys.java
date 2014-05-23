@@ -821,36 +821,12 @@ public class ifsys extends Panel
             ctrlDown=false;
         if(e.getKeyCode()==KeyEvent.VK_SHIFT)
             shiftDown=false;
+
         if(e.getKeyChar() == '/')
             iterations++;
         if(e.getKeyChar() == '.' && iterations > 1)
             iterations--;
-        //if(e.getKeyChar() == 'a')
-        //    antiAliasing = !antiAliasing;
-        //if(e.getKeyChar() == 'l')
-        //    leavesHidden = !leavesHidden;
-        //if(e.getKeyChar() == 's')
-        //    spokesHidden = !spokesHidden;
-        //if(e.getKeyChar() == 'c')
-        //    centerHidden = !centerHidden;
-        //if(e.getKeyChar() == 'f')
-        //    framesHidden = !framesHidden;
-        //if(e.getKeyChar() == 'q')
-        //    imgSamples = !imgSamples;
-        //if(e.getKeyChar() == 't')
-        //    trailsHidden = !trailsHidden;
-        //if(e.getKeyChar() == 'i')
-        //    infoHidden = !infoHidden;
-        //if(e.getKeyChar() == 'g')
-        //    guidesHidden = !guidesHidden;
-        //if(e.getKeyChar() == 'b'){
-        //    shape.autoScale = !shape.autoScale;
-        //    shape.updateCenter();
-        //}
-        //if(e.getKeyChar() == 'p')
-        //    ptsHidden = !ptsHidden;
-        //if(e.getKeyChar() == 'v')
-        //    invertColors = !invertColors;
+
         if(e.getKeyChar() == 'm')
             sampletotal += 100;
         if(e.getKeyChar() == 'n' && sampletotal > 1)
@@ -868,10 +844,6 @@ public class ifsys extends Panel
             shape.setToPreset(5);
         if(e.getKeyChar() == '6')
             shape.setToPreset(6);
-
-
-        //clearframe();
-        //gamefunc();
     }
 
     public void focusGained(FocusEvent focusevent){}
