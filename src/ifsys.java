@@ -44,7 +44,6 @@ public class ifsys extends Panel
         boolean infoHidden;
         boolean imgSamples;
         boolean guidesHidden;
-        boolean ptsHidden;
         boolean invertColors;
         int sampletotal;
         int iterations;
@@ -100,7 +99,6 @@ public class ifsys extends Panel
         infoHidden = false;
         imgSamples = true;
         guidesHidden = false;
-        ptsHidden = false;
         invertColors = false;
         screenwidth = 1024;
         screenheight = 1024;
@@ -203,11 +201,6 @@ public class ifsys extends Panel
             centerButton.addItemListener(is);
             guidesMenu.add(centerButton);
 
-            CheckboxMenuItem ptButton = new CheckboxMenuItem("Point Markers"); //center view toggle
-            ptButton.setState(!is.ptsHidden);
-            ptButton.addItemListener(is);
-            guidesMenu.add(ptButton);
-
         menuBar.add(fileMenu);
         menuBar.add(renderMenu);
         menuBar.add(shapeMenu);
@@ -248,9 +241,6 @@ public class ifsys extends Panel
             }
             if(e.getItem()=="Center"){
                 centerHidden = e.getStateChange()==2;
-            }
-            if(e.getItem()=="Point Markers"){
-                ptsHidden = e.getStateChange()==2;
             }
         //SHAPE MENU
             if(e.getItem()=="AutoScale Points"){
@@ -335,11 +325,17 @@ public class ifsys extends Panel
             if(i==pointselected){
                 rg.setColor(Color.LIGHT_GRAY);
             }else{
-                rg.setColor(Color.darkGray);
+                if(i==0){
+                    rg.setColor(Color.BLUE);
+                }else{
+                    rg.setColor(Color.darkGray);
+                }
+
             }
             thePt = shape.pts[i];
             circleWidth = (int)(thePt.scale*thePt.radius*2);
             rg.drawOval((int)thePt.x-circleWidth/2, (int)thePt.y-circleWidth/2, circleWidth, circleWidth);
+
             rg.drawLine((int)thePt.x, (int)thePt.y, (int)(thePt.x + Math.sin(thePt.degrees-thePt.rotation)*thePt.scale*thePt.radius),
                                                     (int)(thePt.y + Math.cos(thePt.degrees-thePt.rotation)*thePt.scale*thePt.radius));
             if(!centerHidden){
@@ -545,7 +541,7 @@ public class ifsys extends Panel
 
             for(int a = 0; a < sampletotal; a++){
                 int randomIndex = 0;
-                int nextIndex;
+                int nextIndex=0;
                 double dx = shape.pts[randomIndex].x;
                 double dy = shape.pts[randomIndex].y;
                 double ndx;
@@ -561,19 +557,22 @@ public class ifsys extends Panel
                 double scaleDownMultiplier = Math.pow(shape.pointsInUse,iterations-1); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
 
                // double centerScale = shape.pts[0].scale;
-                double centerRadius =100;
+                //double centerRadius =100;
 
                 for(int d = 0; d < iterations; d++){
                     scaleDownMultiplier/=shape.pointsInUse;
 
                     randomIndex = 1 + (int)(Math.random() * (double) (shape.pointsInUse-1));
+
                     if(d==0){randomIndex=0;}
-                    nextIndex = (randomIndex+1)%shape.pointsInUse;
+                    else{
+                        nextIndex = 1 + (randomIndex+1)%(shape.pointsInUse-1);
 
-                    nextCumulativeScale = cumulativeScale*shape.pts[nextIndex].scale;
-                    nextCumulativeRotation = cumulativeRotation + shape.pts[nextIndex].rotation;
+                        nextCumulativeScale = cumulativeScale*shape.pts[nextIndex].scale;
+                        nextCumulativeRotation = cumulativeRotation + shape.pts[nextIndex].rotation;
+                    }
 
-                    cumulativeScale *= shape.pts[randomIndex].scale;
+                    cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;
                     cumulativeRotation += shape.pts[randomIndex].rotation;
                     cumulativeOpacity *= shape.pts[randomIndex].opacity;
 
@@ -582,10 +581,9 @@ public class ifsys extends Panel
                     if(d!=0){
                         dx += Math.cos((Math.PI/2D - shape.pts[randomIndex].degrees) + cumulativeRotation) * shape.pts[randomIndex].radius * cumulativeScale;
                         dy += Math.sin((Math.PI/2D - shape.pts[randomIndex].degrees) + cumulativeRotation) * shape.pts[randomIndex].radius * cumulativeScale;
-
                     }
 
-                    if(!framesHidden){
+                    if(!framesHidden && d!=0){
                         ndx = _dx + Math.cos((Math.PI/2D - shape.pts[nextIndex].degrees) + nextCumulativeRotation) * shape.pts[nextIndex].radius * nextCumulativeScale;
                         ndy = _dy + Math.sin((Math.PI/2D - shape.pts[nextIndex].degrees) + nextCumulativeRotation) * shape.pts[nextIndex].radius * nextCumulativeScale;
 
@@ -600,14 +598,6 @@ public class ifsys extends Panel
                 }
                 if(!leavesHidden)
                     putPixel(dx, dy, cumulativeOpacity);
-            }
-
-            if(!ptsHidden){
-                for(int a = 1; a < shape.pointsInUse; a++){
-                   drawPtDot(a);
-                }
-                if(!centerHidden || ctrlDown || shiftDown)
-                    drawPtDot(0);
             }
         }
     }

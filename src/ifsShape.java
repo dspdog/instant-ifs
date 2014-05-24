@@ -116,7 +116,7 @@ class ifsShape{
             case 1: // '\001'
 
                 pointsInUse = 4;
-                pts[0].scale = 2;
+                pts[0].scale = 1.0;
                 pts[1].x = 320D;
                 pts[1].y = 160D;
                 pts[1].scale = 0.5D;
