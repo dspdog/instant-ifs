@@ -552,18 +552,22 @@ public class ifsys extends Panel
                 double ndy;
                 double _dx;
                 double _dy;
-                double cumulativeScale = shape.pts[randomIndex].scale;
+                double cumulativeScale = 1.0; //shape.pts[randomIndex].scale;
                 double nextCumulativeScale = 1.0D;
-                double cumulativeRotation = shape.pts[randomIndex].rotation;
-                double nextCumulativeRotation = shape.pts[randomIndex].rotation;
-                double cumulativeOpacity = shape.pts[randomIndex].opacity;
+                double cumulativeRotation = 0; //shape.pts[randomIndex].rotation;
+                double nextCumulativeRotation = 0; //shape.pts[randomIndex].rotation;
+                double cumulativeOpacity = 1; //shape.pts[randomIndex].opacity;
 
                 double scaleDownMultiplier = Math.pow(shape.pointsInUse,iterations-1); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
+
+               // double centerScale = shape.pts[0].scale;
+                double centerRadius =100;
 
                 for(int d = 0; d < iterations; d++){
                     scaleDownMultiplier/=shape.pointsInUse;
 
                     randomIndex = 1 + (int)(Math.random() * (double) (shape.pointsInUse-1));
+                    if(d==0){randomIndex=0;}
                     nextIndex = (randomIndex+1)%shape.pointsInUse;
 
                     nextCumulativeScale = cumulativeScale*shape.pts[nextIndex].scale;
@@ -575,8 +579,11 @@ public class ifsys extends Panel
 
                     _dx = dx;
                     _dy = dy;
-                    dx += Math.cos((Math.PI/2D - shape.pts[randomIndex].degrees) + cumulativeRotation) * shape.pts[randomIndex].radius * cumulativeScale;
-                    dy += Math.sin((Math.PI/2D - shape.pts[randomIndex].degrees) + cumulativeRotation) * shape.pts[randomIndex].radius * cumulativeScale;
+                    if(d!=0){
+                        dx += Math.cos((Math.PI/2D - shape.pts[randomIndex].degrees) + cumulativeRotation) * shape.pts[randomIndex].radius * cumulativeScale;
+                        dy += Math.sin((Math.PI/2D - shape.pts[randomIndex].degrees) + cumulativeRotation) * shape.pts[randomIndex].radius * cumulativeScale;
+
+                    }
 
                     if(!framesHidden){
                         ndx = _dx + Math.cos((Math.PI/2D - shape.pts[nextIndex].degrees) + nextCumulativeRotation) * shape.pts[nextIndex].radius * nextCumulativeScale;

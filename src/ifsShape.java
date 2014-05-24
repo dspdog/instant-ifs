@@ -61,7 +61,7 @@ class ifsShape{
 
         for(int a = 1; a < pointsInUse; a++){
             pts[a].degrees = Math.atan2(pts[a].x - pts[0].x, pts[a].y - pts[0].y);
-            pts[a].radius = autoScale ? distance(pts[a].x - pts[0].x, pts[a].y - pts[0].y) : 100;
+            pts[a].radius = autoScale ? distance(pts[a].x - pts[0].x, pts[a].y - pts[0].y) : pts[0].radius;
         }
     }
 
@@ -114,7 +114,9 @@ class ifsShape{
     public void setToPreset(int preset){
         switch(preset){
             case 1: // '\001'
+
                 pointsInUse = 4;
+                pts[0].scale = 2;
                 pts[1].x = 320D;
                 pts[1].y = 160D;
                 pts[1].scale = 0.5D;
