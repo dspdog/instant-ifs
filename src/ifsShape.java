@@ -1,6 +1,8 @@
 class ifsShape{
     public ifsPt pts[];
-   //public double _centerx, _centery, _offsetx, _offsety;
+
+    public double unitScale;
+
     public int pointsInUse;
     public boolean autoUpdateCenterEnabled;
     public boolean stateSaved;
@@ -11,6 +13,7 @@ class ifsShape{
         autoUpdateCenterEnabled =false;
         stateSaved = false;
         pointsInUse = 1;
+        unitScale = 115.47005383792515; //distance from center to one of the points in preset #1
         autoScale = true;
         pts = new ifsPt[maxPoints];
         for(int a=0; a< maxPoints; a++){
@@ -57,7 +60,7 @@ class ifsShape{
     void updateRadiusDegrees(){
 
         pts[0].degrees = 0;
-        pts[0].radius = 100;
+        pts[0].radius = unitScale;
 
         for(int a = 1; a < pointsInUse; a++){
             pts[a].degrees = Math.atan2(pts[a].x - pts[0].x, pts[a].y - pts[0].y);

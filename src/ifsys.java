@@ -104,7 +104,7 @@ public class ifsys extends Panel
         pixels = new int[screenwidth * screenheight];
         samplePixels = new int[screenwidth * screenheight];
         pixelsData = new double[screenwidth * screenheight];
-        sampletotal = 4096;
+        sampletotal = 512;
         iterations = 8;
         mousemode = 0;
         samplesNeeded = 1;
@@ -547,8 +547,6 @@ public class ifsys extends Panel
 
                 double scaleDownMultiplier = Math.pow(shape.pointsInUse,iterations-1); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
 
-                double upscale=1;
-
                // double centerScale = shape.pts[0].scale;
                 //double centerRadius =100;
 
@@ -565,22 +563,16 @@ public class ifsys extends Panel
                         nextCumulativeRotation = cumulativeRotation + shape.pts[nextIndex].rotation;
                     }
 
-                    cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;
-                    cumulativeRotation += shape.pts[randomIndex].rotation;
-                    cumulativeOpacity *= shape.pts[randomIndex].opacity;
-
-                    upscale = shape.pts[0].scale/shape.pts[randomIndex].scale;
-
                     _dx = dx;
                     _dy = dy;
                     if(d!=0){
-                        dx += Math.cos((Math.PI/2D - shape.pts[randomIndex].degrees) + cumulativeRotation) * shape.pts[randomIndex].radius*upscale * cumulativeScale;
-                        dy += Math.sin((Math.PI/2D - shape.pts[randomIndex].degrees) + cumulativeRotation) * shape.pts[randomIndex].radius*upscale * cumulativeScale;
+                        dx += Math.cos((Math.PI/2D - shape.pts[randomIndex].degrees) + cumulativeRotation) * shape.pts[randomIndex].radius * cumulativeScale;
+                        dy += Math.sin((Math.PI/2D - shape.pts[randomIndex].degrees) + cumulativeRotation) * shape.pts[randomIndex].radius * cumulativeScale;
                     }
 
                     if(!framesHidden && d!=0){
-                        ndx = _dx + Math.cos((Math.PI/2D - shape.pts[nextIndex].degrees) + nextCumulativeRotation) * shape.pts[nextIndex].radius*upscale * nextCumulativeScale;
-                        ndy = _dy + Math.sin((Math.PI/2D - shape.pts[nextIndex].degrees) + nextCumulativeRotation) * shape.pts[nextIndex].radius*upscale * nextCumulativeScale;
+                        ndx = _dx + Math.cos((Math.PI/2D - shape.pts[nextIndex].degrees) + nextCumulativeRotation) * shape.pts[nextIndex].radius * nextCumulativeScale;
+                        ndy = _dy + Math.sin((Math.PI/2D - shape.pts[nextIndex].degrees) + nextCumulativeRotation) * shape.pts[nextIndex].radius * nextCumulativeScale;
 
                         putLine(dx, dy, ndx, ndy, cumulativeOpacity/scaleDownMultiplier); //TODO proper transparent lines?
                     }
@@ -590,6 +582,10 @@ public class ifsys extends Panel
                         putLine(_dx, _dy, dx, dy, cumulativeOpacity/scaleDownMultiplier);
                     if(imgSamples)
                         putImgSample(dx, dy, cumulativeRotation, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier);
+                    cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;
+                    cumulativeRotation += shape.pts[randomIndex].rotation;
+                    cumulativeOpacity *= shape.pts[randomIndex].opacity;
+
                 }
                 if(!leavesHidden)
                     putPixel(dx, dy, cumulativeOpacity);
@@ -669,20 +665,8 @@ public class ifsys extends Panel
     public void mouseDragged(MouseEvent e){
         if(mousemode == 1){ //left click to move a point/set
             setCursor (Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-            if(ctrlDown){
-                for(int i=0; i<shape.pointsInUse; i++){
-                    shape.pts[i].x = shape.pts[i].savedx + (e.getX() - startDragX);
-                    shape.pts[i].y = shape.pts[i].savedy + (e.getY() - startDragY);
-                }
-                shape.pts[0].x = startDragPX + (e.getX() - startDragX);
-                shape.pts[0].y = startDragPY + (e.getY() - startDragY);
-            }else if(shiftDown){ //move the center
-                shape.pts[0].x = startDragPX + (e.getX() - startDragX);
-                shape.pts[0].y = startDragPY + (e.getY() - startDragY);
-            }else{ //move a single point
-                selectedPt.x = startDragPX + (e.getX() - startDragX);
-                selectedPt.y = startDragPY + (e.getY() - startDragY);
-            }
+            selectedPt.x = startDragPX + (e.getX() - startDragX);
+            selectedPt.y = startDragPY + (e.getY() - startDragY);
         }
         else if(mousemode == 3){ //right click to rotate point/set
             setCursor (Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
@@ -691,7 +675,7 @@ public class ifsys extends Panel
                 double rotationDelta = (Math.atan2(e.getX() - shape.pts[0].x , e.getY() - shape.pts[0].y )- startDragAngle);
                 double scaleDelta = shape.distance(e.getX() - shape.pts[0].x , e.getY() - shape.pts[0].y )/startDragDist;
 
-                for(int i=0; i<shape.pointsInUse; i++){
+                for(int i=1; i<shape.pointsInUse; i++){
                     shape.pts[i].x = shape.pts[0].x + scaleDelta * shape.pts[i].savedradius*Math.cos(Math.PI / 2 - shape.pts[i].saveddegrees - rotationDelta);
                     shape.pts[i].y = shape.pts[0].x + scaleDelta * shape.pts[i].savedradius*Math.sin(Math.PI / 2 - shape.pts[i].saveddegrees - rotationDelta);
                 }
@@ -699,7 +683,7 @@ public class ifsys extends Panel
                 double rotationDelta = (Math.atan2(e.getX() - shape.pts[0].x, e.getY() - shape.pts[0].y)- startDragAngle);
                 double scaleDelta = shape.distance(e.getX() - shape.pts[0].x, e.getY() - shape.pts[0].y)/startDragDist;
 
-                for(int i=0; i<shape.pointsInUse; i++){
+                for(int i=1; i<shape.pointsInUse; i++){
                     shape.pts[i].rotation = shape.pts[i].savedrotation + (Math.PI * 2 - rotationDelta);
                     shape.pts[i].scale = shape.pts[i].savedscale*scaleDelta;
                 }
