@@ -104,8 +104,8 @@ public class ifsys extends Panel
         pixels = new int[screenwidth * screenheight];
         samplePixels = new int[screenwidth * screenheight];
         pixelsData = new double[screenwidth * screenheight];
-        sampletotal = 1000;
-        iterations = 2;
+        sampletotal = 4096;
+        iterations = 8;
         mousemode = 0;
         samplesNeeded = 1;
         maxLineLength = screenwidth;
@@ -190,7 +190,7 @@ public class ifsys extends Panel
             infoButton.addItemListener(is);
             guidesMenu.add(infoButton);
 
-            CheckboxMenuItem guidesButton = new CheckboxMenuItem("Scale Markers"); //scale markers toggle
+            CheckboxMenuItem guidesButton = new CheckboxMenuItem("Point Markers"); //scale markers toggle
             guidesButton.setState(!is.guidesHidden);
             guidesButton.addItemListener(is);
             guidesMenu.add(guidesButton);
@@ -206,6 +206,9 @@ public class ifsys extends Panel
 
     public void init() {
         start();
+        shape.updateCenter();
+        clearframe();
+        gamefunc();
     }
 
 
@@ -230,7 +233,7 @@ public class ifsys extends Panel
             if(e.getItem()=="Info Box"){
                 infoHidden = e.getStateChange()==2;
             }
-            if(e.getItem()=="Scale Markers"){
+            if(e.getItem()=="Point Markers"){
                 guidesHidden = e.getStateChange()==2;
             }
         //SHAPE MENU
@@ -815,9 +818,12 @@ public class ifsys extends Panel
             iterations--;
 
         if(e.getKeyChar() == 'm')
-            sampletotal += 100;
+            sampletotal *= 2;
         if(e.getKeyChar() == 'n' && sampletotal > 1)
-            sampletotal -= 100;
+            sampletotal /= 2;
+
+        if(sampletotal<2){sampletotal=2;}
+        if(sampletotal>32768){sampletotal=32768;}
 
         if(e.getKeyChar() == '1')
             shape.setToPreset(1);
