@@ -303,7 +303,7 @@ public class ifsys extends Panel
         clearframe();
         game.start();
         shape.setToPreset(1);
-        setSampleImg("meerkat.jpg");
+        setSampleImg("serp.jpg");
         started = true;
 
     }
@@ -344,8 +344,8 @@ public class ifsys extends Panel
                                                     (int)(thePt.y + Math.cos(thePt.degrees-thePt.rotation)*thePt.scale*thePt.radius));
             if(!centerHidden){
                 rg.setColor(Color.blue);
-                rg.drawLine((int)shape.centerx, (int)shape.centery, (int)(shape.centerx + Math.sin(thePt.degrees)*thePt.radius*thePt.scale),
-                                                                    (int)(shape.centery + Math.cos(thePt.degrees)*thePt.radius*thePt.scale));
+                rg.drawLine((int)shape.pts[0].x, (int)shape.pts[0].y, (int)(shape.pts[0].x + Math.sin(thePt.degrees)*thePt.radius*thePt.scale),
+                                                                      (int)(shape.pts[0].y + Math.cos(thePt.degrees)*thePt.radius*thePt.scale));
             }
         }
 
@@ -531,7 +531,7 @@ public class ifsys extends Panel
             if(!centerHidden){
                 if(!spokesHidden){ //center spokes
                     for(int a=0; a<shape.pointsInUse; a++){
-                        putLine(shape.centerx, shape.centery, shape.pts[a].x, shape.pts[a].y, shape.pts[a].opacity);
+                        putLine(shape.pts[0].x, shape.pts[0].y, shape.pts[a].x, shape.pts[a].y, shape.pts[a].opacity);
                     }
                 }
 
@@ -544,8 +544,8 @@ public class ifsys extends Panel
             }
 
             for(int a = 0; a < sampletotal; a++){
-                int randomIndex = (int)(Math.random() * (double) shape.pointsInUse);
-                int nextIndex = (randomIndex+1)%shape.pointsInUse;
+                int randomIndex = 1 + (int)(Math.random() * (double) (shape.pointsInUse-1));
+                int nextIndex;
                 double dx = shape.pts[randomIndex].x;
                 double dy = shape.pts[randomIndex].y;
                 double ndx;
@@ -563,7 +563,7 @@ public class ifsys extends Panel
                 for(int d = 0; d < iterations; d++){
                     scaleDownMultiplier/=shape.pointsInUse;
 
-                    randomIndex = (int)(Math.random() * (double) shape.pointsInUse);
+                    randomIndex = 1 + (int)(Math.random() * (double) (shape.pointsInUse-1));
                     nextIndex = (randomIndex+1)%shape.pointsInUse;
 
                     nextCumulativeScale = cumulativeScale*shape.pts[nextIndex].scale;
@@ -596,11 +596,11 @@ public class ifsys extends Panel
             }
 
             if(!ptsHidden){
-                for(int a = 0; a < shape.pointsInUse; a++){
+                for(int a = 1; a < shape.pointsInUse; a++){
                    drawPtDot(a);
                 }
                 if(!centerHidden || ctrlDown || shiftDown)
-                    drawPtDot(-1);
+                    drawPtDot(0);
             }
         }
     }
@@ -609,9 +609,9 @@ public class ifsys extends Panel
         int pointx1;
         int pointy1;
 
-        if(pointIndex==-1){//center pt
-            pointx1 = (int)shape.centerx;
-            pointy1 = (int)shape.centery;
+        if(pointIndex==0){//center pt
+            pointx1 = (int)shape.pts[0].x;
+            pointy1 = (int)shape.pts[0].y;
         }else{
             pointx1 = (int)shape.pts[pointIndex].x;
             pointy1 = (int)shape.pts[pointIndex].y;
@@ -646,7 +646,7 @@ public class ifsys extends Panel
     public Image loadImage(String name){
         try{
             //URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);file:/C:/Users/Labrats/Documents/GitHub/
-            URL theImgURL = new URL("file:/C:/Users/Labrats/Documents/GitHub/instant-ifs/img/" + name);
+            URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
             return ImageIO.read(theImgURL);
         }
         catch(Exception e) {
@@ -682,10 +682,10 @@ public class ifsys extends Panel
 
             if(ctrlDown || shiftDown){
                 shape.saveState();
-                startDragPX = shape.centerx;
-                startDragPY = shape.centery;
-                startDragDist = shape.distance(startDragX - shape.centerx, startDragY - shape.centery);
-                startDragAngle = 0 + Math.atan2(startDragX - shape.centerx, startDragY - shape.centery);
+                startDragPX = shape.pts[0].x;
+                startDragPY = shape.pts[0].y;
+                startDragDist = shape.distance(startDragX - shape.pts[0].x, startDragY - shape.pts[0].y);
+                startDragAngle = 0 + Math.atan2(startDragX - shape.pts[0].x, startDragY - shape.pts[0].y);
                 startDragScale = 1.0;
             }else{
                 startDragPX = selectedPt.x;
@@ -720,11 +720,11 @@ public class ifsys extends Panel
                     shape.pts[i].x = shape.pts[i].savedx + (e.getX() - startDragX);
                     shape.pts[i].y = shape.pts[i].savedy + (e.getY() - startDragY);
                 }
-                shape.centerx = startDragPX + (e.getX() - startDragX);
-                shape.centery = startDragPY + (e.getY() - startDragY);
+                shape.pts[0].x = startDragPX + (e.getX() - startDragX);
+                shape.pts[0].y = startDragPY + (e.getY() - startDragY);
             }else if(shiftDown){ //move the center
-                shape.centerx = startDragPX + (e.getX() - startDragX);
-                shape.centery = startDragPY + (e.getY() - startDragY);
+                shape.pts[0].x = startDragPX + (e.getX() - startDragX);
+                shape.pts[0].y = startDragPY + (e.getY() - startDragY);
             }else{ //move a single point
                 selectedPt.x = startDragPX + (e.getX() - startDragX);
                 selectedPt.y = startDragPY + (e.getY() - startDragY);
@@ -734,16 +734,16 @@ public class ifsys extends Panel
             setCursor (Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
 
             if(ctrlDown){ //rotate the set
-                double rotationDelta = (Math.atan2(e.getX() - shape.centerx , e.getY() - shape.centery )- startDragAngle);
-                double scaleDelta = shape.distance(e.getX() - shape.centerx , e.getY() - shape.centery )/startDragDist;
+                double rotationDelta = (Math.atan2(e.getX() - shape.pts[0].x , e.getY() - shape.pts[0].y )- startDragAngle);
+                double scaleDelta = shape.distance(e.getX() - shape.pts[0].x , e.getY() - shape.pts[0].y )/startDragDist;
 
                 for(int i=0; i<shape.pointsInUse; i++){
-                    shape.pts[i].x = shape.centerx + scaleDelta * shape.pts[i].savedradius*Math.cos(Math.PI / 2 - shape.pts[i].saveddegrees - rotationDelta);
-                    shape.pts[i].y = shape.centery + scaleDelta * shape.pts[i].savedradius*Math.sin(Math.PI / 2 - shape.pts[i].saveddegrees - rotationDelta);
+                    shape.pts[i].x = shape.pts[0].x + scaleDelta * shape.pts[i].savedradius*Math.cos(Math.PI / 2 - shape.pts[i].saveddegrees - rotationDelta);
+                    shape.pts[i].y = shape.pts[0].x + scaleDelta * shape.pts[i].savedradius*Math.sin(Math.PI / 2 - shape.pts[i].saveddegrees - rotationDelta);
                 }
             }else if(shiftDown){ //rotate all points in unison
-                double rotationDelta = (Math.atan2(e.getX() - shape.centerx, e.getY() - shape.centery)- startDragAngle);
-                double scaleDelta = shape.distance(e.getX() - shape.centerx, e.getY() - shape.centery)/startDragDist;
+                double rotationDelta = (Math.atan2(e.getX() - shape.pts[0].x, e.getY() - shape.pts[0].y)- startDragAngle);
+                double scaleDelta = shape.distance(e.getX() - shape.pts[0].x, e.getY() - shape.pts[0].y)/startDragDist;
 
                 for(int i=0; i<shape.pointsInUse; i++){
                     shape.pts[i].rotation = shape.pts[i].savedrotation + (Math.PI * 2 - rotationDelta);
