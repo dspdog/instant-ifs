@@ -36,7 +36,6 @@ public class ifsys extends Panel
 
     //user params
         boolean framesHidden;
-        boolean _centerHidden;
         boolean leavesHidden;
         boolean antiAliasing;
         boolean trailsHidden;
@@ -424,7 +423,8 @@ public class ifsys extends Panel
 
                 if(dataMax<pixelsData[(int)x + (int)y * screenwidth]/gamma){dataMax = pixelsData[(int)x + (int)y * screenwidth]/gamma;}
             }else{
-                pixelsData[(int)(x) + (int)(y) * screenwidth]=1;
+                if(alpha>0.49)
+                pixelsData[(int)(x) + (int)(y) * screenwidth]=Math.max(pixelsData[(int)(x) + (int)(y) * screenwidth], 1);
             }
 
             samplesThisFrame++;
@@ -475,17 +475,14 @@ public class ifsys extends Panel
         double exposureAdjust = cumulativeScale*thePt.scale*thePt.radius;
         double ptColor = getSampleValue(sampleX,  sampleY)*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
 
-        if(ptColor>0){
-            //rotate/scale the point
-            double pointDegrees = Math.atan2(sampleX - sampleWidth/2, sampleY - sampleHeight/2)+cumulativeRotation+thePt.rotation-thePt.degrees;
-            double pointDist = shape.distance(sampleX - sampleWidth/2, sampleY - sampleHeight/2)*cumulativeScale*thePt.scale*thePt.radius/sampleWidth;
-            double placedX = Math.cos(pointDegrees)*pointDist;
-            double placedY = Math.sin(pointDegrees)*pointDist;
+        //rotate/scale the point
+        double pointDegrees = Math.atan2(sampleX - sampleWidth/2, sampleY - sampleHeight/2)+cumulativeRotation+thePt.rotation-thePt.degrees;
+        double pointDist = shape.distance(sampleX - sampleWidth/2, sampleY - sampleHeight/2)*cumulativeScale*thePt.scale*thePt.radius/sampleWidth;
+        double placedX = Math.cos(pointDegrees)*pointDist;
+        double placedY = Math.sin(pointDegrees)*pointDist;
 
-            //put pixel
-            putPixel(x+placedX,y+placedY, ptColor);
-        }
-
+        //put pixel
+        putPixel(x+placedX,y+placedY, ptColor);
     }
 
     public void putLine(double x0, double y0, double x1, double y1, double alpha){ //TODO start/end alpha values?
