@@ -542,6 +542,8 @@ public class ifsys extends Panel
 
                 double scaleDownMultiplier = Math.pow(shape.pointsInUse,iterations-1); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
 
+                double upscale=1;
+
                // double centerScale = shape.pts[0].scale;
                 //double centerRadius =100;
 
@@ -562,16 +564,18 @@ public class ifsys extends Panel
                     cumulativeRotation += shape.pts[randomIndex].rotation;
                     cumulativeOpacity *= shape.pts[randomIndex].opacity;
 
+                    upscale = shape.pts[0].scale/shape.pts[randomIndex].scale;
+
                     _dx = dx;
                     _dy = dy;
                     if(d!=0){
-                        dx += Math.cos((Math.PI/2D - shape.pts[randomIndex].degrees) + cumulativeRotation) * shape.pts[randomIndex].radius * cumulativeScale;
-                        dy += Math.sin((Math.PI/2D - shape.pts[randomIndex].degrees) + cumulativeRotation) * shape.pts[randomIndex].radius * cumulativeScale;
+                        dx += Math.cos((Math.PI/2D - shape.pts[randomIndex].degrees) + cumulativeRotation) * shape.pts[randomIndex].radius*upscale * cumulativeScale;
+                        dy += Math.sin((Math.PI/2D - shape.pts[randomIndex].degrees) + cumulativeRotation) * shape.pts[randomIndex].radius*upscale * cumulativeScale;
                     }
 
                     if(!framesHidden && d!=0){
-                        ndx = _dx + Math.cos((Math.PI/2D - shape.pts[nextIndex].degrees) + nextCumulativeRotation) * shape.pts[nextIndex].radius * nextCumulativeScale;
-                        ndy = _dy + Math.sin((Math.PI/2D - shape.pts[nextIndex].degrees) + nextCumulativeRotation) * shape.pts[nextIndex].radius * nextCumulativeScale;
+                        ndx = _dx + Math.cos((Math.PI/2D - shape.pts[nextIndex].degrees) + nextCumulativeRotation) * shape.pts[nextIndex].radius*upscale * nextCumulativeScale;
+                        ndy = _dy + Math.sin((Math.PI/2D - shape.pts[nextIndex].degrees) + nextCumulativeRotation) * shape.pts[nextIndex].radius*upscale * nextCumulativeScale;
 
                         putLine(dx, dy, ndx, ndy, cumulativeOpacity/scaleDownMultiplier); //TODO proper transparent lines?
                     }
