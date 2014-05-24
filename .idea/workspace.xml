@@ -72,7 +72,7 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="569" column="73" selection-start="19927" selection-end="19927" vertical-scroll-proportion="-0.21764706" vertical-offset="9651" max-vertical-offset="14331">
+            <state line="439" column="42" selection-start="14729" selection-end="14729" vertical-scroll-proportion="0.4132353" vertical-offset="7012" max-vertical-offset="13668">
               <folding />
             </state>
           </provider>
@@ -453,7 +453,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -833,7 +833,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="569" column="73" selection-start="19927" selection-end="19927" vertical-scroll-proportion="-0.21764706" vertical-offset="9651" max-vertical-offset="14331">
+        <state line="439" column="42" selection-start="14729" selection-end="14729" vertical-scroll-proportion="0.4132353" vertical-offset="7012" max-vertical-offset="13668">
           <folding />
         </state>
       </provider>

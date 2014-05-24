@@ -282,8 +282,7 @@ public class ifsys extends Panel
         addKeyListener(this);
         render = createImage(screenwidth, screenheight);
         rg = render.getGraphics();
-       // presetstring = getParameter("preset");
-        preset = 1;//Integer.parseInt(presetstring);
+        preset = 1;
         clearframe();
         game.start();
         shape.setToPreset(1);
@@ -595,44 +594,6 @@ public class ifsys extends Panel
                 if(!leavesHidden)
                     putPixel(dx, dy, cumulativeOpacity);
             }
-        }
-    }
-
-    public void drawPtDot(int pointIndex){
-        int pointx1;
-        int pointy1;
-
-        if(pointIndex==0){//center pt
-            pointx1 = (int)shape.pts[0].x;
-            pointy1 = (int)shape.pts[0].y;
-        }else{
-            pointx1 = (int)shape.pts[pointIndex].x;
-            pointy1 = (int)shape.pts[pointIndex].y;
-        }
-
-        if(pointx1 > screenwidth - 2)
-            pointx1 = screenwidth - 2;
-        if(pointy1 > screenheight - 2)
-            pointy1 = screenheight - 2;
-        if(pointx1 < 0)
-            pointx1 = 0;
-        if(pointy1 < 0)
-            pointy1 = 0;
-        if(pointIndex == pointselected){
-            pixels[pointx1 + pointy1 * screenwidth] = 0xff00ff00;
-            pixels[pointx1 + 1 + pointy1 * screenwidth] = 0xff00ff00;
-            pixels[pointx1 + (pointy1 + 1) * screenwidth] = 0xff00ff00;
-            pixels[pointx1 + 1 + (pointy1 + 1) * screenwidth] = 0xff00ff00;
-        } else if(pointIndex != -1){ //non selected non central pt
-            pixels[pointx1 + pointy1 * screenwidth] = 0xffff0000;
-            pixels[pointx1 + 1 + pointy1 * screenwidth] = 0xffff0000;
-            pixels[pointx1 + (pointy1 + 1) * screenwidth] = 0xffff0000;
-            pixels[pointx1 + 1 + (pointy1 + 1) * screenwidth] = 0xffff0000;
-        } else { //central pt
-            pixels[pointx1 + pointy1 * screenwidth] = 0xff00ffff;
-            pixels[pointx1 + 1 + pointy1 * screenwidth] = 0xff00ffff;
-            pixels[pointx1 + (pointy1 + 1) * screenwidth] = 0xff00ffff;
-            pixels[pointx1 + 1 + (pointy1 + 1) * screenwidth] = 0xff00ffff;
         }
     }
 
