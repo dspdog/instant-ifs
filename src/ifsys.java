@@ -544,7 +544,7 @@ public class ifsys extends Panel
             }
 
             for(int a = 0; a < sampletotal; a++){
-                int randomIndex = 1 + (int)(Math.random() * (double) (shape.pointsInUse-1));
+                int randomIndex = 0;
                 int nextIndex;
                 double dx = shape.pts[randomIndex].x;
                 double dy = shape.pts[randomIndex].y;
@@ -552,11 +552,11 @@ public class ifsys extends Panel
                 double ndy;
                 double _dx;
                 double _dy;
-                double cumulativeScale = 1.0D;
+                double cumulativeScale = shape.pts[randomIndex].scale;
                 double nextCumulativeScale = 1.0D;
                 double cumulativeRotation = shape.pts[randomIndex].rotation;
                 double nextCumulativeRotation = shape.pts[randomIndex].rotation;
-                double cumulativeOpacity = 1.0D;
+                double cumulativeOpacity = shape.pts[randomIndex].opacity;
 
                 double scaleDownMultiplier = Math.pow(shape.pointsInUse,iterations-1); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
 

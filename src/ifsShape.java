@@ -1,17 +1,17 @@
 class ifsShape{
     public ifsPt pts[];
-    public double _centerx, _centery, offsetx, offsety;
+   //public double _centerx, _centery, _offsetx, _offsety;
     public int pointsInUse;
     public boolean autoUpdateCenterEnabled;
     public boolean stateSaved;
     public boolean autoScale;
 
     public ifsShape(int maxPoints){
-        offsetx=0; offsety=0;
+        //offsetx=0; offsety=0;
         autoUpdateCenterEnabled =false;
         stateSaved = false;
         pointsInUse = 1;
-        autoScale = false;
+        autoScale = true;
         pts = new ifsPt[maxPoints];
         for(int a=0; a< maxPoints; a++){
             pts[a] = new ifsPt();
@@ -75,8 +75,8 @@ class ifsShape{
                     y += pts[a].y;
                 }
 
-                pts[0].x  = x / pointsInUse;
-                pts[0].y  = y / pointsInUse;
+                pts[0].x  = x / (pointsInUse-1);
+                pts[0].y  = y / (pointsInUse-1);
 
                 //pts[0].x = centerx;
                 //pts[0].y = centery;
@@ -222,7 +222,7 @@ class ifsShape{
                 pts[5].scale = 0.33333333333333331D;
                 break;
         }
-        updateCenter();
+
         updateCenterOnce();
     }
 
