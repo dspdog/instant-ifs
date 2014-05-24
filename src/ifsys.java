@@ -36,7 +36,7 @@ public class ifsys extends Panel
 
     //user params
         boolean framesHidden;
-        boolean centerHidden;
+        boolean _centerHidden;
         boolean leavesHidden;
         boolean antiAliasing;
         boolean trailsHidden;
@@ -92,7 +92,6 @@ public class ifsys extends Panel
         quit = false;
         antiAliasing = true;
         framesHidden = true;
-        centerHidden = false;
         spokesHidden = true;
         trailsHidden = true;
         leavesHidden = true;
@@ -196,11 +195,6 @@ public class ifsys extends Panel
             guidesButton.addItemListener(is);
             guidesMenu.add(guidesButton);
 
-            CheckboxMenuItem centerButton = new CheckboxMenuItem("Center"); //center view toggle
-            centerButton.setState(!is.centerHidden);
-            centerButton.addItemListener(is);
-            guidesMenu.add(centerButton);
-
         menuBar.add(fileMenu);
         menuBar.add(renderMenu);
         menuBar.add(shapeMenu);
@@ -238,9 +232,6 @@ public class ifsys extends Panel
             }
             if(e.getItem()=="Scale Markers"){
                 guidesHidden = e.getStateChange()==2;
-            }
-            if(e.getItem()=="Center"){
-                centerHidden = e.getStateChange()==2;
             }
         //SHAPE MENU
             if(e.getItem()=="AutoScale Points"){
@@ -327,22 +318,17 @@ public class ifsys extends Panel
             }else{
                 if(i==0){
                     rg.setColor(Color.BLUE);
+                    rg.setPaintMode();
                 }else{
                     rg.setColor(Color.darkGray);
                 }
-
             }
+
             thePt = shape.pts[i];
             circleWidth = (int)(thePt.scale*thePt.radius*2);
             rg.drawOval((int)thePt.x-circleWidth/2, (int)thePt.y-circleWidth/2, circleWidth, circleWidth);
-
             rg.drawLine((int)thePt.x, (int)thePt.y, (int)(thePt.x + Math.sin(thePt.degrees-thePt.rotation)*thePt.scale*thePt.radius),
                                                     (int)(thePt.y + Math.cos(thePt.degrees-thePt.rotation)*thePt.scale*thePt.radius));
-            if(!centerHidden){
-                rg.setColor(Color.blue);
-                rg.drawLine((int)shape.pts[0].x, (int)shape.pts[0].y, (int)(shape.pts[0].x + Math.sin(thePt.degrees)*thePt.radius*thePt.scale),
-                                                                      (int)(shape.pts[0].y + Math.cos(thePt.degrees)*thePt.radius*thePt.scale));
-            }
         }
 
         if(!infoHidden && pointselected>=0){
@@ -524,20 +510,20 @@ public class ifsys extends Panel
 
         if(shape.pointsInUse != 0){
 
-            if(!centerHidden){
-                if(!spokesHidden){ //center spokes
-                    for(int a=0; a<shape.pointsInUse; a++){
-                        putLine(shape.pts[0].x, shape.pts[0].y, shape.pts[a].x, shape.pts[a].y, shape.pts[a].opacity);
-                    }
-                }
 
-                if(!framesHidden){ //center outline
-                    for(int a=0; a<shape.pointsInUse; a++){
-                        int nextPt = (a+1)%shape.pointsInUse;
-                        putLine(shape.pts[a].x, shape.pts[a].y, shape.pts[nextPt].x, shape.pts[nextPt].y, shape.pts[nextPt].opacity);
-                    }
+            if(!spokesHidden){ //center spokes
+                for(int a=0; a<shape.pointsInUse; a++){
+                    putLine(shape.pts[0].x, shape.pts[0].y, shape.pts[a].x, shape.pts[a].y, shape.pts[a].opacity);
                 }
             }
+
+            if(!framesHidden){ //center outline
+                for(int a=0; a<shape.pointsInUse; a++){
+                    int nextPt = (a+1)%shape.pointsInUse;
+                    putLine(shape.pts[a].x, shape.pts[a].y, shape.pts[nextPt].x, shape.pts[nextPt].y, shape.pts[nextPt].opacity);
+                }
+            }
+
 
             for(int a = 0; a < sampletotal; a++){
                 int randomIndex = 0;
