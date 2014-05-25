@@ -1,3 +1,6 @@
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.ToggleGroup;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.MemoryImageSource;
@@ -26,6 +29,10 @@ public class ifsys extends Panel
 
     pdf3D thePdf;
 
+    CheckboxMenuItem topButton;
+    CheckboxMenuItem sideButton;
+    CheckboxMenuItem frontButton;
+
     //user params
         boolean framesHidden;
         boolean leavesHidden;
@@ -47,6 +54,8 @@ public class ifsys extends Panel
         int mousex;
         int mousey;
         int mouseScroll;
+
+        int viewMode;
 
     ifsShape shape;
     double shapeArea;
@@ -103,7 +112,7 @@ public class ifsys extends Panel
         pointselected=-1;
 
         thePdf = new pdf3D();
-
+        viewMode=0;
     }
 
     public static void main(String[] args) {
@@ -142,6 +151,24 @@ public class ifsys extends Panel
             inButton.setState(is.invertColors);
             inButton.addItemListener(is);
             renderMenu.add(inButton);
+
+        //VIEW MENU
+            is.topButton = new CheckboxMenuItem("Top (XY)");
+            is.sideButton = new CheckboxMenuItem("Side (XZ)");
+            is.frontButton = new CheckboxMenuItem("Front (YZ)");
+            is.topButton.setState(is.viewMode==0);
+            is.topButton.addItemListener(is);
+            viewMenu.add(is.topButton);
+
+            is.sideButton = new CheckboxMenuItem("Side (XZ)");
+            is.sideButton.setState(is.viewMode==1);
+            is.sideButton.addItemListener(is);
+            viewMenu.add(is.sideButton);
+
+            is.frontButton = new CheckboxMenuItem("Front (YZ)");
+            is.frontButton.setState(is.viewMode==2);
+            is.frontButton.addItemListener(is);
+            viewMenu.add(is.frontButton);
 
         //SHAPE MENU
             CheckboxMenuItem autoScaleButton = new CheckboxMenuItem("AutoScale Points"); //autoscale toggle
@@ -219,6 +246,19 @@ public class ifsys extends Panel
             if(e.getItem()=="Invert"){
                 invertColors = e.getStateChange()==1;
             }
+        //VIEW MENU
+            if(e.getItem()=="Top (XY)"){
+                viewMode = 0;
+            }
+            if(e.getItem()=="Side (XZ)"){
+                viewMode = 1;
+            }
+            if(e.getItem()=="Front (YZ)"){
+                viewMode = 2;
+            }
+            topButton.setState(viewMode==0);
+            sideButton.setState(viewMode==1);
+            frontButton.setState(viewMode==2);
         //GUIDES MENU
             if(e.getItem()=="Info Box"){
                 infoHidden = e.getStateChange()==2;
@@ -340,6 +380,31 @@ public class ifsys extends Panel
             rg.drawString("Area " + String.valueOf((int)shapeArea), 5, 195);
             rg.drawString("AreaDelta " + String.valueOf((int)shapeAreaDelta), 5, 210);
             rg.drawString("DataMax " + String.valueOf((int)dataMax), 5, 225);
+
+            if(viewMode==0){ //XY axis
+                rg.setColor(Color.green);
+                rg.drawLine(10, screenheight-65, 10, screenheight-65-50);
+                rg.drawString("Y+", 10, screenheight-50);
+                rg.setColor(Color.red);
+                rg.drawLine(10, screenheight-65-50, 10+50, screenheight-65-50);
+                rg.drawString("X+", 10+55, screenheight-50-60);
+            }
+            if(viewMode==1){ //XZ axis
+                rg.setColor(Color.yellow);
+                rg.drawLine(10, screenheight-65, 10, screenheight-65-50);
+                rg.drawString("Z+", 10, screenheight-50);
+                rg.setColor(Color.red);
+                rg.drawLine(10, screenheight-65-50, 10+50, screenheight-65-50);
+                rg.drawString("X+", 10+55, screenheight-50-60);
+            }
+            if(viewMode==2){ //YZ axis
+                rg.setColor(Color.green);
+                rg.drawLine(10, screenheight-65, 10, screenheight-65-50);
+                rg.drawString("Y+", 10, screenheight-50);
+                rg.setColor(Color.yellow);
+                rg.drawLine(10, screenheight-65-50, 10+50, screenheight-65-50);
+                rg.drawString("Z+", 10+55, screenheight-50-60);
+            }
         }
 
         gr.drawImage(render, 0, 0, screenwidth, screenheight, this);
