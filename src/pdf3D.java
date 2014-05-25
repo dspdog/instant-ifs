@@ -6,49 +6,77 @@ import java.net.URL;
 public class pdf3D { //3d probabilty density function
 
     int width, height, depth;
-    int centerx, centery, centerz;
 
     int sampleWidth;
     int sampleHeight;
+    int sampleDepth;
 
     public double volume[][][];
+
     Image sampleImage;
     int samplePixels[];
 
     public pdf3D(){
         width = 512;
         height = 512;
-        depth = 1;
+        depth = 512;
         volume = new double[width][height][depth];
         samplePixels = new int[width*height];
 
-        centerx=width/2;
-        centery=height/2;
-        centerz=1;
+        loadMap_3DBlob();
 
-        //loadMap_DistanceFromCenter();
-        loadImg("serp.jpg");
+        System.out.println(sampleWidth + " " + sampleHeight + " " + sampleDepth);
+        //loadImg("serp.jpg");
     }
 
-    public void loadMap_DistanceFromCenter(){ //fill volume w values = distances from point to center of volume
-        for(int x=0; x<width; x++){
-            for(int y=0; y<height; y++){
-                for(int z=0; z<depth; z++){
-                    volume[x][y][z] = distance(x-centerx, y-centery, z-centerz);
+    public double getSliceXY_Sum(int x, int y){
+        double sum = 0;
+        for(int z=0; z<depth; z++){
+            sum+=volume[x][y][z];
+        }
+        return sum;
+    }
+
+    //MAP-LOADING FUNCTIONS:
+
+    public void loadMap_BlobInv(){ //fill volume w values = distances from point to center of volume
+        sampleHeight=height;
+        sampleWidth=width;
+        sampleDepth=1;
+        for(int x=0; x<sampleWidth; x++){
+            for(int y=0; y<sampleHeight; y++){
+                for(int z=0; z<sampleDepth; z++){
+                    volume[x][y][z] = distance(x-sampleWidth/2, y-sampleHeight/2, z-sampleDepth/2);
                 }
             }
         }
     }
 
-    public double getSampleValue(double x, double y){ //TODO bilinear filtering
-        if(x>0 && y>0 && y<sampleHeight && x<sampleWidth){
-            return volume[(int)x][(int)y][0] / 255.0;
-        }else{
-            return 0;
+    public void loadMap_FlatBlob(){ //fill volume w values = inverse distances from point to center of volume
+        sampleHeight=height;
+        sampleWidth=width;
+        sampleDepth=1;
+        for(int x=0; x<sampleWidth; x++){
+            for(int y=0; y<sampleHeight; y++){
+                for(int z=0; z<sampleDepth; z++){
+                    volume[x][y][z] = Math.max(0,sampleWidth/2 - distance(x-sampleWidth/2, y-sampleHeight/2, z-sampleDepth/2));
+                }
+            }
         }
     }
 
-
+    public void loadMap_3DBlob(){ //fill volume w values = inverse distances from point to center of volume
+        sampleHeight=height;
+        sampleWidth=width;
+        sampleDepth=depth;
+        for(int x=0; x<sampleWidth; x++){
+            for(int y=0; y<sampleHeight; y++){
+                for(int z=0; z<sampleDepth; z++){
+                    volume[x][y][z] = Math.max(0,sampleWidth/2 - distance(x-sampleWidth/2, y-sampleHeight/2, z-sampleDepth/2));
+                }
+            }
+        }
+    }
 
     public void loadImg(String filename){
         System.out.println("loading " + filename);
@@ -61,12 +89,12 @@ public class pdf3D { //3d probabilty density function
             if (grabber.grabPixels()) {
                 sampleWidth = grabber.getWidth();
                 sampleHeight = grabber.getHeight();
-                System.out.println(sampleWidth + " " + sampleHeight);
+                sampleDepth = 1;
+
                 samplePixels = (int[]) grabber.getPixels();
 
                 for(int i=0; i<sampleWidth*sampleHeight; i++){
                     samplePixels[i] = samplePixels[i]&0xFF;
-
                 }
 
                 int i=0;

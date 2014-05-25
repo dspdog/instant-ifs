@@ -437,7 +437,7 @@ public class ifsys extends Panel
 
         //modulate with image
         double exposureAdjust = cumulativeScale*thePt.scale*thePt.radius;
-        double ptColor = thePdf.getSampleValue(sampleX, sampleY)*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
+        double ptColor = thePdf.getSliceXY_Sum((int)sampleX,(int)sampleY)/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
 
         //rotate/scale the point
         double pointDegrees = Math.atan2(sampleX - thePdf.sampleWidth/2, sampleY - thePdf.sampleHeight/2)+cumulativeRotation+thePt.rotation-thePt.degrees;

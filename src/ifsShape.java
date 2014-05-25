@@ -60,7 +60,7 @@ class ifsShape{
     void updateRadiusDegrees(){
 
         pts[0].degrees = 0;
-        pts[0].radius = unitScale;
+        pts[0].radius = unitScale*pts[0].scale;
 
         for(int a = 1; a < pointsInUse; a++){
             pts[a].degrees = Math.atan2(pts[a].x - pts[0].x, pts[a].y - pts[0].y);
