@@ -15,10 +15,6 @@ public class ifsys extends Panel
     int screenwidth;
     int screenheight;
 
-    int samplePixels[];
-    int sampleWidth;
-    int sampleHeight;
-
     double pixelsData[];
     double dataMax = 0;
     double gamma = 0;
@@ -32,7 +28,7 @@ public class ifsys extends Panel
     long samplesThisFrame;
     double samplesNeeded;
 
-    Image sampleImage;
+    pdf3D thePdf;
 
     //user params
         boolean framesHidden;
@@ -69,13 +65,10 @@ public class ifsys extends Panel
         double startDragY;
         double startDragPX;
         double startDragPY;
-        double startDragCenterX;
-        double startDragCenterY;
         double startDragDist;
         double startDragAngle;
         double startDragScale;
 
-    String presetstring;
     boolean started;
     int preset;
 
@@ -101,7 +94,6 @@ public class ifsys extends Panel
         screenwidth = 1024;
         screenheight = 1024;
         pixels = new int[screenwidth * screenheight];
-        samplePixels = new int[screenwidth * screenheight];
         pixelsData = new double[screenwidth * screenheight];
         sampletotal = 512;
         iterations = 8;
@@ -113,6 +105,9 @@ public class ifsys extends Panel
         mouseScroll = 0;
         gamma = 1.0D;
         pointselected=-1;
+
+        thePdf = new pdf3D();
+
     }
 
     public static void main(String[] args) {
@@ -285,9 +280,8 @@ public class ifsys extends Panel
         clearframe();
         game.start();
         shape.setToPreset(1);
-        setSampleImg("serp.jpg");
-        started = true;
 
+        started = true;
     }
 
     public void update(Graphics gr){
@@ -305,7 +299,7 @@ public class ifsys extends Panel
         generatePixels();
 
         rg.drawImage(createImage(new MemoryImageSource(screenwidth, screenheight, pixels, 0, screenwidth)), 0, 0, screenwidth, screenheight, this);
-        rg.drawImage(sampleImage, getWidth() - 50, 0, 50, 50, this);
+        rg.drawImage(thePdf.sampleImage, getWidth() - 50, 0, 50, 50, this);
 
         int circleWidth;
 
@@ -436,48 +430,18 @@ public class ifsys extends Panel
 
     }
 
-    public void setSampleImg(String filename){
-        sampleImage = loadImage(filename);
-
-        try {
-            PixelGrabber grabber =
-                    new PixelGrabber(sampleImage, 0, 0, -1, -1, false);
-
-            if (grabber.grabPixels()) {
-                sampleWidth = grabber.getWidth();
-                sampleHeight = grabber.getHeight();
-                samplePixels = (int[]) grabber.getPixels();
-
-                for(int i=0; i<sampleHeight*sampleWidth; i++){
-                    samplePixels[i] = samplePixels[i]&0xFF;
-                }
-            }
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public double getSampleValue(double x, double y){ //TODO bilinear filtering
-        int index = (int)x+sampleWidth*(int)y;
-        if(index < sampleWidth*sampleHeight && index>0){
-            return samplePixels[(int)x + (int)y*sampleWidth] / 255.0;
-        }else{
-            return 0;
-        }
-    }
-
     public void putImgSample(double x, double y, double cumulativeRotation, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown){
         //generate random coords
-        double sampleX = Math.random()*sampleWidth;
-        double sampleY = Math.random()*sampleHeight;
+        double sampleX = Math.random()*thePdf.sampleWidth;
+        double sampleY = Math.random()*thePdf.sampleHeight;
 
         //modulate with image
         double exposureAdjust = cumulativeScale*thePt.scale*thePt.radius;
-        double ptColor = getSampleValue(sampleX,  sampleY)*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
+        double ptColor = thePdf.getSampleValue(sampleX, sampleY)*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
 
         //rotate/scale the point
-        double pointDegrees = Math.atan2(sampleX - sampleWidth/2, sampleY - sampleHeight/2)+cumulativeRotation+thePt.rotation-thePt.degrees;
-        double pointDist = shape.distance(sampleX - sampleWidth/2, sampleY - sampleHeight/2)*cumulativeScale*thePt.scale*thePt.radius/sampleWidth;
+        double pointDegrees = Math.atan2(sampleX - thePdf.sampleWidth/2, sampleY - thePdf.sampleHeight/2)+cumulativeRotation+thePt.rotation-thePt.degrees;
+        double pointDist = shape.distance(sampleX - thePdf.sampleWidth/2, sampleY - thePdf.sampleHeight/2)*cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
         double placedX = Math.cos(pointDegrees)*pointDist;
         double placedY = Math.sin(pointDegrees)*pointDist;
 
@@ -587,18 +551,6 @@ public class ifsys extends Panel
                 if(!leavesHidden)
                     putPixel(dx, dy, cumulativeOpacity);
             }
-        }
-    }
-
-    public Image loadImage(String name){
-        try{
-            //URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);file:/C:/Users/Labrats/Documents/GitHub/
-            URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
-            return ImageIO.read(theImgURL);
-        }
-        catch(Exception e) {
-            e.printStackTrace();
-            return null;
         }
     }
 
