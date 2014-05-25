@@ -72,7 +72,7 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="45" column="32" selection-start="1080" selection-end="1080" vertical-scroll-proportion="-6.576923" vertical-offset="594" max-vertical-offset="11492">
+            <state line="193" column="0" selection-start="4877" selection-end="4877" vertical-scroll-proportion="-5.269231" vertical-offset="3076" max-vertical-offset="11764">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -83,7 +83,7 @@
       <file leaf-file-name="ifsPt.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ifsPt.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="73" column="16" selection-start="1546" selection-end="1546" vertical-scroll-proportion="0.0" vertical-offset="756" max-vertical-offset="1666">
+            <state line="18" column="31" selection-start="498" selection-end="498" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1734">
               <folding />
             </state>
           </provider>
@@ -92,7 +92,7 @@
       <file leaf-file-name="ifsMenu.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsMenu.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="152" column="0" selection-start="5498" selection-end="5498" vertical-scroll-proportion="2.2152975" vertical-offset="1020" max-vertical-offset="3060">
+            <state line="146" column="0" selection-start="5231" selection-end="5231" vertical-scroll-proportion="0.75735295" vertical-offset="1967" max-vertical-offset="3077">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -246,6 +246,7 @@
     <property name="FullScreen" value="false" />
     <property name="OverrideImplement.combined" value="true" />
     <property name="OverrideImplement.overriding.sorted" value="false" />
+    <property name="SearchEverywhereHistory" value="" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -892,14 +893,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsPt.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="73" column="16" selection-start="1546" selection-end="1546" vertical-scroll-proportion="0.0" vertical-offset="756" max-vertical-offset="1666">
+        <state line="18" column="31" selection-start="498" selection-end="498" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1734">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="32" selection-start="1080" selection-end="1080" vertical-scroll-proportion="-6.576923" vertical-offset="594" max-vertical-offset="11492">
+        <state line="193" column="0" selection-start="4877" selection-end="4877" vertical-scroll-proportion="-5.269231" vertical-offset="3076" max-vertical-offset="11764">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -908,7 +909,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsMenu.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="152" column="0" selection-start="5498" selection-end="5498" vertical-scroll-proportion="2.2152975" vertical-offset="1020" max-vertical-offset="3060">
+        <state line="146" column="0" selection-start="5231" selection-end="5231" vertical-scroll-proportion="0.75735295" vertical-offset="1967" max-vertical-offset="3077">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

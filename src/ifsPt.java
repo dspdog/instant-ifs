@@ -4,6 +4,8 @@ class ifsPt {
     public double degreesYaw;
     public double radius;
     public double rotationYaw;
+    public double rotationPitch;
+    public double rotationRoll;
     public double opacity;
 
     public double savedopacity;
@@ -17,6 +19,8 @@ class ifsPt {
         x = 0D; y = 0D; z = 0D;
         scale = 1D;
         rotationYaw = 0.0D;
+        rotationPitch = 0.0D;
+        rotationRoll = 0.0D;
         degreesYaw = 0D;
         radius = 1D;
         opacity = 1D;

@@ -62,6 +62,8 @@ public class ifsys extends Panel
         double startDragPX, startDragPY, startDragPZ;
         double startDragDist;
         double startDragAngleYaw;
+        double startDragAnglePitch;
+        double startDragAngleRoll;
         double startDragScale;
 
     boolean started;
@@ -194,7 +196,7 @@ public class ifsys extends Panel
             yPts[i] = (int)((Math.sin(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
             zPts[i] = 0;
 
-            ifsPt rotatedPt = new ifsPt(xPts[i],yPts[i],zPts[i]).getRotatedPt( 0,0,-pt.rotationYaw);
+            ifsPt rotatedPt = new ifsPt(xPts[i],yPts[i],zPts[i]).getRotatedPt(-pt.rotationRoll,-pt.rotationPitch,-pt.rotationYaw);
             xPts[i] = (int)(rotatedPt.x + pt.x);
             yPts[i] = (int)(rotatedPt.y + pt.y);
             zPts[i] = (int)(rotatedPt.z + pt.z);
@@ -553,7 +555,7 @@ public class ifsys extends Panel
         else if(mousemode == 3){ //right click to rotate point/set
             setCursor (Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
 
-            if(ctrlDown){ //rotate the set
+            /*if(ctrlDown){ //rotate the set
                 double rotationDelta = (Math.atan2(e.getX() - shape.pts[0].x , e.getY() - shape.pts[0].y )- startDragAngleYaw);
                 double scaleDelta = shape.distance(e.getX() - shape.pts[0].x , e.getY() - shape.pts[0].y, mousez - shape.pts[0].z )/startDragDist;
 
@@ -570,12 +572,26 @@ public class ifsys extends Panel
                     shape.pts[i].scale = shape.pts[i].savedscale*scaleDelta;
                 }
             }else{ //move a single point
-                double rotationDelta = (Math.atan2(e.getX() - selectedPt.x, e.getY() - selectedPt.y)- startDragAngleYaw);
-                double scaleDelta = shape.distance(e.getX() - selectedPt.x, e.getY() - selectedPt.y, mousez - shape.pts[0].z)/startDragDist;
 
+            }*/
+            startDragAngleYaw=0;
+            startDragAnglePitch=0;
+            startDragAngleRoll=0;
+            double scaleDelta = shape.distance(e.getX() - selectedPt.x, e.getY() - selectedPt.y, mousez - shape.pts[0].z)/startDragDist;
+            if(rotateMode==0){
+                double rotationDelta = (Math.atan2(e.getX() - selectedPt.x, e.getY() - selectedPt.y)- startDragAngleYaw);
                 selectedPt.rotationYaw = Math.PI * 2 - rotationDelta;
-                selectedPt.scale = startDragScale*scaleDelta;
+            }else if(rotateMode==1){
+                double rotationDelta = (Math.atan2(e.getX() - selectedPt.x, e.getY() - selectedPt.y)- startDragAnglePitch);
+                selectedPt.rotationPitch = Math.PI * 2 - rotationDelta;
+            }else if(rotateMode==2){
+                double rotationDelta = (Math.atan2(e.getX() - selectedPt.x, e.getY() - selectedPt.y)- startDragAngleRoll);
+                selectedPt.rotationRoll = Math.PI * 2 - rotationDelta;
             }
+
+            selectedPt.scale = startDragScale*scaleDelta;
+
+
         }
 
         shape.updateCenter();

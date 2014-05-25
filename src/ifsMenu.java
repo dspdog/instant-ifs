@@ -58,17 +58,17 @@ public class ifsMenu implements ItemListener{
             viewMenu.add(frontButton);
 
         //ROTATE MENU
-            pitchButton = new CheckboxMenuItem("Pitch (X)");
-            yawButton = new CheckboxMenuItem("Yaw (Y)");
+            yawButton = new CheckboxMenuItem("Yaw (X)");
+            pitchButton = new CheckboxMenuItem("Pitch (Y)");
             rollButton = new CheckboxMenuItem("Roll (Z)");
 
-            pitchButton.setState(is.rotateMode==0);
-            pitchButton.addItemListener(this);
-            rotateMenu.add(pitchButton);
-
-            yawButton.setState(is.rotateMode==1);
+            yawButton.setState(is.rotateMode==0);
             yawButton.addItemListener(this);
             rotateMenu.add(yawButton);
+
+            pitchButton.setState(is.rotateMode==1);
+            pitchButton.addItemListener(this);
+            rotateMenu.add(pitchButton);
 
             rollButton.setState(is.rotateMode==2);
             rollButton.addItemListener(this);
@@ -138,17 +138,18 @@ public class ifsMenu implements ItemListener{
             sideButton.setState(myIfsSys.viewMode==1);
             frontButton.setState(myIfsSys.viewMode==2);
         //ROTATE MENU
-            if(e.getItem()=="Pitch (X)"){
+            if(e.getItem()=="Yaw (X)"){
                 myIfsSys.rotateMode = 0;
             }
-            if(e.getItem()=="Yaw (Y)"){
+            if(e.getItem()=="Pitch (Y)"){
                 myIfsSys.rotateMode = 1;
             }
             if(e.getItem()=="Roll (Z)"){
                 myIfsSys.rotateMode = 2;
             }
-            pitchButton.setState(myIfsSys.rotateMode==0);
-            yawButton.setState(myIfsSys.rotateMode==1);
+
+            yawButton.setState(myIfsSys.rotateMode==0);
+            pitchButton.setState(myIfsSys.rotateMode==1);
             rollButton.setState(myIfsSys.rotateMode==2);
         //GUIDES MENU
             if(e.getItem()=="Info Box"){
