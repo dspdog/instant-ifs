@@ -69,16 +69,6 @@ public class ifsMenu implements ItemListener{
         leavesButton.addItemListener(this);
         shapeMenu.add(leavesButton);
 
-        CheckboxMenuItem spokesButton = new CheckboxMenuItem("Spokes"); //spokes toggle
-        spokesButton.setState(!is.spokesHidden);
-        spokesButton.addItemListener(this);
-        shapeMenu.add(spokesButton);
-
-        CheckboxMenuItem framesButton = new CheckboxMenuItem("Frames"); //frames toggle
-        framesButton.setState(!is.framesHidden);
-        framesButton.addItemListener(this);
-        shapeMenu.add(framesButton);
-
         CheckboxMenuItem trailsButton = new CheckboxMenuItem("Point Trails"); //trails toggle
         trailsButton.setState(!is.trailsHidden);
         trailsButton.addItemListener(this);
@@ -142,12 +132,6 @@ public class ifsMenu implements ItemListener{
         }
         if(e.getItem()=="Leaves"){
             myIfsSys.leavesHidden = e.getStateChange()==2;
-        }
-        if(e.getItem()=="Frames"){
-            myIfsSys.framesHidden = e.getStateChange()==2;
-        }
-        if(e.getItem()=="Spokes"){
-            myIfsSys.spokesHidden = e.getStateChange()==2;
         }
         if(e.getItem()=="Point Trails"){
             myIfsSys.spokesHidden = e.getStateChange()==2;

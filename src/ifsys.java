@@ -311,8 +311,9 @@ public class ifsys extends Panel
         dataMax = 0;
     }
 
-    public boolean putPixel(double x, double y, double z, double alpha){
+    public boolean putPixel(ifsPt pt, double alpha){
         double decX, decY, decZ; //decimal parts of coordinates
+        double x = pt.x; double y = pt.y; double z = pt.z;
 
         if(x < (double)(screenwidth - 1) &&
             y < (double)(screenheight - 1) &&
@@ -344,8 +345,13 @@ public class ifsys extends Panel
 
     }
 
-    public void putImgSample(double x, double y, double z, double cumulativeRotationYaw, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown){
+    public void putImgSample(ifsPt dpt, double cumulativeRotationYaw, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown){
         //generate random coords
+
+        double x=dpt.x;
+        double y=dpt.y;
+        double z=dpt.z;
+
         double sampleX = Math.random()*thePdf.sampleWidth;
         double sampleY = Math.random()*thePdf.sampleHeight;
         double sampleZ = Math.random()*thePdf.sampleDepth;
@@ -362,7 +368,7 @@ public class ifsys extends Panel
         double placedZ = 0;
 
         //put pixel
-        putPixel(x+placedX,y+placedY, z+placedZ, ptColor);
+        putPixel(new ifsPt(x+placedX,y+placedY, z+placedZ), ptColor);
     }
 
     public void putLine(ifsPt p0, ifsPt p1, double alpha){ //TODO start/end alpha values?
@@ -380,7 +386,7 @@ public class ifsys extends Panel
             dy = p0.y + i*(p1.y-p0.y)/steps;
             dz = p0.z + i*(p1.z-p0.z)/steps;
 
-            if(putPixel(dx, dy, dz, alpha)){ //stop drawing if pixel is outside bounds
+            if(putPixel(new ifsPt(dx, dy, dz), alpha)){ //stop drawing if pixel is outside bounds
                 startedInScreen = true;
             }else{
                 if(startedInScreen)break;
@@ -410,16 +416,9 @@ public class ifsys extends Panel
 
             for(int a = 0; a < sampletotal; a++){
                 int randomIndex = 0;
-                int nextIndex=0;
-                double dx = shape.pts[randomIndex].x;
-                double dy = shape.pts[randomIndex].y;
-                double dz = shape.pts[randomIndex].z;
-                double ndx, ndy, ndz;
-                double _dx, _dy, _dz;
+                ifsPt dpt = new ifsPt(shape.pts[randomIndex]);
                 double cumulativeScale = 1.0; //shape.pts[randomIndex].scale;
-                double nextCumulativeScale = 1.0D;
                 double cumulativeRotationYaw = 0; //shape.pts[randomIndex].rotationYaw;
-                double nextCumulativeRotationYaw = 0; //shape.pts[randomIndex].rotationYaw;
                 double cumulativeOpacity = 1; //shape.pts[randomIndex].opacity;
 
                 double scaleDownMultiplier = Math.pow(shape.pointsInUse,iterations-1); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
@@ -430,43 +429,24 @@ public class ifsys extends Panel
                     randomIndex = 1 + (int)(Math.random() * (double) (shape.pointsInUse-1));
 
                     if(d==0){randomIndex=0;}
-                    else{
-                        nextIndex = 1 + (randomIndex+1)%(shape.pointsInUse-1);
-
-                        nextCumulativeScale = cumulativeScale*shape.pts[nextIndex].scale;
-                        nextCumulativeRotationYaw = cumulativeRotationYaw + shape.pts[nextIndex].rotationYaw;
-                    }
-
-                    _dx = dx;
-                    _dy = dy;
-                    _dz = dz;
 
                     if(d!=0){
-                        dx += Math.cos((Math.PI/2D - shape.pts[randomIndex].degreesYaw) + cumulativeRotationYaw) * shape.pts[randomIndex].radius * cumulativeScale;
-                        dy += Math.sin((Math.PI/2D - shape.pts[randomIndex].degreesYaw) + cumulativeRotationYaw) * shape.pts[randomIndex].radius * cumulativeScale;
-                        dz += 0;
+                        dpt.x += Math.cos((Math.PI/2D - shape.pts[randomIndex].degreesYaw) + cumulativeRotationYaw) * shape.pts[randomIndex].radius * cumulativeScale;
+                        dpt.y += Math.sin((Math.PI/2D - shape.pts[randomIndex].degreesYaw) + cumulativeRotationYaw) * shape.pts[randomIndex].radius * cumulativeScale;
+                        dpt.z += 0;
                     }
 
-                    if(!framesHidden && d!=0){
-                        ndx = _dx + Math.cos((Math.PI/2D - shape.pts[nextIndex].degreesYaw) + nextCumulativeRotationYaw) * shape.pts[nextIndex].radius * nextCumulativeScale;
-                        ndy = _dy + Math.sin((Math.PI / 2D - shape.pts[nextIndex].degreesYaw) + nextCumulativeRotationYaw) * shape.pts[nextIndex].radius * nextCumulativeScale;
-                        ndz = _dz + 0;
-
-                        putLine(new ifsPt(dx,dy,dz), new ifsPt(ndx, ndy, ndz), cumulativeOpacity/scaleDownMultiplier); //TODO proper transparent lines?
-                    }
                     if(!trailsHidden && d < iterations-1)
-                        putPixel(dx, dy, dz, shape.pts[randomIndex].opacity);
-                    if(!spokesHidden)
-                        putLine(new ifsPt(_dx,_dy,_dz), new ifsPt(dx,dy,dz), cumulativeOpacity/scaleDownMultiplier);
+                        putPixel(dpt, shape.pts[randomIndex].opacity);
                     if(usePDFSamples)
-                        putImgSample(dx, dy, dz, cumulativeRotationYaw, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier);
+                        putImgSample(dpt, cumulativeRotationYaw, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier);
                     cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;
                     cumulativeRotationYaw += shape.pts[randomIndex].rotationYaw;
                     cumulativeOpacity *= shape.pts[randomIndex].opacity;
 
                 }
                 if(!leavesHidden)
-                    putPixel(dx, dy, dz, cumulativeOpacity);
+                    putPixel(dpt, cumulativeOpacity);
             }
         }
     }

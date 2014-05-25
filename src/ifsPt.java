@@ -22,6 +22,12 @@ class ifsPt {
         opacity = 1D;
     }
 
+    public ifsPt(ifsPt pt){
+        x=pt.x;
+        y=pt.y;
+        z=pt.z;
+    }
+
     public ifsPt(double _x, double _y, double _z){
         x = _x; y = _y; z = _z;
     }

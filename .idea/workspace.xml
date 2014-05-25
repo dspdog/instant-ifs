@@ -72,7 +72,7 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="101" column="0" selection-start="2512" selection-end="2512" vertical-scroll-proportion="0.34170854" vertical-offset="1581" max-vertical-offset="11305">
+            <state line="418" column="25" selection-start="14468" selection-end="14471" vertical-scroll-proportion="0.20539731" vertical-offset="6901" max-vertical-offset="10965">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -83,7 +83,7 @@
       <file leaf-file-name="ifsPt.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ifsPt.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="21" column="21" selection-start="549" selection-end="549" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="714">
+            <state line="23" column="0" selection-start="556" selection-end="556" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="816">
               <folding />
             </state>
           </provider>
@@ -92,7 +92,7 @@
       <file leaf-file-name="ifsMenu.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ifsMenu.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="0" selection-start="135" selection-end="135" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2754">
+            <state line="135" column="0" selection-start="4644" selection-end="4644" vertical-scroll-proportion="0.0" vertical-offset="1776" max-vertical-offset="2482">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -138,17 +138,17 @@
         <option value="$PROJECT_DIR$/src/ifsPoint.java" />
         <option value="$PROJECT_DIR$/src/pdf3D.java" />
         <option value="$PROJECT_DIR$/src/ifsShape.java" />
-        <option value="$PROJECT_DIR$/src/ifsPt.java" />
         <option value="$PROJECT_DIR$/src/ifsMenu.java" />
+        <option value="$PROJECT_DIR$/src/ifsPt.java" />
         <option value="$PROJECT_DIR$/src/ifsys.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="350" />
-    <option name="y" value="62" />
-    <option name="width" value="1070" />
-    <option name="height" value="787" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -469,7 +469,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="350" y="62" width="1070" height="787" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -489,8 +489,8 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4367589" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2963526" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23535676" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21035598" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -883,13 +883,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ifsPt.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="21" selection-start="549" selection-end="549" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="714">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsShape.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="36" column="40" selection-start="1046" selection-end="1046" vertical-scroll-proportion="-23.538462" vertical-offset="0" max-vertical-offset="4012">
@@ -899,16 +892,23 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsMenu.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="0" selection-start="135" selection-end="135" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2754">
+        <state line="135" column="0" selection-start="4644" selection-end="4644" vertical-scroll-proportion="0.0" vertical-offset="1776" max-vertical-offset="2482">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/ifsPt.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="23" column="0" selection-start="556" selection-end="556" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="816">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="101" column="0" selection-start="2512" selection-end="2512" vertical-scroll-proportion="0.34170854" vertical-offset="1581" max-vertical-offset="11305">
+        <state line="418" column="25" selection-start="14468" selection-end="14471" vertical-scroll-proportion="0.20539731" vertical-offset="6901" max-vertical-offset="10965">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
