@@ -69,10 +69,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ifsys.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="435" column="59" selection-start="14786" selection-end="14786" vertical-scroll-proportion="-18.5" vertical-offset="6846" max-vertical-offset="12631">
+            <state line="234" column="13" selection-start="7190" selection-end="7190" vertical-scroll-proportion="0.41457286" vertical-offset="3745" max-vertical-offset="12563">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -89,10 +89,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ifsShape.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="ifsShape.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ifsShape.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="62" column="46" selection-start="1658" selection-end="1658" vertical-scroll-proportion="0.81155777" vertical-offset="731" max-vertical-offset="4114">
+            <state line="54" column="22" selection-start="1518" selection-end="1518" vertical-scroll-proportion="-35.307693" vertical-offset="0" max-vertical-offset="4114">
               <folding />
             </state>
           </provider>
@@ -126,15 +126,15 @@
         <option value="$PROJECT_DIR$/src/mainthread.java" />
         <option value="$PROJECT_DIR$/src/ifsPoint.java" />
         <option value="$PROJECT_DIR$/src/ifsPt.java" />
-        <option value="$PROJECT_DIR$/src/ifsys.java" />
         <option value="$PROJECT_DIR$/src/pdf3D.java" />
         <option value="$PROJECT_DIR$/src/ifsShape.java" />
+        <option value="$PROJECT_DIR$/src/ifsys.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="408" />
-    <option name="y" value="35" />
+    <option name="x" value="420" />
+    <option name="y" value="67" />
     <option name="width" value="1070" />
     <option name="height" value="787" />
   </component>
@@ -457,7 +457,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="408" y="35" width="1070" height="787" extended-state="0" />
+    <frame x="420" y="67" width="1070" height="787" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -855,21 +855,19 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ifsys.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="435" column="59" selection-start="14786" selection-end="14786" vertical-scroll-proportion="-18.5" vertical-offset="6846" max-vertical-offset="12631">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/pdf3D.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="65" column="5" selection-start="1848" selection-end="1848" vertical-scroll-proportion="-18.307692" vertical-offset="629" max-vertical-offset="2295">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ifsShape.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="54" column="22" selection-start="1518" selection-end="1518" vertical-scroll-proportion="-35.307693" vertical-offset="0" max-vertical-offset="4114">
+          <folding />
         </state>
       </provider>
     </entry>
@@ -880,10 +878,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ifsShape.java">
+    <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="62" column="46" selection-start="1658" selection-end="1658" vertical-scroll-proportion="0.81155777" vertical-offset="731" max-vertical-offset="4114">
-          <folding />
+        <state line="234" column="13" selection-start="7190" selection-end="7190" vertical-scroll-proportion="0.41457286" vertical-offset="3745" max-vertical-offset="12563">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

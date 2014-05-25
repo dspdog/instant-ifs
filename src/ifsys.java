@@ -1,10 +1,6 @@
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.MemoryImageSource;
-import java.awt.image.PixelGrabber;
-import java.net.URL;
 
 public class ifsys extends Panel
     implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener, ActionListener,
@@ -37,7 +33,7 @@ public class ifsys extends Panel
         boolean trailsHidden;
         boolean spokesHidden;
         boolean infoHidden;
-        boolean imgSamples;
+        boolean usePDFSamples;
         boolean guidesHidden;
         boolean invertColors;
         int sampletotal;
@@ -88,7 +84,7 @@ public class ifsys extends Panel
         trailsHidden = true;
         leavesHidden = true;
         infoHidden = false;
-        imgSamples = true;
+        usePDFSamples = true;
         guidesHidden = false;
         invertColors = false;
         screenwidth = 1024;
@@ -127,10 +123,10 @@ public class ifsys extends Panel
         f.show();
 
         MenuBar menuBar;
-        Menu fileMenu, renderMenu, shapeMenu, guidesMenu, viewMenu;
+        Menu pdfMenu, renderMenu, shapeMenu, guidesMenu, viewMenu;
 
         menuBar = new MenuBar();
-        fileMenu = new Menu("File");
+        pdfMenu = new Menu("PDF");
         renderMenu = new Menu("Render");
         shapeMenu = new Menu("Shape");
         guidesMenu = new Menu("Guides");
@@ -153,8 +149,8 @@ public class ifsys extends Panel
             autoScaleButton.addItemListener(is);
             shapeMenu.add(autoScaleButton);
 
-            CheckboxMenuItem imgButton = new CheckboxMenuItem("Img Samples"); //img samples toggle
-            imgButton.setState(is.imgSamples);
+            CheckboxMenuItem imgButton = new CheckboxMenuItem("PDF Samples"); //img samples toggle
+            imgButton.setState(is.usePDFSamples);
             imgButton.addItemListener(is);
             shapeMenu.add(imgButton);
 
@@ -189,9 +185,9 @@ public class ifsys extends Panel
             guidesButton.addItemListener(is);
             guidesMenu.add(guidesButton);
 
-        menuBar.add(fileMenu);
         menuBar.add(renderMenu);
         menuBar.add(shapeMenu);
+        menuBar.add(pdfMenu);
         menuBar.add(guidesMenu);
         menuBar.add(viewMenu);
 
@@ -234,8 +230,8 @@ public class ifsys extends Panel
             if(e.getItem()=="AutoScale Points"){
                 shape.autoScale = e.getStateChange()==1;
             }
-            if(e.getItem()=="Img Samples"){
-                imgSamples = e.getStateChange()==1;
+            if(e.getItem()=="PDF Samples"){
+                usePDFSamples = e.getStateChange()==1;
             }
             if(e.getItem()=="Leaves"){
                 leavesHidden = e.getStateChange()==2;
@@ -541,7 +537,7 @@ public class ifsys extends Panel
                         putPixel(dx, dy, shape.pts[randomIndex].opacity);
                     if(!spokesHidden)
                         putLine(_dx, _dy, dx, dy, cumulativeOpacity/scaleDownMultiplier);
-                    if(imgSamples)
+                    if(usePDFSamples)
                         putImgSample(dx, dy, cumulativeRotation, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier);
                     cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;
                     cumulativeRotation += shape.pts[randomIndex].rotation;
