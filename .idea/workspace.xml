@@ -69,10 +69,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ifsys.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="193" column="0" selection-start="4877" selection-end="4877" vertical-scroll-proportion="-5.269231" vertical-offset="3076" max-vertical-offset="11764">
+            <state line="522" column="43" selection-start="18739" selection-end="18739" vertical-scroll-proportion="0.6131934" vertical-offset="8397" max-vertical-offset="11815">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -89,10 +89,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ifsMenu.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="ifsMenu.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ifsMenu.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="146" column="0" selection-start="5231" selection-end="5231" vertical-scroll-proportion="0.75735295" vertical-offset="1967" max-vertical-offset="3077">
+            <state line="146" column="0" selection-start="5231" selection-end="5231" vertical-scroll-proportion="-95.46154" vertical-offset="0" max-vertical-offset="3077">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -139,8 +139,8 @@
         <option value="$PROJECT_DIR$/src/pdf3D.java" />
         <option value="$PROJECT_DIR$/src/ifsShape.java" />
         <option value="$PROJECT_DIR$/src/ifsPt.java" />
-        <option value="$PROJECT_DIR$/src/ifsys.java" />
         <option value="$PROJECT_DIR$/src/ifsMenu.java" />
+        <option value="$PROJECT_DIR$/src/ifsys.java" />
       </list>
     </option>
   </component>
@@ -898,18 +898,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ifsys.java">
+    <entry file="file://$PROJECT_DIR$/src/ifsMenu.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="193" column="0" selection-start="4877" selection-end="4877" vertical-scroll-proportion="-5.269231" vertical-offset="3076" max-vertical-offset="11764">
+        <state line="146" column="0" selection-start="5231" selection-end="5231" vertical-scroll-proportion="-95.46154" vertical-offset="0" max-vertical-offset="3077">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ifsMenu.java">
+    <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="146" column="0" selection-start="5231" selection-end="5231" vertical-scroll-proportion="0.75735295" vertical-offset="1967" max-vertical-offset="3077">
+        <state line="522" column="43" selection-start="18739" selection-end="18739" vertical-scroll-proportion="0.6131934" vertical-offset="8397" max-vertical-offset="11815">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

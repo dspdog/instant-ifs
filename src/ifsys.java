@@ -525,6 +525,9 @@ public class ifsys extends Panel
                 startDragPZ = selectedPt.z;
                 startDragDist = shape.distance(startDragX - selectedPt.x, startDragY - selectedPt.y, startDragZ - selectedPt.z);
                 startDragAngleYaw = selectedPt.rotationYaw + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
+                startDragAngleRoll = selectedPt.rotationRoll + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
+                startDragAnglePitch = selectedPt.rotationPitch + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
+
                 startDragScale = selectedPt.scale;
             }
 
@@ -574,9 +577,9 @@ public class ifsys extends Panel
             }else{ //move a single point
 
             }*/
-            startDragAngleYaw=0;
-            startDragAnglePitch=0;
-            startDragAngleRoll=0;
+            //startDragAngleYaw=0;
+            //startDragAnglePitch=startDragAngleYaw;
+            //startDragAngleRoll=startDragAngleYaw;
             double scaleDelta = shape.distance(e.getX() - selectedPt.x, e.getY() - selectedPt.y, mousez - shape.pts[0].z)/startDragDist;
             if(rotateMode==0){
                 double rotationDelta = (Math.atan2(e.getX() - selectedPt.x, e.getY() - selectedPt.y)- startDragAngleYaw);
