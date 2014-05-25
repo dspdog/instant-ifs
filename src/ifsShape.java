@@ -28,11 +28,12 @@ class ifsShape{
         }
     }
 
-    public void addPoint(double x, double y){
+    public void addPoint(double x, double y, double z){
         pts[pointsInUse].x = x;
         pts[pointsInUse].y = y;
+        pts[pointsInUse].z = z;
         pts[pointsInUse].scale = 0.5D;
-        pts[pointsInUse].rotation = 0.0D;
+        pts[pointsInUse].rotationYaw = 0.0D;
         pts[pointsInUse].opacity = 1.0D;
         pointsInUse++;
         updateCenter();
@@ -44,14 +45,14 @@ class ifsShape{
             pts[a].y = pts[a + 1].y;
 
             pts[a].scale = pts[a + 1].scale;
-            pts[a].rotation = pts[a + 1].rotation;
+            pts[a].rotationYaw = pts[a + 1].rotationYaw;
         }
 
         pts[pointsInUse].x = 0.0D;
         pts[pointsInUse].y = 0.0D;
 
         pts[pointsInUse].scale = 0.5D;
-        pts[pointsInUse].rotation = 0.0D;
+        pts[pointsInUse].rotationYaw = 0.0D;
         pointsInUse--;
 
         updateCenter();
@@ -59,12 +60,12 @@ class ifsShape{
 
     void updateRadiusDegrees(){
 
-        pts[0].degrees = 0;
+        pts[0].degreesYaw = 0;
         pts[0].radius = unitScale*pts[0].scale;
 
         for(int a = 1; a < pointsInUse; a++){
-            pts[a].degrees = Math.atan2(pts[a].x - pts[0].x, pts[a].y - pts[0].y);
-            pts[a].radius = autoScale ? distance(pts[a].x - pts[0].x, pts[a].y - pts[0].y) : pts[0].radius;
+            pts[a].degreesYaw = Math.atan2(pts[a].x - pts[0].x, pts[a].y - pts[0].y);
+            pts[a].radius = autoScale ? distance(pts[a].x - pts[0].x, pts[a].y - pts[0].y,  pts[a].z - pts[0].z) : pts[0].radius;
         }
     }
 
@@ -77,27 +78,20 @@ class ifsShape{
                     x += pts[a].x;
                     y += pts[a].y;
                 }
-
                 pts[0].x  = x / (pointsInUse-1);
                 pts[0].y  = y / (pointsInUse-1);
-
-                //pts[0].x = centerx;
-                //pts[0].y = centery;
-            } else{
-                //centerx = pts[0].x;
-                //centery = pts[0].y;
             }
         }
 
         updateRadiusDegrees();
     }
 
-    public int getNearestPtIndex(double x, double y){
+    public int getNearestPtIndex(double x, double y, double z){
         double olddist = 1000D;
         int ptSelected = -1;
         for(int a = 0; a < this.pointsInUse; a++)
         {
-            double currentdist = this.distance((double) x - this.pts[a].x, (double) y - this.pts[a].y);
+            double currentdist = this.distance((double) x - this.pts[a].x, (double) y - this.pts[a].y, (double) z - this.pts[a].z);
             if(currentdist < olddist){
                 olddist = currentdist;
                 ptSelected = a;
@@ -231,7 +225,7 @@ class ifsShape{
         updateCenterOnce();
     }
 
-    public double distance(double x2, double y2){
-        return Math.sqrt(x2 * x2 + y2 * y2);
+    public double distance(double x, double y, double z){
+        return Math.sqrt(x * x + y * y + z * z);
     }
 }

@@ -1,6 +1,3 @@
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.ToggleGroup;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.MemoryImageSource;
@@ -51,8 +48,7 @@ public class ifsys extends Panel
         boolean shiftDown;
         boolean ctrlDown;
         boolean altDown;
-        int mousex;
-        int mousey;
+        int mousex, mousey, mousez;
         int mouseScroll;
 
         int viewMode;
@@ -66,12 +62,10 @@ public class ifsys extends Panel
 
     //drag vars
         int mousemode; //current mouse button
-        double startDragX;
-        double startDragY;
-        double startDragPX;
-        double startDragPY;
+        double startDragX, startDragY, startDragZ;
+        double startDragPX, startDragPY, startDragPZ;
         double startDragDist;
-        double startDragAngle;
+        double startDragAngleYaw;
         double startDragScale;
 
     boolean started;
@@ -230,7 +224,7 @@ public class ifsys extends Panel
 
 
     public void findSelectedPoint(){
-        pointselected = shape.getNearestPtIndex(mousex, mousey);
+        pointselected = shape.getNearestPtIndex(mousex, mousey, mousez);
         selectedPt = shape.pts[pointselected];
     }
 
@@ -358,8 +352,8 @@ public class ifsys extends Panel
             thePt = shape.pts[i];
             circleWidth = (int)(thePt.scale*thePt.radius*2);
             rg.drawOval((int)thePt.x-circleWidth/2, (int)thePt.y-circleWidth/2, circleWidth, circleWidth);
-            rg.drawLine((int)thePt.x, (int)thePt.y, (int)(thePt.x + Math.sin(thePt.degrees-thePt.rotation)*thePt.scale*thePt.radius),
-                                                    (int)(thePt.y + Math.cos(thePt.degrees-thePt.rotation)*thePt.scale*thePt.radius));
+            rg.drawLine((int)thePt.x, (int)thePt.y, (int)(thePt.x + Math.sin(-thePt.rotationYaw)*thePt.scale*thePt.radius),
+                                                    (int)(thePt.y + Math.cos(-thePt.rotationYaw)*thePt.scale*thePt.radius));
         }
 
         if(!infoHidden && pointselected>=0){
@@ -368,12 +362,13 @@ public class ifsys extends Panel
             rg.drawString("Point " + String.valueOf(pointselected + 1), 5, 15);
             rg.drawString("X: " + String.valueOf((double)(int)(selectedPt.x * 1000D) / 1000D), 5, 30);
             rg.drawString("Y: " + String.valueOf((double)(int)(selectedPt.y * 1000D) / 1000D), 5, 45);
-            rg.drawString("Scale: " + String.valueOf((double)(int)(selectedPt.scale * 1000D) / 1000D), 5, 60);
-            rg.drawString("Rotation: " + String.valueOf((double)(int)((((selectedPt.rotation / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 75);
-            rg.drawString("Opacity: " + String.valueOf(selectedPt.opacity), 5, 90);
-            rg.drawString("Iterations (. /): " + String.valueOf(iterations), 5, 105);
-            rg.drawString("Samples (nm): " + String.valueOf(sampletotal), 4, 120);
-            rg.drawString("Expected Done %" + String.valueOf((int)Math.min(100*samplesThisFrame/samplesNeeded/Math.E, 100)), 5, 135); //TODO is dividing by E the right thing to do here?
+            rg.drawString("Z: " + String.valueOf((double)(int)(selectedPt.z * 1000D) / 1000D), 5, 60);
+            rg.drawString("Scale: " + String.valueOf((double)(int)(selectedPt.scale * 1000D) / 1000D), 5, 75);
+            rg.drawString("Rotation Yaw: " + String.valueOf((double)(int)((((selectedPt.rotationYaw / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 90);
+            rg.drawString("Opacity: " + String.valueOf(selectedPt.opacity), 5, 105);
+            rg.drawString("Iterations (. /): " + String.valueOf(iterations), 5, 120);
+            rg.drawString("Samples (nm): " + String.valueOf(sampletotal), 4, 135);
+            //rg.drawString("Expected Done %" + String.valueOf((int)Math.min(100*samplesThisFrame/samplesNeeded/Math.E, 100)), 5, 135); //TODO is dividing by E the right thing to do here?
             rg.drawString("FPS " + String.valueOf(fps), 5, 150);
             rg.drawString("Gamma " + String.valueOf(gamma), 5, 165);
 
@@ -458,8 +453,8 @@ public class ifsys extends Panel
         dataMax = 0;
     }
 
-    public boolean putPixel(double x, double y, double alpha){ 
-        double decX, decY; //decimal parts of coordinates
+    public boolean putPixel(double x, double y, double z, double alpha){
+        double decX, decY, decZ; //decimal parts of coordinates
 
         if(x < (double)(screenwidth - 1) &&
             y < (double)(screenheight - 1) &&
@@ -491,28 +486,30 @@ public class ifsys extends Panel
 
     }
 
-    public void putImgSample(double x, double y, double cumulativeRotation, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown){
+    public void putImgSample(double x, double y, double z, double cumulativeRotationYaw, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown){
         //generate random coords
         double sampleX = Math.random()*thePdf.sampleWidth;
         double sampleY = Math.random()*thePdf.sampleHeight;
+        double sampleZ = Math.random()*thePdf.sampleDepth;
 
         //modulate with image
         double exposureAdjust = cumulativeScale*thePt.scale*thePt.radius;
         double ptColor = thePdf.getSliceXY_Sum((int)sampleX,(int)sampleY)/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
 
         //rotate/scale the point
-        double pointDegrees = Math.atan2(sampleX - thePdf.sampleWidth/2, sampleY - thePdf.sampleHeight/2)+cumulativeRotation+thePt.rotation-thePt.degrees;
-        double pointDist = shape.distance(sampleX - thePdf.sampleWidth/2, sampleY - thePdf.sampleHeight/2)*cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
-        double placedX = Math.cos(pointDegrees)*pointDist;
-        double placedY = Math.sin(pointDegrees)*pointDist;
+        double pointDegreesYaw = Math.atan2(sampleX - thePdf.sampleWidth/2, sampleY - thePdf.sampleHeight/2)+cumulativeRotationYaw+thePt.rotationYaw -thePt.degreesYaw;
+        double pointDist = shape.distance(sampleX - thePdf.sampleWidth/2, sampleY - thePdf.sampleHeight/2, sampleZ - thePdf.sampleDepth/2)*cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
+        double placedX = Math.cos(pointDegreesYaw)*pointDist;
+        double placedY = Math.sin(pointDegreesYaw)*pointDist;
+        double placedZ = 0;
 
         //put pixel
-        putPixel(x+placedX,y+placedY, ptColor);
+        putPixel(x+placedX,y+placedY, z+placedZ, ptColor);
     }
 
-    public void putLine(double x0, double y0, double x1, double y1, double alpha){ //TODO start/end alpha values?
-        double steps = (int)shape.distance(x0-x1, y0-y1);
-        double dx, dy;
+    public void putLine(ifsPt p0, ifsPt p1, double alpha){ //TODO start/end alpha values?
+        double steps = (int)shape.distance(p0.x-p1.x, p0.y-p1.y, p0.z-p1.z);
+        double dx, dy, dz;
 
         boolean startedInScreen = false;
 
@@ -521,10 +518,11 @@ public class ifsys extends Panel
         samplesThisFrame++;
 
         for(int i=0; i<steps; i++){
-            dx = x0 + i*(x1-x0)/steps;
-            dy = y0 + i*(y1-y0)/steps;
+            dx = p0.x + i*(p1.x-p0.x)/steps;
+            dy = p0.y + i*(p1.y-p0.y)/steps;
+            dz = p0.z + i*(p1.z-p0.z)/steps;
 
-            if(putPixel(dx, dy, alpha)){ //stop drawing if pixel is outside bounds
+            if(putPixel(dx, dy, dz, alpha)){ //stop drawing if pixel is outside bounds
                 startedInScreen = true;
             }else{
                 if(startedInScreen)break;
@@ -540,14 +538,14 @@ public class ifsys extends Panel
 
             if(!spokesHidden){ //center spokes
                 for(int a=0; a<shape.pointsInUse; a++){
-                    putLine(shape.pts[0].x, shape.pts[0].y, shape.pts[a].x, shape.pts[a].y, shape.pts[a].opacity);
+                    putLine(shape.pts[0], shape.pts[a], shape.pts[a].opacity);
                 }
             }
 
             if(!framesHidden){ //center outline
                 for(int a=0; a<shape.pointsInUse; a++){
                     int nextPt = (a+1)%shape.pointsInUse;
-                    putLine(shape.pts[a].x, shape.pts[a].y, shape.pts[nextPt].x, shape.pts[nextPt].y, shape.pts[nextPt].opacity);
+                    putLine(shape.pts[a], shape.pts[nextPt], shape.pts[nextPt].opacity);
                 }
             }
 
@@ -557,20 +555,16 @@ public class ifsys extends Panel
                 int nextIndex=0;
                 double dx = shape.pts[randomIndex].x;
                 double dy = shape.pts[randomIndex].y;
-                double ndx;
-                double ndy;
-                double _dx;
-                double _dy;
+                double dz = shape.pts[randomIndex].z;
+                double ndx, ndy, ndz;
+                double _dx, _dy, _dz;
                 double cumulativeScale = 1.0; //shape.pts[randomIndex].scale;
                 double nextCumulativeScale = 1.0D;
-                double cumulativeRotation = 0; //shape.pts[randomIndex].rotation;
-                double nextCumulativeRotation = 0; //shape.pts[randomIndex].rotation;
+                double cumulativeRotationYaw = 0; //shape.pts[randomIndex].rotationYaw;
+                double nextCumulativeRotationYaw = 0; //shape.pts[randomIndex].rotationYaw;
                 double cumulativeOpacity = 1; //shape.pts[randomIndex].opacity;
 
                 double scaleDownMultiplier = Math.pow(shape.pointsInUse,iterations-1); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
-
-               // double centerScale = shape.pts[0].scale;
-                //double centerRadius =100;
 
                 for(int d = 0; d < iterations; d++){
                     scaleDownMultiplier/=shape.pointsInUse;
@@ -582,35 +576,39 @@ public class ifsys extends Panel
                         nextIndex = 1 + (randomIndex+1)%(shape.pointsInUse-1);
 
                         nextCumulativeScale = cumulativeScale*shape.pts[nextIndex].scale;
-                        nextCumulativeRotation = cumulativeRotation + shape.pts[nextIndex].rotation;
+                        nextCumulativeRotationYaw = cumulativeRotationYaw + shape.pts[nextIndex].rotationYaw;
                     }
 
                     _dx = dx;
                     _dy = dy;
+                    _dz = dz;
+
                     if(d!=0){
-                        dx += Math.cos((Math.PI/2D - shape.pts[randomIndex].degrees) + cumulativeRotation) * shape.pts[randomIndex].radius * cumulativeScale;
-                        dy += Math.sin((Math.PI/2D - shape.pts[randomIndex].degrees) + cumulativeRotation) * shape.pts[randomIndex].radius * cumulativeScale;
+                        dx += Math.cos((Math.PI/2D - shape.pts[randomIndex].degreesYaw) + cumulativeRotationYaw) * shape.pts[randomIndex].radius * cumulativeScale;
+                        dy += Math.sin((Math.PI/2D - shape.pts[randomIndex].degreesYaw) + cumulativeRotationYaw) * shape.pts[randomIndex].radius * cumulativeScale;
+                        dz += 0;
                     }
 
                     if(!framesHidden && d!=0){
-                        ndx = _dx + Math.cos((Math.PI/2D - shape.pts[nextIndex].degrees) + nextCumulativeRotation) * shape.pts[nextIndex].radius * nextCumulativeScale;
-                        ndy = _dy + Math.sin((Math.PI/2D - shape.pts[nextIndex].degrees) + nextCumulativeRotation) * shape.pts[nextIndex].radius * nextCumulativeScale;
+                        ndx = _dx + Math.cos((Math.PI/2D - shape.pts[nextIndex].degreesYaw) + nextCumulativeRotationYaw) * shape.pts[nextIndex].radius * nextCumulativeScale;
+                        ndy = _dy + Math.sin((Math.PI / 2D - shape.pts[nextIndex].degreesYaw) + nextCumulativeRotationYaw) * shape.pts[nextIndex].radius * nextCumulativeScale;
+                        ndz = _dz + 0;
 
-                        putLine(dx, dy, ndx, ndy, cumulativeOpacity/scaleDownMultiplier); //TODO proper transparent lines?
+                        putLine(new ifsPt(dx,dy,dz), new ifsPt(ndx, ndy, ndz), cumulativeOpacity/scaleDownMultiplier); //TODO proper transparent lines?
                     }
                     if(!trailsHidden && d < iterations-1)
-                        putPixel(dx, dy, shape.pts[randomIndex].opacity);
+                        putPixel(dx, dy, dz, shape.pts[randomIndex].opacity);
                     if(!spokesHidden)
-                        putLine(_dx, _dy, dx, dy, cumulativeOpacity/scaleDownMultiplier);
+                        putLine(new ifsPt(_dx,_dy,_dz), new ifsPt(dx,dy,dz), cumulativeOpacity/scaleDownMultiplier);
                     if(usePDFSamples)
-                        putImgSample(dx, dy, cumulativeRotation, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier);
+                        putImgSample(dx, dy, dz, cumulativeRotationYaw, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier);
                     cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;
-                    cumulativeRotation += shape.pts[randomIndex].rotation;
+                    cumulativeRotationYaw += shape.pts[randomIndex].rotationYaw;
                     cumulativeOpacity *= shape.pts[randomIndex].opacity;
 
                 }
                 if(!leavesHidden)
-                    putPixel(dx, dy, cumulativeOpacity);
+                    putPixel(dx, dy, dz, cumulativeOpacity);
             }
         }
     }
@@ -623,11 +621,12 @@ public class ifsys extends Panel
 
         mousex = e.getX();
         mousey = e.getY();
+        mousez = 0;
         findSelectedPoint();
 
         if(e.getClickCount()==2){
             if(mousemode == 1){ //add point w/ double click
-                shape.addPoint(mousex, mousey);
+                shape.addPoint(mousex, mousey, mousez);
                 clearframe();
                 gamefunc();
             }else if(mousemode == 3){ //remove point w/ double right click
@@ -638,20 +637,23 @@ public class ifsys extends Panel
         }else{
             startDragX = e.getX();
             startDragY = e.getY();
+            startDragZ = mousez;
             shape.updateCenter();
 
             if(ctrlDown || shiftDown){
                 shape.saveState();
                 startDragPX = shape.pts[0].x;
                 startDragPY = shape.pts[0].y;
-                startDragDist = shape.distance(startDragX - shape.pts[0].x, startDragY - shape.pts[0].y);
-                startDragAngle = 0 + Math.atan2(startDragX - shape.pts[0].x, startDragY - shape.pts[0].y);
+                startDragPZ = shape.pts[0].z;
+                startDragDist = shape.distance(startDragX - shape.pts[0].x, startDragY - shape.pts[0].y, startDragZ - shape.pts[0].z);
+                startDragAngleYaw = 0 + Math.atan2(startDragX - shape.pts[0].x, startDragY - shape.pts[0].y);
                 startDragScale = 1.0;
             }else{
                 startDragPX = selectedPt.x;
                 startDragPY = selectedPt.y;
-                startDragDist = shape.distance(startDragX - selectedPt.x, startDragY - selectedPt.y);
-                startDragAngle = selectedPt.rotation + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
+                startDragPZ = selectedPt.z;
+                startDragDist = shape.distance(startDragX - selectedPt.x, startDragY - selectedPt.y, startDragZ - selectedPt.z);
+                startDragAngleYaw = selectedPt.rotationYaw + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
                 startDragScale = selectedPt.scale;
             }
 
@@ -677,31 +679,32 @@ public class ifsys extends Panel
             setCursor (Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
             selectedPt.x = startDragPX + (e.getX() - startDragX);
             selectedPt.y = startDragPY + (e.getY() - startDragY);
+            selectedPt.z = startDragPZ + (mousez - startDragZ);
         }
         else if(mousemode == 3){ //right click to rotate point/set
             setCursor (Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
 
             if(ctrlDown){ //rotate the set
-                double rotationDelta = (Math.atan2(e.getX() - shape.pts[0].x , e.getY() - shape.pts[0].y )- startDragAngle);
-                double scaleDelta = shape.distance(e.getX() - shape.pts[0].x , e.getY() - shape.pts[0].y )/startDragDist;
+                double rotationDelta = (Math.atan2(e.getX() - shape.pts[0].x , e.getY() - shape.pts[0].y )- startDragAngleYaw);
+                double scaleDelta = shape.distance(e.getX() - shape.pts[0].x , e.getY() - shape.pts[0].y, mousez - shape.pts[0].z )/startDragDist;
 
                 for(int i=1; i<shape.pointsInUse; i++){
                     shape.pts[i].x = shape.pts[0].x + scaleDelta * shape.pts[i].savedradius*Math.cos(Math.PI / 2 - shape.pts[i].saveddegrees - rotationDelta);
                     shape.pts[i].y = shape.pts[0].x + scaleDelta * shape.pts[i].savedradius*Math.sin(Math.PI / 2 - shape.pts[i].saveddegrees - rotationDelta);
                 }
             }else if(shiftDown){ //rotate all points in unison
-                double rotationDelta = (Math.atan2(e.getX() - shape.pts[0].x, e.getY() - shape.pts[0].y)- startDragAngle);
-                double scaleDelta = shape.distance(e.getX() - shape.pts[0].x, e.getY() - shape.pts[0].y)/startDragDist;
+                double rotationDelta = (Math.atan2(e.getX() - shape.pts[0].x, e.getY() - shape.pts[0].y)- startDragAngleYaw);
+                double scaleDelta = shape.distance(e.getX() - shape.pts[0].x, e.getY() - shape.pts[0].y, mousez - shape.pts[0].z)/startDragDist;
 
                 for(int i=1; i<shape.pointsInUse; i++){
-                    shape.pts[i].rotation = shape.pts[i].savedrotation + (Math.PI * 2 - rotationDelta);
+                    shape.pts[i].rotationYaw = shape.pts[i].savedrotation + (Math.PI * 2 - rotationDelta);
                     shape.pts[i].scale = shape.pts[i].savedscale*scaleDelta;
                 }
             }else{ //move a single point
-                double rotationDelta = (Math.atan2(e.getX() - selectedPt.x, e.getY() - selectedPt.y)- startDragAngle);
-                double scaleDelta = shape.distance(e.getX() - selectedPt.x, e.getY() - selectedPt.y)/startDragDist;
+                double rotationDelta = (Math.atan2(e.getX() - selectedPt.x, e.getY() - selectedPt.y)- startDragAngleYaw);
+                double scaleDelta = shape.distance(e.getX() - selectedPt.x, e.getY() - selectedPt.y, mousez - shape.pts[0].z)/startDragDist;
 
-                selectedPt.rotation = Math.PI * 2 - rotationDelta;
+                selectedPt.rotationYaw = Math.PI * 2 - rotationDelta;
                 selectedPt.scale = startDragScale*scaleDelta;
             }
         }
