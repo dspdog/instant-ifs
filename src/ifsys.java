@@ -3,8 +3,7 @@ import java.awt.event.*;
 import java.awt.image.MemoryImageSource;
 
 public class ifsys extends Panel
-    implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener, ActionListener,
-        ItemListener
+    implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener, ActionListener
 {
     mainthread game;
     boolean quit;
@@ -25,10 +24,6 @@ public class ifsys extends Panel
     double samplesNeeded;
 
     pdf3D thePdf;
-
-    CheckboxMenuItem topButton;
-    CheckboxMenuItem sideButton;
-    CheckboxMenuItem frontButton;
 
     //user params
         boolean framesHidden;
@@ -116,7 +111,6 @@ public class ifsys extends Panel
                 System.exit(0);
             };
         });
-
         ifsys is = new ifsys();
         is.setSize(is.screenwidth, is.screenheight); // same size as defined in the HTML APPLET
         f.add(is);
@@ -124,95 +118,7 @@ public class ifsys extends Panel
         is.init();
         f.setSize(is.screenwidth, is.screenheight + 20); // add 20, seems enough for the Frame title,
         f.show();
-
-        MenuBar menuBar;
-        Menu pdfMenu, renderMenu, shapeMenu, guidesMenu, viewMenu;
-
-        menuBar = new MenuBar();
-        pdfMenu = new Menu("PDF");
-        renderMenu = new Menu("Render");
-        shapeMenu = new Menu("Shape");
-        guidesMenu = new Menu("Guides");
-        viewMenu = new Menu("View");
-
-        //RENDER MENU
-            CheckboxMenuItem aaButton = new CheckboxMenuItem("Anti-Aliasing"); //anti-aliasing toggle
-            aaButton.setState(is.antiAliasing);
-            aaButton.addItemListener(is);
-            renderMenu.add(aaButton);
-
-            CheckboxMenuItem inButton = new CheckboxMenuItem("Invert"); //invert toggle
-            inButton.setState(is.invertColors);
-            inButton.addItemListener(is);
-            renderMenu.add(inButton);
-
-        //VIEW MENU
-            is.topButton = new CheckboxMenuItem("Top (XY)");
-            is.sideButton = new CheckboxMenuItem("Side (XZ)");
-            is.frontButton = new CheckboxMenuItem("Front (YZ)");
-            is.topButton.setState(is.viewMode==0);
-            is.topButton.addItemListener(is);
-            viewMenu.add(is.topButton);
-
-            is.sideButton = new CheckboxMenuItem("Side (XZ)");
-            is.sideButton.setState(is.viewMode==1);
-            is.sideButton.addItemListener(is);
-            viewMenu.add(is.sideButton);
-
-            is.frontButton = new CheckboxMenuItem("Front (YZ)");
-            is.frontButton.setState(is.viewMode==2);
-            is.frontButton.addItemListener(is);
-            viewMenu.add(is.frontButton);
-
-        //SHAPE MENU
-            CheckboxMenuItem autoScaleButton = new CheckboxMenuItem("AutoScale Points"); //autoscale toggle
-            autoScaleButton.setState(is.shape.autoScale);
-            autoScaleButton.addItemListener(is);
-            shapeMenu.add(autoScaleButton);
-
-            CheckboxMenuItem imgButton = new CheckboxMenuItem("PDF Samples"); //img samples toggle
-            imgButton.setState(is.usePDFSamples);
-            imgButton.addItemListener(is);
-            shapeMenu.add(imgButton);
-
-            CheckboxMenuItem leavesButton = new CheckboxMenuItem("Leaves"); //leaves toggle
-            leavesButton.setState(!is.leavesHidden);
-            leavesButton.addItemListener(is);
-            shapeMenu.add(leavesButton);
-
-            CheckboxMenuItem spokesButton = new CheckboxMenuItem("Spokes"); //spokes toggle
-            spokesButton.setState(!is.spokesHidden);
-            spokesButton.addItemListener(is);
-            shapeMenu.add(spokesButton);
-
-            CheckboxMenuItem framesButton = new CheckboxMenuItem("Frames"); //frames toggle
-            framesButton.setState(!is.framesHidden);
-            framesButton.addItemListener(is);
-            shapeMenu.add(framesButton);
-
-            CheckboxMenuItem trailsButton = new CheckboxMenuItem("Point Trails"); //trails toggle
-            trailsButton.setState(!is.trailsHidden);
-            trailsButton.addItemListener(is);
-            shapeMenu.add(trailsButton);
-
-        //GUIDES MENU
-            CheckboxMenuItem infoButton = new CheckboxMenuItem("Info Box"); //info box toggle
-            infoButton.setState(!is.infoHidden);
-            infoButton.addItemListener(is);
-            guidesMenu.add(infoButton);
-
-            CheckboxMenuItem guidesButton = new CheckboxMenuItem("Point Markers"); //scale markers toggle
-            guidesButton.setState(!is.guidesHidden);
-            guidesButton.addItemListener(is);
-            guidesMenu.add(guidesButton);
-
-        menuBar.add(renderMenu);
-        menuBar.add(shapeMenu);
-        menuBar.add(pdfMenu);
-        menuBar.add(guidesMenu);
-        menuBar.add(viewMenu);
-
-        f.setMenuBar(menuBar);
+        ifsMenu theMenu = new ifsMenu(f, is);
     }
 
     public void init() {
@@ -221,7 +127,6 @@ public class ifsys extends Panel
         clearframe();
         gamefunc();
     }
-
 
     public void findSelectedPoint(){
         pointselected = shape.getNearestPtIndex(mousex, mousey, mousez);
@@ -232,54 +137,7 @@ public class ifsys extends Panel
 
     }
 
-    public void itemStateChanged(ItemEvent e) {
-        //RENDER MENU
-            if(e.getItem()=="Anti-Aliasing"){
-                antiAliasing = e.getStateChange()==1;
-            }
-            if(e.getItem()=="Invert"){
-                invertColors = e.getStateChange()==1;
-            }
-        //VIEW MENU
-            if(e.getItem()=="Top (XY)"){
-                viewMode = 0;
-            }
-            if(e.getItem()=="Side (XZ)"){
-                viewMode = 1;
-            }
-            if(e.getItem()=="Front (YZ)"){
-                viewMode = 2;
-            }
-            topButton.setState(viewMode==0);
-            sideButton.setState(viewMode==1);
-            frontButton.setState(viewMode==2);
-        //GUIDES MENU
-            if(e.getItem()=="Info Box"){
-                infoHidden = e.getStateChange()==2;
-            }
-            if(e.getItem()=="Point Markers"){
-                guidesHidden = e.getStateChange()==2;
-            }
-        //SHAPE MENU
-            if(e.getItem()=="AutoScale Points"){
-                shape.autoScale = e.getStateChange()==1;
-            }
-            if(e.getItem()=="PDF Samples"){
-                usePDFSamples = e.getStateChange()==1;
-            }
-            if(e.getItem()=="Leaves"){
-                leavesHidden = e.getStateChange()==2;
-            }
-            if(e.getItem()=="Frames"){
-                framesHidden = e.getStateChange()==2;
-            }
-            if(e.getItem()=="Spokes"){
-                spokesHidden = e.getStateChange()==2;
-            }
-            if(e.getItem()=="Point Trails"){
-                spokesHidden = e.getStateChange()==2;
-            }
-    }
+
 
     public class mainthread extends Thread{
         public void run(){
