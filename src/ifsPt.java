@@ -32,6 +32,56 @@ class ifsPt {
         x = _x; y = _y; z = _z;
     }
 
+    public double cos(double i){
+        return Math.cos(i);
+    }
+
+    public double sin(double i){
+        return Math.sin(i);
+    }
+
+    public ifsPt getRotatedPt(double x, double y, double z){
+
+        double sx, sy, sz, cx, cy, cz, theta;
+
+        double Lx, Ly, Lz;
+        double Ux, Uy, Uz;
+        double Fx, Fy, Fz;
+
+        theta = x;
+        sx = sin(theta);
+        cx = cos(theta);
+
+        theta = y;
+        sy = sin(theta);
+        cy = cos(theta);
+
+        theta = z;
+        sz = sin(theta);
+        cz = cos(theta);
+
+        // determine left axis
+        Lx = cy*cz;
+        Ly = sx*sy*cz + cx*sz;
+        Lz = -cx*sy*cz + sx*sz;
+
+        // determine up axis
+        Ux = -cy*sz;
+        Uy = -sx*sy*sz + cx*cz;
+        Uz = cx*sy*sz + sx*cz;
+
+        // determine forward axis
+        Fx = sy;
+        Fy = -sx*cy;
+        Fz = cx*cy;
+
+        double xp = this.x*Lx + this.y*Ly + this.z*Lz;
+        double yp = this.x*Ux + this.y*Uy + this.z*Uz;
+        double zp = this.x*Fx + this.y*Fy + this.z*Fz;
+
+        return new ifsPt(xp,yp,zp);
+    }
+
     public void saveState(){
         savedx = x; savedy = y; savedz = z;
         savedscale = scale;

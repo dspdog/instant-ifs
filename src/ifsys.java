@@ -47,6 +47,7 @@ public class ifsys extends Panel
         int mouseScroll;
 
         int viewMode;
+        int rotateMode;
 
     ifsShape shape;
     double shapeArea;
@@ -102,6 +103,7 @@ public class ifsys extends Panel
 
         thePdf = new pdf3D();
         viewMode=0;
+        rotateMode=0;
     }
 
     public static void main(String[] args) {
@@ -176,6 +178,34 @@ public class ifsys extends Panel
         paint(gr);
     }
 
+    public void drawArc(Graphics _rg, ifsPt pt){
+        int steps = 50;
+        int[] xPts = new int[steps];
+        int[] yPts = new int[steps];
+        int[] zPts = new int[steps];
+
+        xPts[0] = (int)pt.x;
+        yPts[0] = (int)pt.y;
+        zPts[0] = (int)pt.z;
+
+        for(int i=1; i<steps; i++){
+
+            xPts[i] = (int)((Math.cos(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
+            yPts[i] = (int)((Math.sin(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
+            zPts[i] = 0;
+
+            ifsPt rotatedPt = new ifsPt(xPts[i],yPts[i],zPts[i]).getRotatedPt( 0,0,-pt.rotationYaw);
+            xPts[i] = (int)(rotatedPt.x + pt.x);
+            yPts[i] = (int)(rotatedPt.y + pt.y);
+            zPts[i] = (int)(rotatedPt.z + pt.z);
+        }
+
+        xPts[steps-1] = (int)pt.x;
+        yPts[steps-1] = (int)pt.y;
+
+        _rg.drawPolyline(xPts, yPts, steps);
+    }
+
     public void paint(Graphics gr){
         framesThisSecond++;
         if(System.currentTimeMillis()- oneSecondAgo >=1000){
@@ -209,9 +239,10 @@ public class ifsys extends Panel
 
             thePt = shape.pts[i];
             circleWidth = (int)(thePt.scale*thePt.radius*2);
-            rg.drawOval((int)thePt.x-circleWidth/2, (int)thePt.y-circleWidth/2, circleWidth, circleWidth);
-            rg.drawLine((int)thePt.x, (int)thePt.y, (int)(thePt.x + Math.sin(-thePt.rotationYaw)*thePt.scale*thePt.radius),
-                                                    (int)(thePt.y + Math.cos(-thePt.rotationYaw)*thePt.scale*thePt.radius));
+            drawArc(rg, thePt);
+            //rg.drawOval((int)thePt.x-circleWidth/2, (int)thePt.y-circleWidth/2, circleWidth, circleWidth);
+            //rg.drawLine((int)thePt.x, (int)thePt.y, (int)(thePt.x + Math.sin(-thePt.rotationYaw)*thePt.scale*thePt.radius),
+            //                                        (int)(thePt.y + Math.cos(-thePt.rotationYaw)*thePt.scale*thePt.radius));
         }
 
         if(!infoHidden && pointselected>=0){
@@ -345,7 +376,7 @@ public class ifsys extends Panel
 
     }
 
-    public void putImgSample(ifsPt dpt, double cumulativeRotationYaw, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown){
+    public void putPdfSample(ifsPt dpt, double cumulativeRotationYaw, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown){
         //generate random coords
 
         double x=dpt.x;
@@ -439,7 +470,7 @@ public class ifsys extends Panel
                     if(!trailsHidden && d < iterations-1)
                         putPixel(dpt, shape.pts[randomIndex].opacity);
                     if(usePDFSamples)
-                        putImgSample(dpt, cumulativeRotationYaw, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier);
+                        putPdfSample(dpt, cumulativeRotationYaw, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier);
                     cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;
                     cumulativeRotationYaw += shape.pts[randomIndex].rotationYaw;
                     cumulativeOpacity *= shape.pts[randomIndex].opacity;
