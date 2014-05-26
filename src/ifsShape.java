@@ -34,6 +34,8 @@ class ifsShape{
         pts[pointsInUse].z = z;
         pts[pointsInUse].scale = 0.5D;
         pts[pointsInUse].rotationYaw = 0.0D;
+        pts[pointsInUse].rotationPitch = 0.0D;
+        pts[pointsInUse].rotationRoll = 0.0D;
         pts[pointsInUse].opacity = 1.0D;
         pointsInUse++;
         updateCenter();
@@ -65,6 +67,9 @@ class ifsShape{
 
         for(int a = 1; a < pointsInUse; a++){
             pts[a].degreesYaw = Math.atan2(pts[a].x - pts[0].x, pts[a].y - pts[0].y);
+            pts[a].degreesPitch = Math.atan2(pts[a].radius, pts[a].z - pts[0].z);
+
+
             pts[a].radius = autoScale ? distance(pts[a].x - pts[0].x, pts[a].y - pts[0].y,  pts[a].z - pts[0].z) : pts[0].radius;
         }
     }
@@ -120,11 +125,11 @@ class ifsShape{
                 pts[1].scale = 0.5D;
                 pts[2].x = 420D;
                 pts[2].y = 160D + 100D * Math.sqrt(3D);
-                pts[2].z = 50.0;
+                pts[2].z = 0;
                 pts[2].scale = 0.5D;
                 pts[3].x = 220D;
                 pts[3].y = 160D + 100D * Math.sqrt(3D);
-                pts[3].z = 25.0;
+                pts[3].z = 0;
                 pts[3].scale = 0.5D;
 
                 break;

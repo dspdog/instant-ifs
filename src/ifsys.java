@@ -207,10 +207,7 @@ public class ifsys extends Panel
                 break;
         }
 
-
-
         for(int i=1; i<steps; i++){
-
             xPts[i] = (int)((Math.cos(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
             yPts[i] = (int)((Math.sin(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
             zPts[i] = 10*i/steps;
@@ -234,7 +231,6 @@ public class ifsys extends Panel
                     yPts[i] = (int)(rotatedPt.z + pt.z);
                     break;
             }
-
         }
 
         switch (viewMode){
@@ -288,11 +284,8 @@ public class ifsys extends Panel
             }
 
             thePt = shape.pts[i];
-            circleWidth = (int)(thePt.scale*thePt.radius*2);
+
             drawArc(rg, thePt);
-            //rg.drawOval((int)thePt.x-circleWidth/2, (int)thePt.y-circleWidth/2, circleWidth, circleWidth);
-            //rg.drawLine((int)thePt.x, (int)thePt.y, (int)(thePt.x + Math.sin(-thePt.rotationYaw)*thePt.scale*thePt.radius),
-            //                                        (int)(thePt.y + Math.cos(-thePt.rotationYaw)*thePt.scale*thePt.radius));
         }
 
         if(!infoHidden && pointselected>=0){
@@ -303,7 +296,7 @@ public class ifsys extends Panel
             rg.drawString("Y: " + String.valueOf((double)(int)(selectedPt.y * 1000D) / 1000D), 5, 45);
             rg.drawString("Z: " + String.valueOf((double)(int)(selectedPt.z * 1000D) / 1000D), 5, 60);
             rg.drawString("Scale: " + String.valueOf((double)(int)(selectedPt.scale * 1000D) / 1000D), 5, 75);
-            rg.drawString("Rotation Yaw: " + String.valueOf((double)(int)((((selectedPt.rotationYaw / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 90);
+            rg.drawString("Rotation Roll: " + String.valueOf((double)(int)((((selectedPt.rotationRoll / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 90);
             rg.drawString("Opacity: " + String.valueOf(selectedPt.opacity), 5, 105);
             rg.drawString("Iterations (. /): " + String.valueOf(iterations), 5, 120);
             rg.drawString("Samples (nm): " + String.valueOf(sampletotal), 4, 135);
@@ -513,6 +506,10 @@ public class ifsys extends Panel
             for(int a = 0; a < sampletotal; a++){
                 int randomIndex = 0;
                 ifsPt dpt = new ifsPt(shape.pts[randomIndex]);
+                ifsPt rpt;
+
+                double size, yaw, pitch, roll;
+
                 double cumulativeScale = 1.0;
                 double cumulativeOpacity = 1;
 
@@ -530,25 +527,16 @@ public class ifsys extends Panel
                     if(d==0){randomIndex=0;}
 
                     if(d!=0){
-
-                       //dpt.x = shape.pts[randomIndex].radius * cumulativeScale;
-                       // dpt.y = shape.pts[randomIndex].radius * cumulativeScale;
-                       // dpt.z = 0;
-
-                        //dpt.x += Math.cos((Math.PI/2D - shape.pts[randomIndex].degreesYaw) + cumulativeRotationYaw) * shape.pts[randomIndex].radius * cumulativeScale;
-                        //dpt.y += Math.sin((Math.PI/2D - shape.pts[randomIndex].degreesYaw) + cumulativeRotationYaw) * shape.pts[randomIndex].radius * cumulativeScale;
-                        //dpt.z = 0;
-
-                        double size = shape.pts[randomIndex].radius * cumulativeScale;
-                        double yaw = Math.PI/2D - shape.pts[randomIndex].degreesYaw + cumulativeRotationYaw;
-
-                        ifsPt rpt = new ifsPt(size,0,0).getRotatedPt(0, 0, -yaw);
+                        size = shape.pts[randomIndex].radius * cumulativeScale;
+                        yaw = Math.PI/2D - shape.pts[randomIndex].degreesYaw + cumulativeRotationYaw;
+                        pitch = Math.PI/2D - shape.pts[randomIndex].degreesPitch + cumulativeRotationPitch;
+                        roll = - shape.pts[randomIndex].degreesRoll + cumulativeRotationRoll;
+                        rpt = new ifsPt(size,0,0).getRotatedPt(0, -pitch, -yaw);
+                        rpt = new ifsPt(rpt).getRotatedPt(-roll, 0, 0);
 
                         dpt.x += rpt.x;
                         dpt.y += rpt.y;
                         dpt.z += rpt.z;
-
-                        //dpt = dpt.getRotatedPt(shape.pts[randomIndex].rotationYaw, shape.pts[randomIndex].rotationPitch, shape.pts[randomIndex].rotationRoll);
                     }
 
                     if(!trailsHidden && d < iterations-1)
