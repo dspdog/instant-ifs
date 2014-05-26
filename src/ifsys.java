@@ -324,7 +324,7 @@ public class ifsys extends Panel
                 rg.drawString("X+", 10+55, screenheight-50-60);
             }
             if(viewMode==1){ //XZ axis
-                rg.setColor(Color.yellow);
+                rg.setColor(Color.blue);
                 rg.drawLine(10, screenheight-65, 10, screenheight-65-50);
                 rg.drawString("Z+", 10, screenheight-50);
                 rg.setColor(Color.red);
@@ -335,7 +335,7 @@ public class ifsys extends Panel
                 rg.setColor(Color.green);
                 rg.drawLine(10, screenheight-65, 10, screenheight-65-50);
                 rg.drawString("Y+", 10, screenheight-50);
-                rg.setColor(Color.yellow);
+                rg.setColor(Color.blue);
                 rg.drawLine(10, screenheight-65-50, 10+50, screenheight-65-50);
                 rg.drawString("Z+", 10+55, screenheight-50-60);
             }
@@ -513,9 +513,12 @@ public class ifsys extends Panel
             for(int a = 0; a < sampletotal; a++){
                 int randomIndex = 0;
                 ifsPt dpt = new ifsPt(shape.pts[randomIndex]);
-                double cumulativeScale = 1.0; //shape.pts[randomIndex].scale;
-                double cumulativeRotationYaw = 0; //shape.pts[randomIndex].rotationYaw;
-                double cumulativeOpacity = 1; //shape.pts[randomIndex].opacity;
+                double cumulativeScale = 1.0;
+                double cumulativeOpacity = 1;
+
+                double cumulativeRotationYaw = 0;
+                double cumulativeRotationPitch = 0;
+                double cumulativeRotationRoll = 0;
 
                 double scaleDownMultiplier = Math.pow(shape.pointsInUse,iterations-1); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
 
@@ -527,9 +530,25 @@ public class ifsys extends Panel
                     if(d==0){randomIndex=0;}
 
                     if(d!=0){
-                        dpt.x += Math.cos((Math.PI/2D - shape.pts[randomIndex].degreesYaw) + cumulativeRotationYaw) * shape.pts[randomIndex].radius * cumulativeScale;
-                        dpt.y += Math.sin((Math.PI/2D - shape.pts[randomIndex].degreesYaw) + cumulativeRotationYaw) * shape.pts[randomIndex].radius * cumulativeScale;
-                        dpt.z += 0;
+
+                       //dpt.x = shape.pts[randomIndex].radius * cumulativeScale;
+                       // dpt.y = shape.pts[randomIndex].radius * cumulativeScale;
+                       // dpt.z = 0;
+
+                        //dpt.x += Math.cos((Math.PI/2D - shape.pts[randomIndex].degreesYaw) + cumulativeRotationYaw) * shape.pts[randomIndex].radius * cumulativeScale;
+                        //dpt.y += Math.sin((Math.PI/2D - shape.pts[randomIndex].degreesYaw) + cumulativeRotationYaw) * shape.pts[randomIndex].radius * cumulativeScale;
+                        //dpt.z = 0;
+
+                        double size = shape.pts[randomIndex].radius * cumulativeScale;
+                        double yaw = Math.PI/2D - shape.pts[randomIndex].degreesYaw + cumulativeRotationYaw;
+
+                        ifsPt rpt = new ifsPt(size,0,0).getRotatedPt(0, 0, -yaw);
+
+                        dpt.x += rpt.x;
+                        dpt.y += rpt.y;
+                        dpt.z += rpt.z;
+
+                        //dpt = dpt.getRotatedPt(shape.pts[randomIndex].rotationYaw, shape.pts[randomIndex].rotationPitch, shape.pts[randomIndex].rotationRoll);
                     }
 
                     if(!trailsHidden && d < iterations-1)
@@ -537,9 +556,11 @@ public class ifsys extends Panel
                     if(usePDFSamples)
                         putPdfSample(dpt, cumulativeRotationYaw, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier);
                     cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;
-                    cumulativeRotationYaw += shape.pts[randomIndex].rotationYaw;
                     cumulativeOpacity *= shape.pts[randomIndex].opacity;
 
+                    cumulativeRotationYaw += shape.pts[randomIndex].rotationYaw;
+                    cumulativeRotationPitch += shape.pts[randomIndex].rotationPitch;
+                    cumulativeRotationRoll += shape.pts[randomIndex].rotationRoll;
                 }
                 if(!leavesHidden)
                     putPixel(dpt, cumulativeOpacity);
