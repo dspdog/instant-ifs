@@ -101,11 +101,6 @@ public class ifsMenu implements ItemListener{
             infoButton.addItemListener(this);
             guidesMenu.add(infoButton);
 
-            CheckboxMenuItem guidesButton = new CheckboxMenuItem("Point Markers"); //scale markers toggle
-            guidesButton.setState(!is.guidesHidden);
-            guidesButton.addItemListener(this);
-            guidesMenu.add(guidesButton);
-
             menuBar.add(renderMenu);
             menuBar.add(shapeMenu);
             menuBar.add(pdfMenu);
@@ -154,9 +149,6 @@ public class ifsMenu implements ItemListener{
         //GUIDES MENU
             if(e.getItem()=="Info Box"){
                 myIfsSys.infoHidden = e.getStateChange()==2;
-            }
-            if(e.getItem()=="Point Markers"){
-                myIfsSys.guidesHidden = e.getStateChange()==2;
             }
         //SHAPE MENU
             if(e.getItem()=="AutoScale Points"){

@@ -23,6 +23,8 @@ public class ifsys extends Panel
     long samplesThisFrame;
     double samplesNeeded;
 
+    long lastMoveTime;
+
     pdf3D thePdf;
 
     //user params
@@ -83,9 +85,9 @@ public class ifsys extends Panel
         framesHidden = true;
         spokesHidden = true;
         trailsHidden = true;
-        leavesHidden = true;
+        leavesHidden = false;
         infoHidden = false;
-        usePDFSamples = true;
+        usePDFSamples = false;
         guidesHidden = false;
         invertColors = false;
         screenwidth = 1024;
@@ -106,6 +108,7 @@ public class ifsys extends Panel
         thePdf = new pdf3D();
         viewMode=0;
         rotateMode=0;
+        lastMoveTime=0;
     }
 
     public static void main(String[] args) {
@@ -485,6 +488,9 @@ public class ifsys extends Panel
     }
 
     public void gamefunc(){
+
+        guidesHidden = System.currentTimeMillis() - lastMoveTime > 1000;
+
         samplesNeeded = Math.pow(shape.pointsInUse, iterations);
 
         if(shape.pointsInUse != 0){
@@ -583,25 +589,15 @@ public class ifsys extends Panel
             startDragZ = mousez;
             shape.updateCenter();
 
-            if(ctrlDown || shiftDown){
-                shape.saveState();
-                startDragPX = shape.pts[0].x;
-                startDragPY = shape.pts[0].y;
-                startDragPZ = shape.pts[0].z;
-                startDragDist = shape.distance(startDragX - shape.pts[0].x, startDragY - shape.pts[0].y, startDragZ - shape.pts[0].z);
-                startDragAngleYaw = 0 + Math.atan2(startDragX - shape.pts[0].x, startDragY - shape.pts[0].y);
-                startDragScale = 1.0;
-            }else{
-                startDragPX = selectedPt.x;
-                startDragPY = selectedPt.y;
-                startDragPZ = selectedPt.z;
-                startDragDist = shape.distance(startDragX - selectedPt.x, startDragY - selectedPt.y, startDragZ - selectedPt.z);
-                startDragAngleYaw = selectedPt.rotationYaw + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
-                startDragAngleRoll = selectedPt.rotationRoll + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
-                startDragAnglePitch = selectedPt.rotationPitch + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
+            startDragPX = selectedPt.x;
+            startDragPY = selectedPt.y;
+            startDragPZ = selectedPt.z;
+            startDragDist = shape.distance(startDragX - selectedPt.x, startDragY - selectedPt.y, startDragZ - selectedPt.z);
+            startDragAngleYaw = selectedPt.rotationYaw + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
+            startDragAngleRoll = selectedPt.rotationRoll + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
+            startDragAnglePitch = selectedPt.rotationPitch + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
 
-                startDragScale = selectedPt.scale;
-            }
+            startDragScale = selectedPt.scale;
 
             requestFocus();
         }
@@ -621,7 +617,7 @@ public class ifsys extends Panel
     }
 
     public void mouseDragged(MouseEvent e){
-
+        lastMoveTime = System.currentTimeMillis();
         if(mousemode == 1){ //left click to move a point/set
             setCursor (Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 
@@ -669,6 +665,9 @@ public class ifsys extends Panel
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {
+
+        lastMoveTime = System.currentTimeMillis();
+
         mouseScroll += e.getWheelRotation();
 
         double changeFactor = 0.9;
@@ -703,6 +702,7 @@ public class ifsys extends Panel
         mousex = e.getX();
         mousey = e.getY();
         mousez = 0;
+        lastMoveTime = System.currentTimeMillis();
     }
 
     public void keyTyped(KeyEvent e){
