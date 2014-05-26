@@ -532,7 +532,7 @@ public class ifsys extends Panel
                         pitch = Math.PI/2D - shape.pts[randomIndex].degreesPitch + cumulativeRotationPitch;
                         roll = - shape.pts[randomIndex].degreesRoll + cumulativeRotationRoll;
                         rpt = new ifsPt(size,0,0).getRotatedPt(0, -pitch, -yaw);
-                        rpt = new ifsPt(rpt).getRotatedPt(-roll, 0, 0);
+                        rpt = rpt.getRotatedPt(-roll, 0, 0);
 
                         dpt.x += rpt.x;
                         dpt.y += rpt.y;
