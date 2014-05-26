@@ -186,24 +186,69 @@ public class ifsys extends Panel
         int[] yPts = new int[steps];
         int[] zPts = new int[steps];
 
-        xPts[0] = (int)pt.x;
-        yPts[0] = (int)pt.y;
-        zPts[0] = (int)pt.z;
+        switch (viewMode){
+            case 0:
+                xPts[0] = (int)pt.x;
+                yPts[0] = (int)pt.y;
+                zPts[0] = (int)pt.z;
+                break;
+            case 1:
+                xPts[0] = (int)pt.x;
+                yPts[0] = (int)pt.z;
+                zPts[0] = (int)pt.y;
+                break;
+            case 2:
+                xPts[0] = (int)pt.y;
+                yPts[0] = (int)pt.z;
+                zPts[0] = (int)pt.x;
+                break;
+        }
+
+
 
         for(int i=1; i<steps; i++){
 
             xPts[i] = (int)((Math.cos(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
             yPts[i] = (int)((Math.sin(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
-            zPts[i] = 0;
+            zPts[i] = 10*i/steps;
 
             ifsPt rotatedPt = new ifsPt(xPts[i],yPts[i],zPts[i]).getRotatedPt(-pt.rotationRoll,-pt.rotationPitch,-pt.rotationYaw);
-            xPts[i] = (int)(rotatedPt.x + pt.x);
-            yPts[i] = (int)(rotatedPt.y + pt.y);
-            zPts[i] = (int)(rotatedPt.z + pt.z);
+
+            switch (viewMode){
+                case 0:
+                    xPts[i] = (int)(rotatedPt.x + pt.x);
+                    yPts[i] = (int)(rotatedPt.y + pt.y);
+                    zPts[i] = (int)(rotatedPt.z + pt.z);
+                    break;
+                case 1:
+                    xPts[i] = (int)(rotatedPt.x + pt.x);
+                    zPts[i] = (int)(rotatedPt.y + pt.y);
+                    yPts[i] = (int)(rotatedPt.z + pt.z);
+                    break;
+                case 2:
+                    zPts[i] = (int)(rotatedPt.x + pt.x);
+                    xPts[i] = (int)(rotatedPt.y + pt.y);
+                    yPts[i] = (int)(rotatedPt.z + pt.z);
+                    break;
+            }
+
         }
 
-        xPts[steps-1] = (int)pt.x;
-        yPts[steps-1] = (int)pt.y;
+        switch (viewMode){
+            case 0:
+                xPts[steps-1] = (int)pt.x;
+                yPts[steps-1] = (int)pt.y;
+                break;
+            case 1:
+                xPts[steps-1] = (int)pt.x;
+                yPts[steps-1] = (int)pt.z;
+                break;
+            case 2:
+                xPts[steps-1] = (int)pt.y;
+                yPts[steps-1] = (int)pt.z;
+                break;
+        }
+
 
         _rg.drawPolyline(xPts, yPts, steps);
     }
@@ -346,7 +391,19 @@ public class ifsys extends Panel
 
     public boolean putPixel(ifsPt pt, double alpha){
         double decX, decY, decZ; //decimal parts of coordinates
-        double x = pt.x; double y = pt.y; double z = pt.z;
+        double x=0,y=0,z=0;
+
+        switch (viewMode){
+            case 0:
+                x = pt.x; y = pt.y; z = pt.z;
+                break;
+            case 1:
+                x = pt.x; y = pt.z; z = pt.y;
+                break;
+            case 2:
+                x = pt.z; y = pt.y; z = pt.x;
+                break;
+        }
 
         if(x < (double)(screenwidth - 1) &&
             y < (double)(screenheight - 1) &&
@@ -490,9 +547,24 @@ public class ifsys extends Panel
     public void mousePressed(MouseEvent e){
         mousemode = e.getButton();
 
-        mousex = e.getX();
-        mousey = e.getY();
-        mousez = 0;
+        switch (viewMode){
+            case 0: //XY
+                mousex = e.getX();
+                mousey = e.getY();
+                mousez = 0;
+                break;
+            case 1: //XZ
+                mousex = e.getX();
+                mousez = e.getY();
+                mousey = 0;
+                break;
+            case 2: //YZ
+                mousey = e.getX();
+                mousez = e.getY();
+                mousex = 0;
+                break;
+        }
+
         findSelectedPoint();
 
         if(e.getClickCount()==2){
@@ -506,8 +578,8 @@ public class ifsys extends Panel
                 gamefunc();
             }
         }else{
-            startDragX = e.getX();
-            startDragY = e.getY();
+            startDragX = mousex;
+            startDragY = mousey;
             startDragZ = mousez;
             shape.updateCenter();
 
@@ -549,37 +621,33 @@ public class ifsys extends Panel
     }
 
     public void mouseDragged(MouseEvent e){
+
         if(mousemode == 1){ //left click to move a point/set
             setCursor (Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-            selectedPt.x = startDragPX + (e.getX() - startDragX);
-            selectedPt.y = startDragPY + (e.getY() - startDragY);
-            selectedPt.z = startDragPZ + (mousez - startDragZ);
+
+            switch (viewMode){
+                case 0:
+                    selectedPt.x = startDragPX + (e.getX() - startDragX);
+                    selectedPt.y = startDragPY + (e.getY() - startDragY);
+                    selectedPt.z = startDragPZ + (mousez - startDragZ);
+                    break;
+                case 1:
+                    selectedPt.x = startDragPX + (e.getX() - startDragX);
+                    selectedPt.y = startDragPY + (mousey - startDragY);
+                    selectedPt.z = startDragPZ + (e.getY() - startDragZ);
+                    break;
+                case 2:
+                    selectedPt.x = startDragPX + (mousex - startDragX);
+                    selectedPt.y = startDragPY + (e.getX() - startDragY);
+                    selectedPt.z = startDragPZ + (e.getY() - startDragZ);
+                    break;
+            }
+
+
         }
         else if(mousemode == 3){ //right click to rotate point/set
             setCursor (Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
 
-            /*if(ctrlDown){ //rotate the set
-                double rotationDelta = (Math.atan2(e.getX() - shape.pts[0].x , e.getY() - shape.pts[0].y )- startDragAngleYaw);
-                double scaleDelta = shape.distance(e.getX() - shape.pts[0].x , e.getY() - shape.pts[0].y, mousez - shape.pts[0].z )/startDragDist;
-
-                for(int i=1; i<shape.pointsInUse; i++){
-                    shape.pts[i].x = shape.pts[0].x + scaleDelta * shape.pts[i].savedradius*Math.cos(Math.PI / 2 - shape.pts[i].saveddegrees - rotationDelta);
-                    shape.pts[i].y = shape.pts[0].x + scaleDelta * shape.pts[i].savedradius*Math.sin(Math.PI / 2 - shape.pts[i].saveddegrees - rotationDelta);
-                }
-            }else if(shiftDown){ //rotate all points in unison
-                double rotationDelta = (Math.atan2(e.getX() - shape.pts[0].x, e.getY() - shape.pts[0].y)- startDragAngleYaw);
-                double scaleDelta = shape.distance(e.getX() - shape.pts[0].x, e.getY() - shape.pts[0].y, mousez - shape.pts[0].z)/startDragDist;
-
-                for(int i=1; i<shape.pointsInUse; i++){
-                    shape.pts[i].rotationYaw = shape.pts[i].savedrotation + (Math.PI * 2 - rotationDelta);
-                    shape.pts[i].scale = shape.pts[i].savedscale*scaleDelta;
-                }
-            }else{ //move a single point
-
-            }*/
-            //startDragAngleYaw=0;
-            //startDragAnglePitch=startDragAngleYaw;
-            //startDragAngleRoll=startDragAngleYaw;
             double scaleDelta = shape.distance(e.getX() - selectedPt.x, e.getY() - selectedPt.y, mousez - shape.pts[0].z)/startDragDist;
             if(rotateMode==0){
                 double rotationDelta = (Math.atan2(e.getX() - selectedPt.x, e.getY() - selectedPt.y)- startDragAngleYaw);
@@ -593,8 +661,6 @@ public class ifsys extends Panel
             }
 
             selectedPt.scale = startDragScale*scaleDelta;
-
-
         }
 
         shape.updateCenter();
@@ -636,6 +702,7 @@ public class ifsys extends Panel
         findSelectedPoint();
         mousex = e.getX();
         mousey = e.getY();
+        mousez = 0;
     }
 
     public void keyTyped(KeyEvent e){

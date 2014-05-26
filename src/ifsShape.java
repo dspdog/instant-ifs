@@ -116,13 +116,17 @@ class ifsShape{
                 pts[0].scale = 1.0;
                 pts[1].x = 320D;
                 pts[1].y = 160D;
+                pts[1].z = 0D;
                 pts[1].scale = 0.5D;
                 pts[2].x = 420D;
                 pts[2].y = 160D + 100D * Math.sqrt(3D);
+                pts[2].z = 50.0;
                 pts[2].scale = 0.5D;
                 pts[3].x = 220D;
                 pts[3].y = 160D + 100D * Math.sqrt(3D);
+                pts[3].z = 25.0;
                 pts[3].scale = 0.5D;
+
                 break;
             case 2: // '\002'
                 pointsInUse = 5;
