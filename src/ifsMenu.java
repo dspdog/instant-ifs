@@ -15,7 +15,7 @@ public class ifsMenu implements ItemListener{
         myIfsSys = is;
 
         MenuBar menuBar;
-        Menu pdfMenu, renderMenu, shapeMenu, guidesMenu, viewMenu, rotateMenu;
+        Menu pdfMenu, renderMenu, shapeMenu, guidesMenu, viewMenu;
 
         menuBar = new MenuBar();
         pdfMenu = new Menu("PDF");
@@ -23,7 +23,6 @@ public class ifsMenu implements ItemListener{
         shapeMenu = new Menu("Shape");
         guidesMenu = new Menu("Guides");
         viewMenu = new Menu("View");
-        rotateMenu = new Menu("Rotate");
 
         //RENDER MENU
             CheckboxMenuItem aaButton = new CheckboxMenuItem("Anti-Aliasing"); //anti-aliasing toggle
@@ -82,10 +81,9 @@ public class ifsMenu implements ItemListener{
 
             menuBar.add(renderMenu);
             menuBar.add(shapeMenu);
-            menuBar.add(pdfMenu);
+            //menuBar.add(pdfMenu);
             menuBar.add(guidesMenu);
             menuBar.add(viewMenu);
-            menuBar.add(rotateMenu);
 
             f.setMenuBar(menuBar);
     }
