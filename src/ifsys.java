@@ -69,6 +69,7 @@ public class ifsys extends Panel
         double startDragScale;
 
     boolean started;
+    boolean isDragging;
     int preset;
 
     ifsOverlays overlays;
@@ -106,6 +107,7 @@ public class ifsys extends Panel
         mouseScroll = 0;
         gamma = 1.0D;
         pointselected=-1;
+        isDragging = false;
 
         thePdf = new pdf3D();
         viewMode=0;
@@ -492,6 +494,7 @@ public class ifsys extends Panel
     public void mouseReleased(MouseEvent e){
         setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         mousemode = 0;
+        isDragging=false;
     }
 
     public void mouseEntered(MouseEvent e){
@@ -503,6 +506,7 @@ public class ifsys extends Panel
     }
 
     public void mouseDragged(MouseEvent e){
+        isDragging=true;
         lastMoveTime = System.currentTimeMillis();
         if(mousemode == 1){ //left click to move a point/set
             setCursor (Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));

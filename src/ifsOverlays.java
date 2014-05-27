@@ -14,11 +14,11 @@ public class ifsOverlays {
             if(i==0){
                 rg.setColor(Color.BLUE);
             }
-            drawArc(rg, myIfsSys.shape.pts[i], i == myIfsSys.pointselected);
+            drawArc(rg, myIfsSys.shape.pts[i], i == myIfsSys.pointselected, myIfsSys.isDragging);
         }
     }
 
-    public void drawArc(Graphics _rg, ifsPt pt, boolean isSelected){
+    public void drawArc(Graphics _rg, ifsPt pt, boolean isSelected, boolean dragging){
         int viewMode = myIfsSys.viewMode;
         int steps = 50;
 
@@ -155,21 +155,20 @@ public class ifsOverlays {
                     d3 = distance(myIfsSys.mousex - rotatedPt3.y - pt.y, myIfsSys.mousey - rotatedPt3.z - pt.z);
                     break;
             }
+
             if(d1<min_d){
                 min_d=d1;
-                selectedD=1;
+                selectedD=0;
             }
             if(d2<min_d){
                 min_d=d2;
-                selectedD=2;
+                selectedD=1;
             }
             if(d3<min_d){
                 min_d=d3;
-                selectedD=3;
+                selectedD=2;
             }
         }
-
-
 
         switch (viewMode){
             case 0:
@@ -199,12 +198,16 @@ public class ifsOverlays {
         }
 
         if(isSelected){
+            if(!dragging){
+                myIfsSys.rotateMode = selectedD;
+            }
+
             _rg.setColor(Color.red);
-            drawPolylineBolded(_rg, xPts1, yPts1, steps, selectedD==1);
+            drawPolylineBolded(_rg, xPts1, yPts1, steps, myIfsSys.rotateMode==0);
             _rg.setColor(Color.green);
-            drawPolylineBolded(_rg, xPts2, yPts2, steps, selectedD==2);
+            drawPolylineBolded(_rg, xPts2, yPts2, steps, myIfsSys.rotateMode==1);
             _rg.setColor(Color.blue);
-            drawPolylineBolded(_rg, xPts3, yPts3, steps, selectedD==3);
+            drawPolylineBolded(_rg, xPts3, yPts3, steps, myIfsSys.rotateMode==2);
         }else{
             _rg.setColor(Color.darkGray);
             _rg.drawPolyline(xPts1, yPts1, steps);
