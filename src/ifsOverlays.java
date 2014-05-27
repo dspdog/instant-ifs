@@ -34,6 +34,11 @@ public class ifsOverlays {
         int[] yPts3 = new int[steps];
         int[] zPts3 = new int[steps];
 
+        double d1=999,d2=999,d3=999, min_d; //distances from arcs to mouse cursor
+        int selectedD=1;
+
+        min_d=100000;
+
         switch (viewMode){
             case 0:
                 xPts1[0] = (int)pt.x;
@@ -109,6 +114,11 @@ public class ifsOverlays {
                     xPts3[i] = (int)(rotatedPt3.x + pt.x);
                     yPts3[i] = (int)(rotatedPt3.y + pt.y);
                     zPts3[i] = (int)(rotatedPt3.z + pt.z);
+
+                    d1 = distance(myIfsSys.mousex - rotatedPt1.x - pt.x, myIfsSys.mousey - rotatedPt1.y - pt.y);
+                    d2 = distance(myIfsSys.mousex - rotatedPt2.x - pt.x, myIfsSys.mousey - rotatedPt2.y - pt.y);
+                    d3 = distance(myIfsSys.mousex - rotatedPt3.x - pt.x, myIfsSys.mousey - rotatedPt3.y - pt.y);
+
                     break;
                 case 1:
                     xPts1[i] = (int)(rotatedPt1.x + pt.x);
@@ -122,6 +132,10 @@ public class ifsOverlays {
                     xPts3[i] = (int)(rotatedPt3.x + pt.x);
                     zPts3[i] = (int)(rotatedPt3.y + pt.y);
                     yPts3[i] = (int)(rotatedPt3.z + pt.z);
+
+                    d1 = distance(myIfsSys.mousex - rotatedPt1.x - pt.x, myIfsSys.mousey - rotatedPt1.z - pt.z);
+                    d2 = distance(myIfsSys.mousex - rotatedPt2.x - pt.x, myIfsSys.mousey - rotatedPt2.z - pt.z);
+                    d3 = distance(myIfsSys.mousex - rotatedPt3.x - pt.x, myIfsSys.mousey - rotatedPt3.z - pt.z);
                     break;
                 case 2:
                     zPts1[i] = (int)(rotatedPt1.x + pt.x);
@@ -135,9 +149,27 @@ public class ifsOverlays {
                     zPts3[i] = (int)(rotatedPt3.x + pt.x);
                     xPts3[i] = (int)(rotatedPt3.y + pt.y);
                     yPts3[i] = (int)(rotatedPt3.z + pt.z);
+
+                    d1 = distance(myIfsSys.mousex - rotatedPt1.y - pt.y, myIfsSys.mousey - rotatedPt1.z - pt.z);
+                    d2 = distance(myIfsSys.mousex - rotatedPt2.y - pt.y, myIfsSys.mousey - rotatedPt2.z - pt.z);
+                    d3 = distance(myIfsSys.mousex - rotatedPt3.y - pt.y, myIfsSys.mousey - rotatedPt3.z - pt.z);
                     break;
             }
+            if(d1<min_d){
+                min_d=d1;
+                selectedD=1;
+            }
+            if(d2<min_d){
+                min_d=d2;
+                selectedD=2;
+            }
+            if(d3<min_d){
+                min_d=d3;
+                selectedD=3;
+            }
         }
+
+
 
         switch (viewMode){
             case 0:
@@ -168,16 +200,33 @@ public class ifsOverlays {
 
         if(isSelected){
             _rg.setColor(Color.red);
-            _rg.drawPolyline(xPts1, yPts1, steps);
+            drawPolylineBolded(_rg, xPts1, yPts1, steps, selectedD==1);
             _rg.setColor(Color.green);
-            _rg.drawPolyline(xPts2, yPts2, steps);
+            drawPolylineBolded(_rg, xPts2, yPts2, steps, selectedD==2);
             _rg.setColor(Color.blue);
-            _rg.drawPolyline(xPts3, yPts3, steps);
+            drawPolylineBolded(_rg, xPts3, yPts3, steps, selectedD==3);
         }else{
             _rg.setColor(Color.darkGray);
             _rg.drawPolyline(xPts1, yPts1, steps);
             _rg.drawPolyline(xPts2, yPts2, steps);
             _rg.drawPolyline(xPts3, yPts3, steps);
+        }
+    }
+
+    public void drawPolylineBolded(Graphics rg, int[] xPts, int[] yPts, int steps, boolean isSelected){
+        rg.drawPolyline(xPts, yPts, steps);
+
+        if(isSelected){
+                for(int i=0; i<steps; i++){
+                    xPts[i]++;
+                    //yPts[i]++;
+                }
+                rg.drawPolyline(xPts, yPts, steps);
+                for(int i=0; i<steps; i++){
+                    //xPts[i]++;
+                    yPts[i]++;
+                }
+                rg.drawPolyline(xPts, yPts, steps);
         }
     }
 
@@ -231,5 +280,9 @@ public class ifsOverlays {
             rg.drawLine(10, screenheight-65-50, 10+50, screenheight-65-50);
             rg.drawString("Z+", 10+55, screenheight-50-60);
         }
+    }
+
+    public double distance(double x, double y){
+        return Math.sqrt(x * x + y * y);
     }
 }

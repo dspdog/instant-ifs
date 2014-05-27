@@ -202,9 +202,7 @@ public class ifsys extends Panel
 
         rg.drawImage(createImage(new MemoryImageSource(screenwidth, screenheight, pixels, 0, screenwidth)), 0, 0, screenwidth, screenheight, this);
         rg.drawImage(thePdf.sampleImage, getWidth() - 50, 0, 50, 50, this);
-
         rg.setColor(Color.blue);
-        ifsPt thePt;
 
         if(!guidesHidden)
             overlays.drawArcs(rg);
