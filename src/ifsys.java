@@ -183,73 +183,166 @@ public class ifsys extends Panel
         paint(gr);
     }
 
-    public void drawArc(Graphics _rg, ifsPt pt){
+    public void drawArc(Graphics _rg, ifsPt pt, boolean isSelected){
         int steps = 50;
-        int[] xPts = new int[steps];
-        int[] yPts = new int[steps];
-        int[] zPts = new int[steps];
+
+        int[] xPts1 = new int[steps];
+        int[] yPts1 = new int[steps];
+        int[] zPts1 = new int[steps];
+
+        int[] xPts2 = new int[steps];
+        int[] yPts2 = new int[steps];
+        int[] zPts2 = new int[steps];
+
+        int[] xPts3 = new int[steps];
+        int[] yPts3 = new int[steps];
+        int[] zPts3 = new int[steps];
 
         switch (viewMode){
             case 0:
-                xPts[0] = (int)pt.x;
-                yPts[0] = (int)pt.y;
-                zPts[0] = (int)pt.z;
+                xPts1[0] = (int)pt.x;
+                yPts1[0] = (int)pt.y;
+                zPts1[0] = (int)pt.z;
+
+                xPts2[0] = (int)pt.x;
+                yPts2[0] = (int)pt.y;
+                zPts2[0] = (int)pt.z;
+
+                xPts3[0] = (int)pt.x;
+                yPts3[0] = (int)pt.y;
+                zPts3[0] = (int)pt.z;
                 break;
             case 1:
-                xPts[0] = (int)pt.x;
-                yPts[0] = (int)pt.z;
-                zPts[0] = (int)pt.y;
+                xPts1[0] = (int)pt.x;
+                yPts1[0] = (int)pt.z;
+                zPts1[0] = (int)pt.y;
+
+                xPts2[0] = (int)pt.x;
+                yPts2[0] = (int)pt.z;
+                zPts2[0] = (int)pt.y;
+
+                xPts3[0] = (int)pt.x;
+                yPts3[0] = (int)pt.z;
+                zPts3[0] = (int)pt.y;
                 break;
             case 2:
-                xPts[0] = (int)pt.y;
-                yPts[0] = (int)pt.z;
-                zPts[0] = (int)pt.x;
+                xPts1[0] = (int)pt.y;
+                yPts1[0] = (int)pt.z;
+                zPts1[0] = (int)pt.x;
+
+                xPts2[0] = (int)pt.y;
+                yPts2[0] = (int)pt.z;
+                zPts2[0] = (int)pt.x;
+
+                xPts3[0] = (int)pt.y;
+                yPts3[0] = (int)pt.z;
+                zPts3[0] = (int)pt.x;
                 break;
         }
 
         for(int i=1; i<steps; i++){
-            xPts[i] = (int)((Math.cos(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
-            yPts[i] = (int)((Math.sin(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
-            zPts[i] = 10*i/steps;
+            //yaw
+            xPts1[i] = (int)((Math.cos(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
+            yPts1[i] = (int)((Math.sin(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
+            zPts1[i] = 10*i/steps;
 
-            ifsPt rotatedPt = new ifsPt(xPts[i],yPts[i],zPts[i]).getRotatedPt(-pt.rotationRoll,-pt.rotationPitch,-pt.rotationYaw);
+            //pitch
+            xPts2[i] = (int)((Math.cos(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
+            yPts2[i] = 10*i/steps;
+            zPts2[i] = (int)((Math.sin(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
+
+            //roll
+            xPts3[i] = 10*i/steps;
+            yPts3[i] = (int)((Math.cos(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
+            zPts3[i] = (int)((Math.sin(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
+
+            ifsPt rotatedPt1 = new ifsPt(xPts1[i],yPts1[i],zPts1[i]).getRotatedPt(-pt.rotationRoll,-pt.rotationPitch,-pt.rotationYaw);
+            ifsPt rotatedPt2 = new ifsPt(xPts2[i],yPts2[i],zPts2[i]).getRotatedPt(-pt.rotationRoll,-pt.rotationPitch,-pt.rotationYaw);
+            ifsPt rotatedPt3 = new ifsPt(xPts3[i],yPts3[i],zPts3[i]).getRotatedPt(-pt.rotationRoll,-pt.rotationPitch,-pt.rotationYaw);
 
             switch (viewMode){
                 case 0:
-                    xPts[i] = (int)(rotatedPt.x + pt.x);
-                    yPts[i] = (int)(rotatedPt.y + pt.y);
-                    zPts[i] = (int)(rotatedPt.z + pt.z);
+                    xPts1[i] = (int)(rotatedPt1.x + pt.x);
+                    yPts1[i] = (int)(rotatedPt1.y + pt.y);
+                    zPts1[i] = (int)(rotatedPt1.z + pt.z);
+
+                    xPts2[i] = (int)(rotatedPt2.x + pt.x);
+                    yPts2[i] = (int)(rotatedPt2.y + pt.y);
+                    zPts2[i] = (int)(rotatedPt2.z + pt.z);
+
+                    xPts3[i] = (int)(rotatedPt3.x + pt.x);
+                    yPts3[i] = (int)(rotatedPt3.y + pt.y);
+                    zPts3[i] = (int)(rotatedPt3.z + pt.z);
                     break;
                 case 1:
-                    xPts[i] = (int)(rotatedPt.x + pt.x);
-                    zPts[i] = (int)(rotatedPt.y + pt.y);
-                    yPts[i] = (int)(rotatedPt.z + pt.z);
+                    xPts1[i] = (int)(rotatedPt1.x + pt.x);
+                    zPts1[i] = (int)(rotatedPt1.y + pt.y);
+                    yPts1[i] = (int)(rotatedPt1.z + pt.z);
+
+                    xPts2[i] = (int)(rotatedPt2.x + pt.x);
+                    zPts2[i] = (int)(rotatedPt2.y + pt.y);
+                    yPts2[i] = (int)(rotatedPt2.z + pt.z);
+
+                    xPts3[i] = (int)(rotatedPt3.x + pt.x);
+                    zPts3[i] = (int)(rotatedPt3.y + pt.y);
+                    yPts3[i] = (int)(rotatedPt3.z + pt.z);
                     break;
                 case 2:
-                    zPts[i] = (int)(rotatedPt.x + pt.x);
-                    xPts[i] = (int)(rotatedPt.y + pt.y);
-                    yPts[i] = (int)(rotatedPt.z + pt.z);
+                    zPts1[i] = (int)(rotatedPt1.x + pt.x);
+                    xPts1[i] = (int)(rotatedPt1.y + pt.y);
+                    yPts1[i] = (int)(rotatedPt1.z + pt.z);
+
+                    zPts2[i] = (int)(rotatedPt2.x + pt.x);
+                    xPts2[i] = (int)(rotatedPt2.y + pt.y);
+                    yPts2[i] = (int)(rotatedPt2.z + pt.z);
+
+                    zPts3[i] = (int)(rotatedPt3.x + pt.x);
+                    xPts3[i] = (int)(rotatedPt3.y + pt.y);
+                    yPts3[i] = (int)(rotatedPt3.z + pt.z);
                     break;
             }
         }
 
         switch (viewMode){
             case 0:
-                xPts[steps-1] = (int)pt.x;
-                yPts[steps-1] = (int)pt.y;
+                xPts1[steps-1] = (int)pt.x;
+                yPts1[steps-1] = (int)pt.y;
+                xPts2[steps-1] = (int)pt.x;
+                yPts2[steps-1] = (int)pt.y;
+                xPts3[steps-1] = (int)pt.x;
+                yPts3[steps-1] = (int)pt.y;
                 break;
             case 1:
-                xPts[steps-1] = (int)pt.x;
-                yPts[steps-1] = (int)pt.z;
+                xPts1[steps-1] = (int)pt.x;
+                yPts1[steps-1] = (int)pt.z;
+                xPts2[steps-1] = (int)pt.x;
+                yPts2[steps-1] = (int)pt.z;
+                xPts3[steps-1] = (int)pt.x;
+                yPts3[steps-1] = (int)pt.z;
                 break;
             case 2:
-                xPts[steps-1] = (int)pt.y;
-                yPts[steps-1] = (int)pt.z;
+                xPts1[steps-1] = (int)pt.y;
+                yPts1[steps-1] = (int)pt.z;
+                xPts2[steps-1] = (int)pt.y;
+                yPts2[steps-1] = (int)pt.z;
+                xPts3[steps-1] = (int)pt.y;
+                yPts3[steps-1] = (int)pt.z;
                 break;
         }
 
-
-        _rg.drawPolyline(xPts, yPts, steps);
+        if(isSelected){
+            _rg.setColor(Color.red);
+            _rg.drawPolyline(xPts1, yPts1, steps);
+            _rg.setColor(Color.green);
+            _rg.drawPolyline(xPts2, yPts2, steps);
+            _rg.setColor(Color.blue);
+            _rg.drawPolyline(xPts3, yPts3, steps);
+        }else{
+            _rg.setColor(Color.darkGray);
+            _rg.drawPolyline(xPts1, yPts1, steps);
+            _rg.drawPolyline(xPts2, yPts2, steps);
+            _rg.drawPolyline(xPts3, yPts3, steps);
+        }
     }
 
     public void paint(Graphics gr){
@@ -272,20 +365,12 @@ public class ifsys extends Panel
 
         if(!guidesHidden)
         for(int i=0;i<shape.pointsInUse;i++){
-            if(i==pointselected){
-                rg.setColor(Color.LIGHT_GRAY);
-            }else{
-                if(i==0){
-                    rg.setColor(Color.BLUE);
-                    rg.setPaintMode();
-                }else{
-                    rg.setColor(Color.darkGray);
-                }
+            if(i==0){
+                rg.setColor(Color.BLUE);
             }
-
             thePt = shape.pts[i];
 
-            drawArc(rg, thePt);
+            drawArc(rg, thePt, i==pointselected);
         }
 
         if(!infoHidden && pointselected>=0){
