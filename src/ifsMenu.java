@@ -10,10 +10,6 @@ public class ifsMenu implements ItemListener{
     CheckboxMenuItem sideButton;
     CheckboxMenuItem frontButton;
 
-    CheckboxMenuItem pitchButton;
-    CheckboxMenuItem yawButton;
-    CheckboxMenuItem rollButton;
-
     public ifsMenu(Frame f, ifsys is){
 
         myIfsSys = is;
@@ -56,23 +52,6 @@ public class ifsMenu implements ItemListener{
             frontButton.setState(is.viewMode==2);
             frontButton.addItemListener(this);
             viewMenu.add(frontButton);
-
-        //ROTATE MENU
-            yawButton = new CheckboxMenuItem("Yaw (X)");
-            pitchButton = new CheckboxMenuItem("Pitch (Y)");
-            rollButton = new CheckboxMenuItem("Roll (Z)");
-
-            yawButton.setState(is.rotateMode==0);
-            yawButton.addItemListener(this);
-            rotateMenu.add(yawButton);
-
-            pitchButton.setState(is.rotateMode==1);
-            pitchButton.addItemListener(this);
-            rotateMenu.add(pitchButton);
-
-            rollButton.setState(is.rotateMode==2);
-            rollButton.addItemListener(this);
-            rotateMenu.add(rollButton);
 
         //SHAPE MENU
             CheckboxMenuItem autoScaleButton = new CheckboxMenuItem("AutoScale Points"); //autoscale toggle
@@ -132,20 +111,6 @@ public class ifsMenu implements ItemListener{
             topButton.setState(myIfsSys.viewMode==0);
             sideButton.setState(myIfsSys.viewMode==1);
             frontButton.setState(myIfsSys.viewMode==2);
-        //ROTATE MENU
-            if(e.getItem()=="Yaw (X)"){
-                myIfsSys.rotateMode = 0;
-            }
-            if(e.getItem()=="Pitch (Y)"){
-                myIfsSys.rotateMode = 1;
-            }
-            if(e.getItem()=="Roll (Z)"){
-                myIfsSys.rotateMode = 2;
-            }
-
-            yawButton.setState(myIfsSys.rotateMode==0);
-            pitchButton.setState(myIfsSys.rotateMode==1);
-            rollButton.setState(myIfsSys.rotateMode==2);
         //GUIDES MENU
             if(e.getItem()=="Info Box"){
                 myIfsSys.infoHidden = e.getStateChange()==2;

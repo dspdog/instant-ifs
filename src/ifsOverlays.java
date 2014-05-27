@@ -239,22 +239,25 @@ public class ifsOverlays {
 
         rg.setColor(Color.white);
         rg.setColor(myIfsSys.invertColors ? Color.black : Color.white);
-        rg.drawString("Point " + String.valueOf(myIfsSys.pointselected + 1), 5, 15);
-        rg.drawString("X: " + String.valueOf((double)(int)(selectedPt.x * 1000D) / 1000D), 5, 30);
-        rg.drawString("Y: " + String.valueOf((double)(int)(selectedPt.y * 1000D) / 1000D), 5, 45);
-        rg.drawString("Z: " + String.valueOf((double)(int)(selectedPt.z * 1000D) / 1000D), 5, 60);
-        rg.drawString("Scale: " + String.valueOf((double)(int)(selectedPt.scale * 1000D) / 1000D), 5, 75);
-        rg.drawString("Rotation Roll: " + String.valueOf((double)(int)((((selectedPt.rotationRoll / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 90);
-        rg.drawString("Opacity: " + String.valueOf(selectedPt.opacity), 5, 105);
-        rg.drawString("Iterations (. /): " + String.valueOf(myIfsSys.iterations), 5, 120);
-        rg.drawString("Samples (nm): " + String.valueOf(myIfsSys.sampletotal), 4, 135);
-        //rg.drawString("Expected Done %" + String.valueOf((int)Math.min(100*samplesThisFrame/samplesNeeded/Math.E, 100)), 5, 135); //TODO is dividing by E the right thing to do here?
-        rg.drawString("FPS " + String.valueOf(myIfsSys.fps), 5, 150);
-        rg.drawString("Gamma " + String.valueOf(myIfsSys.gamma), 5, 165);
+        rg.drawString("Point " + String.valueOf(myIfsSys.pointselected + 1), 5, 15*1);
+        rg.drawString("X: " + String.valueOf((double)(int)(selectedPt.x * 1000D) / 1000D), 5, 15*2);
+        rg.drawString("Y: " + String.valueOf((double)(int)(selectedPt.y * 1000D) / 1000D), 5, 15*3);
+        rg.drawString("Z: " + String.valueOf((double)(int)(selectedPt.z * 1000D) / 1000D), 5, 15*4);
+        rg.drawString("Scale: " + String.valueOf((double)(int)(selectedPt.scale * 1000D) / 1000D), 5, 15*5);
+        rg.drawString("Rotation Yaw: " + String.valueOf((double)(int)((((selectedPt.rotationYaw / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 15*6);
+        rg.drawString("Rotation Pitch: " + String.valueOf((double)(int)((((selectedPt.rotationPitch / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 15*7);
+        rg.drawString("Rotation Roll: " + String.valueOf((double)(int)((((selectedPt.rotationRoll / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 15*8);
 
-        rg.drawString("Area " + String.valueOf((int)myIfsSys.shapeArea), 5, 195);
-        rg.drawString("AreaDelta " + String.valueOf((int)myIfsSys.shapeAreaDelta), 5, 210);
-        rg.drawString("DataMax " + String.valueOf((int)myIfsSys.dataMax), 5, 225);
+        rg.drawString("Opacity: " + String.valueOf(selectedPt.opacity), 5, 15*10);
+        rg.drawString("Iterations (. /): " + String.valueOf(myIfsSys.iterations), 5, 15*11);
+        rg.drawString("Samples (nm): " + String.valueOf(myIfsSys.sampletotal), 4, 15*12);
+        //rg.drawString("Expected Done %" + String.valueOf((int)Math.min(100*samplesThisFrame/samplesNeeded/Math.E, 100)), 5, 135); //TODO is dividing by E the right thing to do here?
+        rg.drawString("FPS " + String.valueOf(myIfsSys.fps), 5, 15*13);
+        rg.drawString("Gamma " + String.valueOf(myIfsSys.gamma), 5, 15*14);
+
+        rg.drawString("Area " + String.valueOf((int)myIfsSys.shapeArea), 5, 15*15);
+        rg.drawString("AreaDelta " + String.valueOf((int)myIfsSys.shapeAreaDelta), 5, 15*16);
+        rg.drawString("DataMax " + String.valueOf((int)myIfsSys.dataMax), 5, 15*17);
 
         int screenheight = myIfsSys.screenheight;
         int screenwidth = myIfsSys.screenwidth;
