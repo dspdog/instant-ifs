@@ -374,6 +374,9 @@ public class ifsys extends Panel
         guidesHidden = System.currentTimeMillis() - lastMoveTime > 1000;
 
         samplesNeeded = Math.pow(shape.pointsInUse, iterations);
+        //if(usePDFSamples){
+        //    samplesNeeded=Math.pow(shape.pointsInUse, iterations) * thePdf.sampleDepth*thePdf.sampleWidth*thePdf.sampleHeight;
+        //}
 
         if(shape.pointsInUse != 0){
 

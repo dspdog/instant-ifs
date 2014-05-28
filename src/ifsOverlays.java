@@ -277,17 +277,17 @@ public class ifsOverlays {
                 + (int)(myIfsSys.centerOfGrav.z/myIfsSys.samplesThisFrame) + ")", 5, 15*9);
 
 
-
-        rg.drawString("Opacity: " + String.valueOf(selectedPt.opacity), 5, 15*10);
-        rg.drawString("Iterations (. /): " + String.valueOf(myIfsSys.iterations), 5, 15*11);
-        rg.drawString("Samples (nm): " + String.valueOf(myIfsSys.sampletotal), 4, 15*12);
+        rg.drawString("Exposure: " + String.valueOf(myIfsSys.samplesThisFrame/myIfsSys.samplesNeeded), 5, 15*10);
+        rg.drawString("Opacity: " + String.valueOf(selectedPt.opacity), 5, 15*11);
+        rg.drawString("Iterations (. /): " + String.valueOf(myIfsSys.iterations), 5, 15*12);
+        rg.drawString("Samples (nm): " + String.valueOf(myIfsSys.sampletotal), 4, 15*13);
         //rg.drawString("Expected Done %" + String.valueOf((int)Math.min(100*samplesThisFrame/samplesNeeded/Math.E, 100)), 5, 135); //TODO is dividing by E the right thing to do here?
-        rg.drawString("FPS " + String.valueOf(myIfsSys.fps), 5, 15*13);
-        rg.drawString("Gamma " + String.valueOf(myIfsSys.gamma), 5, 15*14);
+        rg.drawString("FPS " + String.valueOf(myIfsSys.fps), 5, 15*14);
+        rg.drawString("Gamma " + String.valueOf(myIfsSys.gamma), 5, 15*15);
 
-        rg.drawString("Area " + String.valueOf((int)myIfsSys.shapeArea), 5, 15*15);
-        rg.drawString("AreaDelta " + String.valueOf((int)myIfsSys.shapeAreaDelta), 5, 15*16);
-        rg.drawString("DataMax " + String.valueOf((int)myIfsSys.dataMax), 5, 15*17);
+        rg.drawString("Area " + String.valueOf((int)myIfsSys.shapeArea), 5, 15*16);
+        rg.drawString("AreaDelta " + String.valueOf((int)myIfsSys.shapeAreaDelta), 5, 15*17);
+        rg.drawString("DataMax " + String.valueOf((int)myIfsSys.dataMax), 5, 15*18);
 
         int screenheight = myIfsSys.screenheight;
         int screenwidth = myIfsSys.screenwidth;
