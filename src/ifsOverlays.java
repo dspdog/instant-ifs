@@ -18,6 +18,30 @@ public class ifsOverlays {
         }
     }
 
+    public void drawCenterOfGravity(Graphics _rg){
+        _rg.setColor(Color.CYAN);
+        int width = 15;
+        int height = 15;
+        int x=0,y=0;
+
+        switch (myIfsSys.viewMode){
+            case 0:
+                x=(int)(myIfsSys.centerOfGrav.x/myIfsSys.samplesThisFrame);
+                y=(int)(myIfsSys.centerOfGrav.y/myIfsSys.samplesThisFrame);
+                break;
+            case 1:
+                x=(int)(myIfsSys.centerOfGrav.x/myIfsSys.samplesThisFrame);
+                y=(int)(myIfsSys.centerOfGrav.z/myIfsSys.samplesThisFrame);
+                break;
+            case 2:
+                x=(int)(myIfsSys.centerOfGrav.y/myIfsSys.samplesThisFrame);
+                y=(int)(myIfsSys.centerOfGrav.z/myIfsSys.samplesThisFrame);
+                break;
+        }
+
+        _rg.drawRect(x-width/2,y-height/2,width,height);
+    }
+
     public void drawArc(Graphics _rg, ifsPt pt, boolean isSelected, boolean dragging){
         int viewMode = myIfsSys.viewMode;
         int steps = 50;
@@ -247,6 +271,12 @@ public class ifsOverlays {
         rg.drawString("Rotation Yaw: " + String.valueOf((double)(int)((((selectedPt.rotationYaw / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 15*6);
         rg.drawString("Rotation Pitch: " + String.valueOf((double)(int)((((selectedPt.rotationPitch / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 15*7);
         rg.drawString("Rotation Roll: " + String.valueOf((double)(int)((((selectedPt.rotationRoll / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 15*8);
+        rg.drawString("CenterOfGrav: ("
+                + (int)(myIfsSys.centerOfGrav.x/myIfsSys.samplesThisFrame) + ", "
+                + (int)(myIfsSys.centerOfGrav.y/myIfsSys.samplesThisFrame) + ", "
+                + (int)(myIfsSys.centerOfGrav.z/myIfsSys.samplesThisFrame) + ")", 5, 15*9);
+
+
 
         rg.drawString("Opacity: " + String.valueOf(selectedPt.opacity), 5, 15*10);
         rg.drawString("Iterations (. /): " + String.valueOf(myIfsSys.iterations), 5, 15*11);

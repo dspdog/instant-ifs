@@ -14,13 +14,14 @@ public class ifsys extends Panel
     double dataMax = 0;
     double gamma = 0;
     int pixels[];
+    long numPoints=0;
     Image render;
     Graphics rg;
     long fps;
     long framesThisSecond;
     long oneSecondAgo;
 
-    long samplesThisFrame;
+    double samplesThisFrame;
     double samplesNeeded;
 
     long lastMoveTime;
@@ -52,6 +53,7 @@ public class ifsys extends Panel
         int rotateMode;
 
     ifsShape shape;
+    ifsPt centerOfGrav = new ifsPt();
     double shapeArea;
     double shapeAreaDelta;
 
@@ -77,6 +79,7 @@ public class ifsys extends Panel
     public ifsys(){
         started=false;
         samplesThisFrame=0;
+        numPoints=0;
         oneSecondAgo =0;
         framesThisSecond = 0;
         altDown=false;
@@ -113,8 +116,6 @@ public class ifsys extends Panel
         viewMode=0;
         rotateMode=0;
         lastMoveTime=0;
-
-
     }
 
     public static void main(String[] args) {
@@ -149,8 +150,6 @@ public class ifsys extends Panel
     public void actionPerformed(ActionEvent e) {
 
     }
-
-
 
     public class mainthread extends Thread{
         public void run(){
@@ -206,8 +205,11 @@ public class ifsys extends Panel
         rg.drawImage(thePdf.sampleImage, getWidth() - 50, 0, 50, 50, this);
         rg.setColor(Color.blue);
 
-        if(!guidesHidden)
+        if(!guidesHidden){
             overlays.drawArcs(rg);
+            overlays.drawCenterOfGravity(rg);
+        }
+
 
         if(!infoHidden && pointselected>=0){
             overlays.drawInfoBox(rg);
@@ -260,11 +262,19 @@ public class ifsys extends Panel
             }
         }
 
-        samplesThisFrame=0;
+        centerOfGrav.x=shape.pts[0].x;
+        centerOfGrav.y=shape.pts[0].y;
+        centerOfGrav.z=shape.pts[0].z;
+        samplesThisFrame=1;
         dataMax = 0;
     }
 
     public boolean putPixel(ifsPt pt, double alpha){
+
+        centerOfGrav.x+=pt.x*alpha;
+        centerOfGrav.y+=pt.y*alpha;
+        centerOfGrav.z+=pt.z*alpha;
+
         double decX, decY, decZ; //decimal parts of coordinates
         double x=0,y=0,z=0;
 
@@ -279,6 +289,8 @@ public class ifsys extends Panel
                 x = pt.z; y = pt.y; z = pt.x;
                 break;
         }
+
+        samplesThisFrame+=alpha;
 
         if(x < (double)(screenwidth - 1) &&
             y < (double)(screenheight - 1) &&
@@ -300,8 +312,6 @@ public class ifsys extends Panel
                 if(alpha>0.49)
                 pixelsData[(int)(x) + (int)(y) * screenwidth]=Math.max(pixelsData[(int)(x) + (int)(y) * screenwidth], 1);
             }
-
-            samplesThisFrame++;
 
             return true; //pixel is in screen bounds
         }else{
