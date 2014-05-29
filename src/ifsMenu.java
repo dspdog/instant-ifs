@@ -1,8 +1,10 @@
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-public class ifsMenu implements ItemListener{
+public class ifsMenu implements ItemListener, ActionListener{
 
     ifsys myIfsSys;
 
@@ -36,9 +38,13 @@ public class ifsMenu implements ItemListener{
             renderMenu.add(inButton);
 
         //VIEW MENU
+            MenuItem centerButton = new MenuItem("Center on Screen");
             topButton = new CheckboxMenuItem("Top (XY)");
             sideButton = new CheckboxMenuItem("Side (XZ)");
             frontButton = new CheckboxMenuItem("Front (YZ)");
+
+            centerButton.addActionListener(this);
+            viewMenu.add(centerButton);
 
             topButton.setState(is.viewMode==0);
             topButton.addItemListener(this);
@@ -99,12 +105,15 @@ public class ifsMenu implements ItemListener{
         //VIEW MENU
             if(e.getItem()=="Top (XY)"){
                 myIfsSys.viewMode = 0;
+                myIfsSys.clearframe();
             }
             if(e.getItem()=="Side (XZ)"){
                 myIfsSys.viewMode = 1;
+                myIfsSys.clearframe();
             }
             if(e.getItem()=="Front (YZ)"){
                 myIfsSys.viewMode = 2;
+                myIfsSys.clearframe();
             }
             topButton.setState(myIfsSys.viewMode==0);
             sideButton.setState(myIfsSys.viewMode==1);
@@ -126,5 +135,12 @@ public class ifsMenu implements ItemListener{
             if(e.getItem()=="Point Trails"){
                 myIfsSys.spokesHidden = e.getStateChange()==2;
             }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(e.getActionCommand()=="Center on Screen"){
+            myIfsSys.centerOnGrav();
+        }
     }
 }

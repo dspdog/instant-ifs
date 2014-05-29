@@ -9,7 +9,6 @@ class ifsShape{
     public boolean autoScale;
 
     public ifsShape(int maxPoints){
-        //offsetx=0; offsety=0;
         autoUpdateCenterEnabled =false;
         stateSaved = false;
         pointsInUse = 1;
@@ -19,6 +18,19 @@ class ifsShape{
         for(int a=0; a< maxPoints; a++){
             pts[a] = new ifsPt();
         }
+    }
+
+    public void centerByPt(int desiredX, int desiredY, int desiredZ, int centerX, int centerY, int centerZ){
+        int offsetX = desiredX-centerX;
+        int offsetY = desiredY-centerY;
+        int offsetZ = desiredZ-centerZ;
+
+        for(int i=0; i<pointsInUse; i++){
+            pts[i].x-=offsetX;
+            pts[i].y-=offsetY;
+            pts[i].z-=offsetZ;
+        }
+        updateCenter();
     }
 
     public void saveState(){
@@ -92,7 +104,7 @@ class ifsShape{
     }
 
     public int getNearestPtIndex(double x, double y, double z){
-        double olddist = 1000D;
+        double olddist = 100000D;
         int ptSelected = -1;
         for(int a = 0; a < this.pointsInUse; a++)
         {

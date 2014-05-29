@@ -245,7 +245,7 @@ public class ifsys extends Panel
             }
         }
 
-        shapeAreaDelta = area - shapeArea;
+        shapeAreaDelta = (area - shapeArea)/shapeArea;
         shapeArea = area;
     }
 
@@ -267,6 +267,15 @@ public class ifsys extends Panel
         centerOfGrav.z=shape.pts[0].z;
         samplesThisFrame=1;
         dataMax = 0;
+    }
+
+    public void centerOnGrav(){
+        shape.centerByPt(
+                (int)(centerOfGrav.x/samplesThisFrame),
+                (int)(centerOfGrav.y/samplesThisFrame),
+                (int)(centerOfGrav.z/samplesThisFrame),
+                screenwidth/2, screenwidth/2, screenwidth/2);
+        clearframe();
     }
 
     public boolean putPixel(ifsPt pt, double alpha){
@@ -630,6 +639,9 @@ public class ifsys extends Panel
             ctrlDown=false;
         if(e.getKeyCode()==KeyEvent.VK_SHIFT)
             shiftDown=false;
+
+        if(e.getKeyChar() == 'c')
+            centerOnGrav();
 
         if(e.getKeyChar() == '/')
             iterations++;

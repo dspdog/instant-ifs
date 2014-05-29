@@ -277,7 +277,7 @@ public class ifsOverlays {
                 + (int)(myIfsSys.centerOfGrav.z/myIfsSys.samplesThisFrame) + ")", 5, 15*9);
 
 
-        rg.drawString("Exposure: " + String.valueOf(myIfsSys.samplesThisFrame/myIfsSys.samplesNeeded), 5, 15*10);
+        //rg.drawString("Exposure: " + String.valueOf(myIfsSys.samplesThisFrame/myIfsSys.samplesNeeded), 5, 15*10);
         rg.drawString("Opacity: " + String.valueOf(selectedPt.opacity), 5, 15*11);
         rg.drawString("Iterations (. /): " + String.valueOf(myIfsSys.iterations), 5, 15*12);
         rg.drawString("Samples (nm): " + String.valueOf(myIfsSys.sampletotal), 4, 15*13);
@@ -286,7 +286,7 @@ public class ifsOverlays {
         rg.drawString("Gamma " + String.valueOf(myIfsSys.gamma), 5, 15*15);
 
         rg.drawString("Area " + String.valueOf((int)myIfsSys.shapeArea), 5, 15*16);
-        rg.drawString("AreaDelta " + String.valueOf((int)myIfsSys.shapeAreaDelta), 5, 15*17);
+        rg.drawString("AreaDelta " + String.valueOf((int)(100*myIfsSys.shapeAreaDelta)+"%"), 5, 15*17);
         rg.drawString("DataMax " + String.valueOf((int)myIfsSys.dataMax), 5, 15*18);
 
         int screenheight = myIfsSys.screenheight;
