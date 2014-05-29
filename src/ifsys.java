@@ -93,7 +93,7 @@ public class ifsys extends Panel
         trailsHidden = true;
         leavesHidden = false;
         infoHidden = false;
-        usePDFSamples = false;
+        usePDFSamples = true;
         guidesHidden = false;
         invertColors = false;
         screenwidth = 1024;
@@ -329,7 +329,7 @@ public class ifsys extends Panel
 
     }
 
-    public void putPdfSample(ifsPt dpt, double cumulativeRotationYaw, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown){
+    public void putPdfSample(ifsPt dpt, double cumulativeRotationYaw, double cumulativeRotationPitch, double cumulativeRotationRoll, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown){
         //generate random coords
 
         double x=dpt.x;
@@ -342,10 +342,13 @@ public class ifsys extends Panel
 
         //modulate with image
         double exposureAdjust = cumulativeScale*thePt.scale*thePt.radius;
-        double ptColor = thePdf.getSliceXY_Sum((int)sampleX,(int)sampleY)/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
+        double ptColor = thePdf.volume[(int)sampleX][(int)sampleY][(int)sampleZ]/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
+
+        //double ptColor = thePdf.getSliceXY_Sum((int)sampleX,(int)sampleY)/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
 
         //rotate/scale the point
         double pointDegreesYaw = Math.atan2(sampleX - thePdf.sampleWidth/2, sampleY - thePdf.sampleHeight/2)+cumulativeRotationYaw+thePt.rotationYaw -thePt.degreesYaw;
+
         double pointDist = shape.distance(sampleX - thePdf.sampleWidth/2, sampleY - thePdf.sampleHeight/2, sampleZ - thePdf.sampleDepth/2)*cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
         double placedX = Math.cos(pointDegreesYaw)*pointDist;
         double placedY = Math.sin(pointDegreesYaw)*pointDist;
@@ -383,9 +386,6 @@ public class ifsys extends Panel
         guidesHidden = System.currentTimeMillis() - lastMoveTime > 1000;
 
         samplesNeeded = Math.pow(shape.pointsInUse, iterations);
-        //if(usePDFSamples){
-        //    samplesNeeded=Math.pow(shape.pointsInUse, iterations) * thePdf.sampleDepth*thePdf.sampleWidth*thePdf.sampleHeight;
-        //}
 
         if(shape.pointsInUse != 0){
 
@@ -443,7 +443,7 @@ public class ifsys extends Panel
                     if(!trailsHidden && d < iterations-1)
                         putPixel(dpt, shape.pts[randomIndex].opacity);
                     if(usePDFSamples)
-                        putPdfSample(dpt, cumulativeRotationYaw, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier);
+                        putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationRoll,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier);
                     cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;
                     cumulativeOpacity *= shape.pts[randomIndex].opacity;
 

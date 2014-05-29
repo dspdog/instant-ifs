@@ -23,7 +23,8 @@ public class pdf3D { //3d probabilty density function
         volume = new double[width][height][depth];
         samplePixels = new int[width*height];
 
-        loadMap_3DBlob();
+        loadMap_XYGradient();
+        //loadMap_3DBlob();
 
         System.out.println(sampleWidth + " " + sampleHeight + " " + sampleDepth);
         //loadImg("serp.jpg");
@@ -73,6 +74,19 @@ public class pdf3D { //3d probabilty density function
             for(int y=0; y<sampleHeight; y++){
                 for(int z=0; z<sampleDepth; z++){
                     volume[x][y][z] = Math.max(0,sampleWidth/2 - distance(x-sampleWidth/2, y-sampleHeight/2, z-sampleDepth/2));
+                }
+            }
+        }
+    }
+
+    public void loadMap_XYGradient(){ //fill volume w linear gradient (all vals = x)
+        sampleHeight=height;
+        sampleWidth=width;
+        sampleDepth=depth;
+        for(int x=0; x<sampleWidth; x++){
+            for(int y=0; y<sampleHeight; y++){
+                for(int z=0; z<sampleDepth; z++){
+                    volume[x][y][z] = x;
                 }
             }
         }
