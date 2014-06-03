@@ -342,9 +342,13 @@ public class ifsys extends Panel
         double y=dpt.y;
         double z=dpt.z;
 
+        double centerX = thePdf.sampleWidth/2;
+        double centerY = thePdf.sampleHeight/2;
+        double centerZ = thePdf.sampleDepth/2;
+
         double sampleX = Math.random()*thePdf.sampleWidth;
         double sampleY = Math.random()*thePdf.sampleHeight;
-        double sampleZ = Math.random()*thePdf.sampleDepth;
+        double sampleZ = 0;//Math.random()*thePdf.sampleDepth;
 
         //modulate with image
         double exposureAdjust = cumulativeScale*thePt.scale*thePt.radius;
@@ -353,15 +357,31 @@ public class ifsys extends Panel
         //double ptColor = thePdf.getSliceXY_Sum((int)sampleX,(int)sampleY)/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
 
         //rotate/scale the point
-        double pointDegreesYaw = Math.atan2(sampleX - thePdf.sampleWidth/2, sampleY - thePdf.sampleHeight/2)+cumulativeRotationYaw+thePt.rotationYaw -thePt.degreesYaw;
+        //double pointDist = shape.distance(sampleX, sampleY, 0)*cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
 
-        double pointDist = shape.distance(sampleX - thePdf.sampleWidth/2, sampleY - thePdf.sampleHeight/2, sampleZ - thePdf.sampleDepth/2)*cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
+        double scale = cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
 
-        ifsPt rpt = new ifsPt(pointDist,0,0).getRotatedPt(-0, -pointDegreesYaw);
+        double pointDegreesYaw = thePt.rotationYaw -thePt.degreesYaw+cumulativeRotationYaw;
+        double multi = 1;//pointDegreesYaw>Math.PI ? 1 : -1;
+        double pointDegreesPitch = Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
+        //System.out.println(Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch);
 
-        double placedX = rpt.x;//Math.cos(pointDegreesYaw)*pointDist;
-        double placedY = rpt.y;//Math.sin(pointDegreesYaw)*pointDist;
-        double placedZ = 0;
+        //RESULTS IN
+        /*
+        *   0.0
+            1.5707963267948966
+            0.0
+            1.5707963267948966
+            0.0
+            1.5707963267948966
+            ....
+        * */
+
+        ifsPt rpt = new ifsPt((sampleX-centerZ)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw);
+
+        double placedX = rpt.x;
+        double placedY = rpt.y;
+        double placedZ = rpt.z;
 
         //put pixel
         putPixel(new ifsPt(x+placedX,y+placedY, z+placedZ), ptColor);

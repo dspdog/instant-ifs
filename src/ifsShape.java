@@ -73,16 +73,13 @@ class ifsShape{
     }
 
     void updateRadiusDegrees(){
-
         pts[0].degreesYaw = 0;
         pts[0].radius = unitScale*pts[0].scale;
 
         for(int a = 1; a < pointsInUse; a++){
+            pts[a].radius = autoScale ? distance(pts[a].x - pts[0].x, pts[a].y - pts[0].y,  pts[a].z - pts[0].z) : pts[0].radius;
             pts[a].degreesYaw = Math.atan2(pts[a].x - pts[0].x, pts[a].y - pts[0].y);
             pts[a].degreesPitch = Math.atan2(pts[a].radius, pts[a].z - pts[0].z);
-
-
-            pts[a].radius = autoScale ? distance(pts[a].x - pts[0].x, pts[a].y - pts[0].y,  pts[a].z - pts[0].z) : pts[0].radius;
         }
     }
 
