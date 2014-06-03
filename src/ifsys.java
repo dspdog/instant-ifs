@@ -67,7 +67,6 @@ public class ifsys extends Panel
         double startDragDist;
         double startDragAngleYaw;
         double startDragAnglePitch;
-        double startDragAngleRoll;
         double startDragScale;
 
     boolean started;
@@ -101,7 +100,7 @@ public class ifsys extends Panel
         pixels = new int[screenwidth * screenheight];
         pixelsData = new double[screenwidth * screenheight];
         sampletotal = 512;
-        iterations = 8;
+        iterations = 2;
         mousemode = 0;
         samplesNeeded = 1;
         maxLineLength = screenwidth;
@@ -143,7 +142,14 @@ public class ifsys extends Panel
     }
 
     public void findSelectedPoint(){
-        pointselected = shape.getNearestPtIndex(mousex, mousey, mousez);
+        if(viewMode==0){
+            pointselected = shape.getNearestPtIndexXY(mousex, mousey);
+        }else if(viewMode==1){
+            pointselected = shape.getNearestPtIndexXZ(mousex, mousey);
+        }else if(viewMode==2){
+            pointselected = shape.getNearestPtIndexZY(mousey, mousez);
+        }
+
         selectedPt = shape.pts[pointselected];
     }
 
@@ -329,7 +335,7 @@ public class ifsys extends Panel
 
     }
 
-    public void putPdfSample(ifsPt dpt, double cumulativeRotationYaw, double cumulativeRotationPitch, double cumulativeRotationRoll, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown){
+    public void putPdfSample(ifsPt dpt, double cumulativeRotationYaw, double cumulativeRotationPitch, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown){
         //generate random coords
 
         double x=dpt.x;
@@ -350,8 +356,11 @@ public class ifsys extends Panel
         double pointDegreesYaw = Math.atan2(sampleX - thePdf.sampleWidth/2, sampleY - thePdf.sampleHeight/2)+cumulativeRotationYaw+thePt.rotationYaw -thePt.degreesYaw;
 
         double pointDist = shape.distance(sampleX - thePdf.sampleWidth/2, sampleY - thePdf.sampleHeight/2, sampleZ - thePdf.sampleDepth/2)*cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
-        double placedX = Math.cos(pointDegreesYaw)*pointDist;
-        double placedY = Math.sin(pointDegreesYaw)*pointDist;
+
+        ifsPt rpt = new ifsPt(pointDist,0,0).getRotatedPt(-0, -pointDegreesYaw);
+
+        double placedX = rpt.x;//Math.cos(pointDegreesYaw)*pointDist;
+        double placedY = rpt.y;//Math.sin(pointDegreesYaw)*pointDist;
         double placedZ = 0;
 
         //put pixel
@@ -409,14 +418,14 @@ public class ifsys extends Panel
                 ifsPt dpt = new ifsPt(shape.pts[randomIndex]);
                 ifsPt rpt;
 
-                double size, yaw, pitch, roll;
+                double size, yaw, pitch;//, roll;
 
                 double cumulativeScale = 1.0;
                 double cumulativeOpacity = 1;
 
                 double cumulativeRotationYaw = 0;
                 double cumulativeRotationPitch = 0;
-                double cumulativeRotationRoll = 0;
+                //double cumulativeRotationRoll = 0;
 
                 double scaleDownMultiplier = Math.pow(shape.pointsInUse,iterations-1); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
 
@@ -431,9 +440,8 @@ public class ifsys extends Panel
                         size = shape.pts[randomIndex].radius * cumulativeScale;
                         yaw = Math.PI/2D - shape.pts[randomIndex].degreesYaw + cumulativeRotationYaw;
                         pitch = Math.PI/2D - shape.pts[randomIndex].degreesPitch + cumulativeRotationPitch;
-                        roll = - shape.pts[randomIndex].degreesRoll + cumulativeRotationRoll;
-                        rpt = new ifsPt(size,0,0).getRotatedPt(0, -pitch, -yaw);
-                        rpt = new ifsPt(rpt).getRotatedPt(-roll, 0, 0);
+
+                        rpt = new ifsPt(size,0,0).getRotatedPt(-pitch, -yaw);
 
                         dpt.x += rpt.x;
                         dpt.y += rpt.y;
@@ -443,13 +451,12 @@ public class ifsys extends Panel
                     if(!trailsHidden && d < iterations-1)
                         putPixel(dpt, shape.pts[randomIndex].opacity);
                     if(usePDFSamples)
-                        putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationRoll,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier);
+                        putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier);
                     cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;
                     cumulativeOpacity *= shape.pts[randomIndex].opacity;
 
                     cumulativeRotationYaw += shape.pts[randomIndex].rotationYaw;
                     cumulativeRotationPitch += shape.pts[randomIndex].rotationPitch;
-                    cumulativeRotationRoll += shape.pts[randomIndex].rotationRoll;
                 }
                 if(!leavesHidden)
                     putPixel(dpt, cumulativeOpacity);
@@ -471,12 +478,12 @@ public class ifsys extends Panel
                 break;
             case 1: //XZ
                 mousex = e.getX();
-                mousez = e.getY();
+                mousey = e.getY();
                 mousey = 0;
                 break;
             case 2: //YZ
-                mousey = e.getX();
-                mousez = e.getY();
+                mousex = e.getX();
+                mousey = e.getY();
                 mousex = 0;
                 break;
         }
@@ -504,7 +511,6 @@ public class ifsys extends Panel
             startDragPZ = selectedPt.z;
             startDragDist = shape.distance(startDragX - selectedPt.x, startDragY - selectedPt.y, startDragZ - selectedPt.z);
             startDragAngleYaw = selectedPt.rotationYaw + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
-            startDragAngleRoll = selectedPt.rotationRoll + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
             startDragAnglePitch = selectedPt.rotationPitch + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
 
             startDragScale = selectedPt.scale;
@@ -563,9 +569,6 @@ public class ifsys extends Panel
             }else if(rotateMode==1){
                 double rotationDelta = (Math.atan2(e.getX() - selectedPt.x, e.getY() - selectedPt.y)- startDragAnglePitch);
                 selectedPt.rotationPitch = Math.PI * 2 - rotationDelta;
-            }else if(rotateMode==2){
-                double rotationDelta = (Math.atan2(e.getX() - selectedPt.x, e.getY() - selectedPt.y)- startDragAngleRoll);
-                selectedPt.rotationRoll = Math.PI * 2 - rotationDelta;
             }
 
             selectedPt.scale = startDragScale*scaleDelta;

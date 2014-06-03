@@ -54,10 +54,6 @@ public class ifsOverlays {
         int[] yPts2 = new int[steps];
         int[] zPts2 = new int[steps];
 
-        int[] xPts3 = new int[steps];
-        int[] yPts3 = new int[steps];
-        int[] zPts3 = new int[steps];
-
         double d1=999,d2=999,d3=999, min_d; //distances from arcs to mouse cursor
         int selectedD=1;
 
@@ -72,10 +68,6 @@ public class ifsOverlays {
                 xPts2[0] = (int)pt.x;
                 yPts2[0] = (int)pt.y;
                 zPts2[0] = (int)pt.z;
-
-                xPts3[0] = (int)pt.x;
-                yPts3[0] = (int)pt.y;
-                zPts3[0] = (int)pt.z;
                 break;
             case 1:
                 xPts1[0] = (int)pt.x;
@@ -85,10 +77,6 @@ public class ifsOverlays {
                 xPts2[0] = (int)pt.x;
                 yPts2[0] = (int)pt.z;
                 zPts2[0] = (int)pt.y;
-
-                xPts3[0] = (int)pt.x;
-                yPts3[0] = (int)pt.z;
-                zPts3[0] = (int)pt.y;
                 break;
             case 2:
                 xPts1[0] = (int)pt.y;
@@ -98,10 +86,6 @@ public class ifsOverlays {
                 xPts2[0] = (int)pt.y;
                 yPts2[0] = (int)pt.z;
                 zPts2[0] = (int)pt.x;
-
-                xPts3[0] = (int)pt.y;
-                yPts3[0] = (int)pt.z;
-                zPts3[0] = (int)pt.x;
                 break;
         }
 
@@ -116,14 +100,8 @@ public class ifsOverlays {
             yPts2[i] = 10*i/steps;
             zPts2[i] = (int)((Math.sin(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
 
-            //roll
-            xPts3[i] = 10*i/steps;
-            yPts3[i] = (int)((Math.cos(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
-            zPts3[i] = (int)((Math.sin(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
-
-            ifsPt rotatedPt1 = new ifsPt(xPts1[i],yPts1[i],zPts1[i]).getRotatedPt(-pt.rotationRoll,-pt.rotationPitch,-pt.rotationYaw);
-            ifsPt rotatedPt2 = new ifsPt(xPts2[i],yPts2[i],zPts2[i]).getRotatedPt(-pt.rotationRoll,-pt.rotationPitch,-pt.rotationYaw);
-            ifsPt rotatedPt3 = new ifsPt(xPts3[i],yPts3[i],zPts3[i]).getRotatedPt(-pt.rotationRoll,-pt.rotationPitch,-pt.rotationYaw);
+            ifsPt rotatedPt1 = new ifsPt(xPts1[i],yPts1[i],zPts1[i]).getRotatedPt(0,-pt.rotationYaw);
+            ifsPt rotatedPt2 = new ifsPt(xPts2[i],yPts2[i],zPts2[i]).getRotatedPt(-pt.rotationPitch,-pt.rotationYaw);
 
             switch (viewMode){
                 case 0:
@@ -135,13 +113,8 @@ public class ifsOverlays {
                     yPts2[i] = (int)(rotatedPt2.y + pt.y);
                     zPts2[i] = (int)(rotatedPt2.z + pt.z);
 
-                    xPts3[i] = (int)(rotatedPt3.x + pt.x);
-                    yPts3[i] = (int)(rotatedPt3.y + pt.y);
-                    zPts3[i] = (int)(rotatedPt3.z + pt.z);
-
                     d1 = distance(myIfsSys.mousex - rotatedPt1.x - pt.x, myIfsSys.mousey - rotatedPt1.y - pt.y);
                     d2 = distance(myIfsSys.mousex - rotatedPt2.x - pt.x, myIfsSys.mousey - rotatedPt2.y - pt.y);
-                    d3 = distance(myIfsSys.mousex - rotatedPt3.x - pt.x, myIfsSys.mousey - rotatedPt3.y - pt.y);
 
                     break;
                 case 1:
@@ -153,13 +126,9 @@ public class ifsOverlays {
                     zPts2[i] = (int)(rotatedPt2.y + pt.y);
                     yPts2[i] = (int)(rotatedPt2.z + pt.z);
 
-                    xPts3[i] = (int)(rotatedPt3.x + pt.x);
-                    zPts3[i] = (int)(rotatedPt3.y + pt.y);
-                    yPts3[i] = (int)(rotatedPt3.z + pt.z);
+                    d1 = distance(myIfsSys.mousex - rotatedPt1.x - pt.x, myIfsSys.mousez - rotatedPt1.z - pt.z);
+                    d2 = distance(myIfsSys.mousex - rotatedPt2.x - pt.x, myIfsSys.mousez - rotatedPt2.z - pt.z);
 
-                    d1 = distance(myIfsSys.mousex - rotatedPt1.x - pt.x, myIfsSys.mousey - rotatedPt1.z - pt.z);
-                    d2 = distance(myIfsSys.mousex - rotatedPt2.x - pt.x, myIfsSys.mousey - rotatedPt2.z - pt.z);
-                    d3 = distance(myIfsSys.mousex - rotatedPt3.x - pt.x, myIfsSys.mousey - rotatedPt3.z - pt.z);
                     break;
                 case 2:
                     zPts1[i] = (int)(rotatedPt1.x + pt.x);
@@ -170,13 +139,9 @@ public class ifsOverlays {
                     xPts2[i] = (int)(rotatedPt2.y + pt.y);
                     yPts2[i] = (int)(rotatedPt2.z + pt.z);
 
-                    zPts3[i] = (int)(rotatedPt3.x + pt.x);
-                    xPts3[i] = (int)(rotatedPt3.y + pt.y);
-                    yPts3[i] = (int)(rotatedPt3.z + pt.z);
+                    d1 = distance(myIfsSys.mousey - rotatedPt1.y - pt.y, myIfsSys.mousez - rotatedPt1.z - pt.z);
+                    d2 = distance(myIfsSys.mousey - rotatedPt2.y - pt.y, myIfsSys.mousez - rotatedPt2.z - pt.z);
 
-                    d1 = distance(myIfsSys.mousex - rotatedPt1.y - pt.y, myIfsSys.mousey - rotatedPt1.z - pt.z);
-                    d2 = distance(myIfsSys.mousex - rotatedPt2.y - pt.y, myIfsSys.mousey - rotatedPt2.z - pt.z);
-                    d3 = distance(myIfsSys.mousex - rotatedPt3.y - pt.y, myIfsSys.mousey - rotatedPt3.z - pt.z);
                     break;
             }
 
@@ -200,24 +165,18 @@ public class ifsOverlays {
                 yPts1[steps-1] = (int)pt.y;
                 xPts2[steps-1] = (int)pt.x;
                 yPts2[steps-1] = (int)pt.y;
-                xPts3[steps-1] = (int)pt.x;
-                yPts3[steps-1] = (int)pt.y;
                 break;
             case 1:
                 xPts1[steps-1] = (int)pt.x;
                 yPts1[steps-1] = (int)pt.z;
                 xPts2[steps-1] = (int)pt.x;
                 yPts2[steps-1] = (int)pt.z;
-                xPts3[steps-1] = (int)pt.x;
-                yPts3[steps-1] = (int)pt.z;
                 break;
             case 2:
                 xPts1[steps-1] = (int)pt.y;
                 yPts1[steps-1] = (int)pt.z;
                 xPts2[steps-1] = (int)pt.y;
                 yPts2[steps-1] = (int)pt.z;
-                xPts3[steps-1] = (int)pt.y;
-                yPts3[steps-1] = (int)pt.z;
                 break;
         }
 
@@ -230,13 +189,10 @@ public class ifsOverlays {
             drawPolylineBolded(_rg, xPts1, yPts1, steps, myIfsSys.rotateMode==0);
             _rg.setColor(Color.green);
             drawPolylineBolded(_rg, xPts2, yPts2, steps, myIfsSys.rotateMode==1);
-            _rg.setColor(Color.blue);
-            drawPolylineBolded(_rg, xPts3, yPts3, steps, myIfsSys.rotateMode==2);
         }else{
             _rg.setColor(Color.darkGray);
             _rg.drawPolyline(xPts1, yPts1, steps);
             _rg.drawPolyline(xPts2, yPts2, steps);
-            _rg.drawPolyline(xPts3, yPts3, steps);
         }
     }
 
@@ -270,7 +226,7 @@ public class ifsOverlays {
         rg.drawString("Scale: " + String.valueOf((double)(int)(selectedPt.scale * 1000D) / 1000D), 5, 15*5);
         rg.drawString("Rotation Yaw: " + String.valueOf((double)(int)((((selectedPt.rotationYaw / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 15*6);
         rg.drawString("Rotation Pitch: " + String.valueOf((double)(int)((((selectedPt.rotationPitch / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 15*7);
-        rg.drawString("Rotation Roll: " + String.valueOf((double)(int)((((selectedPt.rotationRoll / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 15*8);
+        //rg.drawString("Rotation Roll: " + String.valueOf((double)(int)((((selectedPt.rotationRoll / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 15*8);
         rg.drawString("CenterOfGrav: ("
                 + (int)(myIfsSys.centerOfGrav.x/myIfsSys.samplesThisFrame) + ", "
                 + (int)(myIfsSys.centerOfGrav.y/myIfsSys.samplesThisFrame) + ", "

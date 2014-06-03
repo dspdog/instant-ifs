@@ -47,7 +47,7 @@ class ifsShape{
         pts[pointsInUse].scale = 0.5D;
         pts[pointsInUse].rotationYaw = 0.0D;
         pts[pointsInUse].rotationPitch = 0.0D;
-        pts[pointsInUse].rotationRoll = 0.0D;
+        //pts[pointsInUse].rotationRoll = 0.0D;
         pts[pointsInUse].opacity = 1.0D;
         pointsInUse++;
         updateCenter();
@@ -103,12 +103,40 @@ class ifsShape{
         updateRadiusDegrees();
     }
 
-    public int getNearestPtIndex(double x, double y, double z){
+    public int getNearestPtIndexXY(double x, double y){
         double olddist = 100000D;
         int ptSelected = -1;
         for(int a = 0; a < this.pointsInUse; a++)
         {
-            double currentdist = this.distance((double) x - this.pts[a].x, (double) y - this.pts[a].y, (double) z - this.pts[a].z);
+            double currentdist = this.distance((double) x - this.pts[a].x, (double) y - this.pts[a].y, 0);
+            if(currentdist < olddist){
+                olddist = currentdist;
+                ptSelected = a;
+            }
+        }
+        return ptSelected;
+    }
+
+    public int getNearestPtIndexXZ(double x, double y){
+        double olddist = 100000D;
+        int ptSelected = -1;
+        for(int a = 0; a < this.pointsInUse; a++)
+        {
+            double currentdist = this.distance((double) x - this.pts[a].x, (double) y - this.pts[a].z, 0);
+            if(currentdist < olddist){
+                olddist = currentdist;
+                ptSelected = a;
+            }
+        }
+        return ptSelected;
+    }
+
+    public int getNearestPtIndexZY(double x, double y){
+        double olddist = 100000D;
+        int ptSelected = -1;
+        for(int a = 0; a < this.pointsInUse; a++)
+        {
+            double currentdist = this.distance((double) x - this.pts[a].z, (double) y - this.pts[a].y, 0);
             if(currentdist < olddist){
                 olddist = currentdist;
                 ptSelected = a;
