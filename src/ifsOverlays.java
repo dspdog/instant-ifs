@@ -14,7 +14,7 @@ public class ifsOverlays {
             if(i==0){
                 rg.setColor(Color.BLUE);
             }
-            drawArc(rg, myIfsSys.shape.pts[i], i == myIfsSys.pointselected, myIfsSys.isDragging);
+            drawArc(rg, myIfsSys.shape.pts[i], i == myIfsSys.pointSelected, myIfsSys.isDragging);
         }
     }
 
@@ -135,7 +135,7 @@ public class ifsOverlays {
         ifsPt selectedPt = myIfsSys.selectedPt;
 
         rg.setColor(Color.white);
-        rg.drawString("Point " + String.valueOf(myIfsSys.pointselected + 1), 5, 15*1);
+        rg.drawString("Point " + String.valueOf(myIfsSys.pointSelected + 1), 5, 15*1);
         rg.drawString("X: " + String.valueOf((double)(int)(selectedPt.x * 1000D) / 1000D), 5, 15*2);
         rg.drawString("Y: " + String.valueOf((double)(int)(selectedPt.y * 1000D) / 1000D), 5, 15*3);
         rg.drawString("Z: " + String.valueOf((double)(int)(selectedPt.z * 1000D) / 1000D), 5, 15*4);
@@ -152,12 +152,12 @@ public class ifsOverlays {
         //rg.drawString("Exposure: " + String.valueOf(myIfsSys.samplesThisFrame/myIfsSys.samplesNeeded), 5, 15*10);
         rg.drawString("Opacity: " + String.valueOf(selectedPt.opacity), 5, 15*11);
         rg.drawString("Iterations (. /): " + String.valueOf(myIfsSys.iterations), 5, 15*12);
-        rg.drawString("Samples (nm): " + String.valueOf(myIfsSys.sampletotal), 4, 15*13);
+        rg.drawString("Samples (nm): " + String.valueOf(myIfsSys.samplesPerFrame), 4, 15*13);
         //rg.drawString("Expected Done %" + String.valueOf((int)Math.min(100*samplesThisFrame/samplesNeeded/Math.E, 100)), 5, 135); //TODO is dividing by E the right thing to do here?
         rg.drawString("FPS " + String.valueOf(myIfsSys.fps), 5, 15*14);
         rg.drawString("Gamma " + String.valueOf(myIfsSys.gamma), 5, 15*15);
 
-        rg.drawString("DataMax " + String.valueOf((int)myIfsSys.dataMax), 5, 15*18);
+        rg.drawString("DataMax " + String.valueOf((int)myIfsSys.theVolume.dataMax), 5, 15*18);
 
         int screenheight = myIfsSys.screenheight;
         int screenwidth = myIfsSys.screenwidth;

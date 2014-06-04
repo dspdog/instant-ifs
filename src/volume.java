@@ -11,10 +11,13 @@ public class volume {
 
     ifsPt centerOfGravity;
 
+    boolean antiAliasing;
+
     public volume(int w, int h, int d){
         width = w;
         height = h;
         depth = d;
+        antiAliasing = true;
         volume = new double[width][height][depth];
         centerOfGravity = new ifsPt(0,0,0);
     }
@@ -32,7 +35,7 @@ public class volume {
         dataMax=1;
     }
 
-    public void putPixel(ifsPt pt, double alpha, boolean antialiasing){
+    public void putPixel(ifsPt pt, double alpha){
         pt.x=Math.max(pt.x,1);
         pt.y=Math.max(pt.y,1);
         pt.z=Math.max(pt.z,1);
@@ -46,7 +49,7 @@ public class volume {
         centerOfGravity.y+=pt.y*alpha;
         centerOfGravity.z+=pt.z*alpha;
 
-        if(antialiasing){
+        if(antiAliasing){
             double xDec = pt.x - (int)pt.x;
             double yDec = pt.y - (int)pt.y;
             double zDec = pt.z - (int)pt.z;

@@ -10,10 +10,8 @@ public class ifsys extends Panel
     int screenwidth;
     int screenheight;
 
-    double dataMax = 0;
     double gamma = 0;
     int pixels[];
-    long numPoints=0;
     Image render;
     Graphics rg;
     long fps;
@@ -26,13 +24,12 @@ public class ifsys extends Panel
 
     //user params
         boolean framesHidden;
-        boolean antiAliasing;
         boolean infoHidden;
         boolean usePDFSamples;
         boolean guidesHidden;
-        int sampletotal;
+        int samplesPerFrame;
         int iterations;
-        int pointselected;
+        int pointSelected;
         ifsPt selectedPt;
 
         boolean shiftDown;
@@ -45,7 +42,6 @@ public class ifsys extends Panel
     ifsShape shape;
 
     int maxPoints;
-    int maxLineLength;
 
     //drag vars
         int mousemode; //current mouse button
@@ -64,7 +60,6 @@ public class ifsys extends Panel
 
     public ifsys(){
         started=false;
-        numPoints=0;
         oneSecondAgo =0;
         framesThisSecond = 0;
         altDown=false;
@@ -72,7 +67,6 @@ public class ifsys extends Panel
         shiftDown=false;
         game = new mainthread();
         quit = false;
-        antiAliasing = true;
         framesHidden = true;
         infoHidden = false;
         usePDFSamples = false;
@@ -80,15 +74,15 @@ public class ifsys extends Panel
         screenwidth = 512;
         screenheight = 512;
         pixels = new int[screenwidth * screenheight];
-        sampletotal = 512;
-        iterations = 5;
+        samplesPerFrame = 512;
+        iterations = 8;
         mousemode = 0;
-        maxLineLength = screenwidth;
+
         maxPoints = 100;
         shape = new ifsShape(maxPoints);
         mouseScroll = 0;
         gamma = 1.0D;
-        pointselected=-1;
+        pointSelected =-1;
         isDragging = false;
 
         theVolume = new volume(screenwidth, screenheight, 5);
@@ -124,8 +118,8 @@ public class ifsys extends Panel
     }
 
     public void findSelectedPoint(){
-        pointselected = shape.getNearestPtIndexXY(mousex, mousey);
-        selectedPt = shape.pts[pointselected];
+        pointSelected = shape.getNearestPtIndexXY(mousex, mousey);
+        selectedPt = shape.pts[pointSelected];
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -192,7 +186,7 @@ public class ifsys extends Panel
         }
 
 
-        if(!infoHidden && pointselected>=0){
+        if(!infoHidden && pointSelected >=0){
             overlays.drawInfoBox(rg);
         }
 
@@ -224,8 +218,8 @@ public class ifsys extends Panel
         theVolume.clear();
     }
 
-    public boolean putPixel(ifsPt pt, double alpha){
-        theVolume.putPixel(pt,alpha,antiAliasing);
+    public boolean _putPixel(ifsPt pt, double alpha){
+
         return true;
     }
 
@@ -267,7 +261,7 @@ public class ifsys extends Panel
         double placedZ = rpt.z;
 
         //put pixel
-        putPixel(new ifsPt(x+placedX,y+placedY, z+placedZ), ptColor);
+        theVolume.putPixel(new ifsPt(x+placedX,y+placedY, z+placedZ),ptColor);
     }
 
     public void gamefunc(){
@@ -275,7 +269,7 @@ public class ifsys extends Panel
 
         if(shape.pointsInUse != 0){
 
-            for(int a = 0; a < sampletotal; a++){
+            for(int a = 0; a < samplesPerFrame; a++){
                 int randomIndex = 0;
                 ifsPt dpt = new ifsPt(shape.pts[randomIndex]);
                 ifsPt rpt;
@@ -319,7 +313,7 @@ public class ifsys extends Panel
                     cumulativeRotationPitch += shape.pts[randomIndex].rotationPitch;
                 }
 
-                putPixel(dpt, cumulativeOpacity);
+                theVolume.putPixel(dpt, cumulativeOpacity);
             }
         }
     }
@@ -341,7 +335,7 @@ public class ifsys extends Panel
                 clearframe();
                 gamefunc();
             }else if(mousemode == 3){ //remove point w/ double right click
-                shape.deletePoint(pointselected);
+                shape.deletePoint(pointSelected);
                 clearframe();
                 gamefunc();
             }
@@ -472,12 +466,14 @@ public class ifsys extends Panel
             iterations--;
 
         if(e.getKeyChar() == 'm')
-            sampletotal *= 2;
-        if(e.getKeyChar() == 'n' && sampletotal > 1)
-            sampletotal /= 2;
+            samplesPerFrame *= 2;
+        if(e.getKeyChar() == 'n' && samplesPerFrame > 1)
+            samplesPerFrame /= 2;
 
-        if(sampletotal<2){sampletotal=2;}
-        if(sampletotal>32768){sampletotal=32768;}
+        if(samplesPerFrame <2){
+            samplesPerFrame =2;}
+        if(samplesPerFrame >32768){
+            samplesPerFrame =32768;}
 
         if(e.getKeyChar() == '1')
             shape.setToPreset(1);

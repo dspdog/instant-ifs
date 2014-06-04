@@ -27,7 +27,7 @@ public class ifsMenu implements ItemListener{
 
         //RENDER MENU
             CheckboxMenuItem aaButton = new CheckboxMenuItem("Anti-Aliasing"); //anti-aliasing toggle
-            aaButton.setState(is.antiAliasing);
+            aaButton.setState(is.theVolume.antiAliasing);
             aaButton.addItemListener(this);
             renderMenu.add(aaButton);
 
@@ -61,7 +61,7 @@ public class ifsMenu implements ItemListener{
     public void itemStateChanged(ItemEvent e) {
         //RENDER MENU
             if(e.getItem()=="Anti-Aliasing"){
-                myIfsSys.antiAliasing = e.getStateChange()==1;
+                myIfsSys.theVolume.antiAliasing = e.getStateChange()==1;
             }
         //GUIDES MENU
             if(e.getItem()=="Info Box"){
