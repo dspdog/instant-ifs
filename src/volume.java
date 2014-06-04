@@ -5,6 +5,7 @@ public class volume {
     int width, height, depth;
 
     double totalSamples=0;
+    double dataMax=0;
 
     public double volume[][][];
 
@@ -28,15 +29,16 @@ public class volume {
                 }
             }
         }
+        dataMax=1;
     }
 
     public void putPixel(ifsPt pt, double alpha, boolean antialiasing){
-        pt.x=Math.max(pt.x,0);
-        pt.y=Math.max(pt.y,0);
-        pt.z=Math.max(pt.z,0);
-        pt.x=Math.min(pt.x, width - 1);
-        pt.y=Math.min(pt.y,height-1);
-        pt.z=Math.min(pt.z,depth-1);
+        pt.x=Math.max(pt.x,1);
+        pt.y=Math.max(pt.y,1);
+        pt.z=Math.max(pt.z,1);
+        pt.x=Math.min(pt.x, width-2);
+        pt.y=Math.min(pt.y,height-2);
+        pt.z=Math.min(pt.z,depth-2);
 
         totalSamples+=alpha;
 
@@ -44,7 +46,27 @@ public class volume {
         centerOfGravity.y+=pt.y*alpha;
         centerOfGravity.z+=pt.z*alpha;
 
-        volume[(int)pt.x][(int)pt.y][(int)pt.z]=alpha;
+        if(antialiasing){
+            double xDec = pt.x - (int)pt.x;
+            double yDec = pt.y - (int)pt.y;
+            double zDec = pt.z - (int)pt.z;
+
+            volume[(int)pt.x][(int)pt.y][(int)pt.z] += alpha*(1-xDec)*(1-yDec)*(1-zDec);
+            volume[(int)pt.x+1][(int)pt.y][(int)pt.z] += alpha*xDec*(1-yDec)*(1-zDec);
+            volume[(int)pt.x][(int)pt.y+1][(int)pt.z] += alpha*(1-xDec)*yDec*(1-zDec);
+            volume[(int)pt.x+1][(int)pt.y+1][(int)pt.z] += alpha*xDec*yDec*(1-zDec);
+
+            volume[(int)pt.x][(int)pt.y][(int)pt.z+1] += alpha*(1-xDec)*(1-yDec)*zDec;
+            volume[(int)pt.x+1][(int)pt.y][(int)pt.z+1] += alpha*xDec*(1-yDec)*zDec;
+            volume[(int)pt.x][(int)pt.y+1][(int)pt.z+1] += alpha*(1-xDec)*yDec*zDec;
+            volume[(int)pt.x+1][(int)pt.y+1][(int)pt.z+1] += alpha*xDec*yDec*zDec;
+        }else{
+            volume[(int)pt.x][(int)pt.y][(int)pt.z]+=alpha;
+        }
+
+        if(volume[(int)pt.x][(int)pt.y][(int)pt.z]>dataMax){
+            dataMax=volume[(int)pt.x][(int)pt.y][(int)pt.z];
+        }
     }
 
     public ifsPt getCenterOfGravity(){

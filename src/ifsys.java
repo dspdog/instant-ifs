@@ -72,7 +72,7 @@ public class ifsys extends Panel
         shiftDown=false;
         game = new mainthread();
         quit = false;
-        antiAliasing = false;
+        antiAliasing = true;
         framesHidden = true;
         infoHidden = false;
         usePDFSamples = false;
@@ -200,7 +200,7 @@ public class ifsys extends Panel
     }
 
     public void generatePixels(){
-        double scaler = 255;
+        double scaler = 255/theVolume.dataMax;
         double area = 0;
         int scaledColor = 0;
 
