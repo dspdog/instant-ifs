@@ -24,8 +24,8 @@ public class ifsOverlays {
         int height = 15;
         int x=0,y=0;
 
-        x=(int)(myIfsSys.centerOfGrav.x/myIfsSys.samplesThisFrame);
-        y=(int)(myIfsSys.centerOfGrav.y/myIfsSys.samplesThisFrame);
+        x=(int)(myIfsSys.theVolume.getCenterOfGravity().x);
+        y=(int)(myIfsSys.theVolume.getCenterOfGravity().y);
         _rg.drawRect(x-width/2,y-height/2,width,height);
     }
 
@@ -144,9 +144,9 @@ public class ifsOverlays {
         rg.drawString("Rotation Pitch: " + String.valueOf((double)(int)((((selectedPt.rotationPitch / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 15*7);
         //rg.drawString("Rotation Roll: " + String.valueOf((double)(int)((((selectedPt.rotationRoll / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 15*8);
         rg.drawString("CenterOfGrav: ("
-                + (int)(myIfsSys.centerOfGrav.x/myIfsSys.samplesThisFrame) + ", "
-                + (int)(myIfsSys.centerOfGrav.y/myIfsSys.samplesThisFrame) + ", "
-                + (int)(myIfsSys.centerOfGrav.z/myIfsSys.samplesThisFrame) + ")", 5, 15*9);
+                + (int)(myIfsSys.theVolume.getCenterOfGravity().x) + ", "
+                + (int)(myIfsSys.theVolume.getCenterOfGravity().y) + ", "
+                + (int)(myIfsSys.theVolume.getCenterOfGravity().z) + ")", 5, 15*9);
 
 
         //rg.drawString("Exposure: " + String.valueOf(myIfsSys.samplesThisFrame/myIfsSys.samplesNeeded), 5, 15*10);

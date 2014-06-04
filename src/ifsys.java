@@ -10,8 +10,6 @@ public class ifsys extends Panel
     int screenwidth;
     int screenheight;
 
-    double _pixelsData[];
-
     double dataMax = 0;
     double gamma = 0;
     int pixels[];
@@ -22,7 +20,6 @@ public class ifsys extends Panel
     long framesThisSecond;
     long oneSecondAgo;
 
-    double samplesThisFrame;
     double samplesNeeded;
 
     long lastMoveTime;
@@ -39,7 +36,6 @@ public class ifsys extends Panel
         boolean infoHidden;
         boolean usePDFSamples;
         boolean guidesHidden;
-        boolean _invertColors;
         int sampletotal;
         int iterations;
         int pointselected;
@@ -55,7 +51,6 @@ public class ifsys extends Panel
         int rotateMode;
 
     ifsShape shape;
-    ifsPt centerOfGrav = new ifsPt();
     double shapeArea;
     double shapeAreaDelta;
 
@@ -79,7 +74,6 @@ public class ifsys extends Panel
 
     public ifsys(){
         started=false;
-        samplesThisFrame=0;
         numPoints=0;
         oneSecondAgo =0;
         framesThisSecond = 0;
@@ -99,7 +93,6 @@ public class ifsys extends Panel
         screenwidth = 512;
         screenheight = 512;
         pixels = new int[screenwidth * screenheight];
-        //pixelsData = new double[screenwidth * screenheight];
         sampletotal = 512;
         iterations = 5;
         mousemode = 0;
@@ -246,26 +239,10 @@ public class ifsys extends Panel
             pixels[a] = 0xff000000;
         }
         theVolume.clear();
-        centerOfGrav.x=shape.pts[0].x;
-        centerOfGrav.y=shape.pts[0].y;
-        centerOfGrav.z=shape.pts[0].z;
-        samplesThisFrame=1;
     }
 
     public boolean putPixel(ifsPt pt, double alpha){
-
-        centerOfGrav.x+=pt.x*alpha;
-        centerOfGrav.y+=pt.y*alpha;
-        centerOfGrav.z+=pt.z*alpha;
-
-        double x=0,y=0,z=0;
-
-        x = pt.x; y = pt.y; z = pt.z;
-
-        samplesThisFrame+=alpha;
-
-        theVolume.putPixel(x,y,z,false);
-
+        theVolume.putPixel(pt,alpha,antiAliasing);
         return true;
     }
 
@@ -300,17 +277,6 @@ public class ifsys extends Panel
         double pointDegreesPitch = thePt.rotationPitch;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
         //System.out.println(Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch);
 
-        //RESULTS IN
-        /*
-        *   0.0
-            1.5707963267948966
-            0.0
-            1.5707963267948966
-            0.0
-            1.5707963267948966
-            ....
-        * */
-
         ifsPt rpt = new ifsPt((sampleX-centerZ)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw);
 
         double placedX = rpt.x;
@@ -328,8 +294,6 @@ public class ifsys extends Panel
         boolean startedInScreen = false;
 
         if(steps>maxLineLength){steps=maxLineLength;}
-
-        samplesThisFrame++;
 
         for(int i=0; i<steps; i++){
             dx = p0.x + i*(p1.x-p0.x)/steps;
