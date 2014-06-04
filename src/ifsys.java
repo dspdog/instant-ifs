@@ -19,9 +19,6 @@ public class ifsys extends Panel
     long fps;
     long framesThisSecond;
     long oneSecondAgo;
-
-    double samplesNeeded;
-
     long lastMoveTime;
 
     volume theVolume;
@@ -29,10 +26,7 @@ public class ifsys extends Panel
 
     //user params
         boolean framesHidden;
-        boolean _leavesHidden;
         boolean antiAliasing;
-        boolean _trailsHidden;
-        boolean _spokesHidden;
         boolean infoHidden;
         boolean usePDFSamples;
         boolean guidesHidden;
@@ -89,7 +83,6 @@ public class ifsys extends Panel
         sampletotal = 512;
         iterations = 5;
         mousemode = 0;
-        samplesNeeded = 1;
         maxLineLength = screenwidth;
         maxPoints = 100;
         shape = new ifsShape(maxPoints);
@@ -278,10 +271,7 @@ public class ifsys extends Panel
     }
 
     public void gamefunc(){
-
         guidesHidden = System.currentTimeMillis() - lastMoveTime > 1000;
-
-        samplesNeeded = Math.pow(shape.pointsInUse, iterations);
 
         if(shape.pointsInUse != 0){
 
@@ -427,22 +417,17 @@ public class ifsys extends Panel
         double changeFactor = 0.9;
 
         if(e.getWheelRotation()>0){ //scroll down
-            if(shiftDown || ctrlDown){//decrease gamma
-                gamma*=0.9;
-            }else{//decrease point opacity
-                selectedPt.opacity*=changeFactor;
-            }
-        }else{ //scroll up
-            if(shiftDown || ctrlDown){//increase gamma
-                gamma/=0.9;
-            }else{//increase point opacity
-                selectedPt.opacity/=changeFactor;
+            //decrease point opacity
+            selectedPt.opacity*=changeFactor;
 
-                if(selectedPt.opacity>1){ //values above 1 break the line function so instead we reduce the other points for the same effect
-                    selectedPt.opacity=1.0D;
-                    for(int i=0; i<shape.pointsInUse; i++){
-                        shape.pts[i].opacity*=changeFactor;
-                    }
+        }else{ //scroll up
+            //increase point opacity
+            selectedPt.opacity/=changeFactor;
+
+            if(selectedPt.opacity>1){ //values above 1 break the line function so instead we reduce the other points for the same effect
+                selectedPt.opacity=1.0D;
+                for(int i=0; i<shape.pointsInUse; i++){
+                    shape.pts[i].opacity*=changeFactor;
                 }
             }
         }
@@ -481,10 +466,6 @@ public class ifsys extends Panel
             ctrlDown=false;
         if(e.getKeyCode()==KeyEvent.VK_SHIFT)
             shiftDown=false;
-
-        //if(e.getKeyChar() == 'c')
-            //centerOnGrav();
-
         if(e.getKeyChar() == '/')
             iterations++;
         if(e.getKeyChar() == '.' && iterations > 1)

@@ -157,8 +157,6 @@ public class ifsOverlays {
         rg.drawString("FPS " + String.valueOf(myIfsSys.fps), 5, 15*14);
         rg.drawString("Gamma " + String.valueOf(myIfsSys.gamma), 5, 15*15);
 
-        rg.drawString("Area " + String.valueOf((int)myIfsSys.shapeArea), 5, 15*16);
-        rg.drawString("AreaDelta " + String.valueOf((int)(100*myIfsSys.shapeAreaDelta)+"%"), 5, 15*17);
         rg.drawString("DataMax " + String.valueOf((int)myIfsSys.dataMax), 5, 15*18);
 
         int screenheight = myIfsSys.screenheight;

@@ -4,7 +4,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-public class ifsMenu implements ItemListener, ActionListener{
+public class ifsMenu implements ItemListener{
 
     ifsys myIfsSys;
 
@@ -17,10 +17,9 @@ public class ifsMenu implements ItemListener, ActionListener{
         myIfsSys = is;
 
         MenuBar menuBar;
-        Menu pdfMenu, renderMenu, shapeMenu, guidesMenu, viewMenu;
+        Menu renderMenu, shapeMenu, guidesMenu, viewMenu;
 
         menuBar = new MenuBar();
-        pdfMenu = new Menu("PDF");
         renderMenu = new Menu("Render");
         shapeMenu = new Menu("Shape");
         guidesMenu = new Menu("Guides");
@@ -45,16 +44,6 @@ public class ifsMenu implements ItemListener, ActionListener{
             imgButton.addItemListener(this);
             shapeMenu.add(imgButton);
 
-            CheckboxMenuItem leavesButton = new CheckboxMenuItem("Leaves"); //leaves toggle
-            leavesButton.setState(!is.leavesHidden);
-            leavesButton.addItemListener(this);
-            shapeMenu.add(leavesButton);
-
-            CheckboxMenuItem trailsButton = new CheckboxMenuItem("Point Trails"); //trails toggle
-            trailsButton.setState(!is.trailsHidden);
-            trailsButton.addItemListener(this);
-            shapeMenu.add(trailsButton);
-
         //GUIDES MENU
             CheckboxMenuItem infoButton = new CheckboxMenuItem("Info Box"); //info box toggle
             infoButton.setState(!is.infoHidden);
@@ -63,7 +52,6 @@ public class ifsMenu implements ItemListener, ActionListener{
 
             menuBar.add(renderMenu);
             menuBar.add(shapeMenu);
-            //menuBar.add(pdfMenu);
             menuBar.add(guidesMenu);
             menuBar.add(viewMenu);
 
@@ -75,8 +63,6 @@ public class ifsMenu implements ItemListener, ActionListener{
             if(e.getItem()=="Anti-Aliasing"){
                 myIfsSys.antiAliasing = e.getStateChange()==1;
             }
-        //VIEW MENU
-
         //GUIDES MENU
             if(e.getItem()=="Info Box"){
                 myIfsSys.infoHidden = e.getStateChange()==2;
@@ -88,18 +74,5 @@ public class ifsMenu implements ItemListener, ActionListener{
             if(e.getItem()=="PDF Samples"){
                 myIfsSys.usePDFSamples = e.getStateChange()==1;
             }
-            if(e.getItem()=="Leaves"){
-                myIfsSys.leavesHidden = e.getStateChange()==2;
-            }
-            if(e.getItem()=="Point Trails"){
-                myIfsSys.spokesHidden = e.getStateChange()==2;
-            }
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        //if(e.getActionCommand()=="Center on Screen"){
-        //    myIfsSys.centerOnGrav();
-        //}
     }
 }
