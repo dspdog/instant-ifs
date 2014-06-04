@@ -348,7 +348,7 @@ public class ifsys extends Panel
 
         double sampleX = Math.random()*thePdf.sampleWidth;
         double sampleY = Math.random()*thePdf.sampleHeight;
-        double sampleZ = 0;//Math.random()*thePdf.sampleDepth;
+        double sampleZ = thePdf.sampleDepth/2;
 
         //modulate with image
         double exposureAdjust = cumulativeScale*thePt.scale*thePt.radius;
@@ -363,7 +363,7 @@ public class ifsys extends Panel
 
         double pointDegreesYaw = thePt.rotationYaw -thePt.degreesYaw+cumulativeRotationYaw;
         double multi = 1;//pointDegreesYaw>Math.PI ? 1 : -1;
-        double pointDegreesPitch = Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
+        double pointDegreesPitch = thePt.rotationPitch;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
         //System.out.println(Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch);
 
         //RESULTS IN
