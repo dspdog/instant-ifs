@@ -24,26 +24,12 @@ public class ifsOverlays {
         int height = 15;
         int x=0,y=0;
 
-        switch (myIfsSys.viewMode){
-            case 0:
-                x=(int)(myIfsSys.centerOfGrav.x/myIfsSys.samplesThisFrame);
-                y=(int)(myIfsSys.centerOfGrav.y/myIfsSys.samplesThisFrame);
-                break;
-            case 1:
-                x=(int)(myIfsSys.centerOfGrav.x/myIfsSys.samplesThisFrame);
-                y=(int)(myIfsSys.centerOfGrav.z/myIfsSys.samplesThisFrame);
-                break;
-            case 2:
-                x=(int)(myIfsSys.centerOfGrav.y/myIfsSys.samplesThisFrame);
-                y=(int)(myIfsSys.centerOfGrav.z/myIfsSys.samplesThisFrame);
-                break;
-        }
-
+        x=(int)(myIfsSys.centerOfGrav.x/myIfsSys.samplesThisFrame);
+        y=(int)(myIfsSys.centerOfGrav.y/myIfsSys.samplesThisFrame);
         _rg.drawRect(x-width/2,y-height/2,width,height);
     }
 
     public void drawArc(Graphics _rg, ifsPt pt, boolean isSelected, boolean dragging){
-        int viewMode = myIfsSys.viewMode;
         int steps = 50;
 
         int[] xPts1 = new int[steps];
@@ -59,35 +45,13 @@ public class ifsOverlays {
 
         min_d=100000;
 
-        switch (viewMode){
-            case 0:
-                xPts1[0] = (int)pt.x;
-                yPts1[0] = (int)pt.y;
-                zPts1[0] = (int)pt.z;
+        xPts1[0] = (int)pt.x;
+        yPts1[0] = (int)pt.y;
+        zPts1[0] = (int)pt.z;
 
-                xPts2[0] = (int)pt.x;
-                yPts2[0] = (int)pt.y;
-                zPts2[0] = (int)pt.z;
-                break;
-            case 1:
-                xPts1[0] = (int)pt.x;
-                yPts1[0] = (int)pt.z;
-                zPts1[0] = (int)pt.y;
-
-                xPts2[0] = (int)pt.x;
-                yPts2[0] = (int)pt.z;
-                zPts2[0] = (int)pt.y;
-                break;
-            case 2:
-                xPts1[0] = (int)pt.y;
-                yPts1[0] = (int)pt.z;
-                zPts1[0] = (int)pt.x;
-
-                xPts2[0] = (int)pt.y;
-                yPts2[0] = (int)pt.z;
-                zPts2[0] = (int)pt.x;
-                break;
-        }
+        xPts2[0] = (int)pt.x;
+        yPts2[0] = (int)pt.y;
+        zPts2[0] = (int)pt.z;
 
         for(int i=1; i<steps; i++){
             //yaw
@@ -103,47 +67,16 @@ public class ifsOverlays {
             ifsPt rotatedPt1 = new ifsPt(xPts1[i],yPts1[i],zPts1[i]).getRotatedPt(0,-pt.rotationYaw);
             ifsPt rotatedPt2 = new ifsPt(xPts2[i],yPts2[i],zPts2[i]).getRotatedPt(-pt.rotationPitch,-pt.rotationYaw);
 
-            switch (viewMode){
-                case 0:
-                    xPts1[i] = (int)(rotatedPt1.x + pt.x);
-                    yPts1[i] = (int)(rotatedPt1.y + pt.y);
-                    zPts1[i] = (int)(rotatedPt1.z + pt.z);
+            xPts1[i] = (int)(rotatedPt1.x + pt.x);
+            yPts1[i] = (int)(rotatedPt1.y + pt.y);
+            zPts1[i] = (int)(rotatedPt1.z + pt.z);
 
-                    xPts2[i] = (int)(rotatedPt2.x + pt.x);
-                    yPts2[i] = (int)(rotatedPt2.y + pt.y);
-                    zPts2[i] = (int)(rotatedPt2.z + pt.z);
+            xPts2[i] = (int)(rotatedPt2.x + pt.x);
+            yPts2[i] = (int)(rotatedPt2.y + pt.y);
+            zPts2[i] = (int)(rotatedPt2.z + pt.z);
 
-                    d1 = distance(myIfsSys.mousex - rotatedPt1.x - pt.x, myIfsSys.mousey - rotatedPt1.y - pt.y);
-                    d2 = distance(myIfsSys.mousex - rotatedPt2.x - pt.x, myIfsSys.mousey - rotatedPt2.y - pt.y);
-
-                    break;
-                case 1:
-                    xPts1[i] = (int)(rotatedPt1.x + pt.x);
-                    zPts1[i] = (int)(rotatedPt1.y + pt.y);
-                    yPts1[i] = (int)(rotatedPt1.z + pt.z);
-
-                    xPts2[i] = (int)(rotatedPt2.x + pt.x);
-                    zPts2[i] = (int)(rotatedPt2.y + pt.y);
-                    yPts2[i] = (int)(rotatedPt2.z + pt.z);
-
-                    d1 = distance(myIfsSys.mousex - rotatedPt1.x - pt.x, myIfsSys.mousez - rotatedPt1.z - pt.z);
-                    d2 = distance(myIfsSys.mousex - rotatedPt2.x - pt.x, myIfsSys.mousez - rotatedPt2.z - pt.z);
-
-                    break;
-                case 2:
-                    zPts1[i] = (int)(rotatedPt1.x + pt.x);
-                    xPts1[i] = (int)(rotatedPt1.y + pt.y);
-                    yPts1[i] = (int)(rotatedPt1.z + pt.z);
-
-                    zPts2[i] = (int)(rotatedPt2.x + pt.x);
-                    xPts2[i] = (int)(rotatedPt2.y + pt.y);
-                    yPts2[i] = (int)(rotatedPt2.z + pt.z);
-
-                    d1 = distance(myIfsSys.mousey - rotatedPt1.y - pt.y, myIfsSys.mousez - rotatedPt1.z - pt.z);
-                    d2 = distance(myIfsSys.mousey - rotatedPt2.y - pt.y, myIfsSys.mousez - rotatedPt2.z - pt.z);
-
-                    break;
-            }
+            d1 = distance(myIfsSys.mousex - rotatedPt1.x - pt.x, myIfsSys.mousey - rotatedPt1.y - pt.y);
+            d2 = distance(myIfsSys.mousex - rotatedPt2.x - pt.x, myIfsSys.mousey - rotatedPt2.y - pt.y);
 
             if(d1<min_d){
                 min_d=d1;
@@ -159,26 +92,10 @@ public class ifsOverlays {
             }
         }
 
-        switch (viewMode){
-            case 0:
-                xPts1[steps-1] = (int)pt.x;
-                yPts1[steps-1] = (int)pt.y;
-                xPts2[steps-1] = (int)pt.x;
-                yPts2[steps-1] = (int)pt.y;
-                break;
-            case 1:
-                xPts1[steps-1] = (int)pt.x;
-                yPts1[steps-1] = (int)pt.z;
-                xPts2[steps-1] = (int)pt.x;
-                yPts2[steps-1] = (int)pt.z;
-                break;
-            case 2:
-                xPts1[steps-1] = (int)pt.y;
-                yPts1[steps-1] = (int)pt.z;
-                xPts2[steps-1] = (int)pt.y;
-                yPts2[steps-1] = (int)pt.z;
-                break;
-        }
+        xPts1[steps-1] = (int)pt.x;
+        yPts1[steps-1] = (int)pt.y;
+        xPts2[steps-1] = (int)pt.x;
+        yPts2[steps-1] = (int)pt.y;
 
         if(isSelected){
             if(!dragging){
@@ -218,7 +135,6 @@ public class ifsOverlays {
         ifsPt selectedPt = myIfsSys.selectedPt;
 
         rg.setColor(Color.white);
-        rg.setColor(myIfsSys.invertColors ? Color.black : Color.white);
         rg.drawString("Point " + String.valueOf(myIfsSys.pointselected + 1), 5, 15*1);
         rg.drawString("X: " + String.valueOf((double)(int)(selectedPt.x * 1000D) / 1000D), 5, 15*2);
         rg.drawString("Y: " + String.valueOf((double)(int)(selectedPt.y * 1000D) / 1000D), 5, 15*3);
@@ -248,30 +164,12 @@ public class ifsOverlays {
         int screenheight = myIfsSys.screenheight;
         int screenwidth = myIfsSys.screenwidth;
 
-        if(myIfsSys.viewMode==0){ //XY axis
-            rg.setColor(Color.green);
-            rg.drawLine(10, screenheight-65, 10, screenheight-65-50);
-            rg.drawString("Y+", 10, screenheight-50);
-            rg.setColor(Color.red);
-            rg.drawLine(10, screenheight-65-50, 10+50, screenheight-65-50);
-            rg.drawString("X+", 10+55, screenheight-50-60);
-        }
-        if(myIfsSys.viewMode==1){ //XZ axis
-            rg.setColor(Color.blue);
-            rg.drawLine(10, screenheight-65, 10, screenheight-65-50);
-            rg.drawString("Z+", 10, screenheight-50);
-            rg.setColor(Color.red);
-            rg.drawLine(10, screenheight-65-50, 10+50, screenheight-65-50);
-            rg.drawString("X+", 10+55, screenheight-50-60);
-        }
-        if(myIfsSys.viewMode==2){ //YZ axis
-            rg.setColor(Color.green);
-            rg.drawLine(10, screenheight-65, 10, screenheight-65-50);
-            rg.drawString("Y+", 10, screenheight-50);
-            rg.setColor(Color.blue);
-            rg.drawLine(10, screenheight-65-50, 10+50, screenheight-65-50);
-            rg.drawString("Z+", 10+55, screenheight-50-60);
-        }
+        rg.setColor(Color.green);
+        rg.drawLine(10, screenheight-65, 10, screenheight-65-50);
+        rg.drawString("Y+", 10, screenheight-50);
+        rg.setColor(Color.red);
+        rg.drawLine(10, screenheight-65-50, 10+50, screenheight-65-50);
+        rg.drawString("X+", 10+55, screenheight-50-60);
     }
 
     public double distance(double x, double y){

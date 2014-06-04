@@ -32,31 +32,7 @@ public class ifsMenu implements ItemListener, ActionListener{
             aaButton.addItemListener(this);
             renderMenu.add(aaButton);
 
-            CheckboxMenuItem inButton = new CheckboxMenuItem("Invert"); //invert toggle
-            inButton.setState(is.invertColors);
-            inButton.addItemListener(this);
-            renderMenu.add(inButton);
-
         //VIEW MENU
-            MenuItem centerButton = new MenuItem("Center on Screen");
-            topButton = new CheckboxMenuItem("Top (XY)");
-            sideButton = new CheckboxMenuItem("Side (XZ)");
-            frontButton = new CheckboxMenuItem("Front (YZ)");
-
-            centerButton.addActionListener(this);
-            viewMenu.add(centerButton);
-
-            topButton.setState(is.viewMode==0);
-            topButton.addItemListener(this);
-            viewMenu.add(topButton);
-
-            sideButton.setState(is.viewMode==1);
-            sideButton.addItemListener(this);
-            viewMenu.add(sideButton);
-
-            frontButton.setState(is.viewMode==2);
-            frontButton.addItemListener(this);
-            viewMenu.add(frontButton);
 
         //SHAPE MENU
             CheckboxMenuItem autoScaleButton = new CheckboxMenuItem("AutoScale Points"); //autoscale toggle
@@ -99,25 +75,8 @@ public class ifsMenu implements ItemListener, ActionListener{
             if(e.getItem()=="Anti-Aliasing"){
                 myIfsSys.antiAliasing = e.getStateChange()==1;
             }
-            if(e.getItem()=="Invert"){
-                myIfsSys.invertColors = e.getStateChange()==1;
-            }
         //VIEW MENU
-            if(e.getItem()=="Top (XY)"){
-                myIfsSys.viewMode = 0;
-                myIfsSys.clearframe();
-            }
-            if(e.getItem()=="Side (XZ)"){
-                myIfsSys.viewMode = 1;
-                myIfsSys.clearframe();
-            }
-            if(e.getItem()=="Front (YZ)"){
-                myIfsSys.viewMode = 2;
-                myIfsSys.clearframe();
-            }
-            topButton.setState(myIfsSys.viewMode==0);
-            sideButton.setState(myIfsSys.viewMode==1);
-            frontButton.setState(myIfsSys.viewMode==2);
+
         //GUIDES MENU
             if(e.getItem()=="Info Box"){
                 myIfsSys.infoHidden = e.getStateChange()==2;
@@ -139,8 +98,8 @@ public class ifsMenu implements ItemListener, ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getActionCommand()=="Center on Screen"){
-            myIfsSys.centerOnGrav();
-        }
+        //if(e.getActionCommand()=="Center on Screen"){
+        //    myIfsSys.centerOnGrav();
+        //}
     }
 }

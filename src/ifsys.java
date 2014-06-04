@@ -10,7 +10,8 @@ public class ifsys extends Panel
     int screenwidth;
     int screenheight;
 
-    double pixelsData[];
+    double _pixelsData[];
+
     double dataMax = 0;
     double gamma = 0;
     int pixels[];
@@ -26,6 +27,7 @@ public class ifsys extends Panel
 
     long lastMoveTime;
 
+    volume theVolume;
     pdf3D thePdf;
 
     //user params
@@ -37,7 +39,7 @@ public class ifsys extends Panel
         boolean infoHidden;
         boolean usePDFSamples;
         boolean guidesHidden;
-        boolean invertColors;
+        boolean _invertColors;
         int sampletotal;
         int iterations;
         int pointselected;
@@ -49,7 +51,7 @@ public class ifsys extends Panel
         int mousex, mousey, mousez;
         int mouseScroll;
 
-        int viewMode;
+        int _viewMode;
         int rotateMode;
 
     ifsShape shape;
@@ -86,21 +88,20 @@ public class ifsys extends Panel
         shiftDown=false;
         game = new mainthread();
         quit = false;
-        antiAliasing = true;
+        antiAliasing = false;
         framesHidden = true;
         spokesHidden = true;
         trailsHidden = true;
         leavesHidden = false;
         infoHidden = false;
-        usePDFSamples = true;
+        usePDFSamples = false;
         guidesHidden = false;
-        invertColors = false;
-        screenwidth = 1024;
-        screenheight = 1024;
+        screenwidth = 512;
+        screenheight = 512;
         pixels = new int[screenwidth * screenheight];
-        pixelsData = new double[screenwidth * screenheight];
+        //pixelsData = new double[screenwidth * screenheight];
         sampletotal = 512;
-        iterations = 2;
+        iterations = 5;
         mousemode = 0;
         samplesNeeded = 1;
         maxLineLength = screenwidth;
@@ -111,8 +112,10 @@ public class ifsys extends Panel
         pointselected=-1;
         isDragging = false;
 
+        theVolume = new volume(screenwidth, screenheight, 5);
+        theVolume.clear();
         thePdf = new pdf3D();
-        viewMode=0;
+
         rotateMode=0;
         lastMoveTime=0;
     }
@@ -142,14 +145,7 @@ public class ifsys extends Panel
     }
 
     public void findSelectedPoint(){
-        if(viewMode==0){
-            pointselected = shape.getNearestPtIndexXY(mousex, mousey);
-        }else if(viewMode==1){
-            pointselected = shape.getNearestPtIndexXZ(mousex, mousey);
-        }else if(viewMode==2){
-            pointselected = shape.getNearestPtIndexZY(mousey, mousez);
-        }
-
+        pointselected = shape.getNearestPtIndexXY(mousex, mousey);
         selectedPt = shape.pts[pointselected];
     }
 
@@ -225,30 +221,20 @@ public class ifsys extends Panel
     }
 
     public void generatePixels(){
-        double scaler = 255/dataMax;
+        double scaler = 255;
         double area = 0;
         int scaledColor = 0;
 
-        if(invertColors){
-            for(int a = 0; a < screenwidth * screenheight; a++){
-                int argb = 255;
-                scaledColor = (int)(255-scaler*pixelsData[a]);
-                argb = (argb << 8) + scaledColor;
-                argb = (argb << 8) + scaledColor;
-                argb = (argb << 8) + scaledColor;
-                pixels[a] = argb;
-                area+=scaler*pixelsData[a];
-            }
-        }else{
-            for(int a = 0; a < screenwidth * screenheight; a++){
-                int argb = 255;
-                scaledColor = (int)(scaler*pixelsData[a]);
-                argb = (argb << 8) + scaledColor;
-                argb = (argb << 8) + scaledColor;
-                argb = (argb << 8) + scaledColor;
-                pixels[a] = argb;
-                area+=scaler*pixelsData[a];
-            }
+        double [] pixData = theVolume.getFullSliceXY();
+
+        for(int a = 0; a < theVolume.width * theVolume.height; a++){
+            int argb = 255;
+            scaledColor = (int)(scaler*pixData[a]);
+            argb = (argb << 8) + scaledColor;
+            argb = (argb << 8) + scaledColor;
+            argb = (argb << 8) + scaledColor;
+            pixels[a] = argb;
+            area+=scaler*pixData[a];
         }
 
         shapeAreaDelta = (area - shapeArea)/shapeArea;
@@ -256,32 +242,14 @@ public class ifsys extends Panel
     }
 
     public void clearframe(){
-        if(invertColors){
-            for(int a = 0; a < screenwidth * screenheight; a++){
-                pixels[a] = 0xffffffff;
-                pixelsData[a] = 1;
-            }
-        }else{
-            for(int a = 0; a < screenwidth * screenheight; a++){
-                pixels[a] = 0xff000000;
-                pixelsData[a] = 0;
-            }
+        for(int a = 0; a < screenwidth * screenheight; a++){
+            pixels[a] = 0xff000000;
         }
-
+        theVolume.clear();
         centerOfGrav.x=shape.pts[0].x;
         centerOfGrav.y=shape.pts[0].y;
         centerOfGrav.z=shape.pts[0].z;
         samplesThisFrame=1;
-        dataMax = 0;
-    }
-
-    public void centerOnGrav(){
-        shape.centerByPt(
-                (int)(centerOfGrav.x/samplesThisFrame),
-                (int)(centerOfGrav.y/samplesThisFrame),
-                (int)(centerOfGrav.z/samplesThisFrame),
-                screenwidth/2, screenwidth/2, screenwidth/2);
-        clearframe();
     }
 
     public boolean putPixel(ifsPt pt, double alpha){
@@ -290,49 +258,15 @@ public class ifsys extends Panel
         centerOfGrav.y+=pt.y*alpha;
         centerOfGrav.z+=pt.z*alpha;
 
-        double decX, decY, decZ; //decimal parts of coordinates
         double x=0,y=0,z=0;
 
-        switch (viewMode){
-            case 0:
-                x = pt.x; y = pt.y; z = pt.z;
-                break;
-            case 1:
-                x = pt.x; y = pt.z; z = pt.y;
-                break;
-            case 2:
-                x = pt.z; y = pt.y; z = pt.x;
-                break;
-        }
+        x = pt.x; y = pt.y; z = pt.z;
 
         samplesThisFrame+=alpha;
 
-        if(x < (double)(screenwidth - 1) &&
-            y < (double)(screenheight - 1) &&
-            x > 0.0D && y > 0.0D){
+        theVolume.putPixel(x,y,z,false);
 
-            decX = x - Math.floor(x);
-            decY = y - Math.floor(y);
-
-            if(antiAliasing){
-                //each point contributes to 4 pixels
-
-                pixelsData[(int)(x) + (int)(y) * screenwidth]+=alpha*(1.0-decX)*(1.0-decY);
-                pixelsData[(int)(x+1) + (int)(y) * screenwidth]+=alpha*decX*(1.0-decY);
-                pixelsData[(int)(x) + (int)(y+1) * screenwidth]+=alpha*decY*(1.0-decX);
-                pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]+=alpha*decY*decX;
-
-                if(dataMax<pixelsData[(int)x + (int)y * screenwidth]/gamma){dataMax = pixelsData[(int)x + (int)y * screenwidth]/gamma;}
-            }else{
-                if(alpha>0.49)
-                pixelsData[(int)(x) + (int)(y) * screenwidth]=Math.max(pixelsData[(int)(x) + (int)(y) * screenwidth], 1);
-            }
-
-            return true; //pixel is in screen bounds
-        }else{
-            return false; //pixel outside of screen bounds
-        }
-
+        return true;
     }
 
     public void putPdfSample(ifsPt dpt, double cumulativeRotationYaw, double cumulativeRotationPitch, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown){
@@ -489,24 +423,9 @@ public class ifsys extends Panel
 
     public void mousePressed(MouseEvent e){
         mousemode = e.getButton();
-
-        switch (viewMode){
-            case 0: //XY
-                mousex = e.getX();
-                mousey = e.getY();
-                mousez = 0;
-                break;
-            case 1: //XZ
-                mousex = e.getX();
-                mousey = e.getY();
-                mousey = 0;
-                break;
-            case 2: //YZ
-                mousex = e.getX();
-                mousey = e.getY();
-                mousex = 0;
-                break;
-        }
+        mousex = e.getX();
+        mousey = e.getY();
+        mousez = 0;
 
         findSelectedPoint();
 
@@ -559,25 +478,9 @@ public class ifsys extends Panel
         if(mousemode == 1){ //left click to move a point/set
             setCursor (Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 
-            switch (viewMode){
-                case 0:
-                    selectedPt.x = startDragPX + (e.getX() - startDragX);
-                    selectedPt.y = startDragPY + (e.getY() - startDragY);
-                    selectedPt.z = startDragPZ + (mousez - startDragZ);
-                    break;
-                case 1:
-                    selectedPt.x = startDragPX + (e.getX() - startDragX);
-                    selectedPt.y = startDragPY + (mousey - startDragY);
-                    selectedPt.z = startDragPZ + (e.getY() - startDragZ);
-                    break;
-                case 2:
-                    selectedPt.x = startDragPX + (mousex - startDragX);
-                    selectedPt.y = startDragPY + (e.getX() - startDragY);
-                    selectedPt.z = startDragPZ + (e.getY() - startDragZ);
-                    break;
-            }
-
-
+            selectedPt.x = startDragPX + (e.getX() - startDragX);
+            selectedPt.y = startDragPY + (e.getY() - startDragY);
+            selectedPt.z = startDragPZ + (mousez - startDragZ);
         }
         else if(mousemode == 3){ //right click to rotate point/set
             setCursor (Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
@@ -663,8 +566,8 @@ public class ifsys extends Panel
         if(e.getKeyCode()==KeyEvent.VK_SHIFT)
             shiftDown=false;
 
-        if(e.getKeyChar() == 'c')
-            centerOnGrav();
+        //if(e.getKeyChar() == 'c')
+            //centerOnGrav();
 
         if(e.getKeyChar() == '/')
             iterations++;

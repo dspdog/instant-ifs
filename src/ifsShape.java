@@ -20,7 +20,7 @@ class ifsShape{
         }
     }
 
-    public void centerByPt(int desiredX, int desiredY, int desiredZ, int centerX, int centerY, int centerZ){
+    /*public void centerByPt(int desiredX, int desiredY, int desiredZ, int centerX, int centerY, int centerZ){
         int offsetX = desiredX-centerX;
         int offsetY = desiredY-centerY;
         int offsetZ = desiredZ-centerZ;
@@ -31,7 +31,7 @@ class ifsShape{
             pts[i].z-=offsetZ;
         }
         updateCenter();
-    }
+    }*/
 
     public void saveState(){
         for(int a = 0; a < pointsInUse; a++){
