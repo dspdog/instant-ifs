@@ -29,10 +29,10 @@ public class ifsys extends Panel
 
     //user params
         boolean framesHidden;
-        boolean leavesHidden;
+        boolean _leavesHidden;
         boolean antiAliasing;
-        boolean trailsHidden;
-        boolean spokesHidden;
+        boolean _trailsHidden;
+        boolean _spokesHidden;
         boolean infoHidden;
         boolean usePDFSamples;
         boolean guidesHidden;
@@ -46,13 +46,9 @@ public class ifsys extends Panel
         boolean altDown;
         int mousex, mousey, mousez;
         int mouseScroll;
-
-        int _viewMode;
         int rotateMode;
 
     ifsShape shape;
-    double shapeArea;
-    double shapeAreaDelta;
 
     int maxPoints;
     int maxLineLength;
@@ -84,9 +80,6 @@ public class ifsys extends Panel
         quit = false;
         antiAliasing = false;
         framesHidden = true;
-        spokesHidden = true;
-        trailsHidden = true;
-        leavesHidden = false;
         infoHidden = false;
         usePDFSamples = false;
         guidesHidden = false;
@@ -229,9 +222,6 @@ public class ifsys extends Panel
             pixels[a] = argb;
             area+=scaler*pixData[a];
         }
-
-        shapeAreaDelta = (area - shapeArea)/shapeArea;
-        shapeArea = area;
     }
 
     public void clearframe(){
@@ -287,27 +277,6 @@ public class ifsys extends Panel
         putPixel(new ifsPt(x+placedX,y+placedY, z+placedZ), ptColor);
     }
 
-    public void putLine(ifsPt p0, ifsPt p1, double alpha){ //TODO start/end alpha values?
-        double steps = (int)shape.distance(p0.x-p1.x, p0.y-p1.y, p0.z-p1.z);
-        double dx, dy, dz;
-
-        boolean startedInScreen = false;
-
-        if(steps>maxLineLength){steps=maxLineLength;}
-
-        for(int i=0; i<steps; i++){
-            dx = p0.x + i*(p1.x-p0.x)/steps;
-            dy = p0.y + i*(p1.y-p0.y)/steps;
-            dz = p0.z + i*(p1.z-p0.z)/steps;
-
-            if(putPixel(new ifsPt(dx, dy, dz), alpha)){ //stop drawing if pixel is outside bounds
-                startedInScreen = true;
-            }else{
-                if(startedInScreen)break;
-            };
-        }
-    }
-
     public void gamefunc(){
 
         guidesHidden = System.currentTimeMillis() - lastMoveTime > 1000;
@@ -315,21 +284,6 @@ public class ifsys extends Panel
         samplesNeeded = Math.pow(shape.pointsInUse, iterations);
 
         if(shape.pointsInUse != 0){
-
-
-            if(!spokesHidden){ //center spokes
-                for(int a=0; a<shape.pointsInUse; a++){
-                    putLine(shape.pts[0], shape.pts[a], shape.pts[a].opacity);
-                }
-            }
-
-            if(!framesHidden){ //center outline
-                for(int a=0; a<shape.pointsInUse; a++){
-                    int nextPt = (a+1)%shape.pointsInUse;
-                    putLine(shape.pts[a], shape.pts[nextPt], shape.pts[nextPt].opacity);
-                }
-            }
-
 
             for(int a = 0; a < sampletotal; a++){
                 int randomIndex = 0;
@@ -366,8 +320,6 @@ public class ifsys extends Panel
                         dpt.z += rpt.z;
                     }
 
-                    if(!trailsHidden && d < iterations-1)
-                        putPixel(dpt, shape.pts[randomIndex].opacity);
                     if(usePDFSamples)
                         putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier);
                     cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;
@@ -376,8 +328,8 @@ public class ifsys extends Panel
                     cumulativeRotationYaw += shape.pts[randomIndex].rotationYaw;
                     cumulativeRotationPitch += shape.pts[randomIndex].rotationPitch;
                 }
-                if(!leavesHidden)
-                    putPixel(dpt, cumulativeOpacity);
+
+                putPixel(dpt, cumulativeOpacity);
             }
         }
     }
