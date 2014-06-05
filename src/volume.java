@@ -36,39 +36,38 @@ public class volume {
     }
 
     public void putPixel(ifsPt pt, double alpha){
-        pt.x=Math.max(pt.x,1);
-        pt.y=Math.max(pt.y,1);
-        pt.z=Math.max(pt.z,1);
-        pt.x=Math.min(pt.x, width-2);
-        pt.y=Math.min(pt.y,height-2);
-        pt.z=Math.min(pt.z,depth-2);
-
-        totalSamples+=alpha;
-
         centerOfGravity.x+=pt.x*alpha;
         centerOfGravity.y+=pt.y*alpha;
         centerOfGravity.z+=pt.z*alpha;
 
-        if(antiAliasing){
-            double xDec = pt.x - (int)pt.x;
-            double yDec = pt.y - (int)pt.y;
-            double zDec = pt.z - (int)pt.z;
+        //z-axis is pushed to edges, other axes are clipped
 
-            volume[(int)pt.x][(int)pt.y][(int)pt.z] += alpha*(1-xDec)*(1-yDec)*(1-zDec);
-            volume[(int)pt.x+1][(int)pt.y][(int)pt.z] += alpha*xDec*(1-yDec)*(1-zDec);
-            volume[(int)pt.x][(int)pt.y+1][(int)pt.z] += alpha*(1-xDec)*yDec*(1-zDec);
-            volume[(int)pt.x+1][(int)pt.y+1][(int)pt.z] += alpha*xDec*yDec*(1-zDec);
+        pt.z=Math.max(pt.z,1);
+        pt.z=Math.min(pt.z,depth-2);
 
-            volume[(int)pt.x][(int)pt.y][(int)pt.z+1] += alpha*(1-xDec)*(1-yDec)*zDec;
-            volume[(int)pt.x+1][(int)pt.y][(int)pt.z+1] += alpha*xDec*(1-yDec)*zDec;
-            volume[(int)pt.x][(int)pt.y+1][(int)pt.z+1] += alpha*(1-xDec)*yDec*zDec;
-            volume[(int)pt.x+1][(int)pt.y+1][(int)pt.z+1] += alpha*xDec*yDec*zDec;
-        }else{
-            volume[(int)pt.x][(int)pt.y][(int)pt.z]+=alpha;
-        }
+        if(pt.x>1 && pt.y>1 && pt.x<width-1 && pt.y<height-1){
+            totalSamples+=alpha;
+            if(antiAliasing){
+                double xDec = pt.x - (int)pt.x;
+                double yDec = pt.y - (int)pt.y;
+                double zDec = pt.z - (int)pt.z;
 
-        if(volume[(int)pt.x][(int)pt.y][(int)pt.z]>dataMax){
-            dataMax=volume[(int)pt.x][(int)pt.y][(int)pt.z];
+                volume[(int)pt.x][(int)pt.y][(int)pt.z] += alpha*(1-xDec)*(1-yDec)*(1-zDec);
+                volume[(int)pt.x+1][(int)pt.y][(int)pt.z] += alpha*xDec*(1-yDec)*(1-zDec);
+                volume[(int)pt.x][(int)pt.y+1][(int)pt.z] += alpha*(1-xDec)*yDec*(1-zDec);
+                volume[(int)pt.x+1][(int)pt.y+1][(int)pt.z] += alpha*xDec*yDec*(1-zDec);
+
+                volume[(int)pt.x][(int)pt.y][(int)pt.z+1] += alpha*(1-xDec)*(1-yDec)*zDec;
+                volume[(int)pt.x+1][(int)pt.y][(int)pt.z+1] += alpha*xDec*(1-yDec)*zDec;
+                volume[(int)pt.x][(int)pt.y+1][(int)pt.z+1] += alpha*(1-xDec)*yDec*zDec;
+                volume[(int)pt.x+1][(int)pt.y+1][(int)pt.z+1] += alpha*xDec*yDec*zDec;
+            }else{
+                volume[(int)pt.x][(int)pt.y][(int)pt.z]+=alpha;
+            }
+
+            if(volume[(int)pt.x][(int)pt.y][(int)pt.z]>dataMax){
+                dataMax=volume[(int)pt.x][(int)pt.y][(int)pt.z];
+            }
         }
     }
 
