@@ -26,7 +26,6 @@ public class pdf3D { //3d probabilty density function
         loadMap_XYGradient();
         //loadMap_3DBlob();
 
-        System.out.println(sampleWidth + " " + sampleHeight + " " + sampleDepth);
         //loadImg("serp.jpg");
     }
 

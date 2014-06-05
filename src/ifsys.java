@@ -201,12 +201,12 @@ public class ifsys extends Panel
         for(int x = 0; x < theVolume.width; x++){
             for(int y=0; y<theVolume.height; y++){
                 int argb = 255;
-                scaledColor = Math.min((int)(scaler*theVolume.XYSlice[x][y]), 255);
+                scaledColor = Math.min((int)(scaler*theVolume.XYProjection[x][y]), 255);
                 argb = (argb << 8) + scaledColor;
                 argb = (argb << 8) + scaledColor;
                 argb = (argb << 8) + scaledColor;
                 pixels[x+y*theVolume.width] = argb;
-                area+=scaler*theVolume.XYSlice[x][y];
+                area+=scaler*theVolume.XYProjection[x][y];
             }
         }
     }

@@ -10,7 +10,7 @@ public class volume {
     double dataMax=0;
 
     public double volume[][][];
-    public double XYSlice[][];
+    public double XYProjection[][];
 
     ifsPt centerOfGravity;
 
@@ -22,7 +22,7 @@ public class volume {
         depth = d;
         renderMode = RenderMode.SIDES_ONLY;
         antiAliasing = true;
-        XYSlice = new double[width][height];
+        XYProjection = new double[width][height];
         volume = new double[width][height][depth];
         centerOfGravity = new ifsPt(0,0,0);
     }
@@ -45,7 +45,7 @@ public class volume {
             case SIDES_ONLY:
                 for(int x=0; x<width; x++){
                     for(int y=0; y<height; y++){
-                        XYSlice[x][y]=0;
+                        XYProjection[x][y]=0;
                     }
                 }
                 break;
@@ -97,16 +97,16 @@ public class volume {
                         double xDec = pt.x - (int)pt.x;
                         double yDec = pt.y - (int)pt.y;
 
-                        XYSlice[(int)pt.x][(int)pt.y] += alpha*(1-xDec)*(1-yDec);
-                        XYSlice[(int)pt.x+1][(int)pt.y] += alpha*xDec*(1-yDec);
-                        XYSlice[(int)pt.x][(int)pt.y+1] += alpha*(1-xDec)*yDec;
-                        XYSlice[(int)pt.x+1][(int)pt.y+1] += alpha*xDec*yDec;
+                        XYProjection[(int)pt.x][(int)pt.y] += alpha*(1-xDec)*(1-yDec);
+                        XYProjection[(int)pt.x+1][(int)pt.y] += alpha*xDec*(1-yDec);
+                        XYProjection[(int)pt.x][(int)pt.y+1] += alpha*(1-xDec)*yDec;
+                        XYProjection[(int)pt.x+1][(int)pt.y+1] += alpha*xDec*yDec;
                     }else{
-                        XYSlice[(int)pt.x][(int)pt.y]+=alpha;
+                        XYProjection[(int)pt.x][(int)pt.y]+=alpha;
                     }
 
-                    if(XYSlice[(int)pt.x][(int)pt.y]>dataMax){
-                        dataMax=XYSlice[(int)pt.x][(int)pt.y];
+                    if(XYProjection[(int)pt.x][(int)pt.y]>dataMax){
+                        dataMax= XYProjection[(int)pt.x][(int)pt.y];
                     }
 
                     break;
