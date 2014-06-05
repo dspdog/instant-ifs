@@ -149,13 +149,13 @@ public class ifsOverlays {
                 + (int)(myIfsSys.theVolume.getCenterOfGravity().z) + ")", 5, 15*9);
 
 
-        //rg.drawString("Exposure: " + String.valueOf(myIfsSys.samplesThisFrame/myIfsSys.samplesNeeded), 5, 15*10);
+       // rg.drawString("Brightness: " + String.valueOf(myIfsSys.samplesThisFrame/myIfsSys.samplesNeeded), 5, 15*10);
         rg.drawString("Opacity: " + String.valueOf(selectedPt.opacity), 5, 15*11);
         rg.drawString("Iterations (. /): " + String.valueOf(myIfsSys.iterations), 5, 15*12);
         rg.drawString("Samples (nm): " + String.valueOf(myIfsSys.samplesPerFrame), 4, 15*13);
         //rg.drawString("Expected Done %" + String.valueOf((int)Math.min(100*samplesThisFrame/samplesNeeded/Math.E, 100)), 5, 135); //TODO is dividing by E the right thing to do here?
         rg.drawString("FPS " + String.valueOf(myIfsSys.fps), 5, 15*14);
-        rg.drawString("Gamma " + String.valueOf(myIfsSys.gamma), 5, 15*15);
+        rg.drawString("Brightness (jk): " + String.valueOf(myIfsSys.brightnessMultiplier), 5, 15*15);
 
         rg.drawString("DataMax " + String.valueOf((int)myIfsSys.theVolume.dataMax), 5, 15*18);
 

@@ -10,7 +10,6 @@ public class ifsys extends Panel
     int screenwidth;
     int screenheight;
 
-    double gamma = 0;
     int pixels[];
     Image render;
     Graphics rg;
@@ -38,6 +37,7 @@ public class ifsys extends Panel
         int mousex, mousey, mousez;
         int mouseScroll;
         int rotateMode;
+        double brightnessMultiplier;
 
     ifsShape shape;
 
@@ -71,8 +71,8 @@ public class ifsys extends Panel
         infoHidden = false;
         usePDFSamples = false;
         guidesHidden = false;
-        screenwidth = 512;
-        screenheight = 512;
+        screenwidth = 1024;
+        screenheight = 1024;
         pixels = new int[screenwidth * screenheight];
         samplesPerFrame = 512;
         iterations = 8;
@@ -81,16 +81,16 @@ public class ifsys extends Panel
         maxPoints = 100;
         shape = new ifsShape(maxPoints);
         mouseScroll = 0;
-        gamma = 1.0D;
         pointSelected =-1;
         isDragging = false;
 
-        theVolume = new volume(screenwidth, screenheight, 5);
+        theVolume = new volume(screenwidth, screenheight, 128);
         theVolume.clear();
         thePdf = new pdf3D();
 
         rotateMode=0;
         lastMoveTime=0;
+        brightnessMultiplier = 2;
     }
 
     public static void main(String[] args) {
@@ -194,20 +194,20 @@ public class ifsys extends Panel
     }
 
     public void generatePixels(){
-        double scaler = 255/theVolume.dataMax;
+        double scaler = 255/theVolume.dataMax * brightnessMultiplier;
         double area = 0;
         int scaledColor = 0;
 
-        double [] pixData = theVolume.getFullSliceXY();
-
-        for(int a = 0; a < theVolume.width * theVolume.height; a++){
-            int argb = 255;
-            scaledColor = (int)(scaler*pixData[a]);
-            argb = (argb << 8) + scaledColor;
-            argb = (argb << 8) + scaledColor;
-            argb = (argb << 8) + scaledColor;
-            pixels[a] = argb;
-            area+=scaler*pixData[a];
+        for(int x = 0; x < theVolume.width; x++){
+            for(int y=0; y<theVolume.height; y++){
+                int argb = 255;
+                scaledColor = Math.min((int)(scaler*theVolume.XYSlice[x][y]), 255);
+                argb = (argb << 8) + scaledColor;
+                argb = (argb << 8) + scaledColor;
+                argb = (argb << 8) + scaledColor;
+                pixels[x+y*theVolume.width] = argb;
+                area+=scaler*theVolume.XYSlice[x][y];
+            }
         }
     }
 
@@ -449,7 +449,7 @@ public class ifsys extends Panel
         if(e.getKeyCode()==KeyEvent.VK_SHIFT)
             shiftDown=true;
         shape.updateCenter();
-        clearframe();
+        //clearframe();
         gamefunc();
     }
 
@@ -469,6 +469,16 @@ public class ifsys extends Panel
             samplesPerFrame *= 2;
         if(e.getKeyChar() == 'n' && samplesPerFrame > 1)
             samplesPerFrame /= 2;
+
+        if(e.getKeyChar() == 'k')
+            brightnessMultiplier *= 2;
+        if(e.getKeyChar() == 'j')
+            brightnessMultiplier /= 2;
+
+        if(brightnessMultiplier <1.0/64.0){
+            brightnessMultiplier =1.0/64.0;}
+        if(brightnessMultiplier >128){
+            brightnessMultiplier =128;}
 
         if(samplesPerFrame <2){
             samplesPerFrame =2;}
