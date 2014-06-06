@@ -26,6 +26,7 @@ public class ifsOverlays {
 
         x=(int)(myIfsSys.theVolume.getCenterOfGravity().x);
         y=(int)(myIfsSys.theVolume.getCenterOfGravity().y);
+        if(myIfsSys.theVolume.totalSamples>1000)
         _rg.drawRect(x-width/2,y-height/2,width,height);
     }
 

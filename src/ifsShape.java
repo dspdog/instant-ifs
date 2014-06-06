@@ -73,7 +73,8 @@ class ifsShape{
     }
 
     void updateRadiusDegrees(){
-        pts[0].degreesYaw = 0;
+        //pts[0].degreesYaw = 0;
+        pts[0].degreesPitch = Math.PI/2;
         pts[0].radius = unitScale*pts[0].scale;
 
         for(int a = 1; a < pointsInUse; a++){

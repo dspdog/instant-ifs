@@ -69,13 +69,13 @@ public class ifsys extends Panel
         quit = false;
         framesHidden = true;
         infoHidden = false;
-        usePDFSamples = false;
+        usePDFSamples = true;
         guidesHidden = false;
         screenwidth = 1024;
         screenheight = 1024;
         pixels = new int[screenwidth * screenheight];
         samplesPerFrame = 512;
-        iterations = 8;
+        iterations = 2;
         mousemode = 0;
 
         maxPoints = 100;
@@ -90,7 +90,7 @@ public class ifsys extends Panel
 
         rotateMode=0;
         lastMoveTime=0;
-        brightnessMultiplier = 2;
+        brightnessMultiplier = 16;
     }
 
     public static void main(String[] args) {
@@ -223,7 +223,7 @@ public class ifsys extends Panel
         return true;
     }
 
-    public void putPdfSample(ifsPt dpt, double cumulativeRotationYaw, double cumulativeRotationPitch, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown){
+    public void putPdfSample(ifsPt dpt, double cumulativeRotationYaw, double cumulativeRotationPitch, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown, int index){
         //generate random coords
 
         double x=dpt.x;
@@ -250,9 +250,9 @@ public class ifsys extends Panel
         double scale = cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
 
         double pointDegreesYaw = thePt.rotationYaw -thePt.degreesYaw+cumulativeRotationYaw;
-        double multi = 1;//pointDegreesYaw>Math.PI ? 1 : -1;
-        double pointDegreesPitch = thePt.rotationPitch;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
-        //System.out.println(Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch);
+        double pointDegreesPitch = thePt.rotationPitch - Math.PI/2+thePt.degreesPitch+cumulativeRotationPitch;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
+
+         //   System.out.println(thePt.degreesPitch + " " + index);
 
         ifsPt rpt = new ifsPt((sampleX-centerZ)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw);
 
@@ -305,7 +305,7 @@ public class ifsys extends Panel
                     }
 
                     if(usePDFSamples)
-                        putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier);
+                        putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier, randomIndex);
                     cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;
                     cumulativeOpacity *= shape.pts[randomIndex].opacity;
 
