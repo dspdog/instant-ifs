@@ -11,6 +11,7 @@ public class volume {
 
     public double volume[][][];
     public double XYProjection[][];
+    public double XZProjection[][];
 
     ifsPt centerOfGravity;
 
@@ -23,6 +24,7 @@ public class volume {
         renderMode = RenderMode.SIDES_ONLY;
         antiAliasing = true;
         XYProjection = new double[width][height];
+        XZProjection = new double[width][depth];
         volume = new double[width][height][depth];
         centerOfGravity = new ifsPt(0,0,0);
     }
@@ -46,6 +48,9 @@ public class volume {
                 for(int x=0; x<width; x++){
                     for(int y=0; y<height; y++){
                         XYProjection[x][y]=0;
+                    }
+                    for(int z=0; z<depth; z++){
+                        XZProjection[x][z]=0;
                     }
                 }
                 break;
@@ -96,13 +101,21 @@ public class volume {
                     if(antiAliasing){
                         double xDec = pt.x - (int)pt.x;
                         double yDec = pt.y - (int)pt.y;
+                        double zDec = pt.z - (int)pt.z;
 
                         XYProjection[(int)pt.x][(int)pt.y] += alpha*(1-xDec)*(1-yDec);
                         XYProjection[(int)pt.x+1][(int)pt.y] += alpha*xDec*(1-yDec);
                         XYProjection[(int)pt.x][(int)pt.y+1] += alpha*(1-xDec)*yDec;
                         XYProjection[(int)pt.x+1][(int)pt.y+1] += alpha*xDec*yDec;
+
+                        XZProjection[(int)pt.x][(int)pt.z] += alpha*(1-xDec)*(1-zDec);
+                        XZProjection[(int)pt.x+1][(int)pt.z] += alpha*xDec*(1-zDec);
+                        XZProjection[(int)pt.x][(int)pt.z+1] += alpha*(1-xDec)*zDec;
+                        XZProjection[(int)pt.x+1][(int)pt.z+1] += alpha*xDec*zDec;
+
                     }else{
                         XYProjection[(int)pt.x][(int)pt.y]+=alpha;
+                        XZProjection[(int)pt.x][(int)pt.z] += alpha;
                     }
 
                     if(XYProjection[(int)pt.x][(int)pt.y]>dataMax){

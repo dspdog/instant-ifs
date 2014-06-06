@@ -72,7 +72,7 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="233" column="47" selection-start="6342" selection-end="6342" vertical-scroll-proportion="0.17142858" vertical-offset="3793" max-vertical-offset="8568">
+            <state line="199" column="0" selection-start="5177" selection-end="5177" vertical-scroll-proportion="0.5558441" vertical-offset="3067" max-vertical-offset="8568">
               <folding />
             </state>
           </provider>
@@ -108,7 +108,7 @@
       <file leaf-file-name="volume.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/volume.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="0" selection-start="93" selection-end="93" vertical-scroll-proportion="-3.2692308" vertical-offset="0" max-vertical-offset="2601">
+            <state line="116" column="36" selection-start="4314" selection-end="4326" vertical-scroll-proportion="-13.076923" vertical-offset="1632" max-vertical-offset="2822">
               <folding />
             </state>
           </provider>
@@ -132,17 +132,17 @@
         <option value="$PROJECT_DIR$/src/ifsPoint.java" />
         <option value="$PROJECT_DIR$/src/ifsPt.java" />
         <option value="$PROJECT_DIR$/src/ifsMenu.java" />
-        <option value="$PROJECT_DIR$/src/volume.java" />
         <option value="$PROJECT_DIR$/src/ifsOverlays.java" />
         <option value="$PROJECT_DIR$/src/pdf3D.java" />
         <option value="$PROJECT_DIR$/src/ifsShape.java" />
+        <option value="$PROJECT_DIR$/src/volume.java" />
         <option value="$PROJECT_DIR$/src/ifsys.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="376" />
-    <option name="y" value="121" />
+    <option name="x" value="351" />
+    <option name="y" value="88" />
     <option name="width" value="975" />
     <option name="height" value="716" />
   </component>
@@ -472,7 +472,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="376" y="121" width="975" height="716" extended-state="0" />
+    <frame x="351" y="88" width="975" height="716" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -848,13 +848,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/volume.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="0" selection-start="93" selection-end="93" vertical-scroll-proportion="-3.2692308" vertical-offset="0" max-vertical-offset="2601">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/pdf3D.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="92" column="0" selection-start="2703" selection-end="2703" vertical-scroll-proportion="0.0" vertical-offset="1224" max-vertical-offset="2465">
@@ -869,9 +862,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/volume.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="116" column="36" selection-start="4314" selection-end="4326" vertical-scroll-proportion="-13.076923" vertical-offset="1632" max-vertical-offset="2822">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="233" column="47" selection-start="6342" selection-end="6342" vertical-scroll-proportion="0.17142858" vertical-offset="3793" max-vertical-offset="8568">
+        <state line="199" column="0" selection-start="5177" selection-end="5177" vertical-scroll-proportion="0.5558441" vertical-offset="3067" max-vertical-offset="8568">
           <folding />
         </state>
       </provider>
