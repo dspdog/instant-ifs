@@ -67,9 +67,18 @@ class ifsShape{
 
         pts[pointsInUse].scale = 0.5D;
         pts[pointsInUse].rotationYaw = 0.0D;
+        pts[pointsInUse].rotationPitch = 0.0D;
         pointsInUse--;
 
         updateCenter();
+    }
+
+    public void clearPts(){
+
+        for(int a = 0; a < pointsInUse; a++){
+            deletePoint(pointsInUse-a);
+        }
+        pointsInUse=0;
     }
 
     void updateRadiusDegrees(){
@@ -153,6 +162,21 @@ class ifsShape{
 
     public void setToPreset(int preset){
         switch(preset){
+            case 0: // '\000'
+                clearPts();
+                pointsInUse=1;
+                int centerx=512;
+                int centery=512;
+
+                for(int i=0; i<4; i++){
+                    this.addPoint(
+                            Math.cos(Math.PI/4+i*Math.PI/2)*200+centerx,
+                            Math.sin(Math.PI/4+i*Math.PI/2)*200+centery,
+                            0);
+                }
+                System.out.println(pointsInUse);
+                break;
+
             case 1: // '\001'
 
                 pointsInUse = 4;

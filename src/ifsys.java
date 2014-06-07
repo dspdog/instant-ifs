@@ -26,7 +26,7 @@ public class ifsys extends Panel
         boolean infoHidden;
         boolean usePDFSamples;
         boolean guidesHidden;
-        int samplesPerFrame;
+        double samplesPerFrame;
         int iterations;
         int pointSelected;
         ifsPt selectedPt;
@@ -54,7 +54,6 @@ public class ifsys extends Panel
 
     boolean started;
     boolean isDragging;
-    int preset;
 
     ifsOverlays overlays;
 
@@ -90,7 +89,7 @@ public class ifsys extends Panel
 
         rotateMode=0;
         lastMoveTime=0;
-        brightnessMultiplier = 16;
+        brightnessMultiplier = 2;
     }
 
     public static void main(String[] args) {
@@ -154,10 +153,9 @@ public class ifsys extends Panel
 
         overlays = new ifsOverlays(this, rg);
 
-        preset = 1;
         clearframe();
         game.start();
-        shape.setToPreset(1);
+        shape.setToPreset(0);
 
         started = true;
     }
@@ -171,6 +169,9 @@ public class ifsys extends Panel
         if(System.currentTimeMillis()- oneSecondAgo >=1000){
             oneSecondAgo = System.currentTimeMillis();
             fps= framesThisSecond;
+            //target framerate:
+            //samplesPerFrame *= fps/50.0;
+            //samplesPerFrame = Math.floor(samplesPerFrame);
             framesThisSecond =0;
         }
 
@@ -249,8 +250,8 @@ public class ifsys extends Panel
 
         double scale = cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
 
-        double pointDegreesYaw = thePt.rotationYaw -thePt.degreesYaw+cumulativeRotationYaw;
-        double pointDegreesPitch = thePt.rotationPitch - Math.PI/2+thePt.degreesPitch+cumulativeRotationPitch;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
+        double pointDegreesYaw = thePt.rotationYaw +cumulativeRotationYaw;
+        double pointDegreesPitch = thePt.rotationPitch +cumulativeRotationPitch;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
 
          //   System.out.println(thePt.degreesPitch + " " + index);
 
@@ -485,18 +486,43 @@ public class ifsys extends Panel
         if(samplesPerFrame >32768){
             samplesPerFrame =32768;}
 
-        if(e.getKeyChar() == '1')
+        if(e.getKeyChar() == '1'){
+            clearframe();
             shape.setToPreset(1);
-        if(e.getKeyChar() == '2')
+        }
+
+        if(e.getKeyChar() == '2'){
+            clearframe();
             shape.setToPreset(2);
-        if(e.getKeyChar() == '3')
+        }
+
+        if(e.getKeyChar() == '3'){
+            clearframe();
             shape.setToPreset(3);
-        if(e.getKeyChar() == '4')
+        }
+
+        if(e.getKeyChar() == '4'){
+            clearframe();
             shape.setToPreset(4);
-        if(e.getKeyChar() == '5')
+        }
+
+        if(e.getKeyChar() == '5'){
+            clearframe();
             shape.setToPreset(5);
-        if(e.getKeyChar() == '6')
+        }
+
+        if(e.getKeyChar() == '6'){
+            clearframe();
             shape.setToPreset(6);
+        }
+
+        if(e.getKeyChar() == '0'){
+            clearframe();
+            iterations=8;
+            brightnessMultiplier=4;
+            shape.setToPreset(0);
+        }
+
     }
 
     public void focusGained(FocusEvent focusevent){}

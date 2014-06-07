@@ -23,10 +23,10 @@ public class pdf3D { //3d probabilty density function
         volume = new double[width][height][depth];
         samplePixels = new int[width*height];
 
-        loadMap_XYGradient();
+        //loadMap_XYGradient();
         //loadMap_3DBlob();
 
-        //loadImg("serp.jpg");
+        loadImg("serp.png");
     }
 
     public double getSliceXY_Sum(int x, int y){
@@ -100,9 +100,9 @@ public class pdf3D { //3d probabilty density function
                     new PixelGrabber(sampleImage, 0, 0, -1, -1, false);
 
             if (grabber.grabPixels()) {
-                sampleWidth = grabber.getWidth();
-                sampleHeight = grabber.getHeight();
-                sampleDepth = 1;
+                sampleHeight=height;
+                sampleWidth=width;
+                sampleDepth=depth;
 
                 samplePixels = (int[]) grabber.getPixels();
 
@@ -111,13 +111,15 @@ public class pdf3D { //3d probabilty density function
                 }
 
                 int i=0;
-                for(int x=0; x<sampleWidth; x++){
-                    for(int y=0; y<sampleHeight; y++){
-                        volume[x][y][0] = (double)samplePixels[i];
+                for(int y=0; y<sampleWidth; y++){
+                    for(int x=0; x<sampleHeight; x++){
+                        for(int z=0; z<sampleDepth; z++){
+                            volume[x][y][z] = (double)samplePixels[i];
+                        }
                         i++;
                     }
                 }
-                System.out.println("loaded");
+                System.out.println("loaded " + sampleWidth + " " + sampleHeight);
             }
         }catch (InterruptedException e) {
             e.printStackTrace();

@@ -77,7 +77,7 @@ public class ifsOverlays {
             zPts2[i] = (int)(rotatedPt2.z + pt.z);
 
             d1 = distance(myIfsSys.mousex - rotatedPt1.x - pt.x, myIfsSys.mousey - rotatedPt1.y - pt.y);
-            d2 = distance(myIfsSys.mousex - rotatedPt2.x - pt.x, myIfsSys.mousey - rotatedPt2.y - pt.y);
+            //d2 = distance(myIfsSys.mousex - rotatedPt2.x - pt.x, myIfsSys.mousey - rotatedPt2.y - pt.y);
 
             if(d1<min_d){
                 min_d=d1;
