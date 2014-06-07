@@ -1,5 +1,3 @@
-import javafx.scene.control.SplitPane;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -42,6 +40,12 @@ public class ifsys extends Panel
         int rotateMode;
         double brightnessMultiplier;
 
+    double randomDoubles[];
+    int randomInts[];
+    int rndNum;
+
+    double samplesPerPdfScaler;
+
     ifsShape shape;
 
     int maxPoints;
@@ -76,7 +80,7 @@ public class ifsys extends Panel
         screenwidth = 1024;
         screenheight = 1024;
         pixels = new int[screenwidth * screenheight];
-        samplesPerFrame = 512;
+
         iterations = 2;
         mousemode = 0;
 
@@ -93,6 +97,12 @@ public class ifsys extends Panel
         rotateMode=0;
         lastMoveTime=0;
         brightnessMultiplier = 2;
+
+        randomDoubles = new double[4096*4096];
+        rndNum=0;
+
+        samplesPerFrame = 1024;
+        samplesPerPdfScaler = 0.25; //decrease for higher fps while drawing PDFs
     }
 
     public static void main(String[] args) {
@@ -174,11 +184,24 @@ public class ifsys extends Panel
 
         overlays = new ifsOverlays(this, rg);
 
+        //genRandomNums();
+
         clearframe();
         game.start();
         shape.setToPreset(0);
 
         started = true;
+    }
+
+    public void genRandomNums(){
+        for(int i=0; i<randomDoubles.length; i++){
+            randomDoubles[i]=Math.random();
+        }
+    }
+
+    public double randomDouble(){
+        return Math.random();
+        //return randomDoubles[(rndNum++)&16777215];
     }
 
     public void update(Graphics gr){
@@ -246,44 +269,39 @@ public class ifsys extends Panel
     }
 
     public void putPdfSample(ifsPt dpt, double cumulativeRotationYaw, double cumulativeRotationPitch, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown, int index){
-        //generate random coords
-
-        double x=dpt.x;
-        double y=dpt.y;
-        double z=dpt.z;
-
         double centerX = thePdf.sampleWidth/2;
         double centerY = thePdf.sampleHeight/2;
         double centerZ = thePdf.sampleDepth/2;
-
-        double sampleX = Math.random()*thePdf.sampleWidth;
-        double sampleY = Math.random()*thePdf.sampleHeight;
-        double sampleZ = Math.random()*thePdf.sampleDepth;
-
-        //modulate with image
         double exposureAdjust = cumulativeScale*thePt.scale*thePt.radius;
-        double ptColor = thePdf.volume[(int)sampleX][(int)sampleY][(int)sampleZ]/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
 
-        //double ptColor = thePdf.getSliceXY_Sum((int)sampleX,(int)sampleY)/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
+        double sampleX, sampleY, sampleZ;
+        double ptColor, scale, pointDegreesYaw, pointDegreesPitch;
+        ifsPt rpt;
 
         //rotate/scale the point
         //double pointDist = shape.distance(sampleX, sampleY, 0)*cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
 
-        double scale = cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
+        scale = cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
 
-        double pointDegreesYaw = thePt.rotationYaw +cumulativeRotationYaw;
-        double pointDegreesPitch = thePt.rotationPitch +cumulativeRotationPitch;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
+        pointDegreesYaw = thePt.rotationYaw +cumulativeRotationYaw;
+        pointDegreesPitch = thePt.rotationPitch +cumulativeRotationPitch;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
 
-         //   System.out.println(thePt.degreesPitch + " " + index);
+        int iters = (int)(samplesPerPdfScaler * Math.PI*scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
 
-        ifsPt rpt = new ifsPt((sampleX-centerZ)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw);
+        iters=iters&(4095); //limit to 4095
 
-        double placedX = rpt.x;
-        double placedY = rpt.y;
-        double placedZ = rpt.z;
+        for(int iter=0; iter<iters; iter++){
+            sampleX = randomDouble()*thePdf.sampleWidth;
+            sampleY = randomDouble()*thePdf.sampleHeight;
+            sampleZ = randomDouble()*thePdf.sampleDepth;
 
-        //put pixel
-        theVolume.putPixel(new ifsPt(x+placedX,y+placedY, z+placedZ),ptColor);
+            //modulate with image
+            ptColor = thePdf.volume[(int)sampleX][(int)sampleY][(int)sampleZ]/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
+            rpt = new ifsPt((sampleX-centerX)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw); //placed point
+
+            //put pixel
+            theVolume.putPixel(new ifsPt(dpt.x+rpt.x,dpt.y+rpt.y, dpt.z+rpt.z),ptColor);
+        }
     }
 
     public void gamefunc(){
@@ -291,7 +309,7 @@ public class ifsys extends Panel
 
         if(shape.pointsInUse != 0){
 
-            for(int a = 0; a < samplesPerFrame; a++){
+            for(int a = 0; a < samplesPerFrame*samplesPerPdfScaler; a++){
                 int randomIndex = 0;
                 ifsPt dpt = new ifsPt(shape.pts[randomIndex]);
                 ifsPt rpt;
@@ -310,7 +328,7 @@ public class ifsys extends Panel
                 for(int d = 0; d < iterations; d++){
                     scaleDownMultiplier/=shape.pointsInUse;
 
-                    randomIndex = 1 + (int)(Math.random() * (double) (shape.pointsInUse-1));
+                    randomIndex = 1 + (int)(randomDouble() * (double) (shape.pointsInUse-1));
 
                     if(d==0){randomIndex=0;}
 
@@ -338,10 +356,6 @@ public class ifsys extends Panel
                 theVolume.putPixel(dpt, cumulativeOpacity);
             }
         }
-    }
-
-    public double randomDev(double d){
-        return Math.random()*d-d/2.0;
     }
 
     public void mouseClicked(MouseEvent mouseevent){

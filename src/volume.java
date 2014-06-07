@@ -68,6 +68,7 @@ public class volume {
         pt.z=Math.min(pt.z,depth-2);
 
         if(pt.x>1 && pt.y>1 && pt.x<width-1 && pt.y<height-1){
+
             switch (renderMode){
                 case VOLUMETRIC:
 

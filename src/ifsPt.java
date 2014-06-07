@@ -46,23 +46,20 @@ class ifsPt {
 
     public ifsPt getRotatedPt(double y, double z){
 
-        double sx, sy, sz, cx, cy, cz, theta;
+        double sx, sy, sz, cx, cy, cz;
 
         double Lx, Ly, Lz;
         double Ux, Uy, Uz;
         double Fx, Fy, Fz;
 
-        theta = 0;//x;
-        sx = sin(theta);
-        cx = cos(theta);
+        sx = sin(0);//0-->x
+        cx = cos(0);
 
-        theta = y;
-        sy = sin(theta);
-        cy = cos(theta);
+        sy = sin(y);
+        cy = cos(y);
 
-        theta = z;
-        sz = sin(theta);
-        cz = cos(theta);
+        sz = sin(z);
+        cz = cos(z);
 
         // determine left axis
         Lx = cy*cz;
