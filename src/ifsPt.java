@@ -3,11 +3,9 @@ class ifsPt {
     public double scale;
     public double degreesYaw;
     public double degreesPitch;
-    public double degreesRoll;
     public double radius;
     public double rotationYaw;
     public double rotationPitch;
-    public double rotationRoll;
     public double opacity;
 
     public double savedopacity;
@@ -22,10 +20,8 @@ class ifsPt {
         scale = 1D;
         rotationYaw = 0.0D;
         rotationPitch = 0.0D;
-        rotationRoll = 0.0D;
         degreesYaw = 0D;
         degreesPitch = 0D;
-        degreesRoll = 0D;
         radius = 1D;
         opacity = 1D;
     }
@@ -48,7 +44,7 @@ class ifsPt {
         return Math.sin(i);
     }
 
-    public ifsPt getRotatedPt(double x, double y, double z){
+    public ifsPt getRotatedPt(double y, double z){
 
         double sx, sy, sz, cx, cy, cz, theta;
 
@@ -56,7 +52,7 @@ class ifsPt {
         double Ux, Uy, Uz;
         double Fx, Fy, Fz;
 
-        theta = x;
+        theta = 0;//x;
         sx = sin(theta);
         cx = cos(theta);
 

@@ -9,7 +9,6 @@ class ifsShape{
     public boolean autoScale;
 
     public ifsShape(int maxPoints){
-        //offsetx=0; offsety=0;
         autoUpdateCenterEnabled =false;
         stateSaved = false;
         pointsInUse = 1;
@@ -20,6 +19,19 @@ class ifsShape{
             pts[a] = new ifsPt();
         }
     }
+
+    /*public void centerByPt(int desiredX, int desiredY, int desiredZ, int centerX, int centerY, int centerZ){
+        int offsetX = desiredX-centerX;
+        int offsetY = desiredY-centerY;
+        int offsetZ = desiredZ-centerZ;
+
+        for(int i=0; i<pointsInUse; i++){
+            pts[i].x-=offsetX;
+            pts[i].y-=offsetY;
+            pts[i].z-=offsetZ;
+        }
+        updateCenter();
+    }*/
 
     public void saveState(){
         for(int a = 0; a < pointsInUse; a++){
@@ -35,7 +47,7 @@ class ifsShape{
         pts[pointsInUse].scale = 0.5D;
         pts[pointsInUse].rotationYaw = 0.0D;
         pts[pointsInUse].rotationPitch = 0.0D;
-        pts[pointsInUse].rotationRoll = 0.0D;
+        //pts[pointsInUse].rotationRoll = 0.0D;
         pts[pointsInUse].opacity = 1.0D;
         pointsInUse++;
         updateCenter();
@@ -61,16 +73,14 @@ class ifsShape{
     }
 
     void updateRadiusDegrees(){
-
-        pts[0].degreesYaw = 0;
+        //pts[0].degreesYaw = 0;
+        pts[0].degreesPitch = Math.PI/2;
         pts[0].radius = unitScale*pts[0].scale;
 
         for(int a = 1; a < pointsInUse; a++){
+            pts[a].radius = autoScale ? distance(pts[a].x - pts[0].x, pts[a].y - pts[0].y,  pts[a].z - pts[0].z) : pts[0].radius;
             pts[a].degreesYaw = Math.atan2(pts[a].x - pts[0].x, pts[a].y - pts[0].y);
             pts[a].degreesPitch = Math.atan2(pts[a].radius, pts[a].z - pts[0].z);
-
-
-            pts[a].radius = autoScale ? distance(pts[a].x - pts[0].x, pts[a].y - pts[0].y,  pts[a].z - pts[0].z) : pts[0].radius;
         }
     }
 
@@ -91,12 +101,40 @@ class ifsShape{
         updateRadiusDegrees();
     }
 
-    public int getNearestPtIndex(double x, double y, double z){
-        double olddist = 1000D;
+    public int getNearestPtIndexXY(double x, double y){
+        double olddist = 100000D;
         int ptSelected = -1;
         for(int a = 0; a < this.pointsInUse; a++)
         {
-            double currentdist = this.distance((double) x - this.pts[a].x, (double) y - this.pts[a].y, (double) z - this.pts[a].z);
+            double currentdist = this.distance((double) x - this.pts[a].x, (double) y - this.pts[a].y, 0);
+            if(currentdist < olddist){
+                olddist = currentdist;
+                ptSelected = a;
+            }
+        }
+        return ptSelected;
+    }
+
+    public int getNearestPtIndexXZ(double x, double y){
+        double olddist = 100000D;
+        int ptSelected = -1;
+        for(int a = 0; a < this.pointsInUse; a++)
+        {
+            double currentdist = this.distance((double) x - this.pts[a].x, (double) y - this.pts[a].z, 0);
+            if(currentdist < olddist){
+                olddist = currentdist;
+                ptSelected = a;
+            }
+        }
+        return ptSelected;
+    }
+
+    public int getNearestPtIndexZY(double x, double y){
+        double olddist = 100000D;
+        int ptSelected = -1;
+        for(int a = 0; a < this.pointsInUse; a++)
+        {
+            double currentdist = this.distance((double) x - this.pts[a].z, (double) y - this.pts[a].y, 0);
             if(currentdist < olddist){
                 olddist = currentdist;
                 ptSelected = a;
