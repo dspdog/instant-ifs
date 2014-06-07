@@ -14,7 +14,13 @@ public class pdf3D { //3d probabilty density function
     public double volume[][][];
 
     Image sampleImage;
+    Image sampleImageX;
+    Image sampleImageY;
+    Image sampleImageZ;
     int samplePixels[];
+    int samplePixelsX[];
+    int samplePixelsY[];
+    int samplePixelsZ[];
 
     public pdf3D(){
         width = 512;
@@ -25,8 +31,8 @@ public class pdf3D { //3d probabilty density function
 
         //loadMap_XYGradient();
         //loadMap_3DBlob();
-
-        loadImg("serp.png");
+        loadImg3D("serp2.jpg");
+        //loadImg("serp.png");
     }
 
     public double getSliceXY_Sum(int x, int y){
@@ -59,7 +65,7 @@ public class pdf3D { //3d probabilty density function
         for(int x=0; x<sampleWidth; x++){
             for(int y=0; y<sampleHeight; y++){
                 for(int z=0; z<sampleDepth; z++){
-                    volume[x][y][z] = Math.max(0,sampleWidth/2 - distance(x-sampleWidth/2, y-sampleHeight/2, z-sampleDepth/2));
+                    volume[x][y][z] = Math.max(0, sampleWidth / 2 - distance(x - sampleWidth / 2, y - sampleHeight / 2, z - sampleDepth / 2));
                 }
             }
         }
@@ -120,6 +126,56 @@ public class pdf3D { //3d probabilty density function
                     }
                 }
                 System.out.println("loaded " + sampleWidth + " " + sampleHeight);
+            }
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    public void loadImg3D(String filename){
+        loadImgs3D(filename,filename,filename);
+    }
+
+    public void loadImgs3D(String filenameX, String filenameY, String filenameZ){
+        System.out.println("loadingX " + filenameX);
+        System.out.println("loadingY " + filenameY);
+        System.out.println("loadingZ " + filenameZ);
+
+        sampleImageX = getImage(filenameX);
+        sampleImageY = getImage(filenameY);
+        sampleImageZ = getImage(filenameZ);
+
+        try {
+            PixelGrabber grabberX = new PixelGrabber(sampleImageX, 0, 0, -1, -1, false);
+            PixelGrabber grabberY = new PixelGrabber(sampleImageY, 0, 0, -1, -1, false);
+            PixelGrabber grabberZ = new PixelGrabber(sampleImageZ, 0, 0, -1, -1, false);
+
+            if (grabberX.grabPixels() && grabberY.grabPixels() && grabberZ.grabPixels()) {
+                sampleHeight=height;
+                sampleWidth=width;
+                sampleDepth=depth;
+
+                samplePixelsX = (int[]) grabberX.getPixels();
+                samplePixelsY = (int[]) grabberY.getPixels();
+                samplePixelsZ = (int[]) grabberZ.getPixels();
+
+                for(int i=0; i<sampleWidth*sampleHeight; i++){
+                    samplePixelsX[i] = samplePixelsX[i]&0xFF;
+                    samplePixelsY[i] = samplePixelsY[i]&0xFF;
+                    samplePixelsZ[i] = samplePixelsZ[i]&0xFF;
+                }
+
+                int i=0;
+                for(int y=0; y<sampleWidth; y++){
+                    for(int x=0; x<sampleHeight; x++){
+                        for(int z=0; z<sampleDepth; z++){
+                            volume[x][y][z] = samplePixelsX[y+z*width]*
+                                              samplePixelsY[x+z*width]*
+                                              samplePixelsZ[x+y*width]/255/255;
+                            i++;
+                        }
+                    }
+                }
+                System.out.println("built " + sampleWidth + " " + sampleHeight + " " + sampleDepth + " " + i);
             }
         }catch (InterruptedException e) {
             e.printStackTrace();

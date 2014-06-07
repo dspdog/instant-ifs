@@ -86,7 +86,7 @@ public class ifsys extends Panel
         pointSelected =-1;
         isDragging = false;
 
-        theVolume = new volume(screenwidth, screenheight, 128);
+        theVolume = new volume(screenwidth, screenheight, 512);
         theVolume.clear();
         thePdf = new pdf3D();
 
@@ -258,7 +258,7 @@ public class ifsys extends Panel
 
         double sampleX = Math.random()*thePdf.sampleWidth;
         double sampleY = Math.random()*thePdf.sampleHeight;
-        double sampleZ = thePdf.sampleDepth/2;
+        double sampleZ = Math.random()*thePdf.sampleDepth;
 
         //modulate with image
         double exposureAdjust = cumulativeScale*thePt.scale*thePt.radius;
