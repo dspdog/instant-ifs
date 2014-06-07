@@ -1,3 +1,6 @@
+import javafx.scene.control.SplitPane;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.MemoryImageSource;
@@ -93,20 +96,38 @@ public class ifsys extends Panel
     }
 
     public static void main(String[] args) {
-        Frame f = new Frame();
-        f.addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent e) {
-                System.exit(0);
-            };
-        });
+        //Frame f = new Frame();
+       // f.addWindowListener(new java.awt.event.WindowAdapter() {
+        //    public void windowClosing(java.awt.event.WindowEvent e) {
+        //        System.exit(0);
+       //     }
+
+       //     ;
+       // });
+
+       //f.add(is);
+        //f.pack();
+
+       // f.setSize(is.screenwidth, is.screenheight + 20); // add 20, seems enough for the Frame title,
+        //f.show();
+       // ifsMenu theMenu = new ifsMenu(f, is);
+
         ifsys is = new ifsys();
         is.setSize(is.screenwidth, is.screenheight); // same size as defined in the HTML APPLET
-        f.add(is);
-        f.pack();
+        JFrame frame = new JFrame("");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JPanel menu = new JPanel();
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, is, menu);
+        splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.setDividerLocation(is.screenwidth);
+        frame.getContentPane().add(splitPane, BorderLayout.CENTER);
+        frame.setSize(is.screenwidth+200, is.screenheight);
+        frame.setVisible(true);
+
+        ifsMenu theMenu = new ifsMenu(frame, is);
+
         is.init();
-        f.setSize(is.screenwidth, is.screenheight + 20); // add 20, seems enough for the Frame title,
-        f.show();
-        ifsMenu theMenu = new ifsMenu(f, is);
     }
 
     public void init() {
@@ -317,6 +338,10 @@ public class ifsys extends Panel
                 theVolume.putPixel(dpt, cumulativeOpacity);
             }
         }
+    }
+
+    public double randomDev(double d){
+        return Math.random()*d-d/2.0;
     }
 
     public void mouseClicked(MouseEvent mouseevent){
