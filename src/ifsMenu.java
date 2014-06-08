@@ -8,9 +8,9 @@ public class ifsMenu implements ItemListener{
 
     ifsys myIfsSys;
 
-    CheckboxMenuItem topButton;
-    CheckboxMenuItem sideButton;
-    CheckboxMenuItem frontButton;
+    CheckboxMenuItem XYButton;
+    CheckboxMenuItem XZButton;
+    CheckboxMenuItem YZButton;
 
     public ifsMenu(Frame f, ifsys is){
 
@@ -32,6 +32,21 @@ public class ifsMenu implements ItemListener{
             renderMenu.add(aaButton);
 
         //VIEW MENU
+            XYButton = new CheckboxMenuItem("XY");
+            XYButton.addItemListener(this);
+            viewMenu.add(XYButton);
+
+            XZButton = new CheckboxMenuItem("XZ");
+            XZButton.addItemListener(this);
+            viewMenu.add(XZButton);
+
+            YZButton = new CheckboxMenuItem("YZ");
+            YZButton.addItemListener(this);
+            viewMenu.add(YZButton);
+
+            XYButton.setState(is.theVolume.preferredDirection == ifsys.ViewDirection.XY);
+            XZButton.setState(is.theVolume.preferredDirection == ifsys.ViewDirection.XZ);
+            YZButton.setState(is.theVolume.preferredDirection == ifsys.ViewDirection.YZ);
 
         //SHAPE MENU
             CheckboxMenuItem autoScaleButton = new CheckboxMenuItem("AutoScale Points"); //autoscale toggle
@@ -63,6 +78,32 @@ public class ifsMenu implements ItemListener{
             if(e.getItem()=="Anti-Aliasing"){
                 myIfsSys.theVolume.antiAliasing = e.getStateChange()==1;
             }
+        //VIEW MENU
+            if(e.getItem()=="XY"){
+               // if(e.getStateChange()==1){
+                    myIfsSys.theVolume.preferredDirection = ifsys.ViewDirection.XY;
+              //  }
+                XYButton.setState(myIfsSys.theVolume.preferredDirection == ifsys.ViewDirection.XY);
+                XZButton.setState(myIfsSys.theVolume.preferredDirection == ifsys.ViewDirection.XZ);
+                YZButton.setState(myIfsSys.theVolume.preferredDirection == ifsys.ViewDirection.YZ);
+            }
+            if(e.getItem()=="XZ"){
+               // if(e.getStateChange()==1){
+                    myIfsSys.theVolume.preferredDirection = ifsys.ViewDirection.XZ;
+                //}
+                XYButton.setState(myIfsSys.theVolume.preferredDirection == ifsys.ViewDirection.XY);
+                XZButton.setState(myIfsSys.theVolume.preferredDirection == ifsys.ViewDirection.XZ);
+                YZButton.setState(myIfsSys.theVolume.preferredDirection == ifsys.ViewDirection.YZ);
+            }
+            if(e.getItem()=="YZ"){
+               // if(e.getStateChange()==1){
+                    myIfsSys.theVolume.preferredDirection = ifsys.ViewDirection.YZ;
+               // }
+                XYButton.setState(myIfsSys.theVolume.preferredDirection == ifsys.ViewDirection.XY);
+                XZButton.setState(myIfsSys.theVolume.preferredDirection == ifsys.ViewDirection.XZ);
+                YZButton.setState(myIfsSys.theVolume.preferredDirection == ifsys.ViewDirection.YZ);
+            }
+
         //GUIDES MENU
             if(e.getItem()=="Info Box"){
                 myIfsSys.infoHidden = e.getStateChange()==2;

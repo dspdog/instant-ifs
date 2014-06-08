@@ -64,6 +64,12 @@ public class ifsys extends Panel
 
     ifsOverlays overlays;
 
+    public enum ViewDirection{
+        XY, XZ, YZ
+    }
+
+    ViewDirection viewDirection;
+
     public ifsys(){
         started=false;
         oneSecondAgo =0;
@@ -106,22 +112,6 @@ public class ifsys extends Panel
     }
 
     public static void main(String[] args) {
-        //Frame f = new Frame();
-       // f.addWindowListener(new java.awt.event.WindowAdapter() {
-        //    public void windowClosing(java.awt.event.WindowEvent e) {
-        //        System.exit(0);
-       //     }
-
-       //     ;
-       // });
-
-       //f.add(is);
-        //f.pack();
-
-       // f.setSize(is.screenwidth, is.screenheight + 20); // add 20, seems enough for the Frame title,
-        //f.show();
-       // ifsMenu theMenu = new ifsMenu(f, is);
-
         ifsys is = new ifsys();
         is.setSize(is.screenwidth, is.screenheight); // same size as defined in the HTML APPLET
         JFrame frame = new JFrame("");
@@ -148,7 +138,18 @@ public class ifsys extends Panel
     }
 
     public void findSelectedPoint(){
-        pointSelected = shape.getNearestPtIndexXY(mousex, mousey);
+        switch (theVolume.preferredDirection){
+            case XY:
+                pointSelected = shape.getNearestPtIndexXY(mousex, mousey);
+                break;
+            case YZ:
+                pointSelected = shape.getNearestPtIndexYZ(mousex, mousey);
+                break;
+            case XZ:
+                pointSelected = shape.getNearestPtIndexXZ(mousex, mousey);
+                break;
+        }
+
         selectedPt = shape.pts[pointSelected];
     }
 
@@ -227,7 +228,7 @@ public class ifsys extends Panel
 
         if(!guidesHidden){
             overlays.drawArcs(rg);
-            overlays.drawCenterOfGravity(rg);
+            overlays.drawSpecialPoints(rg);
         }
 
 
@@ -242,16 +243,29 @@ public class ifsys extends Panel
         double scaler = 255/theVolume.dataMax * brightnessMultiplier;
         double area = 0;
         int scaledColor = 0;
+        double[][] projection = theVolume.XYProjection;;
 
-        for(int x = 0; x < theVolume.width; x++){
-            for(int y=0; y<theVolume.height; y++){
+        switch (theVolume.preferredDirection){
+            case XY:
+                projection = theVolume.XYProjection;
+                break;
+            case XZ:
+                projection = theVolume.XZProjection;
+                break;
+            case YZ:
+                projection = theVolume.YZProjection;
+                break;
+        }
+
+        for(int x = 0; x < projection.length; x++){
+            for(int y=0; y<projection[x].length; y++){
                 int argb = 255;
-                scaledColor = Math.min((int)(scaler*theVolume.XYProjection[x][y]), 255);
+                scaledColor = Math.min((int)(scaler*projection[x][y]), 255);
                 argb = (argb << 8) + scaledColor;
                 argb = (argb << 8) + scaledColor;
                 argb = (argb << 8) + scaledColor;
-                pixels[x+y*theVolume.width] = argb;
-                area+=scaler*theVolume.XYProjection[x][y];
+                pixels[x+y*projection.length] = argb;
+                area+=scaler*projection[x][y];
             }
         }
     }
@@ -262,12 +276,7 @@ public class ifsys extends Panel
         }
         theVolume.clear();
     }
-
-    public boolean _putPixel(ifsPt pt, double alpha){
-
-        return true;
-    }
-
+    int jj=0;
     public void putPdfSample(ifsPt dpt, double cumulativeRotationYaw, double cumulativeRotationPitch, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown, int index){
         double centerX = thePdf.sampleWidth/2;
         double centerY = thePdf.sampleHeight/2;
@@ -294,13 +303,14 @@ public class ifsys extends Panel
             sampleX = randomDouble()*thePdf.sampleWidth;
             sampleY = randomDouble()*thePdf.sampleHeight;
             sampleZ = randomDouble()*thePdf.sampleDepth;
-
             //modulate with image
-            ptColor = thePdf.volume[(int)sampleX][(int)sampleY][(int)sampleZ]/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
-            rpt = new ifsPt((sampleX-centerX)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw); //placed point
-
-            //put pixel
-            theVolume.putPixel(new ifsPt(dpt.x+rpt.x,dpt.y+rpt.y, dpt.z+rpt.z),ptColor);
+            ptColor = thePdf.volume[(int)sampleX][(int)sampleY][(int)sampleZ];
+            if(ptColor>0){
+                ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
+                rpt = new ifsPt((sampleX-centerX)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw); //placed point
+                //put pixel
+                theVolume.putPixel(new ifsPt(dpt.x+rpt.x,dpt.y+rpt.y, dpt.z+rpt.z),ptColor);
+            }
         }
     }
 

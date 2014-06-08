@@ -18,16 +18,43 @@ public class ifsOverlays {
         }
     }
 
-    public void drawCenterOfGravity(Graphics _rg){
+    public void drawSpecialPoints(Graphics _rg){//center of gravity and maximum
         _rg.setColor(Color.CYAN);
         int width = 15;
         int height = 15;
         int x=0,y=0;
 
-        x=(int)(myIfsSys.theVolume.getCenterOfGravity().x);
-        y=(int)(myIfsSys.theVolume.getCenterOfGravity().y);
-        if(myIfsSys.theVolume.totalSamples>1000)
-        _rg.drawRect(x-width/2,y-height/2,width,height);
+        if(myIfsSys.theVolume.totalSamples>1000){
+            switch (myIfsSys.theVolume.preferredDirection){
+                case XY:
+                    x=(int)(myIfsSys.theVolume.getCenterOfGravity().x);
+                    y=(int)(myIfsSys.theVolume.getCenterOfGravity().y);
+                    _rg.drawRect(x-width/2,y-height/2,width,height);
+                    _rg.setColor(Color.YELLOW);
+                    x=(int)(myIfsSys.theVolume.highPt.x);
+                    y=(int)(myIfsSys.theVolume.highPt.y);
+                    _rg.drawRect(x-width/2,y-height/2,width,height);
+                    break;
+                case YZ:
+                    x=(int)(myIfsSys.theVolume.getCenterOfGravity().y);
+                    y=(int)(myIfsSys.theVolume.getCenterOfGravity().z);
+                    _rg.drawRect(x-width/2,y-height/2,width,height);
+                    _rg.setColor(Color.YELLOW);
+                    x=(int)(myIfsSys.theVolume.highPt.y);
+                    y=(int)(myIfsSys.theVolume.highPt.z);
+                    _rg.drawRect(x-width/2,y-height/2,width,height);
+                    break;
+                case XZ:
+                    x=(int)(myIfsSys.theVolume.getCenterOfGravity().x);
+                    y=(int)(myIfsSys.theVolume.getCenterOfGravity().z);
+                    _rg.drawRect(x-width/2,y-height/2,width,height);
+                    _rg.setColor(Color.YELLOW);
+                    x=(int)(myIfsSys.theVolume.highPt.x);
+                    y=(int)(myIfsSys.theVolume.highPt.z);
+                    _rg.drawRect(x-width/2,y-height/2,width,height);
+                    break;
+            }
+        }
     }
 
     public void drawArc(Graphics _rg, ifsPt pt, boolean isSelected, boolean dragging){
@@ -76,8 +103,21 @@ public class ifsOverlays {
             yPts2[i] = (int)(rotatedPt2.y + pt.y);
             zPts2[i] = (int)(rotatedPt2.z + pt.z);
 
-            d1 = distance(myIfsSys.mousex - rotatedPt1.x - pt.x, myIfsSys.mousey - rotatedPt1.y - pt.y);
-            d2 = distance(myIfsSys.mousex - rotatedPt2.x - pt.x, myIfsSys.mousey - rotatedPt2.y - pt.y);
+            switch (myIfsSys.theVolume.preferredDirection){
+                case XY:
+                    d1 = distance(myIfsSys.mousex - rotatedPt1.x - pt.x, myIfsSys.mousey - rotatedPt1.y - pt.y);
+                    d2 = distance(myIfsSys.mousex - rotatedPt2.x - pt.x, myIfsSys.mousey - rotatedPt2.y - pt.y);
+                    break;
+                case XZ:
+                    d1 = distance(myIfsSys.mousex - rotatedPt1.x - pt.x, myIfsSys.mousey - rotatedPt1.z - pt.z);
+                    d2 = distance(myIfsSys.mousex - rotatedPt2.x - pt.x, myIfsSys.mousey - rotatedPt2.z - pt.z);
+                    break;
+                case YZ:
+                    d1 = distance(myIfsSys.mousex - rotatedPt1.y - pt.y, myIfsSys.mousey - rotatedPt1.z - pt.z);
+                    d2 = distance(myIfsSys.mousex - rotatedPt2.y - pt.y, myIfsSys.mousey - rotatedPt2.z - pt.z);
+                    break;
+            }
+
 
             if(d1<min_d){
                 min_d=d1;
@@ -104,30 +144,46 @@ public class ifsOverlays {
             }
 
             _rg.setColor(Color.red);
-            drawPolylineBolded(_rg, xPts1, yPts1, steps, myIfsSys.rotateMode==0);
+            drawPolylineBolded(_rg, xPts1, yPts1, zPts1, steps, myIfsSys.rotateMode==0);
             _rg.setColor(Color.green);
-            drawPolylineBolded(_rg, xPts2, yPts2, steps, myIfsSys.rotateMode==1);
+            drawPolylineBolded(_rg, xPts2, yPts2, zPts2, steps, myIfsSys.rotateMode==1);
         }else{
             _rg.setColor(Color.darkGray);
-            _rg.drawPolyline(xPts1, yPts1, steps);
-            _rg.drawPolyline(xPts2, yPts2, steps);
+            drawPolyLineRotated(xPts1, yPts1, zPts1, _rg, steps);
+            drawPolyLineRotated(xPts2, yPts2, zPts2, _rg, steps);
         }
     }
 
-    public void drawPolylineBolded(Graphics rg, int[] xPts, int[] yPts, int steps, boolean isSelected){
-        rg.drawPolyline(xPts, yPts, steps);
+    public void drawPolyLineRotated(int[] xPts1, int[] yPts1, int[] zPts1, Graphics _rg, int steps){
+        switch (myIfsSys.theVolume.preferredDirection){
+            case XY:
+                _rg.drawPolyline(xPts1, yPts1, steps);
+                break;
+            case XZ:
+                _rg.drawPolyline(xPts1, zPts1, steps);
+                break;
+            case YZ:
+                _rg.drawPolyline(yPts1, zPts1, steps);
+                break;
+        }
+    }
+
+    public void drawPolylineBolded(Graphics rg, int[] xPts, int[] yPts, int[] zPts, int steps, boolean isSelected){
+        drawPolyLineRotated(xPts, yPts, zPts, rg, steps);
 
         if(isSelected){
                 for(int i=0; i<steps; i++){
                     xPts[i]++;
-                    //yPts[i]++;
                 }
-                rg.drawPolyline(xPts, yPts, steps);
+                drawPolyLineRotated(xPts, yPts, zPts, rg, steps);
                 for(int i=0; i<steps; i++){
-                    //xPts[i]++;
                     yPts[i]++;
                 }
-                rg.drawPolyline(xPts, yPts, steps);
+                drawPolyLineRotated(xPts, yPts, zPts, rg, steps);
+                for(int i=0; i<steps; i++){
+                    zPts[i]++;
+                }
+                drawPolyLineRotated(xPts, yPts, zPts, rg, steps);
         }
     }
 
@@ -148,6 +204,11 @@ public class ifsOverlays {
                 + (int)(myIfsSys.theVolume.getCenterOfGravity().x) + ", "
                 + (int)(myIfsSys.theVolume.getCenterOfGravity().y) + ", "
                 + (int)(myIfsSys.theVolume.getCenterOfGravity().z) + ")", 5, 15*9);
+
+        rg.drawString("HighPt: ("
+                + (int)(myIfsSys.theVolume.highPt.x) + ", "
+                + (int)(myIfsSys.theVolume.highPt.y) + ", "
+                + (int)(myIfsSys.theVolume.highPt.z) + ")", 5, 15*10);
 
 
        // rg.drawString("Brightness: " + String.valueOf(myIfsSys.samplesThisFrame/myIfsSys.samplesNeeded), 5, 15*10);

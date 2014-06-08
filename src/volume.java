@@ -12,8 +12,11 @@ public class volume {
     public double volume[][][];
     public double XYProjection[][];
     public double XZProjection[][];
-
+    public double YZProjection[][];
     ifsPt centerOfGravity;
+    ifsPt highPt;
+
+    ifsys.ViewDirection preferredDirection;
 
     boolean antiAliasing;
 
@@ -22,9 +25,11 @@ public class volume {
         height = h;
         depth = d;
         renderMode = RenderMode.SIDES_ONLY;
+        preferredDirection = ifsys.ViewDirection.XY;
         antiAliasing = true;
         XYProjection = new double[width][height];
         XZProjection = new double[width][depth];
+        YZProjection = new double[height][depth];
         volume = new double[width][height][depth];
         centerOfGravity = new ifsPt(0,0,0);
     }
@@ -45,12 +50,22 @@ public class volume {
                 }
                 break;
             case SIDES_ONLY:
+
                 for(int x=0; x<width; x++){
                     for(int y=0; y<height; y++){
                         XYProjection[x][y]=0;
                     }
+                }
+
+                for(int x=0; x<width; x++){
                     for(int z=0; z<depth; z++){
                         XZProjection[x][z]=0;
+                    }
+                }
+
+                for(int y=0; y<height; y++){
+                    for(int z=0; z<depth; z++){
+                        YZProjection[y][z]=0;
                     }
                 }
                 break;
@@ -93,6 +108,7 @@ public class volume {
 
                     if(volume[(int)pt.x][(int)pt.y][(int)pt.z]>dataMax){
                         dataMax=volume[(int)pt.x][(int)pt.y][(int)pt.z];
+                        highPt = new ifsPt(pt);
                     }
 
                     break;
@@ -104,23 +120,35 @@ public class volume {
                         double yDec = pt.y - (int)pt.y;
                         double zDec = pt.z - (int)pt.z;
 
-                        XYProjection[(int)pt.x][(int)pt.y] += alpha*(1-xDec)*(1-yDec);
-                        XYProjection[(int)pt.x+1][(int)pt.y] += alpha*xDec*(1-yDec);
-                        XYProjection[(int)pt.x][(int)pt.y+1] += alpha*(1-xDec)*yDec;
-                        XYProjection[(int)pt.x+1][(int)pt.y+1] += alpha*xDec*yDec;
-
-                        XZProjection[(int)pt.x][(int)pt.z] += alpha*(1-xDec)*(1-zDec);
-                        XZProjection[(int)pt.x+1][(int)pt.z] += alpha*xDec*(1-zDec);
-                        XZProjection[(int)pt.x][(int)pt.z+1] += alpha*(1-xDec)*zDec;
-                        XZProjection[(int)pt.x+1][(int)pt.z+1] += alpha*xDec*zDec;
-
+                        switch (preferredDirection){
+                            case XY:
+                                XYProjection[(int)pt.x][(int)pt.y] += alpha*(1-xDec)*(1-yDec);
+                                XYProjection[(int)pt.x+1][(int)pt.y] += alpha*xDec*(1-yDec);
+                                XYProjection[(int)pt.x][(int)pt.y+1] += alpha*(1-xDec)*yDec;
+                                XYProjection[(int)pt.x+1][(int)pt.y+1] += alpha*xDec*yDec;
+                                break;
+                            case XZ:
+                                XZProjection[(int)pt.x][(int)pt.z] += alpha*(1-xDec)*(1-zDec);
+                                XZProjection[(int)pt.x+1][(int)pt.z] += alpha*xDec*(1-zDec);
+                                XZProjection[(int)pt.x][(int)pt.z+1] += alpha*(1-xDec)*zDec;
+                                XZProjection[(int)pt.x+1][(int)pt.z+1] += alpha*xDec*zDec;
+                                break;
+                            case YZ:
+                                YZProjection[(int)pt.y][(int)pt.z] += alpha*(1-yDec)*(1-zDec);
+                                YZProjection[(int)pt.y+1][(int)pt.z] += alpha*yDec*(1-zDec);
+                                YZProjection[(int)pt.y][(int)pt.z+1] += alpha*(1-yDec)*zDec;
+                                YZProjection[(int)pt.y+1][(int)pt.z+1] += alpha*yDec*zDec;
+                                break;
+                        }
                     }else{
                         XYProjection[(int)pt.x][(int)pt.y]+=alpha;
                         XZProjection[(int)pt.x][(int)pt.z] += alpha;
+                        YZProjection[(int)pt.y][(int)pt.z] += alpha;
                     }
 
                     if(XYProjection[(int)pt.x][(int)pt.y]>dataMax){
                         dataMax= XYProjection[(int)pt.x][(int)pt.y];
+                        highPt = new ifsPt(pt);
                     }
 
                     break;
