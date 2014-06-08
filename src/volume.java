@@ -13,6 +13,9 @@ public class volume {
     public double XYProjection[][];
     public double XZProjection[][];
     public double YZProjection[][];
+
+    public int depthLeanX, depthLeanY;
+
     ifsPt centerOfGravity;
     ifsPt highPt;
 
@@ -24,6 +27,8 @@ public class volume {
         width = w;
         height = h;
         depth = d;
+        depthLeanX = 0;
+        depthLeanY = 0;
         renderMode = RenderMode.SIDES_ONLY;
         preferredDirection = ViewDirection.XY;
         antiAliasing = true;
@@ -76,6 +81,21 @@ public class volume {
         centerOfGravity.x+=pt.x*alpha;
         centerOfGravity.y+=pt.y*alpha;
         centerOfGravity.z+=pt.z*alpha;
+
+        switch (preferredDirection){
+            case XY:
+                pt.x += (pt.z-depth/2)/(depth/2)*depthLeanX;
+                pt.y += (pt.z-depth/2)/(depth/2)*depthLeanY;
+                break;
+            case XZ:
+                pt.x += (pt.y-height/2)/(height/2)*depthLeanX;
+                pt.z += (pt.y-height/2)/(height/2)*depthLeanY;
+                break;
+            case YZ:
+                pt.y += (pt.x-width/2)/(width/2)*depthLeanX;
+                pt.z += (pt.x-width/2)/(width/2)*depthLeanY;
+                break;
+        }
 
         if(pt.x>1 && pt.y>1 && pt.z>1 && pt.x<width-1 && pt.y<height-1 && pt.z<depth-1){
 

@@ -193,6 +193,8 @@ public class ifsOverlays {
 
         rg.setColor(Color.white);
         rg.drawString("Mouse XYZ (" + myIfsSys.mousex + ", " + myIfsSys.mousey + ", " + myIfsSys.mousez + ")", 5, 15*1);
+        rg.drawString("DepthLeanX (df): " + myIfsSys.theVolume.depthLeanX, 5, 15*2);
+        rg.drawString("DepthLeanY (ws): " + myIfsSys.theVolume.depthLeanY, 5, 15*3);
         rg.drawString("Scale: " + String.valueOf((double)(int)(selectedPt.scale * 1000D) / 1000D), 5, 15*5);
         rg.drawString("Rotation Yaw: " + String.valueOf((double)(int)((((selectedPt.rotationYaw / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 15*6);
         rg.drawString("Rotation Pitch: " + String.valueOf((double)(int)((((selectedPt.rotationPitch / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 15*7);

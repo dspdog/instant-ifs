@@ -574,6 +574,27 @@ public class ifsys extends Panel
         if(e.getKeyChar() == 'j')
             brightnessMultiplier /= 2;
 
+        if(e.getKeyChar() == 'd'){
+            theVolume.depthLeanX-=20;
+            clearframe();
+        }
+
+        if(e.getKeyChar() == 'f'){
+            theVolume.depthLeanX+=20;
+            clearframe();
+        }
+
+        if(e.getKeyChar() == 'w'){
+            theVolume.depthLeanY-=20;
+            clearframe();
+        }
+
+        if(e.getKeyChar() == 's'){
+            theVolume.depthLeanY+=20;
+            clearframe();
+        }
+
+
         if(brightnessMultiplier <1.0/64.0){
             brightnessMultiplier =1.0/64.0;}
         if(brightnessMultiplier >128){
