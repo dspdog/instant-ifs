@@ -16,7 +16,7 @@ public class volume {
     ifsPt centerOfGravity;
     ifsPt highPt;
 
-    ifsys.ViewDirection preferredDirection;
+    ViewDirection preferredDirection;
 
     boolean antiAliasing;
 
@@ -25,7 +25,7 @@ public class volume {
         height = h;
         depth = d;
         renderMode = RenderMode.SIDES_ONLY;
-        preferredDirection = ifsys.ViewDirection.XY;
+        preferredDirection = ViewDirection.XY;
         antiAliasing = true;
         XYProjection = new double[width][height];
         XZProjection = new double[width][depth];
@@ -77,12 +77,7 @@ public class volume {
         centerOfGravity.y+=pt.y*alpha;
         centerOfGravity.z+=pt.z*alpha;
 
-        //z-axis is pushed to edges, other axes are clipped
-
-        pt.z=Math.max(pt.z,1);
-        pt.z=Math.min(pt.z,depth-2);
-
-        if(pt.x>1 && pt.y>1 && pt.x<width-1 && pt.y<height-1){
+        if(pt.x>1 && pt.y>1 && pt.z>1 && pt.x<width-1 && pt.y<height-1 && pt.z<depth-1){
 
             switch (renderMode){
                 case VOLUMETRIC:
@@ -151,6 +146,15 @@ public class volume {
                         highPt = new ifsPt(pt);
                     }
 
+                    if(XZProjection[(int)pt.x][(int)pt.z]>dataMax){
+                        dataMax= XZProjection[(int)pt.x][(int)pt.z];
+                        highPt = new ifsPt(pt);
+                    }
+
+                    if(YZProjection[(int)pt.y][(int)pt.z]>dataMax){
+                        dataMax= YZProjection[(int)pt.y][(int)pt.z];
+                        highPt = new ifsPt(pt);
+                    }
                     break;
 
             }
@@ -186,4 +190,9 @@ public class volume {
     public enum RenderMode {
         VOLUMETRIC, SIDES_ONLY
     }
+
+    public enum ViewDirection{
+        XY, XZ, YZ
+    }
+
 }

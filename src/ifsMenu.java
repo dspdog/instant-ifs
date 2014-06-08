@@ -44,9 +44,9 @@ public class ifsMenu implements ItemListener{
             YZButton.addItemListener(this);
             viewMenu.add(YZButton);
 
-            XYButton.setState(is.theVolume.preferredDirection == ifsys.ViewDirection.XY);
-            XZButton.setState(is.theVolume.preferredDirection == ifsys.ViewDirection.XZ);
-            YZButton.setState(is.theVolume.preferredDirection == ifsys.ViewDirection.YZ);
+            XYButton.setState(is.theVolume.preferredDirection == volume.ViewDirection.XY);
+            XZButton.setState(is.theVolume.preferredDirection == volume.ViewDirection.XZ);
+            YZButton.setState(is.theVolume.preferredDirection == volume.ViewDirection.YZ);
 
         //SHAPE MENU
             CheckboxMenuItem autoScaleButton = new CheckboxMenuItem("AutoScale Points"); //autoscale toggle
@@ -81,27 +81,27 @@ public class ifsMenu implements ItemListener{
         //VIEW MENU
             if(e.getItem()=="XY"){
                // if(e.getStateChange()==1){
-                    myIfsSys.theVolume.preferredDirection = ifsys.ViewDirection.XY;
+                    myIfsSys.theVolume.preferredDirection = volume.ViewDirection.XY;
               //  }
-                XYButton.setState(myIfsSys.theVolume.preferredDirection == ifsys.ViewDirection.XY);
-                XZButton.setState(myIfsSys.theVolume.preferredDirection == ifsys.ViewDirection.XZ);
-                YZButton.setState(myIfsSys.theVolume.preferredDirection == ifsys.ViewDirection.YZ);
+                XYButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.XY);
+                XZButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.XZ);
+                YZButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.YZ);
             }
             if(e.getItem()=="XZ"){
                // if(e.getStateChange()==1){
-                    myIfsSys.theVolume.preferredDirection = ifsys.ViewDirection.XZ;
+                    myIfsSys.theVolume.preferredDirection = volume.ViewDirection.XZ;
                 //}
-                XYButton.setState(myIfsSys.theVolume.preferredDirection == ifsys.ViewDirection.XY);
-                XZButton.setState(myIfsSys.theVolume.preferredDirection == ifsys.ViewDirection.XZ);
-                YZButton.setState(myIfsSys.theVolume.preferredDirection == ifsys.ViewDirection.YZ);
+                XYButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.XY);
+                XZButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.XZ);
+                YZButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.YZ);
             }
             if(e.getItem()=="YZ"){
                // if(e.getStateChange()==1){
-                    myIfsSys.theVolume.preferredDirection = ifsys.ViewDirection.YZ;
+                    myIfsSys.theVolume.preferredDirection = volume.ViewDirection.YZ;
                // }
-                XYButton.setState(myIfsSys.theVolume.preferredDirection == ifsys.ViewDirection.XY);
-                XZButton.setState(myIfsSys.theVolume.preferredDirection == ifsys.ViewDirection.XZ);
-                YZButton.setState(myIfsSys.theVolume.preferredDirection == ifsys.ViewDirection.YZ);
+                XYButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.XY);
+                XZButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.XZ);
+                YZButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.YZ);
             }
 
         //GUIDES MENU

@@ -167,13 +167,15 @@ class ifsShape{
                 pointsInUse=1;
                 int centerx=512;
                 int centery=512;
+                int centerz=512;
 
                 for(int i=0; i<4; i++){
                     this.addPoint(
                             Math.cos(Math.PI/4+i*Math.PI/2)*200+centerx,
                             Math.sin(Math.PI/4+i*Math.PI/2)*200+centery,
-                            0);
+                            centerz);
                 }
+                this.pts[0].z=centerz;
                 System.out.println(pointsInUse);
                 break;
 

@@ -11,10 +11,7 @@ public class ifsOverlays {
 
     public void drawArcs(Graphics rg){
         for(int i=0;i<myIfsSys.shape.pointsInUse;i++){
-            if(i==0){
-                rg.setColor(Color.BLUE);
-            }
-            drawArc(rg, myIfsSys.shape.pts[i], i == myIfsSys.pointSelected, myIfsSys.isDragging);
+            drawArc(rg, myIfsSys.shape.pts[i], i == myIfsSys.pointSelected, myIfsSys.isDragging, i==0);
         }
     }
 
@@ -57,7 +54,7 @@ public class ifsOverlays {
         }
     }
 
-    public void drawArc(Graphics _rg, ifsPt pt, boolean isSelected, boolean dragging){
+    public void drawArc(Graphics _rg, ifsPt pt, boolean isSelected, boolean dragging, boolean isCenter){
         int steps = 50;
 
         int[] xPts1 = new int[steps];
@@ -149,6 +146,9 @@ public class ifsOverlays {
             drawPolylineBolded(_rg, xPts2, yPts2, zPts2, steps, myIfsSys.rotateMode==1);
         }else{
             _rg.setColor(Color.darkGray);
+            if(isCenter){
+                _rg.setColor(Color.BLUE);
+            }
             drawPolyLineRotated(xPts1, yPts1, zPts1, _rg, steps);
             drawPolyLineRotated(xPts2, yPts2, zPts2, _rg, steps);
         }
@@ -193,9 +193,9 @@ public class ifsOverlays {
 
         rg.setColor(Color.white);
         rg.drawString("Point " + String.valueOf(myIfsSys.pointSelected + 1), 5, 15*1);
-        rg.drawString("X: " + String.valueOf((double)(int)(selectedPt.x * 1000D) / 1000D), 5, 15*2);
-        rg.drawString("Y: " + String.valueOf((double)(int)(selectedPt.y * 1000D) / 1000D), 5, 15*3);
-        rg.drawString("Z: " + String.valueOf((double)(int)(selectedPt.z * 1000D) / 1000D), 5, 15*4);
+        rg.drawString("X: " + String.valueOf((double)(int)(selectedPt.x * 1000D) / 1000D) + " (" + myIfsSys.mousex + ")", 5, 15*2);
+        rg.drawString("Y: " + String.valueOf((double)(int)(selectedPt.y * 1000D) / 1000D) + " (" + myIfsSys.mousey + ")", 5, 15*3);
+        rg.drawString("Z: " + String.valueOf((double)(int)(selectedPt.z * 1000D) / 1000D) + " (" + myIfsSys.mousez + ")", 5, 15*4);
         rg.drawString("Scale: " + String.valueOf((double)(int)(selectedPt.scale * 1000D) / 1000D), 5, 15*5);
         rg.drawString("Rotation Yaw: " + String.valueOf((double)(int)((((selectedPt.rotationYaw / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 15*6);
         rg.drawString("Rotation Pitch: " + String.valueOf((double)(int)((((selectedPt.rotationPitch / Math.PI) * 180D + 36000000D) % 360D) * 1000D) / 1000D), 5, 15*7);
@@ -221,15 +221,41 @@ public class ifsOverlays {
 
         rg.drawString("DataMax " + String.valueOf((int)myIfsSys.theVolume.dataMax), 5, 15*18);
 
+        drawAxis(rg);
+    }
+
+    public void drawAxis(Graphics rg){
         int screenheight = myIfsSys.screenheight;
         int screenwidth = myIfsSys.screenwidth;
+        switch (myIfsSys.theVolume.preferredDirection){
+            case XY:
+                rg.setColor(Color.red);
+                rg.drawLine(10, screenheight-65-50, 10+50, screenheight-65-50);
+                rg.drawString("X+", 10+55, screenheight-50-60);
 
-        rg.setColor(Color.green);
-        rg.drawLine(10, screenheight-65, 10, screenheight-65-50);
-        rg.drawString("Y+", 10, screenheight-50);
-        rg.setColor(Color.red);
-        rg.drawLine(10, screenheight-65-50, 10+50, screenheight-65-50);
-        rg.drawString("X+", 10+55, screenheight-50-60);
+                rg.setColor(Color.green);
+                rg.drawLine(10, screenheight-65, 10, screenheight-65-50);
+                rg.drawString("Y+", 10, screenheight-50);
+                break;
+            case YZ:
+                rg.setColor(Color.green);
+                rg.drawLine(10, screenheight-65-50, 10+50, screenheight-65-50);
+                rg.drawString("Y+", 10+55, screenheight-50-60);
+
+                rg.setColor(Color.blue);
+                rg.drawLine(10, screenheight-65, 10, screenheight-65-50);
+                rg.drawString("Z+", 10, screenheight-50);
+                break;
+            case XZ:
+                rg.setColor(Color.red);
+                rg.drawLine(10, screenheight-65-50, 10+50, screenheight-65-50);
+                rg.drawString("X+", 10+55, screenheight-50-60);
+
+                rg.setColor(Color.blue);
+                rg.drawLine(10, screenheight-65, 10, screenheight-65-50);
+                rg.drawString("Z+", 10, screenheight-50);
+                break;
+        }
     }
 
     public double distance(double x, double y){

@@ -64,12 +64,6 @@ public class ifsys extends Panel
 
     ifsOverlays overlays;
 
-    public enum ViewDirection{
-        XY, XZ, YZ
-    }
-
-    ViewDirection viewDirection;
-
     public ifsys(){
         started=false;
         oneSecondAgo =0;
@@ -96,7 +90,7 @@ public class ifsys extends Panel
         pointSelected =-1;
         isDragging = false;
 
-        theVolume = new volume(screenwidth, screenheight, 512);
+        theVolume = new volume(screenwidth, screenheight, 1024);
         theVolume.clear();
         thePdf = new pdf3D();
 
@@ -143,10 +137,10 @@ public class ifsys extends Panel
                 pointSelected = shape.getNearestPtIndexXY(mousex, mousey);
                 break;
             case YZ:
-                pointSelected = shape.getNearestPtIndexYZ(mousex, mousey);
+                pointSelected = shape.getNearestPtIndexYZ(mousey, mousez);
                 break;
             case XZ:
-                pointSelected = shape.getNearestPtIndexXZ(mousex, mousey);
+                pointSelected = shape.getNearestPtIndexXZ(mousex, mousez);
                 break;
         }
 
@@ -351,7 +345,7 @@ public class ifsys extends Panel
 
                         dpt.x += rpt.x;
                         dpt.y += rpt.y;
-                        dpt.z += rpt.z;
+                        dpt.z -= rpt.z;
                     }
 
                     if(usePDFSamples)
@@ -373,9 +367,7 @@ public class ifsys extends Panel
 
     public void mousePressed(MouseEvent e){
         mousemode = e.getButton();
-        mousex = e.getX();
-        mousey = e.getY();
-        mousez = 0;
+        getMouseXYZ(e);
 
         findSelectedPoint();
 
@@ -422,25 +414,47 @@ public class ifsys extends Panel
         setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
     }
 
+    public void getMouseXYZ(MouseEvent e){
+        switch (theVolume.preferredDirection){
+            case XY:
+                mousex = e.getX();
+                mousey = e.getY();
+                mousez = 0;
+                break;
+            case YZ:
+                mousey = e.getX();
+                mousez = e.getY();
+                mousex = 0;
+                break;
+            case XZ:
+                mousex = e.getX();
+                mousez = e.getY();
+                mousey = 0;
+                break;
+        }
+    }
+
     public void mouseDragged(MouseEvent e){
+        getMouseXYZ(e);
+
         isDragging=true;
         lastMoveTime = System.currentTimeMillis();
         if(mousemode == 1){ //left click to move a point/set
             setCursor (Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 
-            selectedPt.x = startDragPX + (e.getX() - startDragX);
-            selectedPt.y = startDragPY + (e.getY() - startDragY);
+            selectedPt.x = startDragPX + (mousex - startDragX);
+            selectedPt.y = startDragPY + (mousey - startDragY);
             selectedPt.z = startDragPZ + (mousez - startDragZ);
         }
         else if(mousemode == 3){ //right click to rotate point/set
             setCursor (Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
 
-            double scaleDelta = shape.distance(e.getX() - selectedPt.x, e.getY() - selectedPt.y, mousez - shape.pts[0].z)/startDragDist;
+            double scaleDelta = shape.distance(mousex - selectedPt.x, mousey - selectedPt.y, mousez - shape.pts[0].z)/startDragDist;
             if(rotateMode==0){
-                double rotationDelta = (Math.atan2(e.getX() - selectedPt.x, e.getY() - selectedPt.y)- startDragAngleYaw);
+                double rotationDelta = (Math.atan2(mousex - selectedPt.x, mousey - selectedPt.y)- startDragAngleYaw);
                 selectedPt.rotationYaw = Math.PI * 2 - rotationDelta;
             }else if(rotateMode==1){
-                double rotationDelta = (Math.atan2(e.getX() - selectedPt.x, e.getY() - selectedPt.y)- startDragAnglePitch);
+                double rotationDelta = (Math.atan2(mousex - selectedPt.x, mousey - selectedPt.y)- startDragAnglePitch);
                 selectedPt.rotationPitch = Math.PI * 2 - rotationDelta;
             }
 
@@ -482,9 +496,7 @@ public class ifsys extends Panel
 
     public void mouseMoved(MouseEvent e){
         findSelectedPoint();
-        mousex = e.getX();
-        mousey = e.getY();
-        mousez = 0;
+        getMouseXYZ(e);
         lastMoveTime = System.currentTimeMillis();
     }
 
