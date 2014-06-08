@@ -20,61 +20,92 @@ public class ifsMenu implements ItemListener, ChangeListener {
     JSpinner ySpinner;
     JSpinner zSpinner;
 
+    JSpinner pitchSpinner;
+    JSpinner yawSpinner;
+
+    JSpinner scaleSpinner;
+
     boolean inited=false;
     boolean autoChange = false;
+
+    public void addLabeledSpinner(JSpinner spinner, SpringLayout layout, String labelText, JPanel panel, int row){
+        int spinnerLeft = 55;
+        int spinnerRight = -5;
+        int labelToSpinner = -5;
+        int vspace = 20;
+        int topPad=5;
+
+        JLabel xlab = new JLabel(labelText);
+
+        layout.putConstraint(SpringLayout.EAST, xlab, labelToSpinner, SpringLayout.WEST, spinner);
+        layout.putConstraint(SpringLayout.WEST, spinner, spinnerLeft, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.EAST, spinner, spinnerRight, SpringLayout.EAST, panel);
+        layout.putConstraint(SpringLayout.NORTH, spinner, topPad+vspace*row, SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.NORTH, xlab, topPad+vspace*row, SpringLayout.NORTH, panel);
+
+        spinner.addChangeListener(this);
+
+        panel.add(xlab);
+        panel.add(spinner);
+    }
+
+    public void setupPointPropertiesPanel(JPanel panel){
+        xSpinner = new JSpinner();
+        ySpinner = new JSpinner();
+        zSpinner = new JSpinner();
+        scaleSpinner = new JSpinner();
+
+        pitchSpinner = new JSpinner();
+        yawSpinner = new JSpinner();
+
+        ptLabel = new JLabel("Point -1");
+
+        int topPad=5;
+
+        SpringLayout layout = new SpringLayout();
+        panel.setLayout(layout);
+
+        layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
+
+        addLabeledSpinner(xSpinner, layout, "X", panel, 1);
+        addLabeledSpinner(ySpinner, layout, "Y", panel, 2);
+        addLabeledSpinner(zSpinner, layout, "Z", panel, 3);
+        addLabeledSpinner(scaleSpinner, layout, "Scale %", panel, 4);
+        addLabeledSpinner(pitchSpinner, layout, "Pitch°", panel, 6);
+        addLabeledSpinner(yawSpinner, layout, "Yaw°", panel, 7);
+
+        panel.add(ptLabel);
+
+    }
 
     public ifsMenu(Frame f, ifsys is, JPanel sideMenu){
 
         inited=false;
 
         myIfsSys = is;
+        JPanel topPanel = new JPanel();
+        JPanel bottomPanel = new JPanel();
 
         //SIDE MENU
 
-            xSpinner = new JSpinner();
-            ySpinner = new JSpinner();
-            zSpinner = new JSpinner();
+        setupPointPropertiesPanel(topPanel);
 
-            SpringLayout layout = new SpringLayout();
-            sideMenu.setLayout(layout);
+        SpringLayout sideMenuLayout = new SpringLayout();
+        sideMenu.setLayout(sideMenuLayout);
 
-            ptLabel = new JLabel("Point -1");
-            JLabel xlab = new JLabel("X");
-            JLabel ylab = new JLabel("Y");
-            JLabel zlab = new JLabel("Z");
 
-            layout.putConstraint(SpringLayout.NORTH, ptLabel, 5, SpringLayout.NORTH, sideMenu);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topPanel, bottomPanel);
+        splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        splitPane.setDividerLocation(200);
+        splitPane.setSize(500,500);
 
-            layout.putConstraint(SpringLayout.WEST, xlab, 5, SpringLayout.WEST, sideMenu);
-            layout.putConstraint(SpringLayout.WEST, xSpinner, 15, SpringLayout.WEST, sideMenu);
-            layout.putConstraint(SpringLayout.EAST, xSpinner, 100, SpringLayout.WEST, sideMenu);
-            layout.putConstraint(SpringLayout.NORTH, xSpinner, 25, SpringLayout.NORTH, sideMenu);
-            layout.putConstraint(SpringLayout.NORTH, xlab, 25, SpringLayout.NORTH, sideMenu);
+        int padding=0;
+        sideMenuLayout.putConstraint(SpringLayout.EAST, splitPane, padding, SpringLayout.EAST, sideMenu);
+        sideMenuLayout.putConstraint(SpringLayout.WEST, splitPane, padding, SpringLayout.WEST, sideMenu);
+        sideMenuLayout.putConstraint(SpringLayout.SOUTH, splitPane, padding, SpringLayout.SOUTH, sideMenu);
+        sideMenuLayout.putConstraint(SpringLayout.NORTH, splitPane, padding, SpringLayout.NORTH, sideMenu);
 
-            layout.putConstraint(SpringLayout.WEST, ylab, 5, SpringLayout.WEST, sideMenu);
-            layout.putConstraint(SpringLayout.WEST, ySpinner, 15, SpringLayout.WEST, sideMenu);
-            layout.putConstraint(SpringLayout.EAST, ySpinner, 100, SpringLayout.WEST, sideMenu);
-            layout.putConstraint(SpringLayout.NORTH, ySpinner, 45, SpringLayout.NORTH, sideMenu);
-            layout.putConstraint(SpringLayout.NORTH, ylab, 45, SpringLayout.NORTH, sideMenu);
-
-            layout.putConstraint(SpringLayout.WEST, zlab, 5, SpringLayout.WEST, sideMenu);
-            layout.putConstraint(SpringLayout.WEST, zSpinner, 15, SpringLayout.WEST, sideMenu);
-            layout.putConstraint(SpringLayout.EAST, zSpinner, 100, SpringLayout.WEST, sideMenu);
-            layout.putConstraint(SpringLayout.NORTH, zSpinner, 65, SpringLayout.NORTH, sideMenu);
-            layout.putConstraint(SpringLayout.NORTH, zlab, 65, SpringLayout.NORTH, sideMenu);
-
-            xSpinner.addChangeListener(this);
-            ySpinner.addChangeListener(this);
-            zSpinner.addChangeListener(this);
-
-            sideMenu.add(ptLabel);
-            sideMenu.add(xlab);
-            sideMenu.add(xSpinner);
-            sideMenu.add(ylab);
-            sideMenu.add(ySpinner);
-            sideMenu.add(zlab);
-            sideMenu.add(zSpinner);
-
+        sideMenu.add(splitPane);
 
         MenuBar menuBar;
         Menu renderMenu, shapeMenu, guidesMenu, viewMenu;
@@ -142,6 +173,10 @@ public class ifsMenu implements ItemListener, ChangeListener {
                 xSpinner.setValue(myIfsSys.selectedPt.x);
                 ySpinner.setValue(myIfsSys.selectedPt.y);
                 zSpinner.setValue(myIfsSys.selectedPt.z);
+                scaleSpinner.setValue(myIfsSys.selectedPt.scale * 100);
+
+                pitchSpinner.setValue(myIfsSys.selectedPt.rotationPitch/Math.PI*180);
+                yawSpinner.setValue(myIfsSys.selectedPt.rotationYaw/Math.PI*180);
             }
         }
         autoChange = false;
@@ -154,25 +189,19 @@ public class ifsMenu implements ItemListener, ChangeListener {
             }
         //VIEW MENU
             if(e.getItem()=="XY"){
-               // if(e.getStateChange()==1){
-                    myIfsSys.theVolume.preferredDirection = volume.ViewDirection.XY;
-              //  }
+                myIfsSys.theVolume.preferredDirection = volume.ViewDirection.XY;
                 XYButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.XY);
                 XZButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.XZ);
                 YZButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.YZ);
             }
             if(e.getItem()=="XZ"){
-               // if(e.getStateChange()==1){
-                    myIfsSys.theVolume.preferredDirection = volume.ViewDirection.XZ;
-                //}
+                myIfsSys.theVolume.preferredDirection = volume.ViewDirection.XZ;
                 XYButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.XY);
                 XZButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.XZ);
                 YZButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.YZ);
             }
             if(e.getItem()=="YZ"){
-               // if(e.getStateChange()==1){
-                    myIfsSys.theVolume.preferredDirection = volume.ViewDirection.YZ;
-               // }
+                myIfsSys.theVolume.preferredDirection = volume.ViewDirection.YZ;
                 XYButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.XY);
                 XZButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.XZ);
                 YZButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.YZ);
@@ -197,6 +226,10 @@ public class ifsMenu implements ItemListener, ChangeListener {
             myIfsSys.selectedPt.x = Double.parseDouble(xSpinner.getValue().toString());
             myIfsSys.selectedPt.y = Double.parseDouble(ySpinner.getValue().toString());
             myIfsSys.selectedPt.z = Double.parseDouble(zSpinner.getValue().toString());
+            myIfsSys.selectedPt.scale = 0.01 * Double.parseDouble(scaleSpinner.getValue().toString());
+
+            myIfsSys.selectedPt.rotationPitch = Double.parseDouble(pitchSpinner.getValue().toString())/180.0*Math.PI;
+            myIfsSys.selectedPt.rotationYaw = Double.parseDouble(yawSpinner.getValue().toString())/180.0*Math.PI;
             myIfsSys.shape.updateCenter();
             myIfsSys.clearframe();
         }
