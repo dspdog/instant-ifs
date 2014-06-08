@@ -124,10 +124,10 @@ public class ifsOverlays {
                 min_d=d2;
                 selectedD=1;
             }
-            if(d3<min_d){
-                min_d=d3;
-                selectedD=2;
-            }
+            //if(d3<min_d){
+            //    min_d=d3;
+            //   selectedD=2;
+            //}
         }
 
         xPts1[steps-1] = (int)pt.x;
