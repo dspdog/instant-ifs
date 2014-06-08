@@ -316,7 +316,21 @@ public class ifsys extends Panel
         }
     }
 
+    public void limitParams(){
+        if(brightnessMultiplier <1.0/64.0){
+            brightnessMultiplier =1.0/64.0;}
+        if(brightnessMultiplier >128){
+            brightnessMultiplier =128;}
+
+        if(samplesPerFrame <2){
+            samplesPerFrame =2;}
+        if(samplesPerFrame >32768){
+            samplesPerFrame =32768;}
+    }
+
     public void gamefunc(){
+
+        limitParams();
 
         theMenu.updateSideMenu();
 
@@ -559,20 +573,7 @@ public class ifsys extends Panel
             ctrlDown=false;
         if(e.getKeyCode()==KeyEvent.VK_SHIFT)
             shiftDown=false;
-        if(e.getKeyChar() == '/')
-            iterations++;
-        if(e.getKeyChar() == '.' && iterations > 1)
-            iterations--;
 
-        if(e.getKeyChar() == 'm')
-            samplesPerFrame *= 2;
-        if(e.getKeyChar() == 'n' && samplesPerFrame > 1)
-            samplesPerFrame /= 2;
-
-        if(e.getKeyChar() == 'k')
-            brightnessMultiplier *= 2;
-        if(e.getKeyChar() == 'j')
-            brightnessMultiplier /= 2;
 
         if(e.getKeyChar() == 'd'){
             theVolume.depthLeanX-=20;
@@ -593,17 +594,6 @@ public class ifsys extends Panel
             theVolume.depthLeanY+=20;
             clearframe();
         }
-
-
-        if(brightnessMultiplier <1.0/64.0){
-            brightnessMultiplier =1.0/64.0;}
-        if(brightnessMultiplier >128){
-            brightnessMultiplier =128;}
-
-        if(samplesPerFrame <2){
-            samplesPerFrame =2;}
-        if(samplesPerFrame >32768){
-            samplesPerFrame =32768;}
 
         if(e.getKeyChar() == '1'){
             clearframe();

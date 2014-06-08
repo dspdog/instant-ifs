@@ -20,6 +20,10 @@ public class ifsMenu implements ItemListener, ChangeListener {
     JSpinner ySpinner;
     JSpinner zSpinner;
 
+    JSpinner brightnessSpinner;
+    JSpinner samplesSpinner;
+    JSpinner iterationsSpinner;
+
     JSpinner pitchSpinner;
     JSpinner yawSpinner;
 
@@ -29,23 +33,23 @@ public class ifsMenu implements ItemListener, ChangeListener {
     boolean autoChange = false;
 
     public void addLabeledSpinner(JSpinner spinner, SpringLayout layout, String labelText, JPanel panel, int row){
-        int spinnerLeft = 55;
+        int spinnerLeft = 70;
         int spinnerRight = -5;
         int labelToSpinner = -5;
         int vspace = 20;
         int topPad=5;
 
-        JLabel xlab = new JLabel(labelText);
+        JLabel label = new JLabel(labelText);
 
-        layout.putConstraint(SpringLayout.EAST, xlab, labelToSpinner, SpringLayout.WEST, spinner);
+        layout.putConstraint(SpringLayout.EAST, label, labelToSpinner, SpringLayout.WEST, spinner);
         layout.putConstraint(SpringLayout.WEST, spinner, spinnerLeft, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.EAST, spinner, spinnerRight, SpringLayout.EAST, panel);
         layout.putConstraint(SpringLayout.NORTH, spinner, topPad+vspace*row, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.NORTH, xlab, topPad+vspace*row, SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.NORTH, label, topPad+vspace*row, SpringLayout.NORTH, panel);
 
         spinner.addChangeListener(this);
 
-        panel.add(xlab);
+        panel.add(label);
         panel.add(spinner);
     }
 
@@ -75,7 +79,27 @@ public class ifsMenu implements ItemListener, ChangeListener {
         addLabeledSpinner(yawSpinner, layout, "Yaw°", panel, 7);
 
         panel.add(ptLabel);
+    }
 
+    public void setupRenderPropertiesPanel(JPanel panel){
+        brightnessSpinner = new JSpinner();
+        samplesSpinner = new JSpinner();
+        iterationsSpinner = new JSpinner();
+
+        JLabel renderLabel = new JLabel(" Render Properties");
+
+        int topPad=5;
+
+        SpringLayout layout = new SpringLayout();
+        panel.setLayout(layout);
+
+        layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
+
+        addLabeledSpinner(brightnessSpinner, layout, "Brightness", panel, 1);
+        addLabeledSpinner(samplesSpinner, layout, "Samples", panel, 2);
+        addLabeledSpinner(iterationsSpinner, layout, "Iterations", panel, 3);
+
+        panel.add(renderLabel);
     }
 
     public ifsMenu(Frame f, ifsys is, JPanel sideMenu){
@@ -89,6 +113,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
         //SIDE MENU
 
         setupPointPropertiesPanel(topPanel);
+        setupRenderPropertiesPanel(bottomPanel);
 
         SpringLayout sideMenuLayout = new SpringLayout();
         sideMenu.setLayout(sideMenuLayout);
@@ -177,6 +202,10 @@ public class ifsMenu implements ItemListener, ChangeListener {
 
                 pitchSpinner.setValue(myIfsSys.selectedPt.rotationPitch/Math.PI*180);
                 yawSpinner.setValue(myIfsSys.selectedPt.rotationYaw/Math.PI*180);
+
+                brightnessSpinner.setValue(myIfsSys.brightnessMultiplier);
+                samplesSpinner.setValue(myIfsSys.samplesPerFrame);
+                iterationsSpinner.setValue(myIfsSys.iterations);
             }
         }
         autoChange = false;
@@ -230,6 +259,11 @@ public class ifsMenu implements ItemListener, ChangeListener {
 
             myIfsSys.selectedPt.rotationPitch = Double.parseDouble(pitchSpinner.getValue().toString())/180.0*Math.PI;
             myIfsSys.selectedPt.rotationYaw = Double.parseDouble(yawSpinner.getValue().toString())/180.0*Math.PI;
+
+            myIfsSys.iterations = Integer.parseInt(iterationsSpinner.getValue().toString());
+            myIfsSys.brightnessMultiplier = Double.parseDouble(brightnessSpinner.getValue().toString());
+            myIfsSys.samplesPerFrame = Double.parseDouble(samplesSpinner.getValue().toString());
+
             myIfsSys.shape.updateCenter();
             myIfsSys.clearframe();
         }

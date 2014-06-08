@@ -195,24 +195,17 @@ public class ifsOverlays {
         rg.drawString("Mouse XYZ (" + myIfsSys.mousex + ", " + myIfsSys.mousey + ", " + myIfsSys.mousez + ")", 5, 15*1);
         rg.drawString("DepthLeanX (df): " + myIfsSys.theVolume.depthLeanX, 5, 15*2);
         rg.drawString("DepthLeanY (ws): " + myIfsSys.theVolume.depthLeanY, 5, 15*3);
-
         rg.drawString("CenterOfGrav: ("
                 + (int)(myIfsSys.theVolume.getCenterOfGravity().x) + ", "
                 + (int)(myIfsSys.theVolume.getCenterOfGravity().y) + ", "
                 + (int)(myIfsSys.theVolume.getCenterOfGravity().z) + ")", 5, 15*4);
-
         rg.drawString("HighPt: ("
                 + (int)(myIfsSys.theVolume.highPt.x) + ", "
                 + (int)(myIfsSys.theVolume.highPt.y) + ", "
                 + (int)(myIfsSys.theVolume.highPt.z) + ")", 5, 15*5);
 
-        rg.drawString("Opacity: " + String.valueOf(selectedPt.opacity), 5, 15*6);
-        rg.drawString("Iterations (. /): " + String.valueOf(myIfsSys.iterations), 5, 15*7);
-        rg.drawString("Samples (nm): " + String.valueOf(myIfsSys.samplesPerFrame), 4, 15*8);
-        rg.drawString("FPS " + String.valueOf(myIfsSys.fps), 5, 15*9);
-        rg.drawString("Brightness (jk): " + String.valueOf(myIfsSys.brightnessMultiplier), 5, 15*10);
-
-        rg.drawString("DataMax " + String.valueOf((int)myIfsSys.theVolume.dataMax), 5, 15*11);
+        rg.drawString("FPS " + String.valueOf(myIfsSys.fps), 5, 15*6);
+        rg.drawString("DataMax " + String.valueOf((int)myIfsSys.theVolume.dataMax), 5, 15*7);
 
         drawAxis(rg);
     }
