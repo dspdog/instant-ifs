@@ -111,15 +111,15 @@ public class ifsys extends Panel
         JFrame frame = new JFrame("");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel menu = new JPanel();
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, is, menu);
+        JPanel sideMenu = new JPanel();
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, is, sideMenu);
         splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         splitPane.setDividerLocation(is.screenwidth);
         frame.getContentPane().add(splitPane, BorderLayout.CENTER);
         frame.setSize(is.screenwidth+200, is.screenheight);
         frame.setVisible(true);
 
-        ifsMenu theMenu = new ifsMenu(frame, is);
+        ifsMenu theMenu = new ifsMenu(frame, is, sideMenu);
 
         is.init();
     }
@@ -215,20 +215,26 @@ public class ifsys extends Panel
         }
 
         generatePixels();
+        try{ //TODO why does this err?
+            rg.drawImage(createImage(new MemoryImageSource(screenwidth, screenheight, pixels, 0, screenwidth)), 0, 0, screenwidth, screenheight, this);
+            rg.drawImage(thePdf.sampleImage, getWidth() - 50, 0, 50, 50, this);
+            rg.setColor(Color.blue);
 
-        rg.drawImage(createImage(new MemoryImageSource(screenwidth, screenheight, pixels, 0, screenwidth)), 0, 0, screenwidth, screenheight, this);
-        rg.drawImage(thePdf.sampleImage, getWidth() - 50, 0, 50, 50, this);
-        rg.setColor(Color.blue);
+            if(!guidesHidden){
+                overlays.drawArcs(rg);
+                overlays.drawSpecialPoints(rg);
+            }
 
-        if(!guidesHidden){
-            overlays.drawArcs(rg);
-            overlays.drawSpecialPoints(rg);
+
+            if(!infoHidden && pointSelected >=0){
+                overlays.drawInfoBox(rg);
+            }
+
+        }catch (Exception e){
+
         }
 
 
-        if(!infoHidden && pointSelected >=0){
-            overlays.drawInfoBox(rg);
-        }
 
         gr.drawImage(render, 0, 0, screenwidth, screenheight, this);
     }

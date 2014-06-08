@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,9 +13,48 @@ public class ifsMenu implements ItemListener{
     CheckboxMenuItem XZButton;
     CheckboxMenuItem YZButton;
 
-    public ifsMenu(Frame f, ifsys is){
+    public ifsMenu(Frame f, ifsys is, JPanel sideMenu){
 
         myIfsSys = is;
+
+        //SIDE MENU
+
+            SpringLayout layout = new SpringLayout();
+            sideMenu.setLayout(layout);
+
+            JSpinner xSpinner = new JSpinner();
+            JSpinner ySpinner = new JSpinner();
+            JSpinner zSpinner = new JSpinner();
+
+            JLabel xlab = new JLabel("X");
+            JLabel ylab = new JLabel("Y");
+            JLabel zlab = new JLabel("Z");
+
+            layout.putConstraint(SpringLayout.WEST, xlab, 5, SpringLayout.WEST, sideMenu);
+            layout.putConstraint(SpringLayout.WEST, xSpinner, 15, SpringLayout.WEST, sideMenu);
+            layout.putConstraint(SpringLayout.EAST, xSpinner, 100, SpringLayout.WEST, sideMenu);
+            layout.putConstraint(SpringLayout.NORTH, xSpinner, 5, SpringLayout.NORTH, sideMenu);
+            layout.putConstraint(SpringLayout.NORTH, xlab, 5, SpringLayout.NORTH, sideMenu);
+
+            layout.putConstraint(SpringLayout.WEST, ylab, 5, SpringLayout.WEST, sideMenu);
+            layout.putConstraint(SpringLayout.WEST, ySpinner, 15, SpringLayout.WEST, sideMenu);
+            layout.putConstraint(SpringLayout.EAST, ySpinner, 100, SpringLayout.WEST, sideMenu);
+            layout.putConstraint(SpringLayout.NORTH, ySpinner, 25, SpringLayout.NORTH, sideMenu);
+            layout.putConstraint(SpringLayout.NORTH, ylab, 25, SpringLayout.NORTH, sideMenu);
+
+            layout.putConstraint(SpringLayout.WEST, zlab, 5, SpringLayout.WEST, sideMenu);
+            layout.putConstraint(SpringLayout.WEST, zSpinner, 15, SpringLayout.WEST, sideMenu);
+            layout.putConstraint(SpringLayout.EAST, zSpinner, 100, SpringLayout.WEST, sideMenu);
+            layout.putConstraint(SpringLayout.NORTH, zSpinner, 45, SpringLayout.NORTH, sideMenu);
+            layout.putConstraint(SpringLayout.NORTH, zlab, 45, SpringLayout.NORTH, sideMenu);
+
+            sideMenu.add(xlab);
+            sideMenu.add(xSpinner);
+            sideMenu.add(ylab);
+            sideMenu.add(ySpinner);
+            sideMenu.add(zlab);
+            sideMenu.add(zSpinner);
+
 
         MenuBar menuBar;
         Menu renderMenu, shapeMenu, guidesMenu, viewMenu;
