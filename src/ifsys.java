@@ -48,6 +48,8 @@ public class ifsys extends Panel
 
     ifsShape shape;
 
+    ifsMenu theMenu;
+
     int maxPoints;
 
     //drag vars
@@ -119,7 +121,7 @@ public class ifsys extends Panel
         frame.setSize(is.screenwidth+200, is.screenheight);
         frame.setVisible(true);
 
-        ifsMenu theMenu = new ifsMenu(frame, is, sideMenu);
+        is.theMenu = new ifsMenu(frame, is, sideMenu);
 
         is.init();
     }
@@ -315,6 +317,9 @@ public class ifsys extends Panel
     }
 
     public void gamefunc(){
+
+        theMenu.updateSideMenu();
+
         guidesHidden = System.currentTimeMillis() - lastMoveTime > 1000;
 
         if(shape.pointsInUse != 0){

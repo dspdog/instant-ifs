@@ -1,11 +1,13 @@
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-public class ifsMenu implements ItemListener{
+public class ifsMenu implements ItemListener, ChangeListener {
 
     ifsys myIfsSys;
 
@@ -13,41 +15,59 @@ public class ifsMenu implements ItemListener{
     CheckboxMenuItem XZButton;
     CheckboxMenuItem YZButton;
 
+    JLabel ptLabel;
+    JSpinner xSpinner;
+    JSpinner ySpinner;
+    JSpinner zSpinner;
+
+    boolean inited=false;
+    boolean autoChange = false;
+
     public ifsMenu(Frame f, ifsys is, JPanel sideMenu){
+
+        inited=false;
 
         myIfsSys = is;
 
         //SIDE MENU
 
+            xSpinner = new JSpinner();
+            ySpinner = new JSpinner();
+            zSpinner = new JSpinner();
+
             SpringLayout layout = new SpringLayout();
             sideMenu.setLayout(layout);
 
-            JSpinner xSpinner = new JSpinner();
-            JSpinner ySpinner = new JSpinner();
-            JSpinner zSpinner = new JSpinner();
-
+            ptLabel = new JLabel("Point -1");
             JLabel xlab = new JLabel("X");
             JLabel ylab = new JLabel("Y");
             JLabel zlab = new JLabel("Z");
 
+            layout.putConstraint(SpringLayout.NORTH, ptLabel, 5, SpringLayout.NORTH, sideMenu);
+
             layout.putConstraint(SpringLayout.WEST, xlab, 5, SpringLayout.WEST, sideMenu);
             layout.putConstraint(SpringLayout.WEST, xSpinner, 15, SpringLayout.WEST, sideMenu);
             layout.putConstraint(SpringLayout.EAST, xSpinner, 100, SpringLayout.WEST, sideMenu);
-            layout.putConstraint(SpringLayout.NORTH, xSpinner, 5, SpringLayout.NORTH, sideMenu);
-            layout.putConstraint(SpringLayout.NORTH, xlab, 5, SpringLayout.NORTH, sideMenu);
+            layout.putConstraint(SpringLayout.NORTH, xSpinner, 25, SpringLayout.NORTH, sideMenu);
+            layout.putConstraint(SpringLayout.NORTH, xlab, 25, SpringLayout.NORTH, sideMenu);
 
             layout.putConstraint(SpringLayout.WEST, ylab, 5, SpringLayout.WEST, sideMenu);
             layout.putConstraint(SpringLayout.WEST, ySpinner, 15, SpringLayout.WEST, sideMenu);
             layout.putConstraint(SpringLayout.EAST, ySpinner, 100, SpringLayout.WEST, sideMenu);
-            layout.putConstraint(SpringLayout.NORTH, ySpinner, 25, SpringLayout.NORTH, sideMenu);
-            layout.putConstraint(SpringLayout.NORTH, ylab, 25, SpringLayout.NORTH, sideMenu);
+            layout.putConstraint(SpringLayout.NORTH, ySpinner, 45, SpringLayout.NORTH, sideMenu);
+            layout.putConstraint(SpringLayout.NORTH, ylab, 45, SpringLayout.NORTH, sideMenu);
 
             layout.putConstraint(SpringLayout.WEST, zlab, 5, SpringLayout.WEST, sideMenu);
             layout.putConstraint(SpringLayout.WEST, zSpinner, 15, SpringLayout.WEST, sideMenu);
             layout.putConstraint(SpringLayout.EAST, zSpinner, 100, SpringLayout.WEST, sideMenu);
-            layout.putConstraint(SpringLayout.NORTH, zSpinner, 45, SpringLayout.NORTH, sideMenu);
-            layout.putConstraint(SpringLayout.NORTH, zlab, 45, SpringLayout.NORTH, sideMenu);
+            layout.putConstraint(SpringLayout.NORTH, zSpinner, 65, SpringLayout.NORTH, sideMenu);
+            layout.putConstraint(SpringLayout.NORTH, zlab, 65, SpringLayout.NORTH, sideMenu);
 
+            xSpinner.addChangeListener(this);
+            ySpinner.addChangeListener(this);
+            zSpinner.addChangeListener(this);
+
+            sideMenu.add(ptLabel);
             sideMenu.add(xlab);
             sideMenu.add(xSpinner);
             sideMenu.add(ylab);
@@ -111,6 +131,20 @@ public class ifsMenu implements ItemListener{
             menuBar.add(viewMenu);
 
             f.setMenuBar(menuBar);
+            inited=true;
+    }
+
+    public void updateSideMenu(){
+        autoChange = true;
+        ptLabel.setText(" Point " + myIfsSys.pointSelected + " Properties:");
+        if(inited){
+            if(myIfsSys.pointSelected!=-1){
+                xSpinner.setValue(myIfsSys.selectedPt.x);
+                ySpinner.setValue(myIfsSys.selectedPt.y);
+                zSpinner.setValue(myIfsSys.selectedPt.z);
+            }
+        }
+        autoChange = false;
     }
 
     public void itemStateChanged(ItemEvent e) {
@@ -155,5 +189,16 @@ public class ifsMenu implements ItemListener{
             if(e.getItem()=="PDF Samples"){
                 myIfsSys.usePDFSamples = e.getStateChange()==1;
             }
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        if(!autoChange){
+            myIfsSys.selectedPt.x = Double.parseDouble(xSpinner.getValue().toString());
+            myIfsSys.selectedPt.y = Double.parseDouble(ySpinner.getValue().toString());
+            myIfsSys.selectedPt.z = Double.parseDouble(zSpinner.getValue().toString());
+            myIfsSys.shape.updateCenter();
+            myIfsSys.clearframe();
+        }
     }
 }
