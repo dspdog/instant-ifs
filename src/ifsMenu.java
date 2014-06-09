@@ -29,6 +29,8 @@ public class ifsMenu implements ItemListener, ChangeListener {
 
     JSpinner scaleSpinner;
 
+    JCheckBox frameHoldCheck;
+
     boolean inited=false;
     boolean autoChange = false;
 
@@ -51,6 +53,27 @@ public class ifsMenu implements ItemListener, ChangeListener {
 
         panel.add(label);
         panel.add(spinner);
+    }
+
+    public void addLabeledCheckbox(JCheckBox checkbox, SpringLayout layout, String labelText, JPanel panel, int row){
+        int spinnerLeft = 70;
+        int spinnerRight = -5;
+        int labelToSpinner = -5;
+        int vspace = 20;
+        int topPad=5;
+
+        JLabel label = new JLabel(labelText);
+
+        layout.putConstraint(SpringLayout.EAST, label, labelToSpinner, SpringLayout.WEST, checkbox);
+        layout.putConstraint(SpringLayout.WEST, checkbox, spinnerLeft, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.EAST, checkbox, spinnerRight, SpringLayout.EAST, panel);
+        layout.putConstraint(SpringLayout.NORTH, checkbox, topPad+vspace*row, SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.NORTH, label, topPad+vspace*row, SpringLayout.NORTH, panel);
+
+        checkbox.addChangeListener(this);
+
+        panel.add(label);
+        panel.add(checkbox);
     }
 
     public void setupPointPropertiesPanel(JPanel panel){
@@ -85,6 +108,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
         brightnessSpinner = new JSpinner();
         samplesSpinner = new JSpinner();
         iterationsSpinner = new JSpinner();
+        frameHoldCheck = new JCheckBox();
 
         JLabel renderLabel = new JLabel(" Render Properties");
 
@@ -98,6 +122,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
         addLabeledSpinner(brightnessSpinner, layout, "Brightness", panel, 1);
         addLabeledSpinner(samplesSpinner, layout, "Samples", panel, 2);
         addLabeledSpinner(iterationsSpinner, layout, "Iterations", panel, 3);
+        addLabeledCheckbox(frameHoldCheck, layout, "Hold Frame", panel, 4);
 
         panel.add(renderLabel);
     }
@@ -206,6 +231,8 @@ public class ifsMenu implements ItemListener, ChangeListener {
                 brightnessSpinner.setValue(myIfsSys.brightnessMultiplier);
                 samplesSpinner.setValue(myIfsSys.samplesPerFrame);
                 iterationsSpinner.setValue(myIfsSys.iterations);
+
+                frameHoldCheck.setSelected(myIfsSys.holdFrame);
             }
         }
         autoChange = false;
@@ -263,6 +290,8 @@ public class ifsMenu implements ItemListener, ChangeListener {
             myIfsSys.iterations = Integer.parseInt(iterationsSpinner.getValue().toString());
             myIfsSys.brightnessMultiplier = Double.parseDouble(brightnessSpinner.getValue().toString());
             myIfsSys.samplesPerFrame = Double.parseDouble(samplesSpinner.getValue().toString());
+
+            myIfsSys.holdFrame = frameHoldCheck.isSelected();
 
             myIfsSys.shape.updateCenter();
             myIfsSys.clearframe();

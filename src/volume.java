@@ -35,7 +35,10 @@ public class volume {
         XYProjection = new double[width][height];
         XZProjection = new double[width][depth];
         YZProjection = new double[height][depth];
-        volume = new double[width][height][depth];
+        if(renderMode == RenderMode.VOLUMETRIC){
+            volume = new double[width][height][depth];
+        }
+
         centerOfGravity = new ifsPt(0,0,0);
     }
 

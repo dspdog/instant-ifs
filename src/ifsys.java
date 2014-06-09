@@ -66,6 +66,8 @@ public class ifsys extends Panel
 
     ifsOverlays overlays;
 
+    boolean holdFrame;
+
     public ifsys(){
         started=false;
         oneSecondAgo =0;
@@ -105,6 +107,8 @@ public class ifsys extends Panel
 
         samplesPerFrame = 1024;
         samplesPerPdfScaler = 0.25; //decrease for higher fps while drawing PDFs
+
+        holdFrame=false;
     }
 
     public static void main(String[] args) {
@@ -273,10 +277,12 @@ public class ifsys extends Panel
     }
 
     public void clearframe(){
-        for(int a = 0; a < screenwidth * screenheight; a++){
-            pixels[a] = 0xff000000;
+        if(!holdFrame){
+            for(int a = 0; a < screenwidth * screenheight; a++){
+                pixels[a] = 0xff000000;
+            }
+            theVolume.clear();
         }
-        theVolume.clear();
     }
     int jj=0;
     public void putPdfSample(ifsPt dpt, double cumulativeRotationYaw, double cumulativeRotationPitch, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown, int index){
