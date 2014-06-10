@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.text.DecimalFormat;
 
 public class ifsOverlays {
     ifsys myIfsSys;
@@ -223,32 +224,35 @@ public class ifsOverlays {
     }
 
     public void drawInfoBox(Graphics rg){
+        int lineSize = 15;
+        int xPad = 5;
 
+        DecimalFormat df = new DecimalFormat("##.###");
         ifsPt selectedPt = myIfsSys.selectedPt;
 
         rg.setColor(Color.white);
-        rg.drawString("Mouse XYZ (" + myIfsSys.mousex + ", " + myIfsSys.mousey + ", " + myIfsSys.mousez + ")", 5, 15*1);
-        rg.drawString("DepthLeanX (df): " + myIfsSys.theVolume.depthLeanX, 5, 15*2);
-        rg.drawString("DepthLeanY (ws): " + myIfsSys.theVolume.depthLeanY, 5, 15*3);
+        rg.drawString("Mouse XYZ (" + myIfsSys.mousex + ", " + myIfsSys.mousey + ", " + myIfsSys.mousez + ")", xPad, lineSize*1);
+        rg.drawString("DepthLeanX (df): " + myIfsSys.theVolume.depthLeanX, xPad, lineSize*2);
+        rg.drawString("DepthLeanY (ws): " + myIfsSys.theVolume.depthLeanY, xPad, lineSize*3);
         rg.drawString("Centroid: ("
                 + (int)(myIfsSys.theVolume.getCentroid().x) + ", "
                 + (int)(myIfsSys.theVolume.getCentroid().y) + ", "
-                + (int)(myIfsSys.theVolume.getCentroid().z) + ")", 5, 15*4);
+                + (int)(myIfsSys.theVolume.getCentroid().z) + ")", xPad, lineSize*4);
         rg.drawString("HighPt: ("
                 + (int)(myIfsSys.theVolume.highPt.x) + ", "
                 + (int)(myIfsSys.theVolume.highPt.y) + ", "
-                + (int)(myIfsSys.theVolume.highPt.z) + ")", 5,+ 15*5);
+                + (int)(myIfsSys.theVolume.highPt.z) + ")", xPad,+ lineSize*5);
 
-        rg.drawString("FPS " + String.valueOf(myIfsSys.fps), 5, 15*6);
-        rg.drawString("DataMax " + String.valueOf((int) myIfsSys.theVolume.dataMax), 5, 15 * 7);
+        rg.drawString("DataMax 10^" + df.format(Math.log10(myIfsSys.theVolume.dataMax)), xPad, lineSize * 6);
 
         double memoryUsedMB = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024*1024);
         double memoryMaxMB = Runtime.getRuntime().maxMemory()/(1024*1024);
 
-        rg.drawString("Memory " + (int)memoryUsedMB +" / " + (int)memoryMaxMB + "MB (" + (int)(100*memoryUsedMB/memoryMaxMB) + "%)", 5, 15 * 10);
-        rg.drawString("Render " + myIfsSys.theVolume.width + "x" + myIfsSys.theVolume.height + "x" + myIfsSys.theVolume.depth + " - " + myIfsSys.theVolume.renderMode.toString(), 5, 15 * 9);
+        rg.drawString("Memory " + (int)memoryUsedMB +" / " + (int)memoryMaxMB + "MB (" + (int)(100*memoryUsedMB/memoryMaxMB) + "%)", xPad, lineSize * 9);
+        rg.drawString("Render " + myIfsSys.theVolume.width + "x" + myIfsSys.theVolume.height + "x" + myIfsSys.theVolume.depth + " - " + myIfsSys.theVolume.renderMode.toString(), xPad, lineSize * 8);
 
-        //rg.drawString("TotalMemory " + Runtime.getRuntime().totalMemory()/(1024*1024)+"MB", 5, 15 * 10);
+        rg.drawString("FPS " + String.valueOf(myIfsSys.fps), xPad, lineSize*10);
+
         drawAxis(rg);
     }
 
