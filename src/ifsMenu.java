@@ -1,6 +1,7 @@
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.multi.MultiSplitPaneUI;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -119,7 +120,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
         layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
 
         addLabeledSpinner(brightnessSpinner, layout, "Brightness", panel, 1);
-        addLabeledSpinner(samplesSpinner, layout, "Samples", panel, 2);
+        addLabeledSpinner(samplesSpinner, layout, "Dots/Frame", panel, 2);
         addLabeledSpinner(iterationsSpinner, layout, "Iterations", panel, 3);
         addLabeledCheckbox(frameHoldCheck, layout, "Hold Frame", panel, 4);
 
@@ -131,30 +132,35 @@ public class ifsMenu implements ItemListener, ChangeListener {
         inited=false;
 
         myIfsSys = is;
-        JPanel topPanel = new JPanel();
-        JPanel bottomPanel = new JPanel();
+        JPanel pointProperties = new JPanel();
+        JPanel renderProperties = new JPanel();
+        JPanel cameraProperties = new JPanel();
 
         //SIDE MENU
 
-        setupPointPropertiesPanel(topPanel);
-        setupRenderPropertiesPanel(bottomPanel);
+        setupPointPropertiesPanel(pointProperties);
+        setupRenderPropertiesPanel(renderProperties);
 
         SpringLayout sideMenuLayout = new SpringLayout();
         sideMenu.setLayout(sideMenuLayout);
 
+        JSplitPane splitPaneBig = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topPanel, bottomPanel);
-        splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        splitPane.setDividerLocation(200);
-        splitPane.setSize(500,500);
+        JSplitPane splitPaneTop = new JSplitPane(JSplitPane.VERTICAL_SPLIT, pointProperties, renderProperties);
+        splitPaneTop.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        splitPaneTop.setDividerLocation(200);
 
         int padding=0;
-        sideMenuLayout.putConstraint(SpringLayout.EAST, splitPane, padding, SpringLayout.EAST, sideMenu);
-        sideMenuLayout.putConstraint(SpringLayout.WEST, splitPane, padding, SpringLayout.WEST, sideMenu);
-        sideMenuLayout.putConstraint(SpringLayout.SOUTH, splitPane, padding, SpringLayout.SOUTH, sideMenu);
-        sideMenuLayout.putConstraint(SpringLayout.NORTH, splitPane, padding, SpringLayout.NORTH, sideMenu);
+        sideMenuLayout.putConstraint(SpringLayout.EAST, splitPaneBig, padding, SpringLayout.EAST, sideMenu);
+        sideMenuLayout.putConstraint(SpringLayout.WEST, splitPaneBig, padding, SpringLayout.WEST, sideMenu);
+        sideMenuLayout.putConstraint(SpringLayout.SOUTH, splitPaneBig, padding, SpringLayout.SOUTH, sideMenu);
+        sideMenuLayout.putConstraint(SpringLayout.NORTH, splitPaneBig, padding, SpringLayout.NORTH, sideMenu);
 
-        sideMenu.add(splitPane);
+
+        splitPaneBig.setDividerLocation(512);
+        splitPaneBig.setTopComponent(splitPaneTop);
+        splitPaneBig.setBottomComponent(cameraProperties);
+        sideMenu.add(splitPaneBig);
 
         MenuBar menuBar;
         Menu renderMenu, shapeMenu, guidesMenu, viewMenu;

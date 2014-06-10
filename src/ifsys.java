@@ -106,7 +106,7 @@ public class ifsys extends Panel
         randomDoubles = new double[4096*4096];
         rndNum=0;
 
-        samplesPerFrame = 1024;
+        samplesPerFrame = 512;
         samplesPerPdfScaler = 0.25; //decrease for higher fps while drawing PDFs
 
         holdFrame=false;
@@ -277,7 +277,7 @@ public class ifsys extends Panel
             theVolume.clear();
         }
     }
-    int jj=0;
+
     public void putPdfSample(ifsPt dpt, double cumulativeRotationYaw, double cumulativeRotationPitch, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown, int index){
         double centerX = thePdf.sampleWidth/2;
         double centerY = thePdf.sampleHeight/2;
@@ -626,11 +626,14 @@ public class ifsys extends Panel
         }
 
         if(e.getKeyChar() == '0'){
-            clearframe();
+            shape.setToPreset(0);
+            theVolume.clear();
             iterations=8;
             brightnessMultiplier=4;
-            shape.setToPreset(0);
+            clearframe();
+            gamefunc();
         }
+
 
     }
 

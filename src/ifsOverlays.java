@@ -237,11 +237,18 @@ public class ifsOverlays {
         rg.drawString("HighPt: ("
                 + (int)(myIfsSys.theVolume.highPt.x) + ", "
                 + (int)(myIfsSys.theVolume.highPt.y) + ", "
-                + (int)(myIfsSys.theVolume.highPt.z) + ")", 5, 15*5);
+                + (int)(myIfsSys.theVolume.highPt.z) + ")", 5,+ 15*5);
 
         rg.drawString("FPS " + String.valueOf(myIfsSys.fps), 5, 15*6);
         rg.drawString("DataMax " + String.valueOf((int) myIfsSys.theVolume.dataMax), 5, 15 * 7);
 
+        double memoryUsedMB = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024*1024);
+        double memoryMaxMB = Runtime.getRuntime().maxMemory()/(1024*1024);
+
+        rg.drawString("Memory " + (int)memoryUsedMB +" / " + (int)memoryMaxMB + "MB (" + (int)(100*memoryUsedMB/memoryMaxMB) + "%)", 5, 15 * 10);
+        rg.drawString("Render " + myIfsSys.theVolume.width + "x" + myIfsSys.theVolume.height + "x" + myIfsSys.theVolume.depth + " - " + myIfsSys.theVolume.renderMode.toString(), 5, 15 * 9);
+
+        //rg.drawString("TotalMemory " + Runtime.getRuntime().totalMemory()/(1024*1024)+"MB", 5, 15 * 10);
         drawAxis(rg);
     }
 

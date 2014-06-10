@@ -8,6 +8,7 @@ public class volume {
 
     double totalSamples=0;
     double dataMax=0;
+    double dataMaxReset = 0;
 
     public double volume[][][];
     public double XYProjection[][];
@@ -45,7 +46,7 @@ public class volume {
     public void clear(){
         totalSamples=1;
         centroid = new ifsPt(0,0,0);
-        dataMax=1;
+        dataMax=dataMaxReset;
 
         switch (renderMode){
             case VOLUMETRIC:
