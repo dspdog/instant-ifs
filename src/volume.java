@@ -16,7 +16,7 @@ public class volume {
 
     public int depthLeanX, depthLeanY;
 
-    ifsPt centerOfGravity;
+    ifsPt centroid;
     ifsPt highPt;
 
     ViewDirection preferredDirection;
@@ -39,12 +39,12 @@ public class volume {
             volume = new double[width][height][depth];
         }
 
-        centerOfGravity = new ifsPt(0,0,0);
+        centroid = new ifsPt(0,0,0);
     }
 
     public void clear(){
         totalSamples=1;
-        centerOfGravity = new ifsPt(0,0,0);
+        centroid = new ifsPt(0,0,0);
         dataMax=1;
 
         switch (renderMode){
@@ -81,9 +81,9 @@ public class volume {
     }
 
     public void putPixel(ifsPt pt, double alpha){
-        centerOfGravity.x+=pt.x*alpha;
-        centerOfGravity.y+=pt.y*alpha;
-        centerOfGravity.z+=pt.z*alpha;
+        centroid.x+=pt.x*alpha;
+        centroid.y+=pt.y*alpha;
+        centroid.z+=pt.z*alpha;
 
         switch (preferredDirection){
             case XY:
@@ -184,8 +184,46 @@ public class volume {
         }
     }
 
-    public ifsPt getCenterOfGravity(){
-        return new ifsPt(centerOfGravity.x/totalSamples, centerOfGravity.y/totalSamples, centerOfGravity.z/totalSamples);
+    public ifsPt getCentroid(){
+        return new ifsPt(centroid.x/totalSamples, centroid.y/totalSamples, centroid.z/totalSamples);
+    }
+
+    public ifsPt getProjectedPt(ifsPt pt){
+
+        ifsPt res = new ifsPt(pt, true);
+
+        switch (preferredDirection){
+            case XY:
+                res.x=pt.x;
+                res.y=pt.y;
+                res.z=pt.z;
+                break;
+            case XZ:
+                res.x=pt.x;
+                res.y=pt.z;
+                res.z=pt.y;
+                break;
+            case YZ:
+                res.x=pt.y;
+                res.y=pt.z;
+                res.z=pt.x;
+                break;
+        }
+
+        return res;
+    }
+
+    public double[][] getPreferredProjection(){
+        switch (preferredDirection){
+            case XY:
+                return XYProjection;
+            case XZ:
+                return XZProjection;
+            case YZ:
+                return YZProjection;
+            default:
+                return XYProjection;
+        }
     }
 
     public double[] getFullSliceXY(){

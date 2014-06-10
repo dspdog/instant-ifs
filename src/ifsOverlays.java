@@ -15,42 +15,44 @@ public class ifsOverlays {
         }
     }
 
-    public void drawSpecialPoints(Graphics _rg){//center of gravity and maximum
-        _rg.setColor(Color.CYAN);
+    public void drawRegularPolygon(Graphics rg, int x, int y, int rad, int sides, double rotation){
+        for(int i=0; i<sides; i++){
+            rg.drawLine(
+                    (int)(Math.cos(i*Math.PI*2.0/sides+rotation)*rad+x),
+                    (int)(Math.sin(i*Math.PI*2.0/sides+rotation)*rad+y),
+                    (int)(Math.cos((i+1)*Math.PI*2.0/sides+rotation)*rad+x),
+                    (int)(Math.sin((i+1)*Math.PI*2.0/sides+rotation)*rad+y)
+            );
+        }
+    }
+
+    public void drawHighPt(Graphics _rg, int x, int y){
+        int radius = 10;
+        int width = (int)(10/Math.sqrt(2));
+        int height = (int)(10/Math.sqrt(2));
+        _rg.setColor(Color.YELLOW);
+        drawRegularPolygon(_rg, x - width / 2, y - height / 2, radius, 3, -Math.PI/2); //upward pointd triangle
+    }
+
+    public void drawCentroid(Graphics _rg, int x, int y){
         int width = 15;
         int height = 15;
-        int x=0,y=0;
+        _rg.setColor(Color.CYAN);
+        _rg.drawOval(x - width / 2, y - height / 2, width, height);
+    }
 
-        if(myIfsSys.theVolume.totalSamples>1000){
-            switch (myIfsSys.theVolume.preferredDirection){
-                case XY:
-                    x=(int)(myIfsSys.theVolume.getCenterOfGravity().x);
-                    y=(int)(myIfsSys.theVolume.getCenterOfGravity().y);
-                    _rg.drawRect(x-width/2,y-height/2,width,height);
-                    _rg.setColor(Color.YELLOW);
-                    x=(int)(myIfsSys.theVolume.highPt.x);
-                    y=(int)(myIfsSys.theVolume.highPt.y);
-                    _rg.drawRect(x-width/2,y-height/2,width,height);
-                    break;
-                case YZ:
-                    x=(int)(myIfsSys.theVolume.getCenterOfGravity().y);
-                    y=(int)(myIfsSys.theVolume.getCenterOfGravity().z);
-                    _rg.drawRect(x-width/2,y-height/2,width,height);
-                    _rg.setColor(Color.YELLOW);
-                    x=(int)(myIfsSys.theVolume.highPt.y);
-                    y=(int)(myIfsSys.theVolume.highPt.z);
-                    _rg.drawRect(x-width/2,y-height/2,width,height);
-                    break;
-                case XZ:
-                    x=(int)(myIfsSys.theVolume.getCenterOfGravity().x);
-                    y=(int)(myIfsSys.theVolume.getCenterOfGravity().z);
-                    _rg.drawRect(x-width/2,y-height/2,width,height);
-                    _rg.setColor(Color.YELLOW);
-                    x=(int)(myIfsSys.theVolume.highPt.x);
-                    y=(int)(myIfsSys.theVolume.highPt.z);
-                    _rg.drawRect(x-width/2,y-height/2,width,height);
-                    break;
-            }
+    public void drawSpecialPoints(Graphics _rg){//centroid and maximum
+        volume vol = myIfsSys.theVolume;
+        ifsPt projectedCentroid = vol.getProjectedPt(vol.getCentroid());
+        ifsPt projectedHighPt = vol.getProjectedPt(vol.highPt);
+
+        if(myIfsSys.theVolume.totalSamples>5000){
+            int x=(int)projectedCentroid.x;
+            int y=(int)projectedCentroid.y;
+            drawCentroid(_rg,x,y);
+            x=(int)projectedHighPt.x;
+            y=(int)projectedHighPt.y;
+            drawHighPt(_rg, x, y);
         }
     }
 
@@ -188,9 +190,9 @@ public class ifsOverlays {
     }
 
     public void drawBox(Graphics rg, int ptIndex){
-        ifsPt thePt = myIfsSys.shape.pts[ptIndex];
+        ifsPt thePt =  myIfsSys.theVolume.getProjectedPt(myIfsSys.shape.pts[ptIndex]);
         double wobbleFreq = 6;
-        double wobbleSize = 6;
+        double wobbleSize = 5;
         double width = thePt.scale * thePt.radius;
         double size = Math.cos(System.currentTimeMillis()/1000.0*Math.PI*wobbleFreq)*wobbleSize + width;
         if(ptIndex==myIfsSys.pointSelected){
@@ -198,8 +200,26 @@ public class ifsOverlays {
         }else{
             rg.setColor(Color.DARK_GRAY);
         }
-        rg.drawString("Point "+String.valueOf(ptIndex), (int)(thePt.x-width/2-wobbleSize), (int)(thePt.y-width/2-wobbleSize));
-        rg.drawRect((int)(thePt.x - size/2), (int)(thePt.y-size/2), (int)size, (int)size);
+        rg.drawString("Point "+String.valueOf(ptIndex), (int)(thePt.x-width/2-wobbleSize*2), (int)(thePt.y-width/2-wobbleSize*2));
+        drawBoxBrackets(rg, (int)(thePt.x - size/2), (int)(thePt.y-size/2), (int)size, (int)size, (int)(size/10));
+    }
+
+    public void drawBoxBrackets(Graphics rg, int x, int y, int width, int height, int bracketSize){
+        //upper left
+        rg.drawLine(x,y,x+bracketSize,y);
+        rg.drawLine(x,y,x,y+bracketSize);
+
+        //lower left
+        rg.drawLine(x,y+height,x+bracketSize,y+height);
+        rg.drawLine(x,y+height,x,y+height-bracketSize);
+
+        //upper right
+        rg.drawLine(x+width,y,x+width-bracketSize,y);
+        rg.drawLine(x+width,y,x+width,y+bracketSize);
+
+        //lower right
+        rg.drawLine(x+width,y+height,x+width-bracketSize,y+height);
+        rg.drawLine(x+width,y+height,x+width,y+height-bracketSize);
     }
 
     public void drawInfoBox(Graphics rg){
@@ -210,17 +230,17 @@ public class ifsOverlays {
         rg.drawString("Mouse XYZ (" + myIfsSys.mousex + ", " + myIfsSys.mousey + ", " + myIfsSys.mousez + ")", 5, 15*1);
         rg.drawString("DepthLeanX (df): " + myIfsSys.theVolume.depthLeanX, 5, 15*2);
         rg.drawString("DepthLeanY (ws): " + myIfsSys.theVolume.depthLeanY, 5, 15*3);
-        rg.drawString("CenterOfGrav: ("
-                + (int)(myIfsSys.theVolume.getCenterOfGravity().x) + ", "
-                + (int)(myIfsSys.theVolume.getCenterOfGravity().y) + ", "
-                + (int)(myIfsSys.theVolume.getCenterOfGravity().z) + ")", 5, 15*4);
+        rg.drawString("Centroid: ("
+                + (int)(myIfsSys.theVolume.getCentroid().x) + ", "
+                + (int)(myIfsSys.theVolume.getCentroid().y) + ", "
+                + (int)(myIfsSys.theVolume.getCentroid().z) + ")", 5, 15*4);
         rg.drawString("HighPt: ("
                 + (int)(myIfsSys.theVolume.highPt.x) + ", "
                 + (int)(myIfsSys.theVolume.highPt.y) + ", "
                 + (int)(myIfsSys.theVolume.highPt.z) + ")", 5, 15*5);
 
         rg.drawString("FPS " + String.valueOf(myIfsSys.fps), 5, 15*6);
-        rg.drawString("DataMax " + String.valueOf((int)myIfsSys.theVolume.dataMax), 5, 15*7);
+        rg.drawString("DataMax " + String.valueOf((int) myIfsSys.theVolume.dataMax), 5, 15 * 7);
 
         drawAxis(rg);
     }

@@ -32,6 +32,22 @@ class ifsPt {
         z=pt.z;
     }
 
+    public ifsPt(ifsPt pt, boolean full){
+        x=pt.x;
+        y=pt.y;
+        z=pt.z;
+
+        if(full){
+            scale = pt.scale;
+            rotationYaw = pt.rotationYaw;
+            rotationPitch = pt.rotationPitch;
+            degreesYaw = pt.degreesYaw;
+            degreesPitch = pt.degreesPitch;
+            radius = pt.radius;
+            opacity = pt.opacity;
+        }
+    }
+
     public ifsPt(double _x, double _y, double _z){
         x = _x; y = _y; z = _z;
     }

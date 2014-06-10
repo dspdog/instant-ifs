@@ -231,10 +231,10 @@ public class ifsys extends Panel
             rg.setColor(Color.blue);
 
             if(!guidesHidden){
-                overlays.drawBox(rg, pointSelected);
-                overlays.drawBox(rg, pointNearest);
                 overlays.drawArcs(rg);
                 overlays.drawSpecialPoints(rg);
+                overlays.drawBox(rg, pointSelected);
+                overlays.drawBox(rg, pointNearest);
             }
 
             if(!infoHidden && pointNearest >=0){
@@ -254,19 +254,7 @@ public class ifsys extends Panel
         double scaler = 255/theVolume.dataMax * brightnessMultiplier;
         double area = 0;
         int scaledColor = 0;
-        double[][] projection = theVolume.XYProjection;;
-
-        switch (theVolume.preferredDirection){
-            case XY:
-                projection = theVolume.XYProjection;
-                break;
-            case XZ:
-                projection = theVolume.XZProjection;
-                break;
-            case YZ:
-                projection = theVolume.YZProjection;
-                break;
-        }
+        double[][] projection = theVolume.getPreferredProjection();
 
         for(int x = 0; x < projection.length; x++){
             for(int y=0; y<projection[x].length; y++){
