@@ -186,7 +186,7 @@ public class pdf3D { //3d probabilty density function
         try{
             //URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
             // file:/C:/Users/Labrats/Documents/GitHub/instant-ifs/img/
-            URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
+            URL theImgURL = new URL("file:/C:/Users/Labrats/Documents/GitHub/instant-ifs/img/" + name);
             return ImageIO.read(theImgURL);
         }
         catch(Exception e) {

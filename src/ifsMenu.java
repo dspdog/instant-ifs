@@ -31,6 +31,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
 
     boolean inited=false;
     boolean autoChange = false;
+    long lastUiChange = 0;
 
     public void addLabeledSpinner(JSpinner spinner, SpringLayout layout, String labelText, JPanel panel, int row){
         int spinnerLeft = 70;
@@ -216,7 +217,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
     public void updateSideMenu(){
         autoChange = true;
         ptLabel.setText(" Point " + myIfsSys.pointSelected + " Properties:");
-        if(inited){
+        if(inited && System.currentTimeMillis()-lastUiChange>100){
             if(myIfsSys.pointSelected !=-1){
                 xSpinner.setValue(myIfsSys.selectedPt.x);
                 ySpinner.setValue(myIfsSys.selectedPt.y);
@@ -277,6 +278,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
     @Override
     public void stateChanged(ChangeEvent e) {
         if(!autoChange){
+            lastUiChange=System.currentTimeMillis();
             myIfsSys.selectedPt.x = Double.parseDouble(xSpinner.getValue().toString());
             myIfsSys.selectedPt.y = Double.parseDouble(ySpinner.getValue().toString());
             myIfsSys.selectedPt.z = Double.parseDouble(zSpinner.getValue().toString());
@@ -293,6 +295,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
 
             myIfsSys.shape.updateCenter();
             myIfsSys.clearframe();
+
         }
     }
 }
