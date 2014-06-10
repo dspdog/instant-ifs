@@ -29,7 +29,7 @@ public class ifsys extends Panel
         boolean guidesHidden;
         double samplesPerFrame;
         int iterations;
-        int pointSelected;
+        int pointNearest, pointSelected;
         ifsPt selectedPt;
 
         boolean shiftDown;
@@ -91,6 +91,7 @@ public class ifsys extends Panel
         maxPoints = 100;
         shape = new ifsShape(maxPoints);
         mouseScroll = 0;
+        pointNearest =-1;
         pointSelected =-1;
         isDragging = false;
 
@@ -137,20 +138,23 @@ public class ifsys extends Panel
         gamefunc();
     }
 
-    public void findSelectedPoint(){
+    public void findNearestPt(){
         switch (theVolume.preferredDirection){
             case XY:
-                pointSelected = shape.getNearestPtIndexXY(mousex, mousey);
+                pointNearest = shape.getNearestPtIndexXY(mousex, mousey);
                 break;
             case YZ:
-                pointSelected = shape.getNearestPtIndexYZ(mousey, mousez);
+                pointNearest = shape.getNearestPtIndexYZ(mousey, mousez);
                 break;
             case XZ:
-                pointSelected = shape.getNearestPtIndexXZ(mousex, mousez);
+                pointNearest = shape.getNearestPtIndexXZ(mousex, mousez);
                 break;
         }
+    }
 
-        selectedPt = shape.pts[pointSelected];
+    public void selectedNearestPt(){
+        selectedPt = shape.pts[pointNearest];
+        pointSelected = pointNearest;
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -227,12 +231,13 @@ public class ifsys extends Panel
             rg.setColor(Color.blue);
 
             if(!guidesHidden){
+                overlays.drawBox(rg, pointSelected);
+                overlays.drawBox(rg, pointNearest);
                 overlays.drawArcs(rg);
                 overlays.drawSpecialPoints(rg);
             }
 
-
-            if(!infoHidden && pointSelected >=0){
+            if(!infoHidden && pointNearest >=0){
                 overlays.drawInfoBox(rg);
             }
 
@@ -303,7 +308,7 @@ public class ifsys extends Panel
         pointDegreesYaw = thePt.rotationYaw +cumulativeRotationYaw;
         pointDegreesPitch = thePt.rotationPitch +cumulativeRotationPitch;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
 
-        int iters = (int)(samplesPerPdfScaler * Math.PI*scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
+        int iters = (int)(samplesPerPdfScaler * scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
 
         iters=iters&(4095); //limit to 4095
 
@@ -400,7 +405,8 @@ public class ifsys extends Panel
         mousemode = e.getButton();
         getMouseXYZ(e);
 
-        findSelectedPoint();
+        selectedNearestPt();
+        //findNearestPt();
 
         if(e.getClickCount()==2){
             if(mousemode == 1){ //add point w/ double click
@@ -408,7 +414,7 @@ public class ifsys extends Panel
                 clearframe();
                 gamefunc();
             }else if(mousemode == 3){ //remove point w/ double right click
-                shape.deletePoint(pointSelected);
+                shape.deletePoint(pointNearest);
                 clearframe();
                 gamefunc();
             }
@@ -552,7 +558,7 @@ public class ifsys extends Panel
     }
 
     public void mouseMoved(MouseEvent e){
-        findSelectedPoint();
+        findNearestPt();
         getMouseXYZ(e);
         lastMoveTime = System.currentTimeMillis();
     }

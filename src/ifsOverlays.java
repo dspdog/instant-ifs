@@ -11,7 +11,7 @@ public class ifsOverlays {
 
     public void drawArcs(Graphics rg){
         for(int i=0;i<myIfsSys.shape.pointsInUse;i++){
-            drawArc(rg, myIfsSys.shape.pts[i], i == myIfsSys.pointSelected, myIfsSys.isDragging, i==0);
+            drawArc(rg, myIfsSys.shape.pts[i], i == myIfsSys.pointNearest, myIfsSys.isDragging, i==0);
         }
     }
 
@@ -185,6 +185,21 @@ public class ifsOverlays {
                 }
                 drawPolyLineRotated(xPts, yPts, zPts, rg, steps);
         }
+    }
+
+    public void drawBox(Graphics rg, int ptIndex){
+        ifsPt thePt = myIfsSys.shape.pts[ptIndex];
+        double wobbleFreq = 6;
+        double wobbleSize = 6;
+        double width = thePt.scale * thePt.radius;
+        double size = Math.cos(System.currentTimeMillis()/1000.0*Math.PI*wobbleFreq)*wobbleSize + width;
+        if(ptIndex==myIfsSys.pointSelected){
+            rg.setColor(Color.CYAN);
+        }else{
+            rg.setColor(Color.DARK_GRAY);
+        }
+        rg.drawString("Point "+String.valueOf(ptIndex), (int)(thePt.x-width/2-wobbleSize), (int)(thePt.y-width/2-wobbleSize));
+        rg.drawRect((int)(thePt.x - size/2), (int)(thePt.y-size/2), (int)size, (int)size);
     }
 
     public void drawInfoBox(Graphics rg){
