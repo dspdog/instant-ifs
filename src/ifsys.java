@@ -117,8 +117,8 @@ public class ifsys extends Panel
 
         holdFrame=false;
 
-        usingThreshold = true;
-        threshold = 128;
+        usingThreshold = false;
+        threshold = 32;
     }
 
     public static void main(String[] args) {
