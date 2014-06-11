@@ -22,6 +22,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
     JSpinner brightnessSpinner;
     JSpinner samplesSpinner;
     JSpinner iterationsSpinner;
+    JSpinner thresholdSpinner;
 
     JSpinner pitchSpinner;
     JSpinner yawSpinner;
@@ -29,6 +30,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
     JSpinner scaleSpinner;
 
     JCheckBox frameHoldCheck;
+    JCheckBox thresholdCheck;
 
     boolean inited=false;
     boolean autoChange = false;
@@ -108,7 +110,9 @@ public class ifsMenu implements ItemListener, ChangeListener {
         brightnessSpinner = new JSpinner();
         samplesSpinner = new JSpinner();
         iterationsSpinner = new JSpinner();
+        thresholdSpinner = new JSpinner();
         frameHoldCheck = new JCheckBox();
+        thresholdCheck = new JCheckBox();
 
         JLabel renderLabel = new JLabel(" Render Properties");
 
@@ -122,7 +126,9 @@ public class ifsMenu implements ItemListener, ChangeListener {
         addLabeledSpinner(brightnessSpinner, layout, "Brightness", panel, 1);
         addLabeledSpinner(samplesSpinner, layout, "Dots/Frame", panel, 2);
         addLabeledSpinner(iterationsSpinner, layout, "Iterations", panel, 3);
-        addLabeledCheckbox(frameHoldCheck, layout, "Hold Frame", panel, 4);
+        addLabeledSpinner(thresholdSpinner, layout, "Threshold", panel, 4);
+        addLabeledCheckbox(thresholdCheck, layout, "Threshold", panel, 5);
+        addLabeledCheckbox(frameHoldCheck, layout, "Hold Frame", panel, 6);
 
         panel.add(renderLabel);
     }
@@ -236,8 +242,10 @@ public class ifsMenu implements ItemListener, ChangeListener {
                 brightnessSpinner.setValue(myIfsSys.brightnessMultiplier);
                 samplesSpinner.setValue(myIfsSys.samplesPerFrame);
                 iterationsSpinner.setValue(myIfsSys.iterations);
+                thresholdSpinner.setValue(myIfsSys.threshold);
 
                 frameHoldCheck.setSelected(myIfsSys.holdFrame);
+                thresholdCheck.setSelected(myIfsSys.usingThreshold);
             }
         }
         autoChange = false;
@@ -293,6 +301,8 @@ public class ifsMenu implements ItemListener, ChangeListener {
             myIfsSys.selectedPt.rotationPitch = Double.parseDouble(pitchSpinner.getValue().toString())/180.0*Math.PI;
             myIfsSys.selectedPt.rotationYaw = Double.parseDouble(yawSpinner.getValue().toString())/180.0*Math.PI;
 
+            myIfsSys.usingThreshold = thresholdCheck.isSelected();
+            myIfsSys.threshold = Integer.parseInt(thresholdSpinner.getValue().toString());
             myIfsSys.iterations = Integer.parseInt(iterationsSpinner.getValue().toString());
             myIfsSys.brightnessMultiplier = Double.parseDouble(brightnessSpinner.getValue().toString());
             myIfsSys.samplesPerFrame = Double.parseDouble(samplesSpinner.getValue().toString());

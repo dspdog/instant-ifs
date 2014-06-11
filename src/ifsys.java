@@ -68,7 +68,13 @@ public class ifsys extends Panel
 
     boolean holdFrame;
 
+    boolean usingThreshold;
+    int threshold;
+
+    int overlayHideTime;
+
     public ifsys(){
+        overlayHideTime=1000;
         started=false;
         oneSecondAgo =0;
         framesThisSecond = 0;
@@ -110,6 +116,9 @@ public class ifsys extends Panel
         samplesPerPdfScaler = 0.25; //decrease for higher fps while drawing PDFs
 
         holdFrame=false;
+
+        usingThreshold = true;
+        threshold = 128;
     }
 
     public static void main(String[] args) {
@@ -251,15 +260,18 @@ public class ifsys extends Panel
     }
 
     public void generatePixels(){
+
         double scaler = 255/theVolume.dataMax * brightnessMultiplier;
         double area = 0;
         int scaledColor = 0;
         double[][] projection = theVolume.getPreferredProjection();
+        int argb;
 
         for(int x = 0; x < projection.length; x++){
             for(int y=0; y<projection[x].length; y++){
-                int argb = 255;
+                argb = 255;
                 scaledColor = Math.min((int)(scaler*projection[x][y]), 255);
+                if(usingThreshold) scaledColor = scaledColor > threshold ? 255 : 0;
                 argb = (argb << 8) + scaledColor;
                 argb = (argb << 8) + scaledColor;
                 argb = (argb << 8) + scaledColor;
@@ -333,7 +345,7 @@ public class ifsys extends Panel
 
         theMenu.updateSideMenu();
 
-        guidesHidden = System.currentTimeMillis() - lastMoveTime > 1000;
+        guidesHidden = System.currentTimeMillis() - lastMoveTime > overlayHideTime;
 
         if(shape.pointsInUse != 0){
 
