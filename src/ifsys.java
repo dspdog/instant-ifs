@@ -71,9 +71,16 @@ public class ifsys extends Panel
     boolean usingThreshold;
     int threshold;
 
+    boolean usingPotential;
+    int potentialRadius;
+
     int overlayHideTime;
 
     public ifsys(){
+
+        usingPotential=false;
+        potentialRadius=4;
+
         overlayHideTime=1000;
         started=false;
         oneSecondAgo =0;
@@ -107,7 +114,7 @@ public class ifsys extends Panel
 
         rotateMode=0;
         lastMoveTime=0;
-        brightnessMultiplier = 2;
+        brightnessMultiplier = 1;
 
         randomDoubles = new double[4096*4096];
         rndNum=0;
@@ -118,7 +125,7 @@ public class ifsys extends Panel
         holdFrame=false;
 
         usingThreshold = false;
-        threshold = 32;
+        threshold = 64;
     }
 
     public static void main(String[] args) {
@@ -266,10 +273,8 @@ public class ifsys extends Panel
         int scaledColor = 0;
         double[][] projection = theVolume.getProjection();
 
-        boolean usePotential = true;
-
-        if(usePotential){
-            projection = theVolume.getPotential(projection, 8);
+        if(usingPotential){
+            projection = theVolume.getPotential(projection, potentialRadius);
         }
 
         int argb;
@@ -278,7 +283,7 @@ public class ifsys extends Panel
             for(int y=0; y<projection[x].length; y++){
                 argb = 255;
                 scaledColor = Math.min((int)(scaler*projection[x][y]), 255);
-                //if(usingThreshold) scaledColor = scaledColor > threshold ? 255 : 0;
+                if(usingThreshold) scaledColor = scaledColor > threshold ? 255 : 0;
                 argb = (argb << 8) + scaledColor;
                 argb = (argb << 8) + scaledColor;
                 argb = (argb << 8) + scaledColor;
@@ -344,6 +349,13 @@ public class ifsys extends Panel
             samplesPerFrame =2;}
         if(samplesPerFrame >32768){
             samplesPerFrame =32768;}
+
+        if(potentialRadius>16){
+            potentialRadius=16;
+        }
+        if(potentialRadius<1){
+            potentialRadius=1;
+        }
     }
 
     public void gamefunc(){
@@ -648,7 +660,7 @@ public class ifsys extends Panel
             shape.setToPreset(0);
             theVolume.clear();
             iterations=8;
-            brightnessMultiplier=4;
+            brightnessMultiplier=1;
             clearframe();
             gamefunc();
         }

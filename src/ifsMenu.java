@@ -23,6 +23,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
     JSpinner samplesSpinner;
     JSpinner iterationsSpinner;
     JSpinner thresholdSpinner;
+    JSpinner potentialSpinner;
 
     JSpinner pitchSpinner;
     JSpinner yawSpinner;
@@ -31,12 +32,13 @@ public class ifsMenu implements ItemListener, ChangeListener {
 
     JCheckBox frameHoldCheck;
     JCheckBox thresholdCheck;
+    JCheckBox potentialCheck;
 
     boolean inited=false;
     boolean autoChange = false;
     long lastUiChange = 0;
 
-    public void addLabeledSpinner(JSpinner spinner, SpringLayout layout, String labelText, JPanel panel, int row){
+    public void addLabeledSpinner(JSpinner spinner, SpringLayout layout, String labelText, JPanel panel, double row){
         int spinnerLeft = 70;
         int spinnerRight = -5;
         int labelToSpinner = -5;
@@ -48,8 +50,8 @@ public class ifsMenu implements ItemListener, ChangeListener {
         layout.putConstraint(SpringLayout.EAST, label, labelToSpinner, SpringLayout.WEST, spinner);
         layout.putConstraint(SpringLayout.WEST, spinner, spinnerLeft, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.EAST, spinner, spinnerRight, SpringLayout.EAST, panel);
-        layout.putConstraint(SpringLayout.NORTH, spinner, topPad+vspace*row, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.NORTH, label, topPad+vspace*row, SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.NORTH, spinner, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.NORTH, label, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
 
         spinner.addChangeListener(this);
 
@@ -57,7 +59,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
         panel.add(spinner);
     }
 
-    public void addLabeledCheckbox(JCheckBox checkbox, SpringLayout layout, String labelText, JPanel panel, int row){
+    public void addLabeledCheckbox(JCheckBox checkbox, SpringLayout layout, String labelText, JPanel panel, double row){
         int spinnerLeft = 70;
         int spinnerRight = -5;
         int labelToSpinner = -5;
@@ -69,8 +71,8 @@ public class ifsMenu implements ItemListener, ChangeListener {
         layout.putConstraint(SpringLayout.EAST, label, labelToSpinner, SpringLayout.WEST, checkbox);
         layout.putConstraint(SpringLayout.WEST, checkbox, spinnerLeft, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.EAST, checkbox, spinnerRight, SpringLayout.EAST, panel);
-        layout.putConstraint(SpringLayout.NORTH, checkbox, topPad+vspace*row, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.NORTH, label, topPad+vspace*row, SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.NORTH, checkbox, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.NORTH, label, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
 
         checkbox.addChangeListener(this);
 
@@ -111,8 +113,10 @@ public class ifsMenu implements ItemListener, ChangeListener {
         samplesSpinner = new JSpinner();
         iterationsSpinner = new JSpinner();
         thresholdSpinner = new JSpinner();
+        potentialSpinner = new JSpinner();
         frameHoldCheck = new JCheckBox();
         thresholdCheck = new JCheckBox();
+        potentialCheck = new JCheckBox();
 
         JLabel renderLabel = new JLabel(" Render Properties");
 
@@ -126,9 +130,14 @@ public class ifsMenu implements ItemListener, ChangeListener {
         addLabeledSpinner(brightnessSpinner, layout, "Brightness", panel, 1);
         addLabeledSpinner(samplesSpinner, layout, "Dots/Frame", panel, 2);
         addLabeledSpinner(iterationsSpinner, layout, "Iterations", panel, 3);
-        addLabeledSpinner(thresholdSpinner, layout, "Threshold", panel, 4);
-        addLabeledCheckbox(thresholdCheck, layout, "Threshold", panel, 5);
-        addLabeledCheckbox(frameHoldCheck, layout, "Hold Frame", panel, 6);
+
+        addLabeledCheckbox(frameHoldCheck, layout, "Hold Frame", panel, 4.5);
+
+        addLabeledSpinner(potentialSpinner, layout, "Potential", panel, 5.6);
+        addLabeledCheckbox(potentialCheck, layout, "Potential", panel, 6.6);
+        addLabeledSpinner(thresholdSpinner, layout, "Threshold", panel, 8);
+        addLabeledCheckbox(thresholdCheck, layout, "Threshold", panel, 9);
+
 
         panel.add(renderLabel);
     }
@@ -243,9 +252,11 @@ public class ifsMenu implements ItemListener, ChangeListener {
                 samplesSpinner.setValue(myIfsSys.samplesPerFrame);
                 iterationsSpinner.setValue(myIfsSys.iterations);
                 thresholdSpinner.setValue(myIfsSys.threshold);
+                potentialSpinner.setValue(myIfsSys.potentialRadius);
 
                 frameHoldCheck.setSelected(myIfsSys.holdFrame);
                 thresholdCheck.setSelected(myIfsSys.usingThreshold);
+                potentialCheck.setSelected(myIfsSys.usingPotential);
             }
         }
         autoChange = false;
@@ -308,6 +319,9 @@ public class ifsMenu implements ItemListener, ChangeListener {
             myIfsSys.samplesPerFrame = Double.parseDouble(samplesSpinner.getValue().toString());
 
             myIfsSys.holdFrame = frameHoldCheck.isSelected();
+
+            myIfsSys.potentialRadius = Integer.parseInt(potentialSpinner.getValue().toString());
+            myIfsSys.usingPotential = potentialCheck.isSelected();
 
             myIfsSys.shape.updateCenter();
             myIfsSys.clearframe();
