@@ -214,7 +214,7 @@ public class volume {
         return res;
     }
 
-    public double[][] getPreferredProjection(){
+    public double[][] getProjection(){
         switch (preferredDirection){
             case XY:
                 return XYProjection;
@@ -225,6 +225,38 @@ public class volume {
             default:
                 return XYProjection;
         }
+    }
+
+    public double[][] getPotential(double[][] map, int radius){ // map must be square!
+        int width = map.length;
+        double[][] res = new double[width][width];
+        double invDistance[][] = new double[radius*2][radius*2];
+        int x,y;
+        int x2,y2;
+
+        double d2;
+
+        for(x2=-radius; x2<radius; x2++){
+            for(y2=-radius; y2<radius; y2++){
+                d2 = (x2*x2+y2*y2);
+                if(d2<1){d2=1;}
+                invDistance[x2+radius][y2+radius] = 1.0/d2;
+                if(d2>radius){invDistance[x2+radius][y2+radius]=0;}
+            }
+        }
+
+        for(x=radius; x<width-radius; x++){
+            for(y=radius; y<width-radius; y++){
+                res[x][y]=0;
+                for(x2=-radius; x2<radius; x2++){
+                    for(y2=-radius; y2<radius; y2++){
+                        res[x][y]+=map[(x+x2)][(y+y2)]*invDistance[x2+radius][y2+radius]/2;
+                    }
+                }
+            }
+        }
+
+        return res;
     }
 
     public double[] getFullSliceXY(){

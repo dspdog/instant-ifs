@@ -264,14 +264,21 @@ public class ifsys extends Panel
         double scaler = 255/theVolume.dataMax * brightnessMultiplier;
         double area = 0;
         int scaledColor = 0;
-        double[][] projection = theVolume.getPreferredProjection();
+        double[][] projection = theVolume.getProjection();
+
+        boolean usePotential = true;
+
+        if(usePotential){
+            projection = theVolume.getPotential(projection, 8);
+        }
+
         int argb;
 
         for(int x = 0; x < projection.length; x++){
             for(int y=0; y<projection[x].length; y++){
                 argb = 255;
                 scaledColor = Math.min((int)(scaler*projection[x][y]), 255);
-                if(usingThreshold) scaledColor = scaledColor > threshold ? 255 : 0;
+                //if(usingThreshold) scaledColor = scaledColor > threshold ? 255 : 0;
                 argb = (argb << 8) + scaledColor;
                 argb = (argb << 8) + scaledColor;
                 argb = (argb << 8) + scaledColor;
