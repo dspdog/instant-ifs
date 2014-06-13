@@ -33,6 +33,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
     JCheckBox frameHoldCheck;
     JCheckBox thresholdCheck;
     JCheckBox potentialCheck;
+    JCheckBox findEdgesCheck;
 
     boolean inited=false;
     boolean autoChange = false;
@@ -117,6 +118,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
         frameHoldCheck = new JCheckBox();
         thresholdCheck = new JCheckBox();
         potentialCheck = new JCheckBox();
+        findEdgesCheck = new JCheckBox();
 
         JLabel renderLabel = new JLabel(" Render Properties");
 
@@ -137,7 +139,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
         addLabeledCheckbox(potentialCheck, layout, "Potential", panel, 6.6);
         addLabeledSpinner(thresholdSpinner, layout, "Threshold", panel, 8);
         addLabeledCheckbox(thresholdCheck, layout, "Threshold", panel, 9);
-
+        addLabeledCheckbox(findEdgesCheck, layout, "Find Edges", panel, 10);
 
         panel.add(renderLabel);
     }
@@ -257,6 +259,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
                 frameHoldCheck.setSelected(myIfsSys.holdFrame);
                 thresholdCheck.setSelected(myIfsSys.usingThreshold);
                 potentialCheck.setSelected(myIfsSys.usingPotential);
+                findEdgesCheck.setSelected(myIfsSys.usingFindEdges);
             }
         }
         autoChange = false;
@@ -322,6 +325,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
 
             myIfsSys.potentialRadius = Integer.parseInt(potentialSpinner.getValue().toString());
             myIfsSys.usingPotential = potentialCheck.isSelected();
+            myIfsSys.usingFindEdges = findEdgesCheck.isSelected();
 
             myIfsSys.shape.updateCenter();
             myIfsSys.clearframe();

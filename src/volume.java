@@ -10,6 +10,8 @@ public class volume {
     double dataMax=0;
     double dataMaxReset = 0;
 
+    double surfaceArea=0;
+
     public double volume[][][];
     public double XYProjection[][];
     public double XZProjection[][];
@@ -227,6 +229,21 @@ public class volume {
         }
     }
 
+    public double[][] getScaledProjection(double brightness){
+        double[][] proj = getProjection();
+        double[][] scaled = new double[width][height];
+
+        double scaler = 255.0/dataMax * brightness;
+
+        for(int x=0; x<width; x++){
+            for(int y=0; y<height; y++){
+                scaled[x][y]= Math.min((int)(scaler*proj[x][y]), 255);
+            }
+        }
+
+        return scaled;
+    }
+
     public double[][] getPotential(double[][] map, int radius){ // map must be square!
         int width = map.length;
         double[][] res = new double[width][width];
@@ -253,6 +270,63 @@ public class volume {
                         res[x][y]+=map[(x+x2)][(y+y2)]*invDistance[x2+radius][y2+radius]/2;
                     }
                 }
+                res[x][y]=Math.min(res[x][y],255);
+            }
+        }
+
+        return res;
+    }
+
+    public double[][] findEdges(double[][] map){
+        int width = map.length;
+
+        double total =0;
+
+        double[][] res = new double[width][width];
+        int x,y;
+
+        for(x=3; x<width-3; x++){
+            for(y=3; y<width-3; y++){
+                //double edges = Math.abs(map[x][y]-map[x-1][y]) + Math.abs(map[x][y]-map[x+1][y]) + Math.abs(map[x][y]-map[x][y-1]) + Math.abs(map[x][y]-map[x][y+1])/4;
+
+                double edges1 = Math.max(
+                                Math.max(
+                                        (map[x][y]-map[x-1][y]),
+                                        (map[x][y] - map[x + 1][y])),
+                                Math.max((map[x][y]-map[x][y-1]),
+                                        (map[x][y]-map[x][y+1]))
+                );
+
+                double edges2 = Math.max(
+                        Math.max(
+                                (map[x][y]-map[x-1][y-1]),
+                                (map[x][y] - map[x + 1][y+1])),
+                        Math.max((map[x][y]-map[x+1][y-1]),
+                                (map[x][y]-map[x-1][y+1]))
+                );
+
+                double edges = Math.max(edges1, edges2 * 1.0 / Math.sqrt(2));
+                total+=edges;
+
+                edges = Math.min(edges, 255);
+                res[x][y]=edges;
+            }
+        }
+
+        surfaceArea = total;
+
+        return res;
+    }
+
+    public double[][] getThreshold(double[][] map, int threshold){
+        int width = map.length;
+
+        double[][] res = new double[width][width];
+        int x,y;
+
+        for(x=0; x<width; x++){
+            for(y=0; y<width; y++){
+                res[x][y]=map[x][y]>threshold?255:0;
             }
         }
 

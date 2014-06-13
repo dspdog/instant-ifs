@@ -68,6 +68,7 @@ public class ifsys extends Panel
 
     boolean holdFrame;
 
+    boolean usingFindEdges;
     boolean usingThreshold;
     int threshold;
 
@@ -125,6 +126,7 @@ public class ifsys extends Panel
         holdFrame=false;
 
         usingThreshold = false;
+        usingFindEdges = false;
         threshold = 64;
     }
 
@@ -268,13 +270,21 @@ public class ifsys extends Panel
 
     public void generatePixels(){
 
-        double scaler = 255/theVolume.dataMax * brightnessMultiplier;
+        double scaler = 1;//255/theVolume.dataMax * brightnessMultiplier;
         double area = 0;
         int scaledColor = 0;
-        double[][] projection = theVolume.getProjection();
+        double[][] projection = theVolume.getScaledProjection(brightnessMultiplier);
 
         if(usingPotential){
             projection = theVolume.getPotential(projection, potentialRadius);
+        }
+
+        if(usingThreshold){
+            projection = theVolume.getThreshold(projection, threshold);
+        }
+
+        if(usingFindEdges){
+            projection = theVolume.findEdges(projection);
         }
 
         int argb;
@@ -282,8 +292,8 @@ public class ifsys extends Panel
         for(int x = 0; x < projection.length; x++){
             for(int y=0; y<projection[x].length; y++){
                 argb = 255;
-                scaledColor = Math.min((int)(scaler*projection[x][y]), 255);
-                if(usingThreshold) scaledColor = scaledColor > threshold ? 255 : 0;
+                scaledColor = (int)projection[x][y];
+                //if(usingThreshold) scaledColor = projection[x][y] > threshold ? 255 : 0;
                 argb = (argb << 8) + scaledColor;
                 argb = (argb << 8) + scaledColor;
                 argb = (argb << 8) + scaledColor;

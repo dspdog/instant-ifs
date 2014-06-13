@@ -245,13 +245,16 @@ public class ifsOverlays {
 
         rg.drawString("DataMax 10^" + df.format(Math.log10(myIfsSys.theVolume.dataMax)), xPad, lineSize * 6);
 
+        if(myIfsSys.usingFindEdges)rg.drawString("Surface Area 10^" + df.format(Math.log10(myIfsSys.theVolume.surfaceArea)), xPad, lineSize * 7);
+
         double memoryUsedMB = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024*1024);
         double memoryMaxMB = Runtime.getRuntime().maxMemory()/(1024*1024);
+        
+        rg.drawString("Render " + myIfsSys.theVolume.width + "x" + myIfsSys.theVolume.height + "x" + myIfsSys.theVolume.depth + " - " + myIfsSys.theVolume.renderMode.toString(), xPad, lineSize * 9);
+        rg.drawString("Memory " + (int)memoryUsedMB +" / " + (int)memoryMaxMB + "MB (" + (int)(100*memoryUsedMB/memoryMaxMB) + "%)", xPad, lineSize * 10);
 
-        rg.drawString("Memory " + (int)memoryUsedMB +" / " + (int)memoryMaxMB + "MB (" + (int)(100*memoryUsedMB/memoryMaxMB) + "%)", xPad, lineSize * 9);
-        rg.drawString("Render " + myIfsSys.theVolume.width + "x" + myIfsSys.theVolume.height + "x" + myIfsSys.theVolume.depth + " - " + myIfsSys.theVolume.renderMode.toString(), xPad, lineSize * 8);
 
-        rg.drawString("FPS " + String.valueOf(myIfsSys.fps), xPad, lineSize*10);
+        rg.drawString("FPS " + String.valueOf(myIfsSys.fps), xPad, lineSize*11);
 
         drawAxis(rg);
     }
