@@ -18,6 +18,10 @@ public class ifsys extends Panel
     long framesThisSecond;
     long oneSecondAgo;
     long lastMoveTime;
+    long postProcessPeriod;
+    long lastPostProcessTime;
+
+    double lastProcessedProjection[][];
 
     volume theVolume;
     pdf3D thePdf;
@@ -128,6 +132,8 @@ public class ifsys extends Panel
         usingThreshold = false;
         usingFindEdges = false;
         threshold = 64;
+
+        postProcessPeriod=1000;
     }
 
     public static void main(String[] args) {
@@ -275,16 +281,25 @@ public class ifsys extends Panel
         int scaledColor = 0;
         double[][] projection = theVolume.getScaledProjection(brightnessMultiplier);
 
-        if(usingPotential){
-            projection = theVolume.getPotential(projection, potentialRadius);
-        }
+        boolean didProcess=false;
+        boolean postEffect = usingPotential || usingThreshold || usingFindEdges;
 
-        if(usingThreshold){
-            projection = theVolume.getThreshold(projection, threshold);
-        }
-
-        if(usingFindEdges){
-            projection = theVolume.findEdges(projection);
+        if(postEffect){
+            if(System.currentTimeMillis()-lastPostProcessTime>postProcessPeriod){
+                didProcess=true;
+                if(usingPotential){
+                    projection = theVolume.getPotential(projection, potentialRadius);
+                }
+                if(usingThreshold){
+                    projection = theVolume.getThreshold(projection, threshold);
+                }
+                if(usingFindEdges){
+                    projection = theVolume.findEdges(projection);
+                }
+                lastProcessedProjection = theVolume.getProjectionCopy(projection);
+            }else{
+                projection = lastProcessedProjection;
+            }
         }
 
         int argb;
@@ -301,6 +316,8 @@ public class ifsys extends Panel
                 area+=scaler*projection[x][y];
             }
         }
+
+        if(postEffect && didProcess)lastPostProcessTime=System.currentTimeMillis();
     }
 
     public void clearframe(){

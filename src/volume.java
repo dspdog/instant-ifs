@@ -277,6 +277,21 @@ public class volume {
         return res;
     }
 
+    public double[][] getProjectionCopy(double[][] map){
+        int width = map.length;
+
+        double[][] res = new double[width][width];
+        int x,y;
+
+        for(x=0; x<width; x++){
+            for(y=0; y<width; y++){
+                res[x][y]=map[x][y]+0;
+            }
+        }
+
+        return res;
+    }
+
     public double[][] findEdges(double[][] map){
         int width = map.length;
 

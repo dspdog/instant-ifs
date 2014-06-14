@@ -244,8 +244,9 @@ public class ifsOverlays {
                 + (int)(myIfsSys.theVolume.highPt.z) + ")", xPad,+ lineSize*5);
 
         rg.drawString("DataMax 10^" + df.format(Math.log10(myIfsSys.theVolume.dataMax)), xPad, lineSize * 6);
+        rg.drawString("Samples 10^" + df.format(Math.log10(myIfsSys.theVolume.totalSamples)), xPad, lineSize * 7);
 
-        if(myIfsSys.usingFindEdges)rg.drawString("Surface Area 10^" + df.format(Math.log10(myIfsSys.theVolume.surfaceArea)), xPad, lineSize * 7);
+        if(myIfsSys.usingFindEdges)rg.drawString("Surface Area 10^" + df.format(Math.log10(myIfsSys.theVolume.surfaceArea)), xPad, lineSize * 8);
 
         double memoryUsedMB = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024*1024);
         double memoryMaxMB = Runtime.getRuntime().maxMemory()/(1024*1024);
