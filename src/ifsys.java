@@ -18,6 +18,8 @@ public class ifsys extends Panel
     long framesThisSecond;
     long oneSecondAgo;
     long lastMoveTime;
+
+    boolean renderThrottling;
     long postProcessPeriod;
     long lastPostProcessTime;
 
@@ -133,6 +135,7 @@ public class ifsys extends Panel
         usingFindEdges = false;
         threshold = 64;
 
+        renderThrottling=false;
         postProcessPeriod=1000;
     }
 
@@ -275,56 +278,48 @@ public class ifsys extends Panel
     }
 
     public void generatePixels(){
-
         double scaler = 1;//255/theVolume.dataMax * brightnessMultiplier;
         double area = 0;
         int scaledColor = 0;
         double[][] projection = theVolume.getScaledProjection(brightnessMultiplier);
 
         boolean didProcess=false;
-        boolean postEffect = usingPotential || usingThreshold || usingFindEdges;
 
-        if(postEffect){
-            if(System.currentTimeMillis()-lastPostProcessTime>postProcessPeriod){
-                didProcess=true;
-                if(usingPotential){
-                    projection = theVolume.getPotential(projection, potentialRadius);
-                }
-                if(usingThreshold){
-                    projection = theVolume.getThreshold(projection, threshold);
-                }
-                if(usingFindEdges){
-                    projection = theVolume.findEdges(projection);
-                }
-                lastProcessedProjection = theVolume.getProjectionCopy(projection);
-            }else{
-                projection = lastProcessedProjection;
+        if(!renderThrottling || System.currentTimeMillis()-lastPostProcessTime>postProcessPeriod){
+            didProcess=true;
+            if(usingPotential){
+                projection = theVolume.getPotential(projection, potentialRadius);
             }
+            if(usingThreshold){
+                projection = theVolume.getThreshold(projection, threshold);
+            }
+            if(usingFindEdges){
+                projection = theVolume.findEdges(projection);
+            }
+            lastProcessedProjection = theVolume.getProjectionCopy(projection);
+
+            int argb;
+
+            for(int x = 0; x < projection.length; x++){
+                for(int y=0; y<projection[x].length; y++){
+                    argb = 255;
+                    scaledColor = (int)projection[x][y];
+                    argb = (argb << 8) + scaledColor;
+                    argb = (argb << 8) + scaledColor;
+                    argb = (argb << 8) + scaledColor;
+                    pixels[x+y*projection.length] = argb;
+                    area+=scaler*projection[x][y];
+                }
+            }
+        }else{
+            projection = lastProcessedProjection;
         }
 
-        int argb;
-
-        for(int x = 0; x < projection.length; x++){
-            for(int y=0; y<projection[x].length; y++){
-                argb = 255;
-                scaledColor = (int)projection[x][y];
-                //if(usingThreshold) scaledColor = projection[x][y] > threshold ? 255 : 0;
-                argb = (argb << 8) + scaledColor;
-                argb = (argb << 8) + scaledColor;
-                argb = (argb << 8) + scaledColor;
-                pixels[x+y*projection.length] = argb;
-                area+=scaler*projection[x][y];
-            }
-        }
-
-        if(postEffect && didProcess)lastPostProcessTime=System.currentTimeMillis();
+        if(didProcess)lastPostProcessTime=System.currentTimeMillis();
     }
 
     public void clearframe(){
         if(!holdFrame){
-            for(int a = 0; a < screenwidth * screenheight; a++){
-                pixels[a] = 0xff000000;
-            }
             theVolume.clear();
         }
     }
@@ -357,6 +352,7 @@ public class ifsys extends Panel
             sampleZ = randomDouble()*thePdf.sampleDepth;
             //modulate with image
             ptColor = thePdf.volume[(int)sampleX][(int)sampleY][(int)sampleZ];
+
             if(ptColor>0){
                 ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
                 rpt = new ifsPt((sampleX-centerX)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw); //placed point
@@ -374,8 +370,8 @@ public class ifsys extends Panel
 
         if(samplesPerFrame <2){
             samplesPerFrame =2;}
-        if(samplesPerFrame >32768){
-            samplesPerFrame =32768;}
+        if(samplesPerFrame >131072){
+            samplesPerFrame =131072;}
 
         if(potentialRadius>16){
             potentialRadius=16;

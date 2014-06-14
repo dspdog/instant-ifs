@@ -24,6 +24,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
     JSpinner iterationsSpinner;
     JSpinner thresholdSpinner;
     JSpinner potentialSpinner;
+    JSpinner delaySpinner;
 
     JSpinner pitchSpinner;
     JSpinner yawSpinner;
@@ -34,6 +35,8 @@ public class ifsMenu implements ItemListener, ChangeListener {
     JCheckBox thresholdCheck;
     JCheckBox potentialCheck;
     JCheckBox findEdgesCheck;
+
+    JCheckBox delayCheck;
 
     boolean inited=false;
     boolean autoChange = false;
@@ -115,10 +118,13 @@ public class ifsMenu implements ItemListener, ChangeListener {
         iterationsSpinner = new JSpinner();
         thresholdSpinner = new JSpinner();
         potentialSpinner = new JSpinner();
+        delaySpinner = new JSpinner();
+
         frameHoldCheck = new JCheckBox();
         thresholdCheck = new JCheckBox();
         potentialCheck = new JCheckBox();
         findEdgesCheck = new JCheckBox();
+        delayCheck = new JCheckBox();
 
         JLabel renderLabel = new JLabel(" Render Properties");
 
@@ -140,6 +146,9 @@ public class ifsMenu implements ItemListener, ChangeListener {
         addLabeledSpinner(thresholdSpinner, layout, "Threshold", panel, 8);
         addLabeledCheckbox(thresholdCheck, layout, "Threshold", panel, 9);
         addLabeledCheckbox(findEdgesCheck, layout, "Find Edges", panel, 10);
+
+        addLabeledCheckbox(delayCheck, layout, "Framelimit", panel, 11.5);
+        addLabeledSpinner(delaySpinner, layout, "Wait X ms", panel, 12.6);
 
         panel.add(renderLabel);
     }
@@ -255,11 +264,13 @@ public class ifsMenu implements ItemListener, ChangeListener {
                 iterationsSpinner.setValue(myIfsSys.iterations);
                 thresholdSpinner.setValue(myIfsSys.threshold);
                 potentialSpinner.setValue(myIfsSys.potentialRadius);
+                delaySpinner.setValue(myIfsSys.postProcessPeriod);
 
                 frameHoldCheck.setSelected(myIfsSys.holdFrame);
                 thresholdCheck.setSelected(myIfsSys.usingThreshold);
                 potentialCheck.setSelected(myIfsSys.usingPotential);
                 findEdgesCheck.setSelected(myIfsSys.usingFindEdges);
+                delayCheck.setSelected(myIfsSys.renderThrottling);
             }
         }
         autoChange = false;
@@ -321,6 +332,9 @@ public class ifsMenu implements ItemListener, ChangeListener {
             myIfsSys.brightnessMultiplier = Double.parseDouble(brightnessSpinner.getValue().toString());
             myIfsSys.samplesPerFrame = Double.parseDouble(samplesSpinner.getValue().toString());
 
+            myIfsSys.renderThrottling = delayCheck.isSelected();
+            myIfsSys.postProcessPeriod = Long.parseLong(delaySpinner.getValue().toString());
+
             myIfsSys.holdFrame = frameHoldCheck.isSelected();
 
             myIfsSys.potentialRadius = Integer.parseInt(potentialSpinner.getValue().toString());
@@ -328,8 +342,9 @@ public class ifsMenu implements ItemListener, ChangeListener {
             myIfsSys.usingFindEdges = findEdgesCheck.isSelected();
 
             myIfsSys.shape.updateCenter();
-            myIfsSys.clearframe();
 
+          //  if(!myIfsSys.holdFrame)
+           // myIfsSys.clearframe();
         }
     }
 }

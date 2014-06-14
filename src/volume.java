@@ -6,7 +6,10 @@ public class volume {
 
     RenderMode renderMode;
 
-    double totalSamples=0;
+    long drawTime = 0;
+    long totalSamples = 0;
+
+    double totalSamplesAlpha =0;
     double dataMax=0;
     double dataMaxReset = 0;
 
@@ -46,7 +49,9 @@ public class volume {
     }
 
     public void clear(){
+        drawTime=System.currentTimeMillis();
         totalSamples=1;
+        totalSamplesAlpha =1;
         centroid = new ifsPt(0,0,0);
         dataMax=dataMaxReset;
 
@@ -107,8 +112,8 @@ public class volume {
 
             switch (renderMode){
                 case VOLUMETRIC:
-
-                    totalSamples+=alpha;
+                    totalSamples++;
+                    totalSamplesAlpha +=alpha;
                     if(antiAliasing){
                         double xDec = pt.x - (int)pt.x;
                         double yDec = pt.y - (int)pt.y;
@@ -134,8 +139,8 @@ public class volume {
 
                     break;
                 case SIDES_ONLY:
-
-                    totalSamples+=alpha;
+                    totalSamples++;
+                    totalSamplesAlpha +=alpha;
                     if(antiAliasing){
                         double xDec = pt.x - (int)pt.x;
                         double yDec = pt.y - (int)pt.y;
@@ -188,7 +193,7 @@ public class volume {
     }
 
     public ifsPt getCentroid(){
-        return new ifsPt(centroid.x/totalSamples, centroid.y/totalSamples, centroid.z/totalSamples);
+        return new ifsPt(centroid.x/ totalSamplesAlpha, centroid.y/ totalSamplesAlpha, centroid.z/ totalSamplesAlpha);
     }
 
     public ifsPt getProjectedPt(ifsPt pt){

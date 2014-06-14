@@ -47,7 +47,7 @@ public class ifsOverlays {
         ifsPt projectedCentroid = vol.getProjectedPt(vol.getCentroid());
         ifsPt projectedHighPt = vol.getProjectedPt(vol.highPt);
 
-        if(myIfsSys.theVolume.totalSamples>5000){
+        if(myIfsSys.theVolume.totalSamplesAlpha >5000){
             int x=(int)projectedCentroid.x;
             int y=(int)projectedCentroid.y;
             drawCentroid(_rg,x,y);
@@ -244,7 +244,8 @@ public class ifsOverlays {
                 + (int)(myIfsSys.theVolume.highPt.z) + ")", xPad,+ lineSize*5);
 
         rg.drawString("DataMax 10^" + df.format(Math.log10(myIfsSys.theVolume.dataMax)), xPad, lineSize * 6);
-        rg.drawString("Samples 10^" + df.format(Math.log10(myIfsSys.theVolume.totalSamples)), xPad, lineSize * 7);
+
+        rg.drawString("Dots 10^" + df.format(Math.log10(myIfsSys.theVolume.totalSamples)), xPad, lineSize * 7);
 
         if(myIfsSys.usingFindEdges)rg.drawString("Surface Area 10^" + df.format(Math.log10(myIfsSys.theVolume.surfaceArea)), xPad, lineSize * 8);
 
@@ -254,8 +255,12 @@ public class ifsOverlays {
         rg.drawString("Render " + myIfsSys.theVolume.width + "x" + myIfsSys.theVolume.height + "x" + myIfsSys.theVolume.depth + " - " + myIfsSys.theVolume.renderMode.toString(), xPad, lineSize * 9);
         rg.drawString("Memory " + (int)memoryUsedMB +" / " + (int)memoryMaxMB + "MB (" + (int)(100*memoryUsedMB/memoryMaxMB) + "%)", xPad, lineSize * 10);
 
+        double time = (System.currentTimeMillis()-myIfsSys.theVolume.drawTime)/1000.0;
 
         rg.drawString("FPS " + String.valueOf(myIfsSys.fps), xPad, lineSize*11);
+        rg.drawString("RenderTime " + df.format(time) + "s", xPad, lineSize*12);
+        rg.drawString("Dots/s 10^" + df.format(Math.log10((myIfsSys.theVolume.totalSamples/time))), xPad, lineSize*13);
+
 
         drawAxis(rg);
     }
