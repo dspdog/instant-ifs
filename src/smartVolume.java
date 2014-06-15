@@ -46,11 +46,19 @@ public class smartVolume { //partitions the space into subVolumes but ignores em
     }
 
     public void putData(int x, int y, int z, double increment){
+        if(increment>0)
         data[x>>subVolume.sizeLog2][y>>subVolume.sizeLog2][z>>subVolume.sizeLog2].putData(x&subVolume.sizeMask, y&subVolume.sizeMask, z&subVolume.sizeMask, increment);
     }
 
+    public void clearData(int x, int y, int z){
+        data[x>>subVolume.sizeLog2][y>>subVolume.sizeLog2][z>>subVolume.sizeLog2].clearData(x & subVolume.sizeMask, y & subVolume.sizeMask, z & subVolume.sizeMask);
+    }
+
+    public void clipData(int x, int y, int z){
+        data[x>>subVolume.sizeLog2][y>>subVolume.sizeLog2][z>>subVolume.sizeLog2].clipData(x & subVolume.sizeMask, y & subVolume.sizeMask, z & subVolume.sizeMask);
+    }
+    
     public double getData(int x, int y, int z){
         return data[x>>subVolume.sizeLog2][y>>subVolume.sizeLog2][z>>subVolume.sizeLog2].getData(x&subVolume.sizeMask, y&subVolume.sizeMask, z&subVolume.sizeMask);
     }
-
 }

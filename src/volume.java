@@ -36,7 +36,7 @@ public class volume {
         depth = d;
         depthLeanX = 0;
         depthLeanY = 0;
-        renderMode = RenderMode.VOLUMETRIC;
+        renderMode = RenderMode.SIDES_ONLY;
         preferredDirection = ViewDirection.XY;
         antiAliasing = true;
         XYProjection = new double[width][height];
@@ -228,13 +228,12 @@ public class volume {
         return scaled;
     }
 
-    public static double[][] getPotential(double[][] map, int radius){ // map must be square!
+    public static double[][] getPotential2D(double[][] map, int radius){ // map must be square!
         int width = map.length;
         double[][] res = new double[width][width];
         double invDistance[][] = new double[radius*2][radius*2];
         int x,y;
         int x2,y2;
-
         double d2;
 
         for(x2=-radius; x2<radius; x2++){
@@ -261,6 +260,53 @@ public class volume {
         return res;
     }
 
+    public static smartVolume getPotential3D(smartVolume map, int radius){ // map must be square!
+        int size = map.size;
+
+        System.out.println("3D POTENTIAL...");
+        smartVolume res = new smartVolume(size);
+
+        double invDistance[][][] = new double[radius*2][radius*2][radius*2];
+        int x,y,z;
+        int x2,y2,z2;
+
+        double d2;
+
+        for(x2=-radius; x2<radius; x2++){
+            for(y2=-radius; y2<radius; y2++){
+                for(z2=-radius; z2<radius; z2++){
+                    d2 = (x2*x2 + y2*y2 + z2*z2);
+                    if(d2<1){d2=1;}
+                    invDistance[x2+radius][y2+radius][z2+radius] = 1.0/d2;
+                    if(d2>radius){invDistance[x2+radius][y2+radius][z2+radius]=0;}
+                }
+            }
+        }
+
+        double addition;
+
+        for(x=radius; x<size-radius; x++){
+            for(y=radius; y<size-radius; y++){
+                for(z=radius; z<size-radius; z++){
+                    res.clearData(x,y,z);
+                    addition=0;
+                    for(x2=-radius; x2<radius; x2++){
+                        for(y2=-radius; y2<radius; y2++){
+                            for(z2=-radius; z2<radius; z2++){
+                                addition+=map.getData(x+x2,y+y2,z+z2)*invDistance[x2+radius][y2+radius][z2+radius];
+                            }
+                        }
+                    }
+                    res.putData(x,y,z,addition/2);
+                    res.clipData(x, y, z);
+                }
+            }
+            System.out.println("3D POTENTIAL " + x);
+        }
+
+        return res;
+    }
+
     public static double[][] getProjectionCopy(double[][] map){
         int width = map.length;
 
@@ -276,7 +322,7 @@ public class volume {
         return res;
     }
 
-    public double[][] findEdges(double[][] map){
+    public double[][] findEdges2D(double[][] map){
         int width = map.length;
 
         double total =0;
@@ -317,7 +363,7 @@ public class volume {
         return res;
     }
 
-    public static double[][] getThreshold(double[][] map, int threshold){
+    public static double[][] getThreshold2D(double[][] map, int threshold){
         int width = map.length;
 
         double[][] res = new double[width][width];

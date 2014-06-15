@@ -45,7 +45,14 @@ public class ifsOverlays {
     public void drawSpecialPoints(Graphics _rg){//centroid and maximum
         volume vol = myIfsSys.theVolume;
         ifsPt projectedCentroid = vol.getProjectedPt(vol.getCentroid());
-        ifsPt projectedHighPt = vol.getProjectedPt(vol.highPtVolumetric);
+
+        ifsPt projectedHighPt;
+
+        if(vol.renderMode == volume.RenderMode.SIDES_ONLY){
+            projectedHighPt = vol.getProjectedPt(vol.highPt);
+        }else{
+            projectedHighPt = vol.getProjectedPt(vol.highPtVolumetric);
+        }
 
         if(myIfsSys.theVolume.totalSamplesAlpha >5000){
             int x=(int)projectedCentroid.x;
@@ -191,18 +198,20 @@ public class ifsOverlays {
     }
 
     public void drawBox(Graphics rg, int ptIndex){
-        ifsPt thePt =  myIfsSys.theVolume.getProjectedPt(myIfsSys.shape.pts[ptIndex]);
-        double wobbleFreq = 6;
-        double wobbleSize = 5;
-        double width = thePt.scale * thePt.radius;
-        double size = Math.cos(System.currentTimeMillis()/1000.0*Math.PI*wobbleFreq)*wobbleSize + width;
-        if(ptIndex==myIfsSys.pointSelected){
-            rg.setColor(Color.CYAN);
-        }else{
-            rg.setColor(Color.DARK_GRAY);
+        if(ptIndex>-1){
+            ifsPt thePt =  myIfsSys.theVolume.getProjectedPt(myIfsSys.shape.pts[ptIndex]);
+            double wobbleFreq = 6;
+            double wobbleSize = 5;
+            double width = thePt.scale * thePt.radius;
+            double size = Math.cos(System.currentTimeMillis()/1000.0*Math.PI*wobbleFreq)*wobbleSize + width;
+            if(ptIndex==myIfsSys.pointSelected){
+                rg.setColor(Color.CYAN);
+            }else{
+                rg.setColor(Color.DARK_GRAY);
+            }
+            rg.drawString("Point "+String.valueOf(ptIndex), (int)(thePt.x-width/2-wobbleSize*2), (int)(thePt.y-width/2-wobbleSize*2));
+            drawBoxBrackets(rg, (int)(thePt.x - size/2), (int)(thePt.y-size/2), (int)size, (int)size, (int)(size/10));
         }
-        rg.drawString("Point "+String.valueOf(ptIndex), (int)(thePt.x-width/2-wobbleSize*2), (int)(thePt.y-width/2-wobbleSize*2));
-        drawBoxBrackets(rg, (int)(thePt.x - size/2), (int)(thePt.y-size/2), (int)size, (int)size, (int)(size/10));
     }
 
     public void drawBoxBrackets(Graphics rg, int x, int y, int width, int height, int bracketSize){
@@ -238,12 +247,26 @@ public class ifsOverlays {
                 + (int)(myIfsSys.theVolume.getCentroid().x) + ", "
                 + (int)(myIfsSys.theVolume.getCentroid().y) + ", "
                 + (int)(myIfsSys.theVolume.getCentroid().z) + ")", xPad, lineSize*4);
-        rg.drawString("HighPt: ("
-                + (int)(myIfsSys.theVolume.highPtVolumetric.x) + ", "
-                + (int)(myIfsSys.theVolume.highPtVolumetric.y) + ", "
-                + (int)(myIfsSys.theVolume.highPtVolumetric.z) + ")", xPad,+ lineSize*5);
 
-        rg.drawString("DataMax 10^" + df.format(Math.log10(myIfsSys.theVolume.dataMaxVolumetric)), xPad, lineSize * 6);
+        if(myIfsSys.theVolume.renderMode == volume.RenderMode.VOLUMETRIC){
+            rg.drawString("HighPt: ("
+                    + (int)(myIfsSys.theVolume.highPtVolumetric.x) + ", "
+                    + (int)(myIfsSys.theVolume.highPtVolumetric.y) + ", "
+                    + (int)(myIfsSys.theVolume.highPtVolumetric.z) + ")", xPad,+ lineSize*5);
+
+
+            rg.drawString("DataMax 10^" + df.format(Math.log10(myIfsSys.theVolume.dataMaxVolumetric)), xPad, lineSize * 6);
+
+            rg.drawString("Regions " + myIfsSys.theVolume.volume.getInitCount() + "/" + myIfsSys.theVolume.volume.totalRegions + " (" + (100*myIfsSys.theVolume.volume.getInitCount()/myIfsSys.theVolume.volume.totalRegions) + "%)", xPad, lineSize*14);
+
+        }else{
+            rg.drawString("HighPt: ("
+                    + (int)(myIfsSys.theVolume.highPt.x) + ", "
+                    + (int)(myIfsSys.theVolume.highPt.y) + ", "
+                    + (int)(myIfsSys.theVolume.highPt.z) + ")", xPad,+ lineSize*5);
+
+            rg.drawString("DataMax 10^" + df.format(Math.log10(myIfsSys.theVolume.dataMax)), xPad, lineSize * 6);
+        }
 
         rg.drawString("Dots 10^" + df.format(Math.log10(myIfsSys.theVolume.totalSamples)), xPad, lineSize * 7);
 
@@ -260,8 +283,6 @@ public class ifsOverlays {
         rg.drawString("FPS " + String.valueOf(myIfsSys.fps), xPad, lineSize*11);
         rg.drawString("RenderTime " + df.format(time) + "s", xPad, lineSize*12);
         rg.drawString("Dots/s 10^" + df.format(Math.log10((myIfsSys.theVolume.totalSamples/time))), xPad, lineSize*13);
-
-        rg.drawString("Regions " + myIfsSys.theVolume.volume.getInitCount() + "/" + myIfsSys.theVolume.volume.totalRegions + " (" + (100*myIfsSys.theVolume.volume.getInitCount()/myIfsSys.theVolume.volume.totalRegions) + "%)", xPad, lineSize*14);
 
         drawAxis(rg);
     }

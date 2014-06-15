@@ -126,7 +126,7 @@ public class ifsys extends Panel
         randomDoubles = new double[4096*4096];
         rndNum=0;
 
-        samplesPerFrame = 512;
+        samplesPerFrame = 4096;
         samplesPerPdfScaler = 0.25; //decrease for higher fps while drawing PDFs
 
         holdFrame=false;
@@ -135,8 +135,8 @@ public class ifsys extends Panel
         usingFindEdges = false;
         threshold = 64;
 
-        renderThrottling=true;
-        postProcessPeriod=2000;
+        renderThrottling=false;
+        postProcessPeriod=1000;
     }
 
     public static void main(String[] args) {
@@ -269,7 +269,7 @@ public class ifsys extends Panel
             }
 
         }catch (Exception e){
-
+            e.printStackTrace();
         }
 
 
@@ -288,14 +288,16 @@ public class ifsys extends Panel
         if(!renderThrottling || System.currentTimeMillis()-lastPostProcessTime>postProcessPeriod){
             didProcess=true;
             if(usingPotential){
-                projection = theVolume.getPotential(projection, potentialRadius);
+                projection = volume.getPotential2D(projection, potentialRadius);
+                //theVolume.volume = volume.getPotential3D(theVolume.volume, potentialRadius);
             }
             if(usingThreshold){
-                projection = theVolume.getThreshold(projection, threshold);
+                projection = theVolume.getThreshold2D(projection, threshold);
             }
             if(usingFindEdges){
-                projection = theVolume.findEdges(projection);
+                projection = theVolume.findEdges2D(projection);
             }
+
             lastProcessedProjection = theVolume.getProjectionCopy(projection);
 
             int argb;
@@ -602,6 +604,7 @@ public class ifsys extends Panel
     public void mouseMoved(MouseEvent e){
         findNearestPt();
         getMouseXYZ(e);
+        gamefunc();
         lastMoveTime = System.currentTimeMillis();
     }
 

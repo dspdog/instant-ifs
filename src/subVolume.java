@@ -44,4 +44,10 @@ public class subVolume {
             data[x][y][z]=0;
         }
     }
+
+    public void clipData(int x, int y, int z){
+        if(inited){
+            data[x][y][z]=Math.min(data[x][y][z], 255);
+        }
+    }
 }

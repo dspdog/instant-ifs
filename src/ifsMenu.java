@@ -343,8 +343,8 @@ public class ifsMenu implements ItemListener, ChangeListener {
 
             myIfsSys.shape.updateCenter();
 
-          //  if(!myIfsSys.holdFrame)
-           // myIfsSys.clearframe();
+            if(!myIfsSys.holdFrame)
+            myIfsSys.clearframe();
         }
     }
 }
