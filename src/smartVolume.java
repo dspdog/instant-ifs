@@ -1,6 +1,6 @@
 public class smartVolume { //partitions the space into subVolumes but ignores empty space
     int size;
-    private int subRes;
+    int subRes;
     int totalRegions;
 
     private subVolume[][][] data;
@@ -43,6 +43,10 @@ public class smartVolume { //partitions the space into subVolumes but ignores em
             }
         }
         return count;
+    }
+
+    public boolean isNotEmpty(int x, int y, int z){
+        return data[x][y][z].inited;
     }
 
     public void putData(int x, int y, int z, double increment){

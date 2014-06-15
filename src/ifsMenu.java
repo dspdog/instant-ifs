@@ -1,7 +1,6 @@
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.plaf.multi.MultiSplitPaneUI;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -141,8 +140,8 @@ public class ifsMenu implements ItemListener, ChangeListener {
 
         addLabeledCheckbox(frameHoldCheck, layout, "Hold Frame", panel, 4.5);
 
-        addLabeledSpinner(potentialSpinner, layout, "Potential", panel, 5.6);
-        addLabeledCheckbox(potentialCheck, layout, "Potential", panel, 6.6);
+        addLabeledSpinner(potentialSpinner, layout, "Blur", panel, 5.6);
+        addLabeledCheckbox(potentialCheck, layout, "Gaussian", panel, 6.6);
         addLabeledSpinner(thresholdSpinner, layout, "Threshold", panel, 8);
         addLabeledCheckbox(thresholdCheck, layout, "Threshold", panel, 9);
         addLabeledCheckbox(findEdgesCheck, layout, "Find Edges", panel, 10);
@@ -268,7 +267,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
 
                 frameHoldCheck.setSelected(myIfsSys.holdFrame);
                 thresholdCheck.setSelected(myIfsSys.usingThreshold);
-                potentialCheck.setSelected(myIfsSys.usingPotential);
+                potentialCheck.setSelected(myIfsSys.usingGaussian);
                 findEdgesCheck.setSelected(myIfsSys.usingFindEdges);
                 delayCheck.setSelected(myIfsSys.renderThrottling);
             }
@@ -338,7 +337,7 @@ public class ifsMenu implements ItemListener, ChangeListener {
             myIfsSys.holdFrame = frameHoldCheck.isSelected();
 
             myIfsSys.potentialRadius = Integer.parseInt(potentialSpinner.getValue().toString());
-            myIfsSys.usingPotential = potentialCheck.isSelected();
+            myIfsSys.usingGaussian = potentialCheck.isSelected();
             myIfsSys.usingFindEdges = findEdgesCheck.isSelected();
 
             myIfsSys.shape.updateCenter();

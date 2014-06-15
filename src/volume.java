@@ -261,7 +261,6 @@ public class volume {
     public static smartVolume getPotential3D(smartVolume map, int radius){ // map must be square!
         int size = map.size;
 
-        System.out.println("3D POTENTIAL...");
         smartVolume res = new smartVolume(size);
 
         double invDistance[][][] = new double[radius*2][radius*2][radius*2];
@@ -282,27 +281,43 @@ public class volume {
         }
 
         double addition;
+        int x1,y1,z1;
+        //iterate through sub-domains, skipping empty ones
 
-        for(x=radius; x<size-radius; x++){
-            for(y=radius; y<size-radius; y++){
-                for(z=radius; z<size-radius; z++){
-                    res.clearData(x,y,z);
-                    addition=0;
-                    for(x2=-radius; x2<radius; x2++){
-                        for(y2=-radius; y2<radius; y2++){
-                            for(z2=-radius; z2<radius; z2++){
-                                addition+=map.getData(x+x2,y+y2,z+z2)*invDistance[x2+radius][y2+radius][z2+radius];
+        for(x1=0; x1<map.subRes; x1++){
+            for(y1=0; y1<map.subRes; y1++){
+                for(z1=0; z1<map.subRes; z1++){
+
+                    if(map.isNotEmpty(x1,y1,z1)){ //skip empty domains
+                        for(x=x1*subVolume.size; x<(x1+1)*subVolume.size; x++){
+                            for(y=y1*subVolume.size; y<(y1+1)*subVolume.size; y++){
+                                for(z=z1*subVolume.size; z<(z1+1)*subVolume.size; z++){
+                                    res.clearData(x,y,z);
+                                    addition=0;
+                                    for(x2=-radius; x2<radius; x2++){
+                                        for(y2=-radius; y2<radius; y2++){
+                                            for(z2=-radius; z2<radius; z2++){
+                                                addition+=map.getData(x+x2,y+y2,z+z2)*invDistance[x2+radius][y2+radius][z2+radius];
+                                            }
+                                        }
+                                    }
+                                    if(addition>0){
+                                        res.putData(x,y,z,addition/2);
+                                        res.clipData(x, y, z);
+                                    }
+                                }
                             }
                         }
                     }
-                    if(addition>0){
-                        res.putData(x,y,z,addition/2);
-                        res.clipData(x, y, z);
-                    }
+
+
                 }
             }
-            System.out.println("3D POTENTIAL " + x);
+            if(x1%10==0)
+                System.out.println("3D POTENTIAL " + x1 + "/" + map.subRes);
         }
+
+
 
         return res;
     }

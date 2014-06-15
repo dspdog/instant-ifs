@@ -78,14 +78,14 @@ public class ifsys extends Panel
     boolean usingThreshold;
     int threshold;
 
-    boolean usingPotential;
+    boolean usingGaussian;
     int potentialRadius;
 
     int overlayHideTime;
 
     public ifsys(){
 
-        usingPotential=false;
+        usingGaussian =false;
         potentialRadius=4;
 
         overlayHideTime=1000;
@@ -287,10 +287,10 @@ public class ifsys extends Panel
 
         if(!renderThrottling || System.currentTimeMillis()-lastPostProcessTime>postProcessPeriod){
             didProcess=true;
-            if(usingPotential){
-                projection = volume.getPotential2D(projection, potentialRadius);
+            //if(usingGaussian){
+                //projection = volume.getPotential2D(projection, potentialRadius);
                 //theVolume.volume = volume.getPotential3D(theVolume.volume, potentialRadius);
-            }
+            //}
             if(usingThreshold){
                 projection = theVolume.getThreshold2D(projection, threshold);
             }
@@ -327,6 +327,9 @@ public class ifsys extends Panel
     }
 
     public void putPdfSample(ifsPt dpt, double cumulativeRotationYaw, double cumulativeRotationPitch, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown, int index){
+
+        double uncertainty = potentialRadius;
+
         double centerX = thePdf.sampleWidth/2;
         double centerY = thePdf.sampleHeight/2;
         double centerZ = thePdf.sampleDepth/2;
@@ -348,6 +351,13 @@ public class ifsys extends Panel
 
         iters=iters&(4095); //limit to 4095
 
+        double uncertaintyX = uncertainty*Math.random()-uncertainty/2;
+        double uncertaintyY = uncertainty*Math.random()-uncertainty/2;
+        double uncertaintyZ = uncertainty*Math.random()-uncertainty/2;
+        double distScaleDown = usingGaussian ? 1.0/(uncertaintyX*uncertaintyX+uncertaintyY*uncertaintyY+uncertaintyZ*uncertaintyZ) : 1.0;
+
+        if(distScaleDown>1){distScaleDown=1;}
+
         for(int iter=0; iter<iters; iter++){
             sampleX = randomDouble()*thePdf.sampleWidth;
             sampleY = randomDouble()*thePdf.sampleHeight;
@@ -356,10 +366,13 @@ public class ifsys extends Panel
             ptColor = thePdf.volume[(int)sampleX][(int)sampleY][(int)sampleZ];
 
             if(ptColor>0){
-                ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust;
+                ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust*distScaleDown;
                 rpt = new ifsPt((sampleX-centerX)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw); //placed point
+
                 //put pixel
-                theVolume.putPixel(new ifsPt(dpt.x+rpt.x,dpt.y+rpt.y, dpt.z+rpt.z),ptColor);
+                theVolume.putPixel(new ifsPt(dpt.x+rpt.x+uncertaintyX,
+                                             dpt.y+rpt.y+uncertaintyY,
+                                             dpt.z+rpt.z+uncertaintyZ),ptColor);
             }
         }
     }
@@ -375,11 +388,11 @@ public class ifsys extends Panel
         if(samplesPerFrame >131072){
             samplesPerFrame =131072;}
 
-        if(potentialRadius>16){
-            potentialRadius=16;
+        if(potentialRadius>512){
+            potentialRadius=512;
         }
-        if(potentialRadius<1){
-            potentialRadius=1;
+        if(potentialRadius<0){
+            potentialRadius=0;
         }
     }
 
