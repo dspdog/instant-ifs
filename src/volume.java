@@ -9,6 +9,7 @@ public class volume {
 
     double totalSamplesAlpha =0;
     double dataMax=0;
+    double dataMaxVolumetric=0;
     double dataMaxReset = 0;
 
     double surfaceArea=0;
@@ -23,6 +24,7 @@ public class volume {
 
     ifsPt centroid;
     ifsPt highPt;
+    ifsPt highPtVolumetric;
 
     ViewDirection preferredDirection;
 
@@ -54,6 +56,7 @@ public class volume {
         totalSamplesAlpha =1;
         centroid = new ifsPt(0,0,0);
         dataMax=dataMaxReset;
+        dataMaxVolumetric=dataMaxReset;
 
         if(renderMode == renderMode.VOLUMETRIC){
             volume.reset();
@@ -112,9 +115,9 @@ public class volume {
                     volume.putData((int) pt.x, (int) pt.y, (int) pt.z + 1, alpha);
                 }
 
-                if(volume.getData((int)pt.x, (int)pt.y, (int)pt.y)>dataMax){
-                    dataMax= volume.getData((int)pt.x, (int)pt.y, (int)pt.y);//volume[(int)pt.x][(int)pt.y][(int)pt.z];
-                    highPt = new ifsPt(pt);
+                if(volume.getData((int)pt.x, (int)pt.y, (int)pt.y)>dataMaxVolumetric){
+                    dataMaxVolumetric= volume.getData((int)pt.x, (int)pt.y, (int)pt.y);//volume[(int)pt.x][(int)pt.y][(int)pt.z];
+                    highPtVolumetric = new ifsPt(pt);
                 }
             }
 
@@ -151,21 +154,19 @@ public class volume {
                 YZProjection[(int)pt.y][(int)pt.z] += alpha;
             }
 
-            if(renderMode!=renderMode.VOLUMETRIC){
-                if(XYProjection[(int)pt.x][(int)pt.y]>dataMax){
-                    dataMax= XYProjection[(int)pt.x][(int)pt.y];
-                    highPt = new ifsPt(pt);
-                }
+            if(XYProjection[(int)pt.x][(int)pt.y]>dataMax){
+                dataMax= XYProjection[(int)pt.x][(int)pt.y];
+                highPt = new ifsPt(pt);
+            }
 
-                if(XZProjection[(int)pt.x][(int)pt.z]>dataMax){
-                    dataMax= XZProjection[(int)pt.x][(int)pt.z];
-                    highPt = new ifsPt(pt);
-                }
+            if(XZProjection[(int)pt.x][(int)pt.z]>dataMax){
+                dataMax= XZProjection[(int)pt.x][(int)pt.z];
+                highPt = new ifsPt(pt);
+            }
 
-                if(YZProjection[(int)pt.y][(int)pt.z]>dataMax){
-                    dataMax= YZProjection[(int)pt.y][(int)pt.z];
-                    highPt = new ifsPt(pt);
-                }
+            if(YZProjection[(int)pt.y][(int)pt.z]>dataMax){
+                dataMax= YZProjection[(int)pt.y][(int)pt.z];
+                highPt = new ifsPt(pt);
             }
         }
     }

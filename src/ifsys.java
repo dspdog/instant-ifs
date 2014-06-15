@@ -281,7 +281,7 @@ public class ifsys extends Panel
         double scaler = 1;//255/theVolume.dataMax * brightnessMultiplier;
         double area = 0;
         int scaledColor = 0;
-        double[][] projection = theVolume.getScaledProjection(brightnessMultiplier);
+        double[][] projection = theVolume.getScaledProjection(Math.pow(2,brightnessMultiplier));
 
         boolean didProcess=false;
 
@@ -363,10 +363,10 @@ public class ifsys extends Panel
     }
 
     public void limitParams(){
-        if(brightnessMultiplier <1.0/64.0){
-            brightnessMultiplier =1.0/64.0;}
-        if(brightnessMultiplier >128){
-            brightnessMultiplier =128;}
+        if(brightnessMultiplier <-16){
+            brightnessMultiplier =-16;}
+        if(brightnessMultiplier >16){
+            brightnessMultiplier =16;}
 
         if(samplesPerFrame <2){
             samplesPerFrame =2;}

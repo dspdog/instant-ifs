@@ -45,7 +45,7 @@ public class ifsOverlays {
     public void drawSpecialPoints(Graphics _rg){//centroid and maximum
         volume vol = myIfsSys.theVolume;
         ifsPt projectedCentroid = vol.getProjectedPt(vol.getCentroid());
-        ifsPt projectedHighPt = vol.getProjectedPt(vol.highPt);
+        ifsPt projectedHighPt = vol.getProjectedPt(vol.highPtVolumetric);
 
         if(myIfsSys.theVolume.totalSamplesAlpha >5000){
             int x=(int)projectedCentroid.x;
@@ -239,11 +239,11 @@ public class ifsOverlays {
                 + (int)(myIfsSys.theVolume.getCentroid().y) + ", "
                 + (int)(myIfsSys.theVolume.getCentroid().z) + ")", xPad, lineSize*4);
         rg.drawString("HighPt: ("
-                + (int)(myIfsSys.theVolume.highPt.x) + ", "
-                + (int)(myIfsSys.theVolume.highPt.y) + ", "
-                + (int)(myIfsSys.theVolume.highPt.z) + ")", xPad,+ lineSize*5);
+                + (int)(myIfsSys.theVolume.highPtVolumetric.x) + ", "
+                + (int)(myIfsSys.theVolume.highPtVolumetric.y) + ", "
+                + (int)(myIfsSys.theVolume.highPtVolumetric.z) + ")", xPad,+ lineSize*5);
 
-        rg.drawString("DataMax 10^" + df.format(Math.log10(myIfsSys.theVolume.dataMax)), xPad, lineSize * 6);
+        rg.drawString("DataMax 10^" + df.format(Math.log10(myIfsSys.theVolume.dataMaxVolumetric)), xPad, lineSize * 6);
 
         rg.drawString("Dots 10^" + df.format(Math.log10(myIfsSys.theVolume.totalSamples)), xPad, lineSize * 7);
 
