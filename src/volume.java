@@ -36,7 +36,7 @@ public class volume {
         depth = d;
         depthLeanX = 0;
         depthLeanY = 0;
-        renderMode = RenderMode.SIDES_ONLY;
+        renderMode = RenderMode.VOLUMETRIC;
         preferredDirection = ViewDirection.XY;
         antiAliasing = true;
         XYProjection = new double[width][height];
@@ -70,8 +70,6 @@ public class volume {
             }
         }
     }
-
-
 
     public void putPixel(ifsPt pt, double alpha){
         centroid.x+=pt.x*alpha;
@@ -297,8 +295,10 @@ public class volume {
                             }
                         }
                     }
-                    res.putData(x,y,z,addition/2);
-                    res.clipData(x, y, z);
+                    if(addition>0){
+                        res.putData(x,y,z,addition/2);
+                        res.clipData(x, y, z);
+                    }
                 }
             }
             System.out.println("3D POTENTIAL " + x);
@@ -332,7 +332,6 @@ public class volume {
 
         for(x=3; x<width-3; x++){
             for(y=3; y<width-3; y++){
-                //double edges = Math.abs(map[x][y]-map[x-1][y]) + Math.abs(map[x][y]-map[x+1][y]) + Math.abs(map[x][y]-map[x][y-1]) + Math.abs(map[x][y]-map[x][y+1])/4;
 
                 double edges1 = Math.max(
                                 Math.max(
@@ -342,19 +341,10 @@ public class volume {
                                         (map[x][y]-map[x][y+1]))
                 );
 
-                double edges2 = Math.max(
-                        Math.max(
-                                (map[x][y]-map[x-1][y-1]),
-                                (map[x][y] - map[x + 1][y+1])),
-                        Math.max((map[x][y]-map[x+1][y-1]),
-                                (map[x][y]-map[x-1][y+1]))
-                );
+                total+=edges1/255.0;
 
-                double edges = Math.max(edges1, edges2 * 1.0 / Math.sqrt(2));
-                total+=edges;
-
-                edges = Math.min(edges, 255);
-                res[x][y]=edges;
+                edges1 = Math.min(edges1, 255);
+                res[x][y]=edges1;
             }
         }
 

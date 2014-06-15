@@ -69,10 +69,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="ifsys.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="596" column="13" selection-start="19678" selection-end="19678" vertical-scroll-proportion="0.22830188" vertical-offset="9960" max-vertical-offset="11934">
+            <state line="291" column="18" selection-start="7700" selection-end="7700" vertical-scroll-proportion="-6.1153846" vertical-offset="4737" max-vertical-offset="11934">
               <folding />
             </state>
           </provider>
@@ -107,28 +107,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="volume.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="volume.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/volume.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="179" column="0" selection-start="6562" selection-end="6562" vertical-scroll-proportion="-9.230769" vertical-offset="2803" max-vertical-offset="6715">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="smartVolume.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/smartVolume.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="41" column="17" selection-start="1161" selection-end="1161" vertical-scroll-proportion="0.0" vertical-offset="426" max-vertical-offset="1190">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="subVolume.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/subVolume.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="47" column="24" selection-start="999" selection-end="1007" vertical-scroll-proportion="0.0" vertical-offset="102" max-vertical-offset="1003">
+            <state line="342" column="0" selection-start="11499" selection-end="11499" vertical-scroll-proportion="0.5159575" vertical-offset="5523" max-vertical-offset="6545">
               <folding />
             </state>
           </provider>
@@ -173,17 +155,17 @@
         <option value="$PROJECT_DIR$/src/ifsShape.java" />
         <option value="$PROJECT_DIR$/src/nestedVolume.java" />
         <option value="$PROJECT_DIR$/src/subVolume.java" />
-        <option value="$PROJECT_DIR$/src/smartVolume.java" />
-        <option value="$PROJECT_DIR$/src/volume.java" />
         <option value="$PROJECT_DIR$/src/ifsMenu.java" />
         <option value="$PROJECT_DIR$/src/ifsOverlays.java" />
         <option value="$PROJECT_DIR$/src/ifsys.java" />
+        <option value="$PROJECT_DIR$/src/smartVolume.java" />
+        <option value="$PROJECT_DIR$/src/volume.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="503" />
-    <option name="y" value="39" />
+    <option name="x" value="482" />
+    <option name="y" value="135" />
     <option name="width" value="1070" />
     <option name="height" value="899" />
   </component>
@@ -513,7 +495,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="503" y="39" width="1070" height="899" extended-state="0" />
+    <frame x="482" y="135" width="1070" height="899" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -524,7 +506,7 @@
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.15210356" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39805827" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.42502698" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3279396" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
@@ -871,23 +853,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/subVolume.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="24" selection-start="999" selection-end="1007" vertical-scroll-proportion="0.0" vertical-offset="102" max-vertical-offset="1003">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsShape.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="6" column="37" selection-start="133" selection-end="136" vertical-scroll-proportion="-3.9230769" vertical-offset="0" max-vertical-offset="5253">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/smartVolume.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="41" column="17" selection-start="1161" selection-end="1161" vertical-scroll-proportion="0.0" vertical-offset="426" max-vertical-offset="1190">
           <folding />
         </state>
       </provider>
@@ -902,13 +870,6 @@
     <entry file="file://$PROJECT_DIR$/src/ifsPt.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="35" column="0" selection-start="804" selection-end="804" vertical-scroll-proportion="0.0" vertical-offset="346" max-vertical-offset="1955">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/volume.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="179" column="0" selection-start="6562" selection-end="6562" vertical-scroll-proportion="-9.230769" vertical-offset="2803" max-vertical-offset="6715">
           <folding />
         </state>
       </provider>
@@ -931,7 +892,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="596" column="13" selection-start="19678" selection-end="19678" vertical-scroll-proportion="0.22830188" vertical-offset="9960" max-vertical-offset="11934">
+        <state line="291" column="18" selection-start="7700" selection-end="7700" vertical-scroll-proportion="-6.1153846" vertical-offset="4737" max-vertical-offset="11934">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/subVolume.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="16" selection-start="535" selection-end="535" vertical-scroll-proportion="0.33333334" vertical-offset="159" max-vertical-offset="1003">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/smartVolume.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="44" column="21" selection-start="1207" selection-end="1207" vertical-scroll-proportion="0.43105757" vertical-offset="426" max-vertical-offset="1173">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/volume.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="342" column="0" selection-start="11499" selection-end="11499" vertical-scroll-proportion="0.5159575" vertical-offset="5523" max-vertical-offset="6545">
           <folding />
         </state>
       </provider>
