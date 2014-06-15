@@ -135,8 +135,8 @@ public class ifsys extends Panel
         usingFindEdges = false;
         threshold = 64;
 
-        renderThrottling=false;
-        postProcessPeriod=1000;
+        renderThrottling=true;
+        postProcessPeriod=2000;
     }
 
     public static void main(String[] args) {

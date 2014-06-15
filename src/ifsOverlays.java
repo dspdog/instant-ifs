@@ -261,6 +261,7 @@ public class ifsOverlays {
         rg.drawString("RenderTime " + df.format(time) + "s", xPad, lineSize*12);
         rg.drawString("Dots/s 10^" + df.format(Math.log10((myIfsSys.theVolume.totalSamples/time))), xPad, lineSize*13);
 
+        rg.drawString("Regions " + myIfsSys.theVolume.volume.getInitCount() + "/" + myIfsSys.theVolume.volume.totalRegions + " (" + (100*myIfsSys.theVolume.volume.getInitCount()/myIfsSys.theVolume.volume.totalRegions) + "%)", xPad, lineSize*14);
 
         drawAxis(rg);
     }

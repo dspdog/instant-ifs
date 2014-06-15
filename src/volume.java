@@ -13,7 +13,8 @@ public class volume {
 
     double surfaceArea=0;
 
-    public double volume[][][];
+    public smartVolume volume;
+
     public double XYProjection[][];
     public double XZProjection[][];
     public double YZProjection[][];
@@ -40,7 +41,8 @@ public class volume {
         XZProjection = new double[width][depth];
         YZProjection = new double[height][depth];
         if(renderMode == RenderMode.VOLUMETRIC){
-            volume = new double[width][height][depth];
+            //volume = new double[width][height][depth];
+            volume = new smartVolume(width);
         }
 
         centroid = new ifsPt(0,0,0);
@@ -54,30 +56,14 @@ public class volume {
         dataMax=dataMaxReset;
 
         if(renderMode == renderMode.VOLUMETRIC){
-            for(int x=0; x<width; x++){
-                for(int y=0; y<height; y++){
-                    for(int z=0; z<depth; z++){
-                        volume[x][y][z]=0;
-                    }
-                }
-            }
+            volume.reset();
         }
+
+        double[][] proj = getProjection();
 
         for(int x=0; x<width; x++){
             for(int y=0; y<height; y++){
-                XYProjection[x][y]=0;
-            }
-        }
-
-        for(int x=0; x<width; x++){
-            for(int z=0; z<depth; z++){
-                XZProjection[x][z]=0;
-            }
-        }
-
-        for(int y=0; y<height; y++){
-            for(int z=0; z<depth; z++){
-                YZProjection[y][z]=0;
+                proj[x][y]=0;
             }
         }
     }
@@ -112,21 +98,22 @@ public class volume {
                     double yDec = pt.y - (int)pt.y;
                     double zDec = pt.z - (int)pt.z;
 
-                    volume[(int)pt.x][(int)pt.y][(int)pt.z] += alpha*(1-xDec)*(1-yDec)*(1-zDec);
-                    volume[(int)pt.x+1][(int)pt.y][(int)pt.z] += alpha*xDec*(1-yDec)*(1-zDec);
-                    volume[(int)pt.x][(int)pt.y+1][(int)pt.z] += alpha*(1-xDec)*yDec*(1-zDec);
-                    volume[(int)pt.x+1][(int)pt.y+1][(int)pt.z] += alpha*xDec*yDec*(1-zDec);
+                    volume.putData((int) pt.x, (int) pt.y, (int) pt.z, alpha * (1 - xDec) * (1 - yDec) * (1 - zDec));
+                    volume.putData((int) pt.x + 1, (int) pt.y, (int) pt.z, alpha * xDec * (1 - yDec) * (1 - zDec));
+                    volume.putData((int) pt.x, (int) pt.y + 1, (int) pt.z, alpha * (1 - xDec) * yDec * (1 - zDec));
+                    volume.putData((int) pt.x + 1, (int) pt.y + 1, (int) pt.z, alpha * xDec * yDec * (1 - zDec));
 
-                    volume[(int)pt.x][(int)pt.y][(int)pt.z+1] += alpha*(1-xDec)*(1-yDec)*zDec;
-                    volume[(int)pt.x+1][(int)pt.y][(int)pt.z+1] += alpha*xDec*(1-yDec)*zDec;
-                    volume[(int)pt.x][(int)pt.y+1][(int)pt.z+1] += alpha*(1-xDec)*yDec*zDec;
-                    volume[(int)pt.x+1][(int)pt.y+1][(int)pt.z+1] += alpha*xDec*yDec*zDec;
+                    volume.putData((int) pt.x, (int) pt.y, (int) pt.z + 1, alpha * (1 - xDec) * (1 - yDec) * zDec);
+                    volume.putData((int) pt.x + 1, (int) pt.y, (int) pt.z + 1, alpha * xDec * (1 - yDec) * zDec);
+                    volume.putData((int) pt.x, (int) pt.y + 1, (int) pt.z + 1, alpha * (1 - xDec) * yDec * zDec);
+                    volume.putData((int) pt.x + 1, (int) pt.y + 1, (int) pt.z + 1, alpha * xDec * yDec * zDec);
+
                 }else{
-                    volume[(int)pt.x][(int)pt.y][(int)pt.z]+=alpha;
+                    volume.putData((int) pt.x, (int) pt.y, (int) pt.z + 1, alpha);
                 }
 
-                if(volume[(int)pt.x][(int)pt.y][(int)pt.z]>dataMax){
-                    dataMax=volume[(int)pt.x][(int)pt.y][(int)pt.z];
+                if(volume.getData((int)pt.x, (int)pt.y, (int)pt.y)>dataMax){
+                    dataMax= volume.getData((int)pt.x, (int)pt.y, (int)pt.y);//volume[(int)pt.x][(int)pt.y][(int)pt.z];
                     highPt = new ifsPt(pt);
                 }
             }
@@ -164,21 +151,22 @@ public class volume {
                 YZProjection[(int)pt.y][(int)pt.z] += alpha;
             }
 
-            if(XYProjection[(int)pt.x][(int)pt.y]>dataMax){
-                dataMax= XYProjection[(int)pt.x][(int)pt.y];
-                highPt = new ifsPt(pt);
-            }
+            if(renderMode!=renderMode.VOLUMETRIC){
+                if(XYProjection[(int)pt.x][(int)pt.y]>dataMax){
+                    dataMax= XYProjection[(int)pt.x][(int)pt.y];
+                    highPt = new ifsPt(pt);
+                }
 
-            if(XZProjection[(int)pt.x][(int)pt.z]>dataMax){
-                dataMax= XZProjection[(int)pt.x][(int)pt.z];
-                highPt = new ifsPt(pt);
-            }
+                if(XZProjection[(int)pt.x][(int)pt.z]>dataMax){
+                    dataMax= XZProjection[(int)pt.x][(int)pt.z];
+                    highPt = new ifsPt(pt);
+                }
 
-            if(YZProjection[(int)pt.y][(int)pt.z]>dataMax){
-                dataMax= YZProjection[(int)pt.y][(int)pt.z];
-                highPt = new ifsPt(pt);
+                if(YZProjection[(int)pt.y][(int)pt.z]>dataMax){
+                    dataMax= YZProjection[(int)pt.y][(int)pt.z];
+                    highPt = new ifsPt(pt);
+                }
             }
-
         }
     }
 
@@ -239,7 +227,7 @@ public class volume {
         return scaled;
     }
 
-    public double[][] getPotential(double[][] map, int radius){ // map must be square!
+    public static double[][] getPotential(double[][] map, int radius){ // map must be square!
         int width = map.length;
         double[][] res = new double[width][width];
         double invDistance[][] = new double[radius*2][radius*2];
@@ -272,7 +260,7 @@ public class volume {
         return res;
     }
 
-    public double[][] getProjectionCopy(double[][] map){
+    public static double[][] getProjectionCopy(double[][] map){
         int width = map.length;
 
         double[][] res = new double[width][width];
@@ -328,7 +316,7 @@ public class volume {
         return res;
     }
 
-    public double[][] getThreshold(double[][] map, int threshold){
+    public static double[][] getThreshold(double[][] map, int threshold){
         int width = map.length;
 
         double[][] res = new double[width][width];
@@ -343,11 +331,11 @@ public class volume {
         return res;
     }
 
-    public enum RenderMode {
+    public static enum RenderMode {
         VOLUMETRIC, SIDES_ONLY
     }
 
-    public enum ViewDirection{
+    public static enum ViewDirection{
         XY, XZ, YZ
     }
 

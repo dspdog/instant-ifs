@@ -298,7 +298,7 @@ class ifsShape{
         updateCenterOnce();
     }
 
-    public double distance(double x, double y, double z){
+    public static double distance(double x, double y, double z){
         return Math.sqrt(x * x + y * y + z * z);
     }
 }
