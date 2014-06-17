@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
 
 public class ifsMenu extends Component implements ItemListener, ChangeListener, ActionListener {
 
@@ -453,12 +454,20 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
             if(cb.getText()=="Choose X Img..."){
                 pdfXImgFile = fc.showOpenDialog(this);
+                if(pdfXImgFile == JFileChooser.APPROVE_OPTION){
+                    myIfsSys.thePdf.setSampleImageX(fc.getSelectedFile());
+                }
             }else if(cb.getText()=="Choose Y Img..."){
                 pdfYImgFile = fc.showOpenDialog(this);
+                if(pdfYImgFile == JFileChooser.APPROVE_OPTION){
+                    myIfsSys.thePdf.setSampleImageY(fc.getSelectedFile());
+                }
             }else if(cb.getText()=="Choose Z Img..."){
                 pdfZImgFile = fc.showOpenDialog(this);
+                if(pdfZImgFile == JFileChooser.APPROVE_OPTION){
+                    myIfsSys.thePdf.setSampleImageZ(fc.getSelectedFile());
+                }
             }
-            //System.out.println(pdfXImgFile + " " + pdfYImgFile + " " + pdfZImgFile);
         }catch (Exception ex){
 
         }

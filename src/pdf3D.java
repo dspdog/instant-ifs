@@ -1,6 +1,7 @@
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.PixelGrabber;
+import java.io.File;
 import java.net.URL;
 
 public class pdf3D { //3d probabilty density function
@@ -135,6 +136,62 @@ public class pdf3D { //3d probabilty density function
         loadImgs3D(filename,filename,filename);
     }
 
+    public void sampleImg(File file, Image sampleImage, int[] samplePixels){
+        try {
+            System.out.println("loading" + file.getCanonicalPath());
+            sampleImage = getImage(file);
+            PixelGrabber grabber = new PixelGrabber(sampleImage, 0, 0, -1, -1, false);
+
+            if (grabber.grabPixels()) {
+                samplePixels = (int[]) grabber.getPixels();
+
+                for(int i=0; i<width*height; i++){
+                    samplePixels[i] = samplePixels[i]&0xFF;
+                }
+
+                int i=0;
+                for(int y=0; y<width; y++){
+                    for(int x=0; x<height; x++){
+                        for(int z=0; z<depth; z++){
+                            addToVolume(x,y,z,samplePixels[y+z*width]);
+                            i++;
+                        }
+                    }
+                }
+                System.out.println("built " + width + " " + height + " " + depth + " " + i);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setSampleImageX(File file){
+        int samplePixels[] = samplePixelsX;
+        Image sampleImage = sampleImageX;
+        System.out.println("Img X: " + file.getAbsolutePath());
+        sampleImg(file, sampleImage, samplePixels);
+    }
+
+    public void setSampleImageY(File file){
+        int samplePixels[] = samplePixelsY;
+        Image sampleImage = sampleImageY;
+        System.out.println("Img Y: " + file.getAbsolutePath());
+        sampleImg(file, sampleImage, samplePixels);
+    }
+
+    public void setSampleImageZ(File file){
+        int samplePixels[] = samplePixelsZ;
+        Image sampleImage = sampleImageZ;
+        System.out.println("Img Z: " + file.getAbsolutePath());
+        sampleImg(file, sampleImage, samplePixels);
+    }
+
+    public void addToVolume(int x, int y, int z, double value){
+        volume[x][y][z] = value;
+        //samplePixelsY[x+z*width]*
+        //samplePixelsZ[x+y*width]/255/255;
+    }
+
     public void loadImgs3D(String filenameX, String filenameY, String filenameZ){
         System.out.println("loadingX " + filenameX);
         System.out.println("loadingY " + filenameY);
@@ -188,6 +245,16 @@ public class pdf3D { //3d probabilty density function
             // file:/C:/Users/Labrats/Documents/GitHub/instant-ifs/img/
             URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
             return ImageIO.read(theImgURL);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Image getImage(File file){
+        try{
+            return ImageIO.read(file);
         }
         catch(Exception e) {
             e.printStackTrace();
