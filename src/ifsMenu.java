@@ -172,7 +172,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         SpringLayout layout = new SpringLayout();
         panel.setLayout(layout);
         layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
-        
+
         JButton xImgButton = new JButton("Choose X Img...");
         JButton yImgButton = new JButton("Choose Y Img...");
         JButton zImgButton = new JButton("Choose Z Img...");

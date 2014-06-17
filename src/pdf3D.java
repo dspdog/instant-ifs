@@ -24,6 +24,8 @@ public class pdf3D { //3d probabilty density function
     int samplePixelsY[];
     int samplePixelsZ[];
 
+    comboMode thePdfComboMode = comboMode.AVERAGE;
+
     public pdf3D(){
         width = 512;
         height = 512;
@@ -33,8 +35,10 @@ public class pdf3D { //3d probabilty density function
 
         //loadMap_XYGradient();
         //loadMap_3DBlob();
-        loadImg3D("serp2.jpg");
+        //loadImg3D("serp2.jpg");
         //loadImg("serp.png");
+        
+        loadImgs3D("_x.png", "_y.png", "_z.png");
     }
 
     public double getSliceXY_Sum(int x, int y){
@@ -137,36 +141,43 @@ public class pdf3D { //3d probabilty density function
         loadImgs3D(filename,filename,filename);
     }
 
-    public void sampleImg(File file, Image sampleImage, int[] samplePixels, int missingDimension){
+    public void sampleImg(File file, Image sampleImage, int missingDimension){
         try {
             System.out.println("loading" + file.getCanonicalPath());
             //sampleImage = getImage(file);
             PixelGrabber grabber = new PixelGrabber(sampleImage, 0, 0, -1, -1, false);
 
             if (grabber.grabPixels()) {
-                samplePixels = (int[]) grabber.getPixels();
 
-                for(int i=0; i<width*height; i++){
-                    samplePixels[i] = samplePixels[i]&0xFF;
-                }
+                switch (missingDimension){
+                                case 0: //X
+                                    samplePixelsX = (int[]) grabber.getPixels();
+
+                                    for(int i=0; i<width*height; i++){
+                                        samplePixelsX[i] = samplePixelsX[i]&0xFF;
+                                    }
+                                    break;
+                                case 1: //Y
+                                    samplePixelsY = (int[]) grabber.getPixels();
+
+                                    for(int i=0; i<width*height; i++){
+                                        samplePixelsY[i] = samplePixelsY[i]&0xFF;
+                                    }
+                                    break;
+                                case 2: //Z
+                                    samplePixelsZ = (int[]) grabber.getPixels();
+
+                                    for(int i=0; i<width*height; i++){
+                                        samplePixelsZ[i] = samplePixelsZ[i]&0xFF;
+                                    }
+                                    break;
+                            }
 
                 int i=0;
                 for(int y=0; y<width; y++){
                     for(int x=0; x<height; x++){
                         for(int z=0; z<depth; z++){
-
-                            switch (missingDimension){
-                                case 0: //X
-                                    addToVolume(x,y,z,samplePixels[y+z*width]);
-                                    break;
-                                case 1: //Y
-                                    addToVolume(x,y,z,samplePixels[x+z*width]);
-                                    break;
-                                case 2: //Z
-                                    addToVolume(x,y,z,samplePixels[x+y*width]);
-                                    break;
-                            }
-
+                            updateVolume(x,y,z);
                             i++;
                         }
                     }
@@ -182,25 +193,49 @@ public class pdf3D { //3d probabilty density function
     public void setSampleImageX(File file){
         System.out.println("Img X: " + file.getAbsolutePath());
         sampleImageX = getImage(file);
-        sampleImg(file, sampleImageX, samplePixelsX, 0);
+        sampleImg(file, sampleImageX, 0);
     }
 
     public void setSampleImageY(File file){
         System.out.println("Img Y: " + file.getAbsolutePath());
         sampleImageY = getImage(file);
-        sampleImg(file, sampleImageY, samplePixelsY, 1);
+        sampleImg(file, sampleImageY, 1);
     }
 
     public void setSampleImageZ(File file){
         System.out.println("Img Z: " + file.getAbsolutePath());
         sampleImageZ = getImage(file);
-        sampleImg(file, sampleImageZ, samplePixelsZ, 2);
+        sampleImg(file, sampleImageZ, 2);
     }
 
-    public void addToVolume(int x, int y, int z, double value){
-        volume[x][y][z] = value;
-        //samplePixelsY[x+z*width]*
-        //samplePixelsZ[x+y*width]/255/255;
+    public void updateVolume(int x, int y, int z){
+
+        switch(thePdfComboMode){
+            case ADD:
+                volume[x][y][z] = samplePixelsX[y+z*width]+
+                                  samplePixelsY[x+z*width]+
+                                  samplePixelsZ[x+y*width];
+                break;
+            case AVERAGE:
+                volume[x][y][z] = (samplePixelsX[y+z*width]+
+                                    samplePixelsY[x+z*width]+
+                                    samplePixelsZ[x+y*width])/3;
+                break;
+            case MULTIPLY:
+                volume[x][y][z] = samplePixelsX[y+z*width]*
+                                  samplePixelsY[x+z*width]*
+                                  samplePixelsZ[x+y*width]/255/255;
+                break;
+            case MAX:
+                volume[x][y][z] = Math.max(Math.max(samplePixelsX[y+z*width],
+                                                    samplePixelsY[x+z*width]), samplePixelsZ[x+y*width]);
+                break;
+            case MIN:
+                volume[x][y][z] = Math.min(Math.min(samplePixelsX[y + z * width],
+                        samplePixelsY[x + z * width]), samplePixelsZ[x + y * width]);
+                break;
+
+        }
     }
 
     public void loadImgs3D(String filenameX, String filenameY, String filenameZ){
@@ -236,10 +271,12 @@ public class pdf3D { //3d probabilty density function
                 for(int y=0; y<sampleWidth; y++){
                     for(int x=0; x<sampleHeight; x++){
                         for(int z=0; z<sampleDepth; z++){
-                            volume[x][y][z] = samplePixelsX[y+z*width]*
+                            /*volume[x][y][z] = samplePixelsX[y+z*width]*
                                               samplePixelsY[x+z*width]*
-                                              samplePixelsZ[x+y*width]/255/255;
-                            i++;
+                                              samplePixelsZ[x+y*width]/255/255;*/
+
+                            updateVolume(x,y,z);
+                             i++;
                         }
                     }
                 }
