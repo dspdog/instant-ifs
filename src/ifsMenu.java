@@ -171,8 +171,12 @@ public class ifsMenu implements ItemListener, ChangeListener, ActionListener {
         //
 
         JButton xImgButton = new JButton("Choose X Img...");
+        JButton yImgButton = new JButton("Choose Y Img...");
+        JButton zImgButton = new JButton("Choose Z Img...");
 
         addLabeledFileChooser(xImgButton, layout, "", panel, 1);
+        addLabeledFileChooser(yImgButton, layout, "", panel, 2.35);
+        addLabeledFileChooser(zImgButton, layout, "", panel, 3.7);
 
         panel.add(renderLabel);
     }
