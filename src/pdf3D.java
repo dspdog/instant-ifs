@@ -1,4 +1,5 @@
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.PixelGrabber;
 import java.io.File;
@@ -139,7 +140,7 @@ public class pdf3D { //3d probabilty density function
     public void sampleImg(File file, Image sampleImage, int[] samplePixels, int missingDimension){
         try {
             System.out.println("loading" + file.getCanonicalPath());
-            sampleImage = getImage(file);
+            //sampleImage = getImage(file);
             PixelGrabber grabber = new PixelGrabber(sampleImage, 0, 0, -1, -1, false);
 
             if (grabber.grabPixels()) {
@@ -179,24 +180,21 @@ public class pdf3D { //3d probabilty density function
     }
 
     public void setSampleImageX(File file){
-        int samplePixels[] = samplePixelsX;
-        Image sampleImage = sampleImageX;
         System.out.println("Img X: " + file.getAbsolutePath());
-        sampleImg(file, sampleImage, samplePixels, 0);
+        sampleImageX = getImage(file);
+        sampleImg(file, sampleImageX, samplePixelsX, 0);
     }
 
     public void setSampleImageY(File file){
-        int samplePixels[] = samplePixelsY;
-        Image sampleImage = sampleImageY;
         System.out.println("Img Y: " + file.getAbsolutePath());
-        sampleImg(file, sampleImage, samplePixels, 1);
+        sampleImageY = getImage(file);
+        sampleImg(file, sampleImageY, samplePixelsY, 1);
     }
 
     public void setSampleImageZ(File file){
-        int samplePixels[] = samplePixelsZ;
-        Image sampleImage = sampleImageZ;
         System.out.println("Img Z: " + file.getAbsolutePath());
-        sampleImg(file, sampleImage, samplePixels, 2);
+        sampleImageZ = getImage(file);
+        sampleImg(file, sampleImageZ, samplePixelsZ, 2);
     }
 
     public void addToVolume(int x, int y, int z, double value){
@@ -250,13 +248,15 @@ public class pdf3D { //3d probabilty density function
         }catch (InterruptedException e) {
             e.printStackTrace();
         }
+        JPanel j = new JPanel();
+
     }
 
     public Image getImage(String name){
         try{
             //URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
             // file:/C:/Users/Labrats/Documents/GitHub/instant-ifs/img/
-            URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
+            URL theImgURL = new URL("file:/C:/Users/Labrats/Documents/GitHub/instant-ifs/img/" + name);
             return ImageIO.read(theImgURL);
         }
         catch(Exception e) {

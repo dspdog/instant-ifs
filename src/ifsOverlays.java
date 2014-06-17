@@ -214,6 +214,20 @@ public class ifsOverlays {
         }
     }
 
+    public void drawPDF(Graphics rg){
+        int size = 128;
+        int x=myIfsSys.screenwidth-size*3;
+        int y=520;
+        int pady = 5;
+        rg.setColor(Color.WHITE);
+        rg.drawImage(myIfsSys.thePdf.sampleImageX, x, y, size, size, myIfsSys);
+        rg.drawString("PDF X", x, y-pady);
+        rg.drawImage(myIfsSys.thePdf.sampleImageY, x+size, y, size, size, myIfsSys);
+        rg.drawString("PDF Y", x+size, y-pady);
+        rg.drawImage(myIfsSys.thePdf.sampleImageZ, x+size*2, y, size, size, myIfsSys);
+        rg.drawString("PDF Z", x+size*2, y-pady);
+    }
+
     public void drawBoxBrackets(Graphics rg, int x, int y, int width, int height, int bracketSize){
         //upper left
         rg.drawLine(x,y,x+bracketSize,y);

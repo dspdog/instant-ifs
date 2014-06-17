@@ -2,13 +2,10 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.*;
 import java.io.File;
 
-public class ifsMenu extends Component implements ItemListener, ChangeListener, ActionListener {
+public class ifsMenu extends Component implements ItemListener, ChangeListener, ActionListener, MouseMotionListener {
 
     ifsys myIfsSys;
 
@@ -51,6 +48,8 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     boolean inited=false;
     boolean autoChange = false;
     long lastUiChange = 0;
+
+    long lastPdfPropertiesMouseMoved=0;
 
     public void addLabeledFileChooser(JButton button, SpringLayout layout, String labelText, JPanel panel, double row){
         int spinnerLeft = 5;
@@ -182,6 +181,8 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         addLabeledFileChooser(xImgButton, layout, "", panel, 1);
         addLabeledFileChooser(yImgButton, layout, "", panel, 2.35);
         addLabeledFileChooser(zImgButton, layout, "", panel, 3.7);
+
+        panel.addMouseMotionListener(this);
 
         panel.add(renderLabel);
     }
@@ -471,5 +472,17 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         }catch (Exception ex){
 
         }
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        //triggered by pdf properties panel
+
+        lastPdfPropertiesMouseMoved=System.currentTimeMillis();
     }
 }

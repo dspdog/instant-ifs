@@ -268,6 +268,10 @@ public class ifsys extends Panel
                 overlays.drawInfoBox(rg);
             }
 
+            if(lastMoveTime < theMenu.lastPdfPropertiesMouseMoved){
+                overlays.drawPDF(rg);
+            }
+
         }catch (Exception e){
             e.printStackTrace();
         }
