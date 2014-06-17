@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-public class ifsMenu implements ItemListener, ChangeListener, ActionListener {
+public class ifsMenu extends Component implements ItemListener, ChangeListener, ActionListener {
 
     ifsys myIfsSys;
 
@@ -40,6 +40,10 @@ public class ifsMenu implements ItemListener, ChangeListener, ActionListener {
     JCheckBox delayCheck;
 
     JComboBox renderModeCombo;
+
+    int pdfXImgFile = 0;
+    int pdfYImgFile = 0;
+    int pdfZImgFile = 0;
 
     final JFileChooser fc = new JFileChooser();
 
@@ -446,7 +450,15 @@ public class ifsMenu implements ItemListener, ChangeListener, ActionListener {
         //If coming from the pdf selections buttons...
         try{
             JButton cb = (JButton)e.getSource();
-            System.out.println((cb.getText()));
+
+            if(cb.getText()=="Choose X Img..."){
+                pdfXImgFile = fc.showOpenDialog(this);
+            }else if(cb.getText()=="Choose Y Img..."){
+                pdfYImgFile = fc.showOpenDialog(this);
+            }else if(cb.getText()=="Choose Z Img..."){
+                pdfZImgFile = fc.showOpenDialog(this);
+            }
+            //System.out.println(pdfXImgFile + " " + pdfYImgFile + " " + pdfZImgFile);
         }catch (Exception ex){
 
         }
