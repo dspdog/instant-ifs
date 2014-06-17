@@ -258,7 +258,6 @@ public class ifsOverlays {
             rg.drawString("DataMax 10^" + df.format(Math.log10(myIfsSys.theVolume.dataMaxVolumetric)), xPad, lineSize * 6);
 
             rg.drawString("Regions " + myIfsSys.theVolume.volume.getInitCount() + "/" + myIfsSys.theVolume.volume.totalRegions + " (" + (100*myIfsSys.theVolume.volume.getInitCount()/myIfsSys.theVolume.volume.totalRegions) + "%)", xPad, lineSize*14);
-
         }else{
             rg.drawString("HighPt2D: ("
                     + (int)(myIfsSys.theVolume.highPt.x) + ", "

@@ -41,9 +41,32 @@ public class ifsMenu implements ItemListener, ChangeListener, ActionListener {
 
     JComboBox renderModeCombo;
 
+    final JFileChooser fc = new JFileChooser();
+
     boolean inited=false;
     boolean autoChange = false;
     long lastUiChange = 0;
+
+    public void addLabeledFileChooser(JButton button, SpringLayout layout, String labelText, JPanel panel, double row){
+        int spinnerLeft = 5;
+        int spinnerRight = -5;
+        int labelToSpinner = -5;
+        int vspace = 20;
+        int topPad=5;
+
+        JLabel label = new JLabel(labelText);
+
+        layout.putConstraint(SpringLayout.EAST, label, labelToSpinner, SpringLayout.WEST, button);
+        layout.putConstraint(SpringLayout.WEST, button, spinnerLeft, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.EAST, button, spinnerRight, SpringLayout.EAST, panel);
+        layout.putConstraint(SpringLayout.NORTH, button, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.NORTH, label, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
+
+        button.addActionListener(this);
+
+        panel.add(label);
+        panel.add(button);
+    }
 
     public void addLabeledCombobox(JComboBox comboBox, SpringLayout layout, String labelText, JPanel panel, double row){
         int spinnerLeft = 70;
@@ -136,6 +159,24 @@ public class ifsMenu implements ItemListener, ChangeListener, ActionListener {
         panel.add(ptLabel);
     }
 
+    public void setupPdfPropertiesPanel(JPanel panel){
+        JLabel renderLabel = new JLabel(" PDF Properties");
+
+        int topPad=5;
+
+        SpringLayout layout = new SpringLayout();
+        panel.setLayout(layout);
+        layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
+
+        //
+
+        JButton xImgButton = new JButton("Choose X Img...");
+
+        addLabeledFileChooser(xImgButton, layout, "", panel, 1);
+
+        panel.add(renderLabel);
+    }
+
     public void setupRenderPropertiesPanel(JPanel panel){
         brightnessSpinner = new JSpinner();
         samplesSpinner = new JSpinner();
@@ -189,12 +230,13 @@ public class ifsMenu implements ItemListener, ChangeListener, ActionListener {
         myIfsSys = is;
         JPanel pointProperties = new JPanel();
         JPanel renderProperties = new JPanel();
-        JPanel cameraProperties = new JPanel();
+        JPanel pdfProperties = new JPanel();
 
         //SIDE MENU
 
         setupPointPropertiesPanel(pointProperties);
         setupRenderPropertiesPanel(renderProperties);
+        setupPdfPropertiesPanel(pdfProperties);
 
         SpringLayout sideMenuLayout = new SpringLayout();
         sideMenu.setLayout(sideMenuLayout);
@@ -214,7 +256,7 @@ public class ifsMenu implements ItemListener, ChangeListener, ActionListener {
 
         splitPaneBig.setDividerLocation(512);
         splitPaneBig.setTopComponent(splitPaneTop);
-        splitPaneBig.setBottomComponent(cameraProperties);
+        splitPaneBig.setBottomComponent(pdfProperties);
         sideMenu.add(splitPaneBig);
 
         MenuBar menuBar;
@@ -300,6 +342,8 @@ public class ifsMenu implements ItemListener, ChangeListener, ActionListener {
                 potentialCheck.setSelected(myIfsSys.usingGaussian);
                 findEdgesCheck.setSelected(myIfsSys.usingFindEdges);
                 delayCheck.setSelected(myIfsSys.renderThrottling);
+                //System.out.println(renderModeCombo.setse);
+                renderModeCombo.setSelectedIndex(myIfsSys.theVolume.renderMode == volume.RenderMode.SIDES_ONLY ? 1 : 0);
             }
         }
         autoChange = false;
@@ -381,11 +425,26 @@ public class ifsMenu implements ItemListener, ChangeListener, ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        JComboBox cb = (JComboBox)e.getSource();
-        if(cb.getSelectedItem() == volume.RenderMode.VOLUMETRIC.toString()){
-            myIfsSys.theVolume.renderMode = volume.RenderMode.VOLUMETRIC;
-        }else if(cb.getSelectedItem() == volume.RenderMode.SIDES_ONLY.toString()){
-            myIfsSys.theVolume.renderMode = volume.RenderMode.SIDES_ONLY;
+        //TODO do all this less hacky...
+
+        //If coming from the render modes combo box...
+        try{
+            JComboBox cb = (JComboBox)e.getSource();
+            if(cb.getSelectedItem() == volume.RenderMode.VOLUMETRIC.toString()){
+                myIfsSys.theVolume.renderMode = volume.RenderMode.VOLUMETRIC;
+            }else if(cb.getSelectedItem() == volume.RenderMode.SIDES_ONLY.toString()){
+                myIfsSys.theVolume.renderMode = volume.RenderMode.SIDES_ONLY;
+            }
+        }catch (Exception ex){
+
+        }
+
+        //If coming from the pdf selections buttons...
+        try{
+            JButton cb = (JButton)e.getSource();
+            System.out.println((cb.getText()));
+        }catch (Exception ex){
+
         }
     }
 }

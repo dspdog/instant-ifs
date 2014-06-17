@@ -36,16 +36,16 @@ public class volume {
         depth = d;
         depthLeanX = 0;
         depthLeanY = 0;
-        renderMode = RenderMode.VOLUMETRIC;
+        renderMode = RenderMode.SIDES_ONLY;
         preferredDirection = ViewDirection.XY;
         antiAliasing = true;
         XYProjection = new double[width][height];
         XZProjection = new double[width][depth];
         YZProjection = new double[height][depth];
-        if(renderMode == RenderMode.VOLUMETRIC){
+        //if(renderMode == RenderMode.VOLUMETRIC){
             //volume = new double[width][height][depth];
             volume = new smartVolume(width);
-        }
+        //}
 
         centroid = new ifsPt(0,0,0);
     }
