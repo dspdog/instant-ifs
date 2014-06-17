@@ -2,10 +2,12 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-public class ifsMenu implements ItemListener, ChangeListener {
+public class ifsMenu implements ItemListener, ChangeListener, ActionListener {
 
     ifsys myIfsSys;
 
@@ -37,9 +39,32 @@ public class ifsMenu implements ItemListener, ChangeListener {
 
     JCheckBox delayCheck;
 
+    JComboBox renderModeCombo;
+
     boolean inited=false;
     boolean autoChange = false;
     long lastUiChange = 0;
+
+    public void addLabeledCombobox(JComboBox comboBox, SpringLayout layout, String labelText, JPanel panel, double row){
+        int spinnerLeft = 70;
+        int spinnerRight = -5;
+        int labelToSpinner = -5;
+        int vspace = 20;
+        int topPad=5;
+
+        JLabel label = new JLabel(labelText);
+
+        layout.putConstraint(SpringLayout.EAST, label, labelToSpinner, SpringLayout.WEST, comboBox);
+        layout.putConstraint(SpringLayout.WEST, comboBox, spinnerLeft, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.EAST, comboBox, spinnerRight, SpringLayout.EAST, panel);
+        layout.putConstraint(SpringLayout.NORTH, comboBox, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.NORTH, label, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
+
+        comboBox.addActionListener(this);
+
+        panel.add(label);
+        panel.add(comboBox);
+    }
 
     public void addLabeledSpinner(JSpinner spinner, SpringLayout layout, String labelText, JPanel panel, double row){
         int spinnerLeft = 70;
@@ -125,6 +150,10 @@ public class ifsMenu implements ItemListener, ChangeListener {
         findEdgesCheck = new JCheckBox();
         delayCheck = new JCheckBox();
 
+        String[] renderModeStrings = {volume.RenderMode.VOLUMETRIC.toString(), volume.RenderMode.SIDES_ONLY.toString()};
+
+        renderModeCombo = new JComboBox(renderModeStrings);
+
         JLabel renderLabel = new JLabel(" Render Properties");
 
         int topPad=5;
@@ -134,20 +163,21 @@ public class ifsMenu implements ItemListener, ChangeListener {
 
         layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
 
-        addLabeledSpinner(brightnessSpinner, layout, "Brightness", panel, 1);
-        addLabeledSpinner(samplesSpinner, layout, "Dots/Frame", panel, 2);
-        addLabeledSpinner(iterationsSpinner, layout, "Iterations", panel, 3);
+        addLabeledCombobox(renderModeCombo, layout, "Mode", panel,  0.7);
+        addLabeledSpinner(brightnessSpinner, layout, "Brightness", panel, 2);
+        addLabeledSpinner(samplesSpinner, layout, "Dots/Frame", panel, 3);
+        addLabeledSpinner(iterationsSpinner, layout, "Iterations", panel, 4);
 
-        addLabeledCheckbox(frameHoldCheck, layout, "Hold Frame", panel, 4.5);
+        addLabeledCheckbox(frameHoldCheck, layout, "Hold Frame", panel, 5.5);
 
-        addLabeledSpinner(potentialSpinner, layout, "Blur", panel, 5.6);
-        addLabeledCheckbox(potentialCheck, layout, "Gaussian", panel, 6.6);
-        addLabeledSpinner(thresholdSpinner, layout, "Threshold", panel, 8);
-        addLabeledCheckbox(thresholdCheck, layout, "Threshold", panel, 9);
-        addLabeledCheckbox(findEdgesCheck, layout, "Find Edges", panel, 10);
+        addLabeledSpinner(potentialSpinner, layout, "Blur", panel, 6.6);
+        addLabeledCheckbox(potentialCheck, layout, "Gaussian", panel, 7.6);
+        addLabeledSpinner(thresholdSpinner, layout, "Threshold", panel, 9);
+        addLabeledCheckbox(thresholdCheck, layout, "Threshold", panel, 10);
+        addLabeledCheckbox(findEdgesCheck, layout, "Find Edges", panel, 11);
 
-        addLabeledCheckbox(delayCheck, layout, "Framelimit", panel, 11.5);
-        addLabeledSpinner(delaySpinner, layout, "Wait X ms", panel, 12.6);
+        addLabeledCheckbox(delayCheck, layout, "Framelimit", panel, 12.5);
+        addLabeledSpinner(delaySpinner, layout, "Wait X ms", panel, 13.6);
 
         panel.add(renderLabel);
     }
@@ -342,8 +372,20 @@ public class ifsMenu implements ItemListener, ChangeListener {
 
             myIfsSys.shape.updateCenter();
 
+
+
             if(!myIfsSys.holdFrame)
             myIfsSys.clearframe();
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        JComboBox cb = (JComboBox)e.getSource();
+        if(cb.getSelectedItem() == volume.RenderMode.VOLUMETRIC.toString()){
+            myIfsSys.theVolume.renderMode = volume.RenderMode.VOLUMETRIC;
+        }else if(cb.getSelectedItem() == volume.RenderMode.SIDES_ONLY.toString()){
+            myIfsSys.theVolume.renderMode = volume.RenderMode.SIDES_ONLY;
         }
     }
 }
