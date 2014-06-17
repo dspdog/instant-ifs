@@ -303,6 +303,7 @@ public class ifsOverlays {
     public void drawAxis(Graphics rg){
         int screenheight = myIfsSys.screenheight;
         int screenwidth = myIfsSys.screenwidth;
+
         switch (myIfsSys.theVolume.preferredDirection){
             case XY:
                 rg.setColor(Color.red);

@@ -278,4 +278,8 @@ public class pdf3D { //3d probabilty density function
     public double distance(double x, double y, double z){
         return Math.sqrt(x * x + y * y + z * z);
     }
+
+    public static enum comboMode {
+        AVERAGE, ADD, MULTIPLY, MAX, MIN
+    }
 }
