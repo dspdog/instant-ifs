@@ -136,7 +136,7 @@ public class pdf3D { //3d probabilty density function
         loadImgs3D(filename,filename,filename);
     }
 
-    public void sampleImg(File file, Image sampleImage, int[] samplePixels){
+    public void sampleImg(File file, Image sampleImage, int[] samplePixels, int missingDimension){
         try {
             System.out.println("loading" + file.getCanonicalPath());
             sampleImage = getImage(file);
@@ -153,11 +153,24 @@ public class pdf3D { //3d probabilty density function
                 for(int y=0; y<width; y++){
                     for(int x=0; x<height; x++){
                         for(int z=0; z<depth; z++){
-                            addToVolume(x,y,z,samplePixels[y+z*width]);
+
+                            switch (missingDimension){
+                                case 0: //X
+                                    addToVolume(x,y,z,samplePixels[y+z*width]);
+                                    break;
+                                case 1: //Y
+                                    addToVolume(x,y,z,samplePixels[x+z*width]);
+                                    break;
+                                case 2: //Z
+                                    addToVolume(x,y,z,samplePixels[x+y*width]);
+                                    break;
+                            }
+
                             i++;
                         }
                     }
                 }
+
                 System.out.println("built " + width + " " + height + " " + depth + " " + i);
             }
         }catch (Exception e) {
@@ -169,21 +182,21 @@ public class pdf3D { //3d probabilty density function
         int samplePixels[] = samplePixelsX;
         Image sampleImage = sampleImageX;
         System.out.println("Img X: " + file.getAbsolutePath());
-        sampleImg(file, sampleImage, samplePixels);
+        sampleImg(file, sampleImage, samplePixels, 0);
     }
 
     public void setSampleImageY(File file){
         int samplePixels[] = samplePixelsY;
         Image sampleImage = sampleImageY;
         System.out.println("Img Y: " + file.getAbsolutePath());
-        sampleImg(file, sampleImage, samplePixels);
+        sampleImg(file, sampleImage, samplePixels, 1);
     }
 
     public void setSampleImageZ(File file){
         int samplePixels[] = samplePixelsZ;
         Image sampleImage = sampleImageZ;
         System.out.println("Img Z: " + file.getAbsolutePath());
-        sampleImg(file, sampleImage, samplePixels);
+        sampleImg(file, sampleImage, samplePixels, 2);
     }
 
     public void addToVolume(int x, int y, int z, double value){

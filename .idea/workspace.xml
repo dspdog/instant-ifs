@@ -128,7 +128,7 @@
       <file leaf-file-name="pdf3D.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/pdf3D.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="180" column="0" selection-start="5724" selection-end="5724" vertical-scroll-proportion="0.9068323" vertical-offset="2554" max-vertical-offset="4590">
+            <state line="150" column="0" selection-start="4711" selection-end="4711" vertical-scroll-proportion="0.4016563" vertical-offset="2288" max-vertical-offset="4811">
               <folding />
             </state>
           </provider>
@@ -173,8 +173,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="526" />
-    <option name="y" value="70" />
+    <option name="x" value="522" />
+    <option name="y" value="59" />
     <option name="width" value="1070" />
     <option name="height" value="899" />
   </component>
@@ -504,7 +504,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="526" y="70" width="1070" height="899" extended-state="0" />
+    <frame x="522" y="59" width="1070" height="899" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -922,7 +922,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/pdf3D.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="180" column="0" selection-start="5724" selection-end="5724" vertical-scroll-proportion="0.9068323" vertical-offset="2554" max-vertical-offset="4590">
+        <state line="150" column="0" selection-start="4711" selection-end="4711" vertical-scroll-proportion="0.4016563" vertical-offset="2288" max-vertical-offset="4811">
           <folding />
         </state>
       </provider>
