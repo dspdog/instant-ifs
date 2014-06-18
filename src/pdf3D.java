@@ -24,7 +24,7 @@ public class pdf3D { //3d probabilty density function
     int samplePixelsY[];
     int samplePixelsZ[];
 
-    comboMode thePdfComboMode = comboMode.AVERAGE;
+    comboMode thePdfComboMode = comboMode.ADD;
 
     public pdf3D(){
         width = 512;
@@ -172,18 +172,7 @@ public class pdf3D { //3d probabilty density function
                                     }
                                     break;
                             }
-
-                int i=0;
-                for(int y=0; y<width; y++){
-                    for(int x=0; x<height; x++){
-                        for(int z=0; z<depth; z++){
-                            updateVolume(x,y,z);
-                            i++;
-                        }
-                    }
-                }
-
-                System.out.println("built " + width + " " + height + " " + depth + " " + i);
+                System.out.println("built " + width + " " + height + " " + depth );
             }
         }catch (Exception e) {
             e.printStackTrace();
@@ -194,22 +183,36 @@ public class pdf3D { //3d probabilty density function
         System.out.println("Img X: " + file.getAbsolutePath());
         sampleImageX = getImage(file);
         sampleImg(file, sampleImageX, 0);
+        updateVolume();
     }
 
     public void setSampleImageY(File file){
         System.out.println("Img Y: " + file.getAbsolutePath());
         sampleImageY = getImage(file);
         sampleImg(file, sampleImageY, 1);
+        updateVolume();
     }
 
     public void setSampleImageZ(File file){
         System.out.println("Img Z: " + file.getAbsolutePath());
         sampleImageZ = getImage(file);
         sampleImg(file, sampleImageZ, 2);
+        updateVolume();
     }
 
-    public void updateVolume(int x, int y, int z){
+    public void updateVolume(){
+        int i=0;
+        for(int y=0; y<width; y++){
+            for(int x=0; x<height; x++){
+                for(int z=0; z<depth; z++){
+                    updateVolumePixel(x, y, z);
+                    i++;
+                }
+            }
+        }
+    }
 
+    public void updateVolumePixel(int x, int y, int z){
         switch(thePdfComboMode){
             case ADD:
                 volume[x][y][z] = samplePixelsX[y+z*width]+
@@ -267,20 +270,8 @@ public class pdf3D { //3d probabilty density function
                     samplePixelsZ[i] = samplePixelsZ[i]&0xFF;
                 }
 
-                int i=0;
-                for(int y=0; y<sampleWidth; y++){
-                    for(int x=0; x<sampleHeight; x++){
-                        for(int z=0; z<sampleDepth; z++){
-                            /*volume[x][y][z] = samplePixelsX[y+z*width]*
-                                              samplePixelsY[x+z*width]*
-                                              samplePixelsZ[x+y*width]/255/255;*/
-
-                            updateVolume(x,y,z);
-                             i++;
-                        }
-                    }
-                }
-                System.out.println("built " + sampleWidth + " " + sampleHeight + " " + sampleDepth + " " + i);
+                updateVolume();
+                System.out.println("built " + sampleWidth + " " + sampleHeight + " " + sampleDepth);
             }
         }catch (InterruptedException e) {
             e.printStackTrace();

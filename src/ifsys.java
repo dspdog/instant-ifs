@@ -137,6 +137,8 @@ public class ifsys extends Panel
 
         renderThrottling=false;
         postProcessPeriod=1000;
+
+        thePdf.thePdfComboMode = pdf3D.comboMode.ADD;
     }
 
     public static void main(String[] args) {

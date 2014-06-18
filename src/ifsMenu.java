@@ -364,6 +364,30 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 renderModeCombo.setSelectedIndex(myIfsSys.theVolume.renderMode == volume.RenderMode.SIDES_ONLY ? 1 : 0);
             }
         }
+
+        switch (myIfsSys.thePdf.thePdfComboMode){
+            case ADD:
+                if(pdfModeCombo.getSelectedIndex()!=0)
+                    pdfModeCombo.setSelectedIndex(0);
+                break;
+            case AVERAGE:
+                if(pdfModeCombo.getSelectedIndex()!=1)
+                    pdfModeCombo.setSelectedIndex(1);
+                break;
+            case MULTIPLY:
+                if(pdfModeCombo.getSelectedIndex()!=2)
+                    pdfModeCombo.setSelectedIndex(2);
+                break;
+            case MAX:
+                if(pdfModeCombo.getSelectedIndex()!=3)
+                    pdfModeCombo.setSelectedIndex(3);
+                break;
+            case MIN:
+                if(pdfModeCombo.getSelectedIndex()!=4)
+                    pdfModeCombo.setSelectedIndex(4);
+                break;
+        }
+
         autoChange = false;
     }
 
@@ -442,43 +466,61 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        //TODO do all this less hacky...
+    public void actionPerformed(ActionEvent e) { //TODO do all this less hacky...
+        if(!autoChange){
+            //If coming from the combo boxs...
+            try{
+                JComboBox cb = (JComboBox)e.getSource();
+                if(cb.getSelectedItem() == volume.RenderMode.VOLUMETRIC.toString()){
+                    myIfsSys.theVolume.renderMode = volume.RenderMode.VOLUMETRIC;
+                }else if(cb.getSelectedItem() == volume.RenderMode.SIDES_ONLY.toString()){
+                    myIfsSys.theVolume.renderMode = volume.RenderMode.SIDES_ONLY;
 
-        //If coming from the render modes combo box...
-        try{
-            JComboBox cb = (JComboBox)e.getSource();
-            if(cb.getSelectedItem() == volume.RenderMode.VOLUMETRIC.toString()){
-                myIfsSys.theVolume.renderMode = volume.RenderMode.VOLUMETRIC;
-            }else if(cb.getSelectedItem() == volume.RenderMode.SIDES_ONLY.toString()){
-                myIfsSys.theVolume.renderMode = volume.RenderMode.SIDES_ONLY;
+                }else if(cb.getSelectedItem() == pdf3D.comboMode.ADD.toString()){
+                    System.out.println("OK");
+                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.ADD;
+                    myIfsSys.thePdf.updateVolume();
+                }else if(cb.getSelectedItem() == pdf3D.comboMode.AVERAGE.toString()){
+                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.AVERAGE;
+                    myIfsSys.thePdf.updateVolume();
+                }else if(cb.getSelectedItem() == pdf3D.comboMode.MULTIPLY.toString()){
+                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.MULTIPLY;
+                    myIfsSys.thePdf.updateVolume();
+                }else if(cb.getSelectedItem() == pdf3D.comboMode.MAX.toString()){
+                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.MAX;
+                    myIfsSys.thePdf.updateVolume();
+                }else if(cb.getSelectedItem() == pdf3D.comboMode.MIN.toString()){
+                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
+                    myIfsSys.thePdf.updateVolume();
+                }
+            }catch (Exception ex){
+
             }
-        }catch (Exception ex){
 
-        }
+            ..
+            //If coming from the pdf selections buttons...
+            try{
+                JButton cb = (JButton)e.getSource();
 
-        //If coming from the pdf selections buttons...
-        try{
-            JButton cb = (JButton)e.getSource();
+                if(cb.getText()=="Choose X Img..."){
+                    pdfXImgFile = fc.showOpenDialog(this);
+                    if(pdfXImgFile == JFileChooser.APPROVE_OPTION){
+                        myIfsSys.thePdf.setSampleImageX(fc.getSelectedFile());
+                    }
+                }else if(cb.getText()=="Choose Y Img..."){
+                    pdfYImgFile = fc.showOpenDialog(this);
+                    if(pdfYImgFile == JFileChooser.APPROVE_OPTION){
+                        myIfsSys.thePdf.setSampleImageY(fc.getSelectedFile());
+                    }
+                }else if(cb.getText()=="Choose Z Img..."){
+                    pdfZImgFile = fc.showOpenDialog(this);
+                    if(pdfZImgFile == JFileChooser.APPROVE_OPTION){
+                        myIfsSys.thePdf.setSampleImageZ(fc.getSelectedFile());
+                    }
+                }
+            }catch (Exception ex){
 
-            if(cb.getText()=="Choose X Img..."){
-                pdfXImgFile = fc.showOpenDialog(this);
-                if(pdfXImgFile == JFileChooser.APPROVE_OPTION){
-                    myIfsSys.thePdf.setSampleImageX(fc.getSelectedFile());
-                }
-            }else if(cb.getText()=="Choose Y Img..."){
-                pdfYImgFile = fc.showOpenDialog(this);
-                if(pdfYImgFile == JFileChooser.APPROVE_OPTION){
-                    myIfsSys.thePdf.setSampleImageY(fc.getSelectedFile());
-                }
-            }else if(cb.getText()=="Choose Z Img..."){
-                pdfZImgFile = fc.showOpenDialog(this);
-                if(pdfZImgFile == JFileChooser.APPROVE_OPTION){
-                    myIfsSys.thePdf.setSampleImageZ(fc.getSelectedFile());
-                }
             }
-        }catch (Exception ex){
-
         }
     }
 
