@@ -15,6 +15,11 @@ public class pdf3D { //3d probabilty density function
 
     public double volume[][][];
 
+    public int validValues = 0;
+    public int[] validX;
+    public int[] validY;
+    public int[] validZ;
+
     Image sampleImage;
     Image sampleImageX;
     Image sampleImageY;
@@ -38,107 +43,8 @@ public class pdf3D { //3d probabilty density function
         //loadImg3D("serp2.jpg");
         //loadImg("serp.png");
         
-        loadImgs3D("_x.png", "_y.png", "_z.png");
-    }
-
-    public double getSliceXY_Sum(int x, int y){
-        double sum = 0;
-        for(int z=0; z<depth; z++){
-            sum+=volume[x][y][z];
-        }
-        return sum;
-    }
-
-    //MAP-LOADING FUNCTIONS:
-
-    public void loadMap_BlobInv(){ //fill volume w values = distances from point to center of volume
-        sampleHeight=height;
-        sampleWidth=width;
-        sampleDepth=1;
-        for(int x=0; x<sampleWidth; x++){
-            for(int y=0; y<sampleHeight; y++){
-                for(int z=0; z<sampleDepth; z++){
-                    volume[x][y][z] = distance(x-sampleWidth/2, y-sampleHeight/2, z-sampleDepth/2);
-                }
-            }
-        }
-    }
-
-    public void loadMap_FlatBlob(){ //fill volume w values = inverse distances from point to center of volume
-        sampleHeight=height;
-        sampleWidth=width;
-        sampleDepth=1;
-        for(int x=0; x<sampleWidth; x++){
-            for(int y=0; y<sampleHeight; y++){
-                for(int z=0; z<sampleDepth; z++){
-                    volume[x][y][z] = Math.max(0, sampleWidth / 2 - distance(x - sampleWidth / 2, y - sampleHeight / 2, z - sampleDepth / 2));
-                }
-            }
-        }
-    }
-
-    public void loadMap_3DBlob(){ //fill volume w values = inverse distances from point to center of volume
-        sampleHeight=height;
-        sampleWidth=width;
-        sampleDepth=depth;
-        for(int x=0; x<sampleWidth; x++){
-            for(int y=0; y<sampleHeight; y++){
-                for(int z=0; z<sampleDepth; z++){
-                    volume[x][y][z] = Math.max(0,sampleWidth/2 - distance(x-sampleWidth/2, y-sampleHeight/2, z-sampleDepth/2));
-                }
-            }
-        }
-    }
-
-    public void loadMap_XYGradient(){ //fill volume w linear gradient (all vals = x)
-        sampleHeight=height;
-        sampleWidth=width;
-        sampleDepth=depth;
-        for(int x=0; x<sampleWidth; x++){
-            for(int y=0; y<sampleHeight; y++){
-                for(int z=0; z<sampleDepth; z++){
-                    volume[x][y][z] = x;
-                }
-            }
-        }
-    }
-
-    public void loadImg(String filename){
-        System.out.println("loading " + filename);
-        sampleImage = getImage(filename);
-
-        try {
-            PixelGrabber grabber =
-                    new PixelGrabber(sampleImage, 0, 0, -1, -1, false);
-
-            if (grabber.grabPixels()) {
-                sampleHeight=height;
-                sampleWidth=width;
-                sampleDepth=depth;
-
-                samplePixels = (int[]) grabber.getPixels();
-
-                for(int i=0; i<sampleWidth*sampleHeight; i++){
-                    samplePixels[i] = samplePixels[i]&0xFF;
-                }
-
-                int i=0;
-                for(int y=0; y<sampleWidth; y++){
-                    for(int x=0; x<sampleHeight; x++){
-                        for(int z=0; z<sampleDepth; z++){
-                            volume[x][y][z] = (double)samplePixels[i];
-                        }
-                        i++;
-                    }
-                }
-                System.out.println("loaded " + sampleWidth + " " + sampleHeight);
-            }
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-    public void loadImg3D(String filename){
-        loadImgs3D(filename,filename,filename);
+        //loadImgs3D("_x.png", "_y.png", "_z.png");
+        loadImgs3D("serp.png", "serp.png", "serp.png");
     }
 
     public void sampleImg(File file, Image sampleImage, int missingDimension){
@@ -202,6 +108,10 @@ public class pdf3D { //3d probabilty density function
 
     public void updateVolume(){
         int i=0;
+        validValues = 0;
+        validX = new int[width*width*width];
+        validY = new int[width*width*width];
+        validZ = new int[width*width*width];
         for(int y=0; y<width; y++){
             for(int x=0; x<height; x++){
                 for(int z=0; z<depth; z++){
@@ -210,6 +120,7 @@ public class pdf3D { //3d probabilty density function
                 }
             }
         }
+        System.out.println(validValues + " valid " + (100.0*validValues/512/512/512));
     }
 
     public void updateVolumePixel(int x, int y, int z){
@@ -239,9 +150,16 @@ public class pdf3D { //3d probabilty density function
                 break;
 
         }
+        if(volume[x][y][z]>0){
+            validX[validValues]=x;
+            validY[validValues]=y;
+            validZ[validValues]=z;
+            validValues++;
+        }
     }
 
     public void loadImgs3D(String filenameX, String filenameY, String filenameZ){
+
         System.out.println("loadingX " + filenameX);
         System.out.println("loadingY " + filenameY);
         System.out.println("loadingZ " + filenameZ);
@@ -284,7 +202,7 @@ public class pdf3D { //3d probabilty density function
         try{
             //URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
             // file:/C:/Users/Labrats/Documents/GitHub/instant-ifs/img/
-            URL theImgURL = new URL("file:/C:/Users/Labrats/Documents/GitHub/instant-ifs/img/" + name);
+            URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
             return ImageIO.read(theImgURL);
         }
         catch(Exception e) {

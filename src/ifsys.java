@@ -364,22 +364,22 @@ public class ifsys extends Panel
 
         if(distScaleDown>1){distScaleDown=1;}
 
+        int rndIndex;
+
         for(int iter=0; iter<iters; iter++){
-            sampleX = randomDouble()*thePdf.sampleWidth;
-            sampleY = randomDouble()*thePdf.sampleHeight;
-            sampleZ = randomDouble()*thePdf.sampleDepth;
-            //modulate with image
+            rndIndex = (int)(Math.random()*thePdf.validValues);
+            sampleX = thePdf.validX[rndIndex];
+            sampleY = thePdf.validY[rndIndex];
+            sampleZ = thePdf.validZ[rndIndex];
             ptColor = thePdf.volume[(int)sampleX][(int)sampleY][(int)sampleZ];
 
-            if(ptColor>0){
-                ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust*distScaleDown;
-                rpt = new ifsPt((sampleX-centerX)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw); //placed point
+            ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust*distScaleDown;
+            rpt = new ifsPt((sampleX-centerX)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw); //placed point
 
-                //put pixel
-                theVolume.putPixel(new ifsPt(dpt.x+rpt.x+uncertaintyX,
-                                             dpt.y+rpt.y+uncertaintyY,
-                                             dpt.z+rpt.z+uncertaintyZ),ptColor);
-            }
+            //put pixel
+            theVolume.putPixel(new ifsPt(dpt.x+rpt.x+uncertaintyX,
+                                         dpt.y+rpt.y+uncertaintyY,
+                                         dpt.z+rpt.z+uncertaintyZ),ptColor);
         }
     }
 
