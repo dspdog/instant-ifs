@@ -49,14 +49,8 @@ public class smartVolume { //partitions the space into subVolumes but ignores em
         return data[x][y][z].inited;
     }
 
-    public void putData(int x, int y, int z, double val){
-        if(val>0){
-            data[x>>subVolume.sizeLog2][y>>subVolume.sizeLog2][z>>subVolume.sizeLog2].putData(x & subVolume.sizeMask, y & subVolume.sizeMask, z & subVolume.sizeMask, val);
-        }
-    }
-
-    public void incrementData(int x, int y, int z, double increment){
-        data[x>>subVolume.sizeLog2][y>>subVolume.sizeLog2][z>>subVolume.sizeLog2].incrementData(x & subVolume.sizeMask, y & subVolume.sizeMask, z & subVolume.sizeMask, increment);
+    public void putData(int x, int y, int z, double increment){
+        data[x>>subVolume.sizeLog2][y>>subVolume.sizeLog2][z>>subVolume.sizeLog2].putData(x&subVolume.sizeMask, y&subVolume.sizeMask, z&subVolume.sizeMask, increment);
     }
 
     public void clearData(int x, int y, int z){
@@ -69,45 +63,5 @@ public class smartVolume { //partitions the space into subVolumes but ignores em
     
     public double getData(int x, int y, int z){
         return data[x>>subVolume.sizeLog2][y>>subVolume.sizeLog2][z>>subVolume.sizeLog2].getData(x&subVolume.sizeMask, y&subVolume.sizeMask, z&subVolume.sizeMask);
-    }
-
-    int validX[];
-    int validY[];
-    int validZ[];
-    boolean regionsUpToDate=false;
-    int regionsCount =0;
-
-    public void findRegionsList(){
-
-        validX = new int[subRes*subRes*subRes];
-        validY = new int[subRes*subRes*subRes];
-        validZ = new int[subRes*subRes*subRes];
-
-        System.out.println("finding regions...");
-        regionsCount=0;
-
-        for(int x=0; x<subRes; x++){
-            for(int y=0; y<subRes; y++){
-                for(int z=0; z<subRes; z++){
-                    if(data[x][y][z].inited){
-                        validX[regionsCount]=x;
-                        validY[regionsCount]=y;
-                        validZ[regionsCount]=z;
-                        regionsCount++;
-                    }
-                }
-            }
-        }
-        regionsUpToDate=true;
-    }
-
-    public ifsPt rndPt(){
-        if(!regionsUpToDate){
-            findRegionsList();
-            System.out.println(regionsCount + " / " + subRes*subRes*subRes + " REGIONS");
-        }
-        return new ifsPt(validX[(int)(Math.random()*regionsCount)]*subVolume.size+Math.random()*subVolume.size,
-                         validY[(int)(Math.random()*regionsCount)]*subVolume.size+Math.random()*subVolume.size,
-                         validZ[(int)(Math.random()*regionsCount)]*subVolume.size+Math.random()*subVolume.size);
     }
 }
