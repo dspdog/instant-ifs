@@ -368,9 +368,9 @@ public class ifsys extends Panel
 
         for(int iter=0; iter<iters; iter++){
             rndIndex = (int)(Math.random()*thePdf.validValues);
-            sampleX = thePdf.validX[rndIndex];
-            sampleY = thePdf.validY[rndIndex];
-            sampleZ = thePdf.validZ[rndIndex];
+            sampleX = thePdf.validX[rndIndex]+randomDouble();
+            sampleY = thePdf.validY[rndIndex]+randomDouble();
+            sampleZ = thePdf.validZ[rndIndex]+randomDouble();
             ptColor = thePdf.volume[(int)sampleX][(int)sampleY][(int)sampleZ];
 
             ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust*distScaleDown;
