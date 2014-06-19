@@ -99,18 +99,18 @@ public class volume {
                     double yDec = pt.y - (int)pt.y;
                     double zDec = pt.z - (int)pt.z;
 
-                    volume.putData((int) pt.x, (int) pt.y, (int) pt.z, alpha * (1 - xDec) * (1 - yDec) * (1 - zDec));
-                    volume.putData((int) pt.x + 1, (int) pt.y, (int) pt.z, alpha * xDec * (1 - yDec) * (1 - zDec));
-                    volume.putData((int) pt.x, (int) pt.y + 1, (int) pt.z, alpha * (1 - xDec) * yDec * (1 - zDec));
-                    volume.putData((int) pt.x + 1, (int) pt.y + 1, (int) pt.z, alpha * xDec * yDec * (1 - zDec));
+                    volume.incrementData((int) pt.x, (int) pt.y, (int) pt.z, alpha * (1 - xDec) * (1 - yDec) * (1 - zDec));
+                    volume.incrementData((int) pt.x + 1, (int) pt.y, (int) pt.z, alpha * xDec * (1 - yDec) * (1 - zDec));
+                    volume.incrementData((int) pt.x, (int) pt.y + 1, (int) pt.z, alpha * (1 - xDec) * yDec * (1 - zDec));
+                    volume.incrementData((int) pt.x + 1, (int) pt.y + 1, (int) pt.z, alpha * xDec * yDec * (1 - zDec));
 
-                    volume.putData((int) pt.x, (int) pt.y, (int) pt.z + 1, alpha * (1 - xDec) * (1 - yDec) * zDec);
-                    volume.putData((int) pt.x + 1, (int) pt.y, (int) pt.z + 1, alpha * xDec * (1 - yDec) * zDec);
-                    volume.putData((int) pt.x, (int) pt.y + 1, (int) pt.z + 1, alpha * (1 - xDec) * yDec * zDec);
-                    volume.putData((int) pt.x + 1, (int) pt.y + 1, (int) pt.z + 1, alpha * xDec * yDec * zDec);
+                    volume.incrementData((int) pt.x, (int) pt.y, (int) pt.z + 1, alpha * (1 - xDec) * (1 - yDec) * zDec);
+                    volume.incrementData((int) pt.x + 1, (int) pt.y, (int) pt.z + 1, alpha * xDec * (1 - yDec) * zDec);
+                    volume.incrementData((int) pt.x, (int) pt.y + 1, (int) pt.z + 1, alpha * (1 - xDec) * yDec * zDec);
+                    volume.incrementData((int) pt.x + 1, (int) pt.y + 1, (int) pt.z + 1, alpha * xDec * yDec * zDec);
 
                 }else{
-                    volume.putData((int) pt.x, (int) pt.y, (int) pt.z + 1, alpha);
+                    volume.incrementData((int) pt.x, (int) pt.y, (int) pt.z + 1, alpha);
                 }
 
                 if(volume.getData((int)pt.x, (int)pt.y, (int)pt.y)>dataMaxVolumetric){
@@ -302,7 +302,7 @@ public class volume {
                                         }
                                     }
                                     if(addition>0){
-                                        res.putData(x,y,z,addition/2);
+                                        res.incrementData(x, y, z, addition / 2);
                                         res.clipData(x, y, z);
                                     }
                                 }

@@ -365,15 +365,13 @@ public class ifsys extends Panel
         if(distScaleDown>1){distScaleDown=1;}
 
         for(int iter=0; iter<iters; iter++){
-            sampleX = randomDouble()*thePdf.sampleWidth;
-            sampleY = randomDouble()*thePdf.sampleHeight;
-            sampleZ = randomDouble()*thePdf.sampleDepth;
+            ifsPt rndPt = thePdf._volume.rndPt();
             //modulate with image
-            ptColor = thePdf.volume[(int)sampleX][(int)sampleY][(int)sampleZ];
+            ptColor = thePdf._volume.getData((int)(rndPt.x),(int)(rndPt.y),(int)(rndPt.z));
 
             if(ptColor>0){
                 ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust*distScaleDown;
-                rpt = new ifsPt((sampleX-centerX)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw); //placed point
+                rpt = new ifsPt((rndPt.x-centerX)*scale,(rndPt.y-centerY)*scale,(rndPt.z-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw); //placed point
 
                 //put pixel
                 theVolume.putPixel(new ifsPt(dpt.x+rpt.x+uncertaintyX,

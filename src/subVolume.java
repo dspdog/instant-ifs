@@ -24,6 +24,15 @@ public class subVolume {
 
     public void putData(int x, int y, int z, double val){
         if(inited){
+            data[x][y][z]=val;
+        }else{
+            init();
+            data[x][y][z]=val;
+        }
+    }
+
+    public void incrementData(int x, int y, int z, double val){
+        if(inited){
             data[x][y][z]+=val;
         }else{
             init();

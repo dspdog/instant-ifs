@@ -497,7 +497,6 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
             }
 
-            ..
             //If coming from the pdf selections buttons...
             try{
                 JButton cb = (JButton)e.getSource();
