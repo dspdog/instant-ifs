@@ -199,16 +199,28 @@ public class pdf3D { //3d probabilty density function
     }
 
     public Image getImage(String name){
-        try{
             //URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
             // file:/C:/Users/Labrats/Documents/GitHub/instant-ifs/img/
-            URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
-            return ImageIO.read(theImgURL);
-        }
-        catch(Exception e) {
-            e.printStackTrace();
+
+            String root;
+
+            try{
+                root= "file:/C:/Users/user/workspace/instant-ifs/img/";
+                URL theImgURL = new URL(root + name);
+                return ImageIO.read(theImgURL);
+            }catch (Exception e){
+
+            }
+
+
+            try{
+                root="file:/C:/Users/Labrats/Documents/GitHub/instant-ifs/img/";
+                URL theImgURL = new URL(root + name);
+                return ImageIO.read(theImgURL);
+            }catch (Exception e){
+
+            }
             return null;
-        }
     }
 
     public Image getImage(File file){

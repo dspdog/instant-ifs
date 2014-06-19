@@ -85,8 +85,6 @@ public class ifsys extends Panel
 
     public ifsys(){
 
-        usingGaussian =false;
-        potentialRadius=4;
 
         overlayHideTime=1000;
         started=false;
@@ -105,7 +103,7 @@ public class ifsys extends Panel
         screenheight = 1024;
         pixels = new int[screenwidth * screenheight];
 
-        iterations = 2;
+        iterations = 1;
         mousemode = 0;
 
         maxPoints = 100;
@@ -135,10 +133,14 @@ public class ifsys extends Panel
         usingFindEdges = false;
         threshold = 64;
 
+
+        usingGaussian =false;
+        potentialRadius=0;
+
         renderThrottling=false;
         postProcessPeriod=1000;
 
-        thePdf.thePdfComboMode = pdf3D.comboMode.ADD;
+        thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
     }
 
     public static void main(String[] args) {
@@ -699,6 +701,10 @@ public class ifsys extends Panel
         if(e.getKeyChar() == '6'){
             clearframe();
             shape.setToPreset(6);
+        }
+
+        if(e.getKeyChar() == 's'){
+            volume.saveToAscii(theVolume.volume);
         }
 
         if(e.getKeyChar() == '0'){
