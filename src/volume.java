@@ -33,6 +33,10 @@ public class volume {
 
     public int depthLeanX, depthLeanY;
 
+    double camRoll;
+    double camYaw;
+    double camPitch;
+
     ifsPt centroid;
     ifsPt highPt;
     ifsPt highPtVolumetric;
@@ -53,6 +57,9 @@ public class volume {
         XYProjection = new double[width][height];
         XZProjection = new double[width][depth];
         YZProjection = new double[height][depth];
+        camPitch=0;
+        camRoll=0;
+        camYaw=0;
         //if(renderMode == RenderMode.VOLUMETRIC){
             //volume = new double[width][height][depth];
             volume = new smartVolume(width);
@@ -82,7 +89,14 @@ public class volume {
         }
     }
 
-    public void putPixel(ifsPt pt, double alpha){
+    public void putPixel(ifsPt _pt, double alpha){
+
+        ifsPt pt = _pt.getCameraRotatedPt(
+                                        camPitch/180.0*Math.PI,
+                                        camYaw/180.0*Math.PI,
+                                        camRoll/180.0*Math.PI
+                                       );
+
         centroid.x+=pt.x*alpha;
         centroid.y+=pt.y*alpha;
         centroid.z+=pt.z*alpha;

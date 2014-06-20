@@ -28,6 +28,10 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     JSpinner pitchSpinner;
     JSpinner yawSpinner;
 
+    JSlider camPitchSpinner;
+    JSlider camYawSpinner;
+    JSlider camRollSpinner;
+
     JSpinner scaleSpinner;
 
     JCheckBox frameHoldCheck;
@@ -95,6 +99,27 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     }
 
     public void addLabeledSpinner(JSpinner spinner, SpringLayout layout, String labelText, JPanel panel, double row){
+        int spinnerLeft = 70;
+        int spinnerRight = -5;
+        int labelToSpinner = -5;
+        int vspace = 20;
+        int topPad=5;
+
+        JLabel label = new JLabel(labelText);
+
+        layout.putConstraint(SpringLayout.EAST, label, labelToSpinner, SpringLayout.WEST, spinner);
+        layout.putConstraint(SpringLayout.WEST, spinner, spinnerLeft, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.EAST, spinner, spinnerRight, SpringLayout.EAST, panel);
+        layout.putConstraint(SpringLayout.NORTH, spinner, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.NORTH, label, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
+
+        spinner.addChangeListener(this);
+
+        panel.add(label);
+        panel.add(spinner);
+    }
+
+    public void addLabeledSlider(JSlider spinner, SpringLayout layout, String labelText, JPanel panel, double row){
         int spinnerLeft = 70;
         int spinnerRight = -5;
         int labelToSpinner = -5;
@@ -187,6 +212,30 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         panel.add(renderLabel);
     }
 
+    public void setupCameraPropertiesPanel(JPanel panel){
+        JLabel cameraLabel = new JLabel(" Camera Properties");
+
+        camPitchSpinner = new JSlider();
+        camYawSpinner = new JSlider();
+        camRollSpinner = new JSlider();
+
+        camPitchSpinner.setMaximum(360);
+        camYawSpinner.setMaximum(360);
+        camRollSpinner.setMaximum(360);
+
+        int topPad=5;
+
+        SpringLayout layout = new SpringLayout();
+        panel.setLayout(layout);
+        layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
+
+        addLabeledSlider(camPitchSpinner, layout, "Pitch", panel, 1);
+        addLabeledSlider(camYawSpinner, layout, "Yaw", panel, 2.35);
+        addLabeledSlider(camRollSpinner, layout, "Roll", panel, 3.7);
+
+        panel.add(cameraLabel);
+    }
+
     public void setupRenderPropertiesPanel(JPanel panel){
         brightnessSpinner = new JSpinner();
         samplesSpinner = new JSpinner();
@@ -249,21 +298,29 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         JPanel pointProperties = new JPanel();
         JPanel renderProperties = new JPanel();
         JPanel pdfProperties = new JPanel();
+        JPanel cameraProperties = new JPanel();
 
         //SIDE MENU
 
         setupPointPropertiesPanel(pointProperties);
         setupRenderPropertiesPanel(renderProperties);
         setupPdfPropertiesPanel(pdfProperties);
+        setupCameraPropertiesPanel(cameraProperties);
 
         SpringLayout sideMenuLayout = new SpringLayout();
         sideMenu.setLayout(sideMenuLayout);
 
-        JSplitPane splitPaneBig = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-
+        JSplitPane splitPaneBottom = new JSplitPane(JSplitPane.VERTICAL_SPLIT, cameraProperties, pdfProperties);
         JSplitPane splitPaneTop = new JSplitPane(JSplitPane.VERTICAL_SPLIT, pointProperties, renderProperties);
+
+        JSplitPane splitPaneBig = new JSplitPane(JSplitPane.VERTICAL_SPLIT, splitPaneTop, splitPaneBottom);
+
+
         splitPaneTop.setOrientation(JSplitPane.VERTICAL_SPLIT);
         splitPaneTop.setDividerLocation(200);
+
+        splitPaneBottom.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        splitPaneBottom.setDividerLocation(200);
 
         int padding=0;
         sideMenuLayout.putConstraint(SpringLayout.EAST, splitPaneBig, padding, SpringLayout.EAST, sideMenu);
@@ -273,8 +330,6 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
 
         splitPaneBig.setDividerLocation(512);
-        splitPaneBig.setTopComponent(splitPaneTop);
-        splitPaneBig.setBottomComponent(pdfProperties);
         sideMenu.add(splitPaneBig);
 
         MenuBar menuBar;
@@ -343,6 +398,11 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 xSpinner.setValue(myIfsSys.selectedPt.x);
                 ySpinner.setValue(myIfsSys.selectedPt.y);
                 zSpinner.setValue(myIfsSys.selectedPt.z);
+
+                camPitchSpinner.setValue((int)myIfsSys.theVolume.camPitch);
+                camRollSpinner.setValue((int)myIfsSys.theVolume.camRoll);
+                camYawSpinner.setValue((int)myIfsSys.theVolume.camYaw);
+
                 scaleSpinner.setValue(myIfsSys.selectedPt.scale * 100);
 
                 pitchSpinner.setValue(myIfsSys.selectedPt.rotationPitch/Math.PI*180);
@@ -458,7 +518,9 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
             myIfsSys.shape.updateCenter();
 
-
+            myIfsSys.theVolume.camPitch = camPitchSpinner.getValue();
+            myIfsSys.theVolume.camYaw = camYawSpinner.getValue();
+            myIfsSys.theVolume.camRoll = camRollSpinner.getValue();
 
             if(!myIfsSys.holdFrame)
             myIfsSys.clearframe();

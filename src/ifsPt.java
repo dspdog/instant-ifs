@@ -99,6 +99,12 @@ class ifsPt {
         return new ifsPt(xp,yp,zp);
     }
 
+    public ifsPt getCameraRotatedPt(double pitch, double yaw, double roll){
+        ifsPt __pt = new ifsPt(this.x-512.0,this.y-512.0,this.z-512.0);
+        ifsPt ___pt = __pt.getRotatedPt(pitch, yaw, roll);
+        return new ifsPt(___pt.x+512.0,___pt.y+512.0,___pt.z+512.0);
+    }
+
     public ifsPt getRotatedPt(double y, double z, double x){
 
         double sx, sy, sz, cx, cy, cz;
