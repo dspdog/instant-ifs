@@ -605,7 +605,7 @@ public class ifsys extends Panel
         if(e.getKeyCode()==KeyEvent.VK_SHIFT)
             shiftDown=false;
 
-
+        /*
         if(e.getKeyChar() == 'd'){
             theVolume.depthLeanX-=20;
             clearframe();
@@ -625,6 +625,7 @@ public class ifsys extends Panel
             theVolume.depthLeanY+=20;
             clearframe();
         }
+        */
 
         if(e.getKeyChar() == '1'){
             clearframe();
@@ -656,9 +657,9 @@ public class ifsys extends Panel
             shape.setToPreset(6);
         }
 
-        if(e.getKeyChar() == 's'){
-            volume.saveToAscii(theVolume.volume);
-        }
+      //  if(e.getKeyChar() == 's'){
+           // volume.saveToAscii(theVolume.volume);
+     //   }
 
         if(e.getKeyChar() == '0'){
             shape.setToPreset(0);

@@ -72,7 +72,7 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="483" column="39" selection-start="15026" selection-end="15026" vertical-scroll-proportion="0.0" vertical-offset="8284" max-vertical-offset="11560">
+            <state line="607" column="10" selection-start="19140" selection-end="19140" vertical-scroll-proportion="19.615385" vertical-offset="10778" max-vertical-offset="11577">
               <folding />
             </state>
           </provider>
@@ -108,7 +108,7 @@
       <file leaf-file-name="volume.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/volume.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="68" column="0" selection-start="1539" selection-end="1539" vertical-scroll-proportion="0.0" vertical-offset="4947" max-vertical-offset="5848">
+            <state line="89" column="10" selection-start="2111" selection-end="2111" vertical-scroll-proportion="-15.884615" vertical-offset="1032" max-vertical-offset="5848">
               <folding />
             </state>
           </provider>
@@ -135,7 +135,7 @@
       <file leaf-file-name="ifsOverlays.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsOverlays.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="254" column="63" selection-start="9762" selection-end="9762" vertical-scroll-proportion="0.550173" vertical-offset="3983" max-vertical-offset="4862">
+            <state line="235" column="10" selection-start="8509" selection-end="8509" vertical-scroll-proportion="0.375" vertical-offset="3825" max-vertical-offset="4862">
               <folding />
             </state>
           </provider>
@@ -163,18 +163,18 @@
         <option value="$PROJECT_DIR$/src/smartVolume.java" />
         <option value="$PROJECT_DIR$/src/pdf3D.java" />
         <option value="$PROJECT_DIR$/src/ifsPt.java" />
-        <option value="$PROJECT_DIR$/src/volume.java" />
         <option value="$PROJECT_DIR$/src/ifsMenu.java" />
+        <option value="$PROJECT_DIR$/src/volume.java" />
         <option value="$PROJECT_DIR$/src/ifsys.java" />
         <option value="$PROJECT_DIR$/src/ifsOverlays.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1936" />
-    <option name="height" value="1056" />
+    <option name="x" value="426" />
+    <option name="y" value="116" />
+    <option name="width" value="1070" />
+    <option name="height" value="899" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -451,7 +451,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="426" y="116" width="1070" height="899" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -471,7 +471,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.09371672" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32038835" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3857143" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.15125136" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -852,13 +852,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/volume.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="68" column="0" selection-start="1539" selection-end="1539" vertical-scroll-proportion="0.0" vertical-offset="4947" max-vertical-offset="5848">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsMenu.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="453" column="0" selection-start="17552" selection-end="17552" vertical-scroll-proportion="-4.076923" vertical-offset="7527" max-vertical-offset="9809">
@@ -866,16 +859,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/volume.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="89" column="10" selection-start="2111" selection-end="2111" vertical-scroll-proportion="-15.884615" vertical-offset="1032" max-vertical-offset="5848">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="483" column="39" selection-start="15026" selection-end="15026" vertical-scroll-proportion="0.0" vertical-offset="8284" max-vertical-offset="11560">
+        <state line="607" column="10" selection-start="19140" selection-end="19140" vertical-scroll-proportion="19.615385" vertical-offset="10778" max-vertical-offset="11577">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsOverlays.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="254" column="63" selection-start="9762" selection-end="9762" vertical-scroll-proportion="0.550173" vertical-offset="3983" max-vertical-offset="4862">
+        <state line="235" column="10" selection-start="8509" selection-end="8509" vertical-scroll-proportion="0.375" vertical-offset="3825" max-vertical-offset="4862">
           <folding />
         </state>
       </provider>

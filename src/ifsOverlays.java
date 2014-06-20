@@ -232,8 +232,8 @@ public class ifsOverlays {
 
         rg.setColor(Color.white);
         rg.drawString("Mouse XYZ (" + myIfsSys.mousex + ", " + myIfsSys.mousey + ", " + myIfsSys.mousez + ")", xPad, lineSize*1);
-        rg.drawString("DepthLeanX (df): " + myIfsSys.theVolume.depthLeanX, xPad, lineSize*2);
-        rg.drawString("DepthLeanY (ws): " + myIfsSys.theVolume.depthLeanY, xPad, lineSize*3);
+        //rg.drawString("DepthLeanX (df): " + myIfsSys.theVolume.depthLeanX, xPad, lineSize*2);
+        //rg.drawString("DepthLeanY (ws): " + myIfsSys.theVolume.depthLeanY, xPad, lineSize*3);
         rg.drawString("Centroid: ("
                 + (int)(myIfsSys.theVolume.getCentroid().x) + ", "
                 + (int)(myIfsSys.theVolume.getCentroid().y) + ", "

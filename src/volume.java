@@ -86,8 +86,8 @@ public class volume {
         centroid.y+=pt.y*alpha;
         centroid.z+=pt.z*alpha;
 
-        pt.x += (pt.z-depth/2)/(depth/2)*depthLeanX;
-        pt.y += (pt.z-depth/2)/(depth/2)*depthLeanY;
+        //pt.x += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*depthLeanX;
+        //pt.y += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*depthLeanY;
 
         if(pt.x>1 && pt.y>1 && pt.z>1 && pt.x<width-1 && pt.y<height-1 && pt.z<depth-1){
 
