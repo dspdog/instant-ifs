@@ -3,7 +3,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 
 public class ifsMenu extends Component implements ItemListener, ChangeListener, ActionListener, MouseMotionListener {
 
@@ -250,7 +249,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         findEdgesCheck = new JCheckBox();
         delayCheck = new JCheckBox();
 
-        String[] renderModeStrings = {volume.RenderMode.VOLUMETRIC.toString(), volume.RenderMode.SIDES_ONLY.toString()};
+        String[] renderModeStrings = {volume.RenderMode.VOLUMETRIC.toString(), volume.RenderMode.PROJECT_ONLY.toString()};
         String[] pdfModeStrings = {
                                        pdf3D.comboMode.ADD.toString(),
                                        pdf3D.comboMode.AVERAGE.toString(),
@@ -360,10 +359,6 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             YZButton.addItemListener(this);
             viewMenu.add(YZButton);
 
-            XYButton.setState(is.theVolume.preferredDirection == volume.ViewDirection.XY);
-            XZButton.setState(is.theVolume.preferredDirection == volume.ViewDirection.XZ);
-            YZButton.setState(is.theVolume.preferredDirection == volume.ViewDirection.YZ);
-
         //SHAPE MENU
             CheckboxMenuItem autoScaleButton = new CheckboxMenuItem("AutoScale Points"); //autoscale toggle
             autoScaleButton.setState(is.shape.autoScale);
@@ -421,7 +416,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 findEdgesCheck.setSelected(myIfsSys.usingFindEdges);
                 delayCheck.setSelected(myIfsSys.renderThrottling);
                 //System.out.println(renderModeCombo.setse);
-                renderModeCombo.setSelectedIndex(myIfsSys.theVolume.renderMode == volume.RenderMode.SIDES_ONLY ? 1 : 0);
+                renderModeCombo.setSelectedIndex(myIfsSys.theVolume.renderMode == volume.RenderMode.PROJECT_ONLY ? 1 : 0);
             }
         }
 
@@ -456,26 +451,6 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             if(e.getItem()=="Anti-Aliasing"){
                 myIfsSys.theVolume.antiAliasing = e.getStateChange()==1;
             }
-        //VIEW MENU
-            if(e.getItem()=="XY"){
-                myIfsSys.theVolume.preferredDirection = volume.ViewDirection.XY;
-                XYButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.XY);
-                XZButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.XZ);
-                YZButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.YZ);
-            }
-            if(e.getItem()=="XZ"){
-                myIfsSys.theVolume.preferredDirection = volume.ViewDirection.XZ;
-                XYButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.XY);
-                XZButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.XZ);
-                YZButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.YZ);
-            }
-            if(e.getItem()=="YZ"){
-                myIfsSys.theVolume.preferredDirection = volume.ViewDirection.YZ;
-                XYButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.XY);
-                XZButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.XZ);
-                YZButton.setState(myIfsSys.theVolume.preferredDirection == volume.ViewDirection.YZ);
-            }
-
         //GUIDES MENU
             if(e.getItem()=="Info Box"){
                 myIfsSys.infoHidden = e.getStateChange()==2;
@@ -535,8 +510,8 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 JComboBox cb = (JComboBox)e.getSource();
                 if(cb.getSelectedItem() == volume.RenderMode.VOLUMETRIC.toString()){
                     myIfsSys.theVolume.renderMode = volume.RenderMode.VOLUMETRIC;
-                }else if(cb.getSelectedItem() == volume.RenderMode.SIDES_ONLY.toString()){
-                    myIfsSys.theVolume.renderMode = volume.RenderMode.SIDES_ONLY;
+                }else if(cb.getSelectedItem() == volume.RenderMode.PROJECT_ONLY.toString()){
+                    myIfsSys.theVolume.renderMode = volume.RenderMode.PROJECT_ONLY;
 
                 }else if(cb.getSelectedItem() == pdf3D.comboMode.ADD.toString()){
                     System.out.println("OK");

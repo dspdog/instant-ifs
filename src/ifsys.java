@@ -170,17 +170,7 @@ public class ifsys extends Panel
     }
 
     public void findNearestPt(){
-        switch (theVolume.preferredDirection){
-            case XY:
-                pointNearest = shape.getNearestPtIndexXY(mousex, mousey);
-                break;
-            case YZ:
-                pointNearest = shape.getNearestPtIndexYZ(mousey, mousez);
-                break;
-            case XZ:
-                pointNearest = shape.getNearestPtIndexXZ(mousex, mousez);
-                break;
-        }
+        pointNearest = shape.getNearestPtIndexXY(mousex, mousey);
     }
 
     public void selectedNearestPt(){
@@ -492,23 +482,10 @@ public class ifsys extends Panel
             startDragPX = selectedPt.x;
             startDragPY = selectedPt.y;
             startDragPZ = selectedPt.z;
-            switch (theVolume.preferredDirection){
-                case XY:
-                    startDragDist = shape.distance(startDragX - selectedPt.x, startDragY - selectedPt.y, 0);
-                    startDragAngleYaw = selectedPt.rotationYaw + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
-                    startDragAnglePitch = selectedPt.rotationPitch + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
-                    break;
-                case XZ:
-                    startDragDist = shape.distance(startDragX - selectedPt.x, 0, startDragZ - selectedPt.z);
-                    startDragAngleYaw = selectedPt.rotationYaw + Math.atan2(startDragX - selectedPt.x, startDragZ - selectedPt.z);
-                    startDragAnglePitch = selectedPt.rotationPitch + Math.atan2(startDragX - selectedPt.x, startDragZ - selectedPt.z);
-                    break;
-                case YZ:
-                    startDragDist = shape.distance(0, startDragY - selectedPt.y, startDragZ - selectedPt.z);
-                    startDragAngleYaw = selectedPt.rotationYaw + Math.atan2(startDragY - selectedPt.y, startDragZ - selectedPt.z);
-                    startDragAnglePitch = selectedPt.rotationPitch + Math.atan2(startDragY - selectedPt.y, startDragZ - selectedPt.z);
-                    break;
-            }
+
+            startDragDist = shape.distance(startDragX - selectedPt.x, startDragY - selectedPt.y, 0);
+            startDragAngleYaw = selectedPt.rotationYaw + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
+            startDragAnglePitch = selectedPt.rotationPitch + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
 
             startDragScale = selectedPt.scale;
 
@@ -531,23 +508,9 @@ public class ifsys extends Panel
     }
 
     public void getMouseXYZ(MouseEvent e){
-        switch (theVolume.preferredDirection){
-            case XY:
-                mousex = e.getX();
-                mousey = e.getY();
-                mousez = 0;
-                break;
-            case YZ:
-                mousey = e.getX();
-                mousez = e.getY();
-                mousex = 0;
-                break;
-            case XZ:
-                mousex = e.getX();
-                mousez = e.getY();
-                mousey = 0;
-                break;
-        }
+        mousex = e.getX();
+        mousey = e.getY();
+        mousez = 0;
     }
 
     public void mouseDragged(MouseEvent e){
@@ -566,17 +529,7 @@ public class ifsys extends Panel
             setCursor (Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
             double scaleDelta = 0;//shape.distance(mousex - selectedPt.x, mousey - selectedPt.y, mousez - shape.pts[0].z)/startDragDist;
 
-            switch (theVolume.preferredDirection){
-                case XY:
-                    scaleDelta = shape.distance(mousex - selectedPt.x, mousey - selectedPt.y, 0)/startDragDist;
-                    break;
-                case YZ:
-                    scaleDelta = shape.distance(0, mousey - selectedPt.y, mousez - shape.pts[0].z)/startDragDist;
-                    break;
-                case XZ:
-                    scaleDelta = shape.distance(mousex - selectedPt.x, 0, mousez - shape.pts[0].z)/startDragDist;
-                    break;
-            }
+            scaleDelta = shape.distance(mousex - selectedPt.x, mousey - selectedPt.y, 0)/startDragDist;
 
             if(rotateMode==0){
                 double rotationDelta = (Math.atan2(mousex - selectedPt.x, mousey - selectedPt.y)- startDragAngleYaw);

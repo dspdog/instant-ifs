@@ -1,12 +1,6 @@
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -28,8 +22,6 @@ public class volume {
     public smartVolume volume;
 
     public double XYProjection[][];
-    public double XZProjection[][];
-    public double YZProjection[][];
 
     public int depthLeanX, depthLeanY;
 
@@ -41,8 +33,6 @@ public class volume {
     ifsPt highPt;
     ifsPt highPtVolumetric;
 
-    ViewDirection preferredDirection;
-
     boolean antiAliasing;
 
     public volume(int w, int h, int d){
@@ -51,12 +41,9 @@ public class volume {
         depth = d;
         depthLeanX = 0;
         depthLeanY = 0;
-        renderMode = RenderMode.SIDES_ONLY;
-        preferredDirection = ViewDirection.XY;
+        renderMode = RenderMode.PROJECT_ONLY;
         antiAliasing = true;
         XYProjection = new double[width][height];
-        XZProjection = new double[width][depth];
-        YZProjection = new double[height][depth];
         camPitch=0;
         camRoll=0;
         camYaw=0;
@@ -80,11 +67,9 @@ public class volume {
             volume.reset();
         }
 
-        double[][] proj = getProjection();
-
         for(int x=0; x<width; x++){
             for(int y=0; y<height; y++){
-                proj[x][y]=0;
+                XYProjection[x][y]=0;
             }
         }
     }
@@ -92,29 +77,17 @@ public class volume {
     public void putPixel(ifsPt _pt, double alpha){
 
         ifsPt pt = _pt.getCameraRotatedPt(
-                                        camPitch/180.0*Math.PI,
-                                        camYaw/180.0*Math.PI,
-                                        camRoll/180.0*Math.PI
-                                       );
+                camPitch / 180.0 * Math.PI,
+                camYaw / 180.0 * Math.PI,
+                camRoll / 180.0 * Math.PI
+        );
 
         centroid.x+=pt.x*alpha;
         centroid.y+=pt.y*alpha;
         centroid.z+=pt.z*alpha;
 
-        switch (preferredDirection){
-            case XY:
-                pt.x += (pt.z-depth/2)/(depth/2)*depthLeanX;
-                pt.y += (pt.z-depth/2)/(depth/2)*depthLeanY;
-                break;
-            case XZ:
-                pt.x += (pt.y-height/2)/(height/2)*depthLeanX;
-                pt.z += (pt.y-height/2)/(height/2)*depthLeanY;
-                break;
-            case YZ:
-                pt.y += (pt.x-width/2)/(width/2)*depthLeanX;
-                pt.z += (pt.x-width/2)/(width/2)*depthLeanY;
-                break;
-        }
+        pt.x += (pt.z-depth/2)/(depth/2)*depthLeanX;
+        pt.y += (pt.z-depth/2)/(depth/2)*depthLeanY;
 
         if(pt.x>1 && pt.y>1 && pt.z>1 && pt.x<width-1 && pt.y<height-1 && pt.z<depth-1){
 
@@ -151,44 +124,16 @@ public class volume {
                 double yDec = pt.y - (int)pt.y;
                 double zDec = pt.z - (int)pt.z;
 
-                switch (preferredDirection){
-                    case XY:
-                        XYProjection[(int)pt.x][(int)pt.y] += alpha*(1-xDec)*(1-yDec);
-                        XYProjection[(int)pt.x+1][(int)pt.y] += alpha*xDec*(1-yDec);
-                        XYProjection[(int)pt.x][(int)pt.y+1] += alpha*(1-xDec)*yDec;
-                        XYProjection[(int)pt.x+1][(int)pt.y+1] += alpha*xDec*yDec;
-                        break;
-                    case XZ:
-                        XZProjection[(int)pt.x][(int)pt.z] += alpha*(1-xDec)*(1-zDec);
-                        XZProjection[(int)pt.x+1][(int)pt.z] += alpha*xDec*(1-zDec);
-                        XZProjection[(int)pt.x][(int)pt.z+1] += alpha*(1-xDec)*zDec;
-                        XZProjection[(int)pt.x+1][(int)pt.z+1] += alpha*xDec*zDec;
-                        break;
-                    case YZ:
-                        YZProjection[(int)pt.y][(int)pt.z] += alpha*(1-yDec)*(1-zDec);
-                        YZProjection[(int)pt.y+1][(int)pt.z] += alpha*yDec*(1-zDec);
-                        YZProjection[(int)pt.y][(int)pt.z+1] += alpha*(1-yDec)*zDec;
-                        YZProjection[(int)pt.y+1][(int)pt.z+1] += alpha*yDec*zDec;
-                        break;
-                }
+                XYProjection[(int)pt.x][(int)pt.y] += alpha*(1-xDec)*(1-yDec);
+                XYProjection[(int)pt.x+1][(int)pt.y] += alpha*xDec*(1-yDec);
+                XYProjection[(int)pt.x][(int)pt.y+1] += alpha*(1-xDec)*yDec;
+                XYProjection[(int)pt.x+1][(int)pt.y+1] += alpha*xDec*yDec;
             }else{
                 XYProjection[(int)pt.x][(int)pt.y]+=alpha;
-                XZProjection[(int)pt.x][(int)pt.z] += alpha;
-                YZProjection[(int)pt.y][(int)pt.z] += alpha;
             }
 
             if(XYProjection[(int)pt.x][(int)pt.y]>dataMax){
                 dataMax= XYProjection[(int)pt.x][(int)pt.y];
-                highPt = new ifsPt(pt);
-            }
-
-            if(XZProjection[(int)pt.x][(int)pt.z]>dataMax){
-                dataMax= XZProjection[(int)pt.x][(int)pt.z];
-                highPt = new ifsPt(pt);
-            }
-
-            if(YZProjection[(int)pt.y][(int)pt.z]>dataMax){
-                dataMax= YZProjection[(int)pt.y][(int)pt.z];
                 highPt = new ifsPt(pt);
             }
         }
@@ -198,53 +143,14 @@ public class volume {
         return new ifsPt(centroid.x/ totalSamplesAlpha, centroid.y/ totalSamplesAlpha, centroid.z/ totalSamplesAlpha);
     }
 
-    public ifsPt getProjectedPt(ifsPt pt){
-
-        ifsPt res = new ifsPt(pt, true);
-
-        switch (preferredDirection){
-            case XY:
-                res.x=pt.x;
-                res.y=pt.y;
-                res.z=pt.z;
-                break;
-            case XZ:
-                res.x=pt.x;
-                res.y=pt.z;
-                res.z=pt.y;
-                break;
-            case YZ:
-                res.x=pt.y;
-                res.y=pt.z;
-                res.z=pt.x;
-                break;
-        }
-
-        return res;
-    }
-
-    public double[][] getProjection(){
-        switch (preferredDirection){
-            case XY:
-                return XYProjection;
-            case XZ:
-                return XZProjection;
-            case YZ:
-                return YZProjection;
-            default:
-                return XYProjection;
-        }
-    }
-
     public double[][] getScaledProjection(double brightness){
-        double[][] proj = getProjection();
         double[][] scaled = new double[width][height];
 
         double scaler = 255.0/dataMax * brightness;
 
         for(int x=0; x<width; x++){
             for(int y=0; y<height; y++){
-                scaled[x][y]= Math.min((int)(scaler*proj[x][y]), 255);
+                scaled[x][y]= Math.min((int)(scaler*XYProjection[x][y]), 255);
             }
         }
 
@@ -431,11 +337,6 @@ public class volume {
     }
 
     public static enum RenderMode {
-        VOLUMETRIC, SIDES_ONLY
+        VOLUMETRIC, PROJECT_ONLY
     }
-
-    public static enum ViewDirection{
-        XY, XZ, YZ
-    }
-
 }

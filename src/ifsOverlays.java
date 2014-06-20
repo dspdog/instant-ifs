@@ -44,14 +44,14 @@ public class ifsOverlays {
 
     public void drawSpecialPoints(Graphics _rg){//centroid and maximum
         volume vol = myIfsSys.theVolume;
-        ifsPt projectedCentroid = vol.getProjectedPt(vol.getCentroid());
+        ifsPt projectedCentroid = vol.getCentroid();
 
         ifsPt projectedHighPt;
 
-        if(vol.renderMode == volume.RenderMode.SIDES_ONLY){
-            projectedHighPt = vol.getProjectedPt(vol.highPt);
+        if(vol.renderMode == volume.RenderMode.PROJECT_ONLY){
+            projectedHighPt = vol.highPt;
         }else{
-            projectedHighPt = vol.getProjectedPt(vol.highPtVolumetric);
+            projectedHighPt = vol.highPtVolumetric;
         }
 
         if(myIfsSys.theVolume.totalSamplesAlpha >5000){
@@ -99,8 +99,8 @@ public class ifsOverlays {
             yPts2[i] = 10*i/steps;
             zPts2[i] = (int)((Math.sin(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
 
-            ifsPt rotatedPt1 = new ifsPt(xPts1[i],yPts1[i],zPts1[i]).getRotatedPt(0,-pt.rotationYaw);
-            ifsPt rotatedPt2 = new ifsPt(xPts2[i],yPts2[i],zPts2[i]).getRotatedPt(-pt.rotationPitch,-pt.rotationYaw);
+            ifsPt rotatedPt1 = new ifsPt(xPts1[i],yPts1[i],zPts1[i]).getRotatedPt(0, -pt.rotationYaw);
+            ifsPt rotatedPt2 = new ifsPt(xPts2[i],yPts2[i],zPts2[i]).getRotatedPt(-pt.rotationPitch, -pt.rotationYaw);
 
             xPts1[i] = (int)(rotatedPt1.x + pt.x);
             yPts1[i] = (int)(rotatedPt1.y + pt.y);
@@ -110,21 +110,8 @@ public class ifsOverlays {
             yPts2[i] = (int)(rotatedPt2.y + pt.y);
             zPts2[i] = (int)(rotatedPt2.z + pt.z);
 
-            switch (myIfsSys.theVolume.preferredDirection){
-                case XY:
-                    d1 = distance(myIfsSys.mousex - rotatedPt1.x - pt.x, myIfsSys.mousey - rotatedPt1.y - pt.y);
-                    d2 = distance(myIfsSys.mousex - rotatedPt2.x - pt.x, myIfsSys.mousey - rotatedPt2.y - pt.y);
-                    break;
-                case XZ:
-                    d1 = distance(myIfsSys.mousex - rotatedPt1.x - pt.x, myIfsSys.mousey - rotatedPt1.z - pt.z);
-                    d2 = distance(myIfsSys.mousex - rotatedPt2.x - pt.x, myIfsSys.mousey - rotatedPt2.z - pt.z);
-                    break;
-                case YZ:
-                    d1 = distance(myIfsSys.mousex - rotatedPt1.y - pt.y, myIfsSys.mousey - rotatedPt1.z - pt.z);
-                    d2 = distance(myIfsSys.mousex - rotatedPt2.y - pt.y, myIfsSys.mousey - rotatedPt2.z - pt.z);
-                    break;
-            }
-
+            d1 = distance(myIfsSys.mousex - rotatedPt1.x - pt.x, myIfsSys.mousey - rotatedPt1.y - pt.y);
+            d2 = distance(myIfsSys.mousex - rotatedPt2.x - pt.x, myIfsSys.mousey - rotatedPt2.y - pt.y);
 
             if(d1<min_d){
                 min_d=d1;
@@ -165,17 +152,7 @@ public class ifsOverlays {
     }
 
     public void drawPolyLineRotated(int[] xPts1, int[] yPts1, int[] zPts1, Graphics _rg, int steps){
-        switch (myIfsSys.theVolume.preferredDirection){
-            case XY:
-                _rg.drawPolyline(xPts1, yPts1, steps);
-                break;
-            case XZ:
-                _rg.drawPolyline(xPts1, zPts1, steps);
-                break;
-            case YZ:
-                _rg.drawPolyline(yPts1, zPts1, steps);
-                break;
-        }
+        _rg.drawPolyline(xPts1, yPts1, steps);
     }
 
     public void drawPolylineBolded(Graphics rg, int[] xPts, int[] yPts, int[] zPts, int steps, boolean isSelected){
@@ -199,7 +176,7 @@ public class ifsOverlays {
 
     public void drawBox(Graphics rg, int ptIndex){
         if(ptIndex>-1){
-            ifsPt thePt =  myIfsSys.theVolume.getProjectedPt(myIfsSys.shape.pts[ptIndex]);
+            ifsPt thePt =  myIfsSys.shape.pts[ptIndex];
             double wobbleFreq = 6;
             double wobbleSize = 5;
             double width = thePt.scale * thePt.radius;
@@ -296,43 +273,6 @@ public class ifsOverlays {
         rg.drawString("FPS " + String.valueOf(myIfsSys.fps), xPad, lineSize*10);
         rg.drawString("RenderTime " + df.format(time) + "s", xPad, lineSize*11);
         rg.drawString("Dots/s 10^" + df.format(Math.log10((myIfsSys.theVolume.totalSamples/time))), xPad, lineSize*12);
-
-        drawAxis(rg);
-    }
-
-    public void drawAxis(Graphics rg){
-        int screenheight = myIfsSys.screenheight;
-        int screenwidth = myIfsSys.screenwidth;
-
-        switch (myIfsSys.theVolume.preferredDirection){
-            case XY:
-                rg.setColor(Color.red);
-                rg.drawLine(10, screenheight-65-50, 10+50, screenheight-65-50);
-                rg.drawString("X+", 10+55, screenheight-50-60);
-
-                rg.setColor(Color.green);
-                rg.drawLine(10, screenheight-65, 10, screenheight-65-50);
-                rg.drawString("Y+", 10, screenheight-50);
-                break;
-            case YZ:
-                rg.setColor(Color.green);
-                rg.drawLine(10, screenheight-65-50, 10+50, screenheight-65-50);
-                rg.drawString("Y+", 10+55, screenheight-50-60);
-
-                rg.setColor(Color.blue);
-                rg.drawLine(10, screenheight-65, 10, screenheight-65-50);
-                rg.drawString("Z+", 10, screenheight-50);
-                break;
-            case XZ:
-                rg.setColor(Color.red);
-                rg.drawLine(10, screenheight-65-50, 10+50, screenheight-65-50);
-                rg.drawString("X+", 10+55, screenheight-50-60);
-
-                rg.setColor(Color.blue);
-                rg.drawLine(10, screenheight-65, 10, screenheight-65-50);
-                rg.drawString("Z+", 10, screenheight-50);
-                break;
-        }
     }
 
     public double distance(double x, double y){
