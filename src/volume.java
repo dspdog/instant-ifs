@@ -22,6 +22,7 @@ public class volume {
     public smartVolume volume;
 
     public double XYProjection[][];
+    public double ZBuffer[][];
 
     public int depthLeanX, depthLeanY;
 
@@ -44,6 +45,7 @@ public class volume {
         renderMode = RenderMode.PROJECT_ONLY;
         antiAliasing = true;
         XYProjection = new double[width][height];
+        ZBuffer = new double[width][height];
         camPitch=0;
         camRoll=0;
         camYaw=0;
@@ -70,11 +72,14 @@ public class volume {
         for(int x=0; x<width; x++){
             for(int y=0; y<height; y++){
                 XYProjection[x][y]=0;
+                ZBuffer[x][y]=0;
             }
         }
     }
 
     public void putPixel(ifsPt _pt, double alpha){
+
+        boolean maxMode = true;
 
         ifsPt pt = _pt.getCameraRotatedPt(
                 camPitch / 180.0 * Math.PI,
@@ -86,8 +91,8 @@ public class volume {
         centroid.y+=pt.y*alpha;
         centroid.z+=pt.z*alpha;
 
-        //pt.x += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*depthLeanX;
-        //pt.y += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*depthLeanY;
+        //pt.x += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
+        //pt.y += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
 
         if(pt.x>1 && pt.y>1 && pt.z>1 && pt.x<width-1 && pt.y<height-1 && pt.z<depth-1){
 
@@ -132,6 +137,22 @@ public class volume {
                 XYProjection[(int)pt.x][(int)pt.y]+=alpha;
             }
 
+            if(maxMode){
+                double xDec = pt.x - (int)pt.x;
+                double yDec = pt.y - (int)pt.y;
+
+                pt.z *= 0.25;
+                pt.z*=pt.z;
+                pt.z/=255.0;
+                pt.z*=pt.z;
+                pt.z/=255.0;
+
+                ZBuffer[(int)pt.x][(int)pt.y] = Math.max(pt.z * (1 - xDec) * (1 - yDec), ZBuffer[(int) pt.x][(int) pt.y]);
+                ZBuffer[(int)pt.x+1][(int)pt.y] = Math.max(pt.z * xDec * (1 - yDec), ZBuffer[(int) pt.x + 1][(int) pt.y]);
+                ZBuffer[(int)pt.x][(int)pt.y+1] = Math.max(pt.z * (1 - xDec) * yDec, ZBuffer[(int) pt.x][(int) pt.y + 1]);
+                ZBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(pt.z * xDec * yDec, ZBuffer[(int) pt.x + 1][(int) pt.y + 1]);
+            }
+
             if(XYProjection[(int)pt.x][(int)pt.y]>dataMax){
                 dataMax= XYProjection[(int)pt.x][(int)pt.y];
                 highPt = new ifsPt(pt);
@@ -141,6 +162,20 @@ public class volume {
 
     public ifsPt getCentroid(){
         return new ifsPt(centroid.x/ totalSamplesAlpha, centroid.y/ totalSamplesAlpha, centroid.z/ totalSamplesAlpha);
+    }
+
+    public double[][] getScaledDepthProjection(double brightness){
+        double[][] scaled = new double[width][height];
+
+        double scaler = brightness;
+
+        for(int x=0; x<width; x++){
+            for(int y=0; y<height; y++){
+                scaled[x][y]= Math.min((int)(scaler*ZBuffer[x][y]), 255);
+            }
+        }
+
+        return scaled;
     }
 
     public double[][] getScaledProjection(double brightness){

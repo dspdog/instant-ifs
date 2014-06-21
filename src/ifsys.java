@@ -225,8 +225,17 @@ public class ifsys extends Panel
         }
     }
 
+    public long randomLong() {
+        long rl = System.nanoTime();
+        rl ^= (rl << 21);
+        rl ^= (rl >>> 35);
+        rl ^= (rl << 4);
+        return rl;
+    }
+
     public double randomDouble(){
         return Math.random();
+        //return randomLong()/Long.MAX_VALUE;
         //return randomDoubles[(rndNum++)&16777215];
     }
 
@@ -247,8 +256,12 @@ public class ifsys extends Panel
 
         generatePixels();
         try{ //TODO why does this err?
+            rg.setColor(Color.green);
+            rg.fillRect(0,0,1024,1024);
+
             rg.drawImage(createImage(new MemoryImageSource(screenwidth, screenheight, pixels, 0, screenwidth)), 0, 0, screenwidth, screenheight, this);
-            rg.drawImage(thePdf.sampleImage, getWidth() - 50, 0, 50, 50, this);
+
+            //rg.drawImage(thePdf.sampleImage, getWidth() - 50, 0, 50, 50, this);
             rg.setColor(Color.blue);
 
             if(!guidesHidden){
@@ -279,8 +292,9 @@ public class ifsys extends Panel
         double scaler = 1;//255/theVolume.dataMax * brightnessMultiplier;
         double area = 0;
         int scaledColor = 0;
-        double[][] projection = theVolume.getScaledProjection(Math.pow(2,brightnessMultiplier));
-
+        int scaledColor2=0;
+        double[][] projection2 = theVolume.getScaledProjection(Math.pow(2,brightnessMultiplier));
+        double[][] projection1 = theVolume.getScaledDepthProjection(Math.pow(2, brightnessMultiplier));
         boolean didProcess=false;
 
         if(!renderThrottling || System.currentTimeMillis()-lastPostProcessTime>postProcessPeriod){
@@ -290,29 +304,31 @@ public class ifsys extends Panel
                 //theVolume.volume = volume.getPotential3D(theVolume.volume, potentialRadius);
             //}
             if(usingThreshold){
-                projection = theVolume.getThreshold2D(projection, threshold);
+                projection1 = theVolume.getThreshold2D(projection1, threshold);
             }
             if(usingFindEdges){
-                projection = theVolume.findEdges2D(projection);
+                projection1 = theVolume.findEdges2D(projection1);
             }
 
-            lastProcessedProjection = theVolume.getProjectionCopy(projection);
+            lastProcessedProjection = theVolume.getProjectionCopy(projection1);
 
             int argb;
 
-            for(int x = 0; x < projection.length; x++){
-                for(int y=0; y<projection[x].length; y++){
+            for(int x = 0; x < projection1.length; x++){
+                for(int y=0; y<projection1[x].length; y++){
+
+                    scaledColor = (int)projection1[x][y];
                     argb = 255;
-                    scaledColor = (int)projection[x][y];
+                    //scaledColor2 = (int)projection2[x][y];
                     argb = (argb << 8) + scaledColor;
                     argb = (argb << 8) + scaledColor;
                     argb = (argb << 8) + scaledColor;
-                    pixels[x+y*projection.length] = argb;
-                    area+=scaler*projection[x][y];
+                    pixels[x+y*projection1.length] = argb;
+                    area+=scaler*projection1[x][y];
                 }
             }
         }else{
-            projection = lastProcessedProjection;
+            projection1 = lastProcessedProjection;
         }
 
         if(didProcess)lastPostProcessTime=System.currentTimeMillis();
