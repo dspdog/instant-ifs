@@ -53,6 +53,19 @@ class ifsShape{
         updateCenter();
     }
 
+    public void addPointScaled(double x, double y, double z, double scale){
+        pts[pointsInUse].x = x;
+        pts[pointsInUse].y = y;
+        pts[pointsInUse].z = z;
+        pts[pointsInUse].scale = scale;
+        pts[pointsInUse].rotationYaw = 0.0D;
+        pts[pointsInUse].rotationPitch = 0.0D;
+        //pts[pointsInUse].rotationRoll = 0.0D;
+        pts[pointsInUse].opacity = 1.0D;
+        pointsInUse++;
+        updateCenter();
+    }
+
     public void deletePoint(int selectedPoint){
         for(int a = selectedPoint; a < pointsInUse; a++){
             pts[a].x = pts[a + 1].x;
@@ -176,26 +189,27 @@ class ifsShape{
                             centerz);
                 }
                 this.pts[0].z=centerz;
-                System.out.println(pointsInUse);
                 break;
 
             case 1: // '\001'
 
-                pointsInUse = 4;
-                pts[0].scale = 1.0;
-                pts[1].x = 320D;
-                pts[1].y = 160D;
-                pts[1].z = 0D;
-                pts[1].scale = 0.5D;
-                pts[2].x = 420D;
-                pts[2].y = 160D + 100D * Math.sqrt(3D);
-                pts[2].z = 0;
-                pts[2].scale = 0.5D;
-                pts[3].x = 220D;
-                pts[3].y = 160D + 100D * Math.sqrt(3D);
-                pts[3].z = 0;
-                pts[3].scale = 0.5D;
+                clearPts();
+                pointsInUse=1;
+                centerx=512;
+                centery=512;
+                centerz=512;
 
+                for(int i=0; i<4; i++){
+                    this.addPointScaled(
+                            Math.cos(Math.PI/4+i*Math.PI/2)*256+centerx,
+                            Math.sin(Math.PI/4+i*Math.PI/2)*256+centery,
+                            256, 1.0/3.0);
+                    this.addPointScaled(
+                            Math.cos(Math.PI/4+i*Math.PI/2)*256+centerx,
+                            Math.sin(Math.PI/4+i*Math.PI/2)*256+centery,
+                            256+512, 1.0/3.0);
+                }
+                this.pts[0].z=centerz;
                 break;
             case 2: // '\002'
                 pointsInUse = 5;
