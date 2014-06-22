@@ -55,24 +55,23 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
     long lastPdfPropertiesMouseMoved=0;
 
-    public void addLabeledFileChooser(JButton button, SpringLayout layout, String labelText, JPanel panel, double row){
-        int spinnerLeft = 5;
-        int spinnerRight = -5;
+    public void addLabeledFileChooser(JButton button, SpringLayout layout, String labelText, JPanel panel, double row, int col){
+        int width = 51;
+        int totalCols = 3;
+        int spinnerLeft = 5 + col*width;
+        int spinnerRight = 5 + col*width+ width;
         int labelToSpinner = -5;
         int vspace = 20;
         int topPad=5;
 
-        JLabel label = new JLabel(labelText);
 
-        layout.putConstraint(SpringLayout.EAST, label, labelToSpinner, SpringLayout.WEST, button);
         layout.putConstraint(SpringLayout.WEST, button, spinnerLeft, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.EAST, button, spinnerRight, SpringLayout.EAST, panel);
+        layout.putConstraint(SpringLayout.EAST, button, spinnerRight, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.NORTH, button, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.NORTH, label, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
+
 
         button.addActionListener(this);
 
-        panel.add(label);
         panel.add(button);
     }
 
@@ -122,7 +121,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         int spinnerLeft = 70;
         int spinnerRight = -5;
         int labelToSpinner = -5;
-        int vspace = 20;
+        int vspace = 15;
         int topPad=5;
 
         JLabel label = new JLabel(labelText);
@@ -197,14 +196,14 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         panel.setLayout(layout);
         layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
 
-        JButton xImgButton = new JButton("Choose X Img...");
-        JButton yImgButton = new JButton("Choose Y Img...");
-        JButton zImgButton = new JButton("Choose Z Img...");
+        JButton xImgButton = new JButton("X");
+        JButton yImgButton = new JButton("Y");
+        JButton zImgButton = new JButton("Z");
 
-        addLabeledFileChooser(xImgButton, layout, "", panel, 1);
-        addLabeledFileChooser(yImgButton, layout, "", panel, 2.35);
-        addLabeledFileChooser(zImgButton, layout, "", panel, 3.7);
-        addLabeledCombobox(pdfModeCombo, layout, "Mix", panel, 6);
+        addLabeledFileChooser(xImgButton, layout, "", panel, 1, 0);
+        addLabeledFileChooser(yImgButton, layout, "", panel, 1, 1);
+        addLabeledFileChooser(zImgButton, layout, "", panel, 1, 2);
+        addLabeledCombobox(pdfModeCombo, layout, "Mix", panel, 3);
 
         panel.addMouseMotionListener(this);
 
@@ -539,17 +538,17 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             try{
                 JButton cb = (JButton)e.getSource();
 
-                if(cb.getText()=="Choose X Img..."){
+                if(cb.getText()=="X"){
                     pdfXImgFile = fc.showOpenDialog(this);
                     if(pdfXImgFile == JFileChooser.APPROVE_OPTION){
                         myIfsSys.thePdf.setSampleImageX(fc.getSelectedFile());
                     }
-                }else if(cb.getText()=="Choose Y Img..."){
+                }else if(cb.getText()=="Y"){
                     pdfYImgFile = fc.showOpenDialog(this);
                     if(pdfYImgFile == JFileChooser.APPROVE_OPTION){
                         myIfsSys.thePdf.setSampleImageY(fc.getSelectedFile());
                     }
-                }else if(cb.getText()=="Choose Z Img..."){
+                }else if(cb.getText()=="Z"){
                     pdfZImgFile = fc.showOpenDialog(this);
                     if(pdfZImgFile == JFileChooser.APPROVE_OPTION){
                         myIfsSys.thePdf.setSampleImageZ(fc.getSelectedFile());

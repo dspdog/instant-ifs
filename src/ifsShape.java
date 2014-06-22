@@ -203,11 +203,11 @@ class ifsShape{
                     this.addPointScaled(
                             Math.cos(Math.PI/4+i*Math.PI/2)*256+centerx,
                             Math.sin(Math.PI/4+i*Math.PI/2)*256+centery,
-                            256, 1.0/3.0);
+                            256, 1.0/Math.sqrt(3.0));
                     this.addPointScaled(
                             Math.cos(Math.PI/4+i*Math.PI/2)*256+centerx,
                             Math.sin(Math.PI/4+i*Math.PI/2)*256+centery,
-                            256+512, 1.0/3.0);
+                            256+512, 1.0/Math.sqrt(3.0));
                 }
                 this.pts[0].z=centerz;
                 break;

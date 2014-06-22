@@ -293,7 +293,7 @@ public class ifsys extends Panel
         double area = 0;
         int scaledColor = 0;
         int scaledColor2=0;
-        double[][] projection2 = theVolume.getScaledProjection(Math.pow(2,brightnessMultiplier));
+        //double[][] projection2 = theVolume.getScaledProjection(Math.pow(2,brightnessMultiplier));
         double[][] projection1 = theVolume.getScaledDepthProjection(Math.pow(2, brightnessMultiplier));
         boolean didProcess=false;
 
@@ -317,12 +317,21 @@ public class ifsys extends Panel
             for(int x = 0; x < projection1.length; x++){
                 for(int y=0; y<projection1[x].length; y++){
 
-                    scaledColor = (int)projection1[x][y];
-                    argb = 255;
-                    //scaledColor2 = (int)projection2[x][y];
-                    argb = (argb << 8) + scaledColor;
-                    argb = (argb << 8) + scaledColor;
-                    argb = (argb << 8) + scaledColor;
+                    if(projection1[x][y]==0){ //"half darkened spanish blue" for background
+                        argb = 255;
+
+                        argb = (argb << 8) + 0;
+                        argb = (argb << 8) + 112/2;
+                        argb = (argb << 8) + 184/2;
+                    }else{
+                        scaledColor = (int)projection1[x][y];
+                        argb = 255;
+
+                        argb = (argb << 8) + scaledColor;
+                        argb = (argb << 8) + scaledColor;
+                        argb = (argb << 8) + scaledColor;
+                    }
+
                     pixels[x+y*projection1.length] = argb;
                     area+=scaler*projection1[x][y];
                 }
@@ -399,8 +408,8 @@ public class ifsys extends Panel
 
         if(samplesPerFrame <2){
             samplesPerFrame =2;}
-        if(samplesPerFrame >131072){
-            samplesPerFrame =131072;}
+        if(samplesPerFrame >1310720){
+            samplesPerFrame =1310720;}
 
         if(potentialRadius>512){
             potentialRadius=512;
