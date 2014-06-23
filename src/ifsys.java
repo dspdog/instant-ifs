@@ -14,6 +14,7 @@ public class ifsys extends Panel
     int pixels[];
     Image render;
     Graphics rg;
+    long frameNo;
     long fps;
     long framesThisSecond;
     long oneSecondAgo;
@@ -163,6 +164,7 @@ public class ifsys extends Panel
     }
 
     public void init() {
+        frameNo=0;
         start();
         shape.updateCenter();
         clearframe();
@@ -188,6 +190,8 @@ public class ifsys extends Panel
                 try{
                     gamefunc();
                     repaint();
+                    //if(frameNo%5==0)
+                    //clearframe();
                     sleep(1L);
                 }
                 catch(InterruptedException e) {
@@ -244,6 +248,7 @@ public class ifsys extends Panel
     }
 
     public void paint(Graphics gr){
+        frameNo++;
         framesThisSecond++;
         if(System.currentTimeMillis()- oneSecondAgo >=1000){
             oneSecondAgo = System.currentTimeMillis();
@@ -344,6 +349,7 @@ public class ifsys extends Panel
     }
 
     public void clearframe(){
+        //if(frameNo%2==0)
         if(!holdFrame){
             theVolume.clear();
         }
@@ -382,21 +388,34 @@ public class ifsys extends Panel
         if(distScaleDown>1){distScaleDown=1;}
 
         int rndIndex;
+        double dx=randomDouble();
+        double dy=randomDouble();
+        double dz=randomDouble();
+        rndIndex = (int)(Math.random()*thePdf.validValues);
 
         for(int iter=0; iter<iters; iter++){
-            rndIndex = (int)(Math.random()*thePdf.validValues);
-            sampleX = thePdf.validX[rndIndex]+randomDouble()-0.5;
-            sampleY = thePdf.validY[rndIndex]+randomDouble()-0.5;
-            sampleZ = thePdf.validZ[rndIndex]+randomDouble()-0.5;
+            if(iter%64==0){
+                rndIndex = (int)(Math.random()*thePdf.validValues);
+            }
+
+            sampleX = thePdf.validX[rndIndex]+dx*4;
+            sampleY = thePdf.validY[rndIndex]+dy*4;
+            sampleZ = thePdf.validZ[rndIndex]+dz*4;
             ptColor = thePdf.volume[(int)sampleX][(int)sampleY][(int)sampleZ];
 
             ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust*distScaleDown;
             rpt = new ifsPt((sampleX-centerX)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw); //placed point
 
             //put pixel
-            theVolume.putPixel(new ifsPt(dpt.x+rpt.x+uncertaintyX,
+            if(theVolume.putPixel(new ifsPt(dpt.x+rpt.x+uncertaintyX,
                                          dpt.y+rpt.y+uncertaintyY,
-                                         dpt.z+rpt.z+uncertaintyZ),ptColor);
+                                         dpt.z+rpt.z+uncertaintyZ),ptColor)){
+                dx=randomDouble()-0.5;
+                dy=randomDouble()-0.5;
+                dz=randomDouble()-0.5;
+            }else{
+                rndIndex = (int)(Math.random()*thePdf.validValues);
+            }
         }
     }
 

@@ -122,10 +122,11 @@ public class pdf3D { //3d probabilty density function
         }
 
         int edgeUnit = 1;
+        int edgePrune = 10;
 
-        for(int y=edgeUnit; y<width-edgeUnit; y++){
-            for(int x=edgeUnit; x<height-edgeUnit; x++){
-                for(int z=edgeUnit; z<depth-edgeUnit; z++){
+        for(int y=edgePrune; y<width-edgePrune; y++){
+            for(int x=edgePrune; x<height-edgePrune; x++){
+                for(int z=edgePrune; z<depth-edgePrune; z++){
                     if(volume[x][y][z]>0 && isNearEdge(x,y,z, edgeUnit)){
                         validX[validValues]=x;
                         validY[validValues]=y;
@@ -142,6 +143,7 @@ public class pdf3D { //3d probabilty density function
     }
 
     public boolean isNearEdge(int x, int y, int z, int unit){
+
         for(int x2=-unit; x2<unit+1; x2++){
             for(int y2=-unit; y2<unit+1; y2++){
                 for(int z2=-unit; z2<unit+1; z2++){
@@ -151,6 +153,7 @@ public class pdf3D { //3d probabilty density function
                 }
             }
         }
+
         return false;
     }
 

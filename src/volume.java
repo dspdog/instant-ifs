@@ -22,7 +22,10 @@ public class volume {
     public smartVolume volume;
 
     public double XYProjection[][];
+
     public double ZBuffer[][];
+    public long ZBufferTime[][];
+    public long dataPoints = 0;
 
     public int depthLeanX, depthLeanY;
 
@@ -46,6 +49,7 @@ public class volume {
         antiAliasing = true;
         XYProjection = new double[width][height];
         ZBuffer = new double[width][height];
+        ZBufferTime = new long[width][height];
         camPitch=0;
         camRoll=0;
         camYaw=0;
@@ -57,7 +61,7 @@ public class volume {
         centroid = new ifsPt(0,0,0);
     }
 
-    public void clear(){
+    public void reset(){
         drawTime=System.currentTimeMillis();
         totalSamples=1;
         totalSamplesAlpha =1;
@@ -68,16 +72,30 @@ public class volume {
         if(renderMode == renderMode.VOLUMETRIC){
             volume.reset();
         }
+    }
 
+    public void clear(){
+        reset();
+        clearProj(0);
+    }
+
+    public void clear(double a){
+        reset();
+        clearProj(a);
+    }
+
+    public void clearProj(double a){
+        dataPoints*=a;
         for(int x=0; x<width; x++){
             for(int y=0; y<height; y++){
-                XYProjection[x][y]=0;
-                ZBuffer[x][y]=0;
+                XYProjection[x][y]*=a;
+                ZBuffer[x][y]*=a;
+                ZBufferTime[x][y]*=a;
             }
         }
     }
 
-    public void putPixel(ifsPt _pt, double alpha){
+    public boolean putPixel(ifsPt _pt, double alpha){
 
         boolean maxMode = true;
 
@@ -91,8 +109,19 @@ public class volume {
         centroid.y+=pt.y*alpha;
         centroid.z+=pt.z*alpha;
 
+        dataPoints++;
+
         //pt.x += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
         //pt.y += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
+
+        double vx = 512.0;
+        double vy = 512.0;
+
+        pt.x += (vx - pt.x)/1024.0 * (1024.0-pt.z);
+        pt.y += (vy - pt.y)/1024.0 * (1024.0-pt.z);
+
+  //      pt.y += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
+
 
         if(pt.x>1 && pt.y>1 && pt.z>1 && pt.x<width-1 && pt.y<height-1 && pt.z<depth-1){
 
@@ -153,12 +182,21 @@ public class volume {
                 pt.z*=pt.z;
                 pt.z/=255.0;
 
+                boolean res=false;
+
+                if(pt.z * (1 - xDec) * (1 - yDec) > ZBuffer[(int) pt.x][(int) pt.y]){res=true;}
+
                 ZBuffer[(int)pt.x][(int)pt.y] = Math.max(pt.z * (1 - xDec) * (1 - yDec), ZBuffer[(int) pt.x][(int) pt.y]);
                 ZBuffer[(int)pt.x+1][(int)pt.y] = Math.max(pt.z * xDec * (1 - yDec), ZBuffer[(int) pt.x + 1][(int) pt.y]);
                 ZBuffer[(int)pt.x][(int)pt.y+1] = Math.max(pt.z * (1 - xDec) * yDec, ZBuffer[(int) pt.x][(int) pt.y + 1]);
                 ZBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(pt.z * xDec * yDec, ZBuffer[(int) pt.x + 1][(int) pt.y + 1]);
+                ZBufferTime[(int)pt.x][(int)pt.y] = dataPoints;
+
+                return res;
             }
         }
+
+        return false;
     }
 
     public ifsPt getCentroid(){
