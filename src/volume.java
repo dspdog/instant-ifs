@@ -124,6 +124,7 @@ public class volume {
 
             totalSamples++;
             totalSamplesAlpha +=alpha;
+
             if(antiAliasing){
                 double xDec = pt.x - (int)pt.x;
                 double yDec = pt.y - (int)pt.y;
@@ -135,6 +136,11 @@ public class volume {
                 XYProjection[(int)pt.x+1][(int)pt.y+1] += alpha*xDec*yDec;
             }else{
                 XYProjection[(int)pt.x][(int)pt.y]+=alpha;
+            }
+
+            if(XYProjection[(int)pt.x][(int)pt.y]>dataMax){
+                dataMax= XYProjection[(int)pt.x][(int)pt.y];
+                highPt = new ifsPt(pt);
             }
 
             if(maxMode){
@@ -151,11 +157,6 @@ public class volume {
                 ZBuffer[(int)pt.x+1][(int)pt.y] = Math.max(pt.z * xDec * (1 - yDec), ZBuffer[(int) pt.x + 1][(int) pt.y]);
                 ZBuffer[(int)pt.x][(int)pt.y+1] = Math.max(pt.z * (1 - xDec) * yDec, ZBuffer[(int) pt.x][(int) pt.y + 1]);
                 ZBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(pt.z * xDec * yDec, ZBuffer[(int) pt.x + 1][(int) pt.y + 1]);
-            }
-
-            if(XYProjection[(int)pt.x][(int)pt.y]>dataMax){
-                dataMax= XYProjection[(int)pt.x][(int)pt.y];
-                highPt = new ifsPt(pt);
             }
         }
     }

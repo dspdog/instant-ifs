@@ -142,7 +142,6 @@ public class pdf3D { //3d probabilty density function
     }
 
     public boolean isNearEdge(int x, int y, int z, int unit){
-
         for(int x2=-unit; x2<unit+1; x2++){
             for(int y2=-unit; y2<unit+1; y2++){
                 for(int z2=-unit; z2<unit+1; z2++){
@@ -152,7 +151,6 @@ public class pdf3D { //3d probabilty density function
                 }
             }
         }
-
         return false;
     }
 
