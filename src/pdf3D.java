@@ -120,7 +120,40 @@ public class pdf3D { //3d probabilty density function
                 }
             }
         }
-        System.out.println(validValues + " valid " + (100.0*validValues/512/512/512));
+
+        int edgeUnit = 1;
+
+        for(int y=edgeUnit; y<width-edgeUnit; y++){
+            for(int x=edgeUnit; x<height-edgeUnit; x++){
+                for(int z=edgeUnit; z<depth-edgeUnit; z++){
+                    if(volume[x][y][z]>0 && isNearEdge(x,y,z, edgeUnit)){
+                        validX[validValues]=x;
+                        validY[validValues]=y;
+                        validZ[validValues]=z;
+                        validValues++;
+                    }
+                    i++;
+                }
+            }
+
+        }
+
+        System.out.println(validValues + " valid %" + (100.0*validValues/512/512/512));
+    }
+
+    public boolean isNearEdge(int x, int y, int z, int unit){
+
+        for(int x2=-unit; x2<unit+1; x2++){
+            for(int y2=-unit; y2<unit+1; y2++){
+                for(int z2=-unit; z2<unit+1; z2++){
+                    if(volume[x+x2][y+y2][z+z2]==0){
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     public void updateVolumePixel(int x, int y, int z){
@@ -150,12 +183,7 @@ public class pdf3D { //3d probabilty density function
                 break;
 
         }
-        if(volume[x][y][z]>0){
-            validX[validValues]=x;
-            validY[validValues]=y;
-            validZ[validValues]=z;
-            validValues++;
-        }
+
     }
 
     public void loadImgs3D(String filenameX, String filenameY, String filenameZ){
