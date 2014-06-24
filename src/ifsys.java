@@ -190,7 +190,7 @@ public class ifsys extends Panel
                 try{
                     gamefunc();
                     repaint();
-                    //if(frameNo%5==0)
+                    //if(frameNo%2==0)
                     //clearframe();
                     sleep(1L);
                 }
@@ -388,19 +388,19 @@ public class ifsys extends Panel
         if(distScaleDown>1){distScaleDown=1;}
 
         int rndIndex;
-        double dx=randomDouble();
-        double dy=randomDouble();
-        double dz=randomDouble();
+        double dx=randomDouble()-0.5;
+        double dy=randomDouble()-0.5;
+        double dz=randomDouble()-0.5;
         rndIndex = (int)(Math.random()*thePdf.validValues);
 
         for(int iter=0; iter<iters; iter++){
-            if(iter%64==0){
+            if(iter%256==0){
                 rndIndex = (int)(Math.random()*thePdf.validValues);
             }
 
-            sampleX = thePdf.validX[rndIndex]+dx*4;
-            sampleY = thePdf.validY[rndIndex]+dy*4;
-            sampleZ = thePdf.validZ[rndIndex]+dz*4;
+            sampleX = thePdf.validX[rndIndex]+dx;
+            sampleY = thePdf.validY[rndIndex]+dy;
+            sampleZ = thePdf.validZ[rndIndex]+dz;
             ptColor = thePdf.volume[(int)sampleX][(int)sampleY][(int)sampleZ];
 
             ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust*distScaleDown;
@@ -410,9 +410,11 @@ public class ifsys extends Panel
             if(theVolume.putPixel(new ifsPt(dpt.x+rpt.x+uncertaintyX,
                                          dpt.y+rpt.y+uncertaintyY,
                                          dpt.z+rpt.z+uncertaintyZ),ptColor)){
-                dx=randomDouble()-0.5;
-                dy=randomDouble()-0.5;
-                dz=randomDouble()-0.5;
+                rndIndex+=(int)(Math.random()*4+1);
+                rndIndex=rndIndex%(thePdf.validValues | 1);
+                //dx=randomDouble()-0.5;
+                //dy=randomDouble()-0.5;
+                //dz=randomDouble()-0.5;
             }else{
                 rndIndex = (int)(Math.random()*thePdf.validValues);
             }
