@@ -172,7 +172,21 @@ public class ifsys extends Panel
     }
 
     public void findNearestPt(){
-        pointNearest = shape.getNearestPtIndexXY(mousex, mousey);
+
+        double minDist = 10000;
+       // int nearestIndex = -1;
+        for(int i=0; i<shape.pointsInUse; i++){
+
+            ifsPt _pt = theVolume.getCameraDistortedPt(shape.pts[i]);
+            double dist = _pt.distanceXY(new ifsPt(mousex, mousey, 0));
+
+            if(dist<minDist){
+                pointNearest=i;
+                minDist=dist;
+            }
+        }
+
+        //pointNearest = shape.getNearestPtIndexXY(mousex, mousey);
     }
 
     public void selectedNearestPt(){

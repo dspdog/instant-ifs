@@ -64,6 +64,14 @@ class ifsPt {
         return new ifsPt(this.x+pt.x, this.y+pt.y, this.z+pt.z);
     }
 
+    public double distanceXY(ifsPt pt){
+        return dist(pt.x-this.x,pt.y-this.y,0);
+    }
+
+    public static double dist(double x, double y, double z){
+        return Math.sqrt(x * x + y * y + z * z);
+    }
+
     public ifsPt getRotatedPt(double y, double z){
 
         double sx, sy, sz, cx, cy, cz;

@@ -184,6 +184,7 @@ public class ifsOverlays {
     public void drawBox(Graphics rg, int ptIndex){
         if(ptIndex>-1){
             ifsPt thePt =  myIfsSys.shape.pts[ptIndex];
+            ifsPt _thePt =  myIfsSys.theVolume.getCameraDistortedPt(myIfsSys.shape.pts[ptIndex]);
             double wobbleFreq = 6;
             double wobbleSize = 5;
             double width = thePt.scale * thePt.radius;
@@ -193,8 +194,8 @@ public class ifsOverlays {
             }else{
                 rg.setColor(Color.DARK_GRAY);
             }
-            rg.drawString("Point "+String.valueOf(ptIndex), (int)(thePt.x-width/2-wobbleSize*2), (int)(thePt.y-width/2-wobbleSize*2));
-            drawBoxBrackets(rg, (int)(thePt.x - size/2), (int)(thePt.y-size/2), (int)size, (int)size, (int)(size/10));
+            rg.drawString("Point "+String.valueOf(ptIndex), (int)(_thePt.x-width/2-wobbleSize*2), (int)(_thePt.y-width/2-wobbleSize*2));
+            drawBoxBrackets(rg, (int)(_thePt.x - size/2), (int)(_thePt.y-size/2), (int)size, (int)size, (int)(size/10));
         }
     }
 
