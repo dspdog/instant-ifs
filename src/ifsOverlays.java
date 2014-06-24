@@ -43,18 +43,16 @@ public class ifsOverlays {
     }
 
     public void drawSpecialPoints(Graphics _rg){//centroid and maximum
-        volume vol = myIfsSys.theVolume;
-        ifsPt projectedCentroid = vol.getCentroid();
-
-        ifsPt projectedHighPt;
-
-        if(vol.renderMode == volume.RenderMode.PROJECT_ONLY){
-            projectedHighPt = vol.highPt;
-        }else{
-            projectedHighPt = vol.highPtVolumetric;
-        }
-
         if(myIfsSys.theVolume.totalSamplesAlpha >5000){
+            ifsPt projectedCentroid = myIfsSys.theVolume.getCameraDistortedPt(myIfsSys.theVolume.getCentroid());
+            ifsPt projectedHighPt;
+
+            if(myIfsSys.theVolume.renderMode == volume.RenderMode.PROJECT_ONLY){
+                projectedHighPt =  myIfsSys.theVolume.getCameraDistortedPt(myIfsSys.theVolume.highPt);
+            }else{
+                projectedHighPt = myIfsSys.theVolume.getCameraDistortedPt(myIfsSys.theVolume.highPtVolumetric);
+            }
+
             int x=(int)projectedCentroid.x;
             int y=(int)projectedCentroid.y;
             drawCentroid(_rg,x,y);
@@ -242,6 +240,7 @@ public class ifsOverlays {
         rg.drawString("Mouse XYZ (" + myIfsSys.mousex + ", " + myIfsSys.mousey + ", " + myIfsSys.mousez + ")", xPad, lineSize*1);
         //rg.drawString("DepthLeanX (df): " + myIfsSys.theVolume.depthLeanX, xPad, lineSize*2);
         //rg.drawString("DepthLeanY (ws): " + myIfsSys.theVolume.depthLeanY, xPad, lineSize*3);
+
         rg.drawString("Centroid: ("
                 + (int)(myIfsSys.theVolume.getCentroid().x) + ", "
                 + (int)(myIfsSys.theVolume.getCentroid().y) + ", "
