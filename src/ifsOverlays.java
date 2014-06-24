@@ -80,13 +80,15 @@ public class ifsOverlays {
 
         min_d=100000;
 
-        xPts1[0] = (int)pt.x;
-        yPts1[0] = (int)pt.y;
-        zPts1[0] = (int)pt.z;
+        ifsPt centerPt = myIfsSys.theVolume.getCameraDistortedPt(pt);
 
-        xPts2[0] = (int)pt.x;
-        yPts2[0] = (int)pt.y;
-        zPts2[0] = (int)pt.z;
+        xPts1[0] = (int)centerPt.x;
+        yPts1[0] = (int)centerPt.y;
+        zPts1[0] = (int)centerPt.z;
+
+        xPts2[0] = (int)centerPt.x;
+        yPts2[0] = (int)centerPt.y;
+        zPts2[0] = (int)centerPt.z;
 
         for(int i=1; i<steps; i++){
             //yaw
@@ -99,16 +101,19 @@ public class ifsOverlays {
             yPts2[i] = 10*i/steps;
             zPts2[i] = (int)((Math.sin(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
 
-            ifsPt rotatedPt1 = new ifsPt(xPts1[i],yPts1[i],zPts1[i]).getRotatedPt(0, -pt.rotationYaw);
-            ifsPt rotatedPt2 = new ifsPt(xPts2[i],yPts2[i],zPts2[i]).getRotatedPt(-pt.rotationPitch, -pt.rotationYaw);
+            ifsPt rotatedPt1 = new ifsPt(xPts1[i],yPts1[i],zPts1[i]).getRotatedPt(0, -pt.rotationYaw).add(pt);
+            ifsPt rotatedPt2 = new ifsPt(xPts2[i],yPts2[i],zPts2[i]).getRotatedPt(-pt.rotationPitch, -pt.rotationYaw).add(pt);
 
-            xPts1[i] = (int)(rotatedPt1.x + pt.x);
-            yPts1[i] = (int)(rotatedPt1.y + pt.y);
-            zPts1[i] = (int)(rotatedPt1.z + pt.z);
+            rotatedPt1 = myIfsSys.theVolume.getCameraDistortedPt(rotatedPt1);
+            rotatedPt2 = myIfsSys.theVolume.getCameraDistortedPt(rotatedPt2);
 
-            xPts2[i] = (int)(rotatedPt2.x + pt.x);
-            yPts2[i] = (int)(rotatedPt2.y + pt.y);
-            zPts2[i] = (int)(rotatedPt2.z + pt.z);
+            xPts1[i] = (int)(rotatedPt1.x);
+            yPts1[i] = (int)(rotatedPt1.y);
+            zPts1[i] = (int)(rotatedPt1.z);
+
+            xPts2[i] = (int)(rotatedPt2.x);
+            yPts2[i] = (int)(rotatedPt2.y);
+            zPts2[i] = (int)(rotatedPt2.z);
 
             d1 = distance(myIfsSys.mousex - rotatedPt1.x - pt.x, myIfsSys.mousey - rotatedPt1.y - pt.y);
             d2 = distance(myIfsSys.mousex - rotatedPt2.x - pt.x, myIfsSys.mousey - rotatedPt2.y - pt.y);
@@ -127,10 +132,12 @@ public class ifsOverlays {
             //}
         }
 
-        xPts1[steps-1] = (int)pt.x;
-        yPts1[steps-1] = (int)pt.y;
-        xPts2[steps-1] = (int)pt.x;
-        yPts2[steps-1] = (int)pt.y;
+        //pt = myIfsSys.theVolume.getCameraDistortedPt(pt);
+
+        xPts1[steps-1] = (int)centerPt.x;
+        yPts1[steps-1] = (int)centerPt.y;
+        xPts2[steps-1] = (int)centerPt.x;
+        yPts2[steps-1] = (int)centerPt.y;
 
         if(isSelected){
             if(!dragging){

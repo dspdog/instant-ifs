@@ -95,6 +95,39 @@ public class volume {
         }
     }
 
+    public ifsPt getCameraDistortedPt(ifsPt _pt){
+        ifsPt pt = _pt.getCameraRotatedPt(
+                camPitch / 180.0 * Math.PI,
+                camYaw / 180.0 * Math.PI,
+                camRoll / 180.0 * Math.PI
+        );
+
+        double scale = 1.0;
+
+        //pt.x += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
+        //pt.y += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
+
+        double vx = 512.0; //vanishing pt onscreen
+        double vy = 512.0;
+
+        pt.x-=512;
+        pt.y-=512;
+        pt.z-=512;
+
+        pt.x*=scale;
+        pt.y*=scale;
+        pt.z*=scale;
+
+        pt.x+=512;
+        pt.y+=512;
+        pt.z+=512;
+
+        pt.x += (vx - pt.x)/1024.0 * (1024.0-pt.z);
+        pt.y += (vy - pt.y)/1024.0 * (1024.0-pt.z);
+
+        return pt;
+    }
+
     public boolean putPixel(ifsPt _pt, double alpha){
 
         boolean maxMode = true;
@@ -111,17 +144,30 @@ public class volume {
 
         dataPoints++;
 
+        double scale = 1.0;
+
         //pt.x += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
         //pt.y += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
 
-        double vx = 512.0;
+        double vx = 512.0; //vanishing pt onscreen
         double vy = 512.0;
+
+        pt.x-=512;
+        pt.y-=512;
+        pt.z-=512;
+
+        pt.x*=scale;
+        pt.y*=scale;
+        pt.z*=scale;
+
+        pt.x+=512;
+        pt.y+=512;
+        pt.z+=512;
 
         pt.x += (vx - pt.x)/1024.0 * (1024.0-pt.z);
         pt.y += (vy - pt.y)/1024.0 * (1024.0-pt.z);
 
   //      pt.y += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
-
 
         if(pt.x>1 && pt.y>1 && pt.z>1 && pt.x<width-1 && pt.y<height-1 && pt.z<depth-1){
 

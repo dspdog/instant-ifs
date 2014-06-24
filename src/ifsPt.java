@@ -60,6 +60,10 @@ class ifsPt {
         return Math.sin(i);
     }
 
+    public ifsPt add(ifsPt pt){
+        return new ifsPt(this.x+pt.x, this.y+pt.y, this.z+pt.z);
+    }
+
     public ifsPt getRotatedPt(double y, double z){
 
         double sx, sy, sz, cx, cy, cz;

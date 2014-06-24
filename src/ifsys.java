@@ -87,7 +87,7 @@ public class ifsys extends Panel
     public ifsys(){
 
 
-        overlayHideTime=1000;
+        overlayHideTime=5000;
         started=false;
         oneSecondAgo =0;
         framesThisSecond = 0;
