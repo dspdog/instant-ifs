@@ -301,8 +301,9 @@ public class ifsys extends Panel
             rg.setColor(Color.blue);
 
             if(!guidesHidden){
-                overlays.drawArcs(rg);
-                overlays.drawSpecialPoints(rg);
+                //overlays.drawArcs(rg);
+                //overlays.drawSpecialPoints(rg);
+                overlays.drawDraggyArrows(rg);
                 overlays.drawBox(rg, pointSelected);
                 overlays.drawBox(rg, pointNearest);
             }
@@ -422,33 +423,34 @@ public class ifsys extends Panel
         double dx=randomDouble()-0.5;
         double dy=randomDouble()-0.5;
         double dz=randomDouble()-0.5;
+
         rndIndex = (int)(Math.random()*thePdf.validValues);
 
-        for(int iter=0; iter<iters; iter++){
-            if(iter%256==0){
-                rndIndex = (int)(Math.random()*thePdf.validValues);
-            }
+        sampleX = thePdf.validX[rndIndex]+dx;
+        sampleY = thePdf.validY[rndIndex]+dy;
+        sampleZ = thePdf.validZ[rndIndex]+dz;
 
-            sampleX = thePdf.validX[rndIndex]+dx;
-            sampleY = thePdf.validY[rndIndex]+dy;
-            sampleZ = thePdf.validZ[rndIndex]+dz;
+        for(int iter=0; iter<iters; iter++){
+            //if(iter%256==0){
+            //    rndIndex = (int)(Math.random()*thePdf.validValues);
+            //}
+
             ptColor = thePdf.volume[(int)sampleX][(int)sampleY][(int)sampleZ];
 
             ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust*distScaleDown;
             rpt = new ifsPt((sampleX-centerX)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw); //placed point
 
             //put pixel
+
             if(theVolume.putPixel(new ifsPt(dpt.x+rpt.x+uncertaintyX,
                                          dpt.y+rpt.y+uncertaintyY,
                                          dpt.z+rpt.z+uncertaintyZ),ptColor)){
-                rndIndex+=(int)(Math.random()*4+1);
-                rndIndex=rndIndex%(thePdf.validValues | 1);
-                //dx=randomDouble()-0.5;
-                //dy=randomDouble()-0.5;
-                //dz=randomDouble()-0.5;
+                rndIndex+=Math.random()*8+1;
+
             }else{
-                rndIndex = (int)(Math.random()*thePdf.validValues);
+                rndIndex+=thePdf.validValues/thePdf.sampleHeight/2;
             }
+            rndIndex=rndIndex%(thePdf.validValues | 1);
         }
     }
 

@@ -109,29 +109,17 @@ public class volume {
     }
 
     public ifsPt getCameraDistortedPt(ifsPt _pt){
-        ifsPt pt = _pt.getCameraRotatedPt(
-                camPitch / 180.0 * Math.PI,
-                camYaw / 180.0 * Math.PI,
-                camRoll / 180.0 * Math.PI
-        );
+        ifsPt pt = _pt
+                .subtract(new ifsPt(camCenterX, camCenterY, camCenterZ))
+                .getRotatedPt(camPitch / 180.0 * Math.PI, camYaw / 180.0 * Math.PI, camRoll / 180.0 * Math.PI)
+                .scale(camScale)
+                .add(new ifsPt(camCenterX, camCenterY, camCenterZ));
 
         //pt.x += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
         //pt.y += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
 
         double vx = 512.0; //vanishing pt onscreen
         double vy = 512.0;
-
-        pt.x-=camCenterX;
-        pt.y-=camCenterY;
-        pt.z-=camCenterZ;
-
-        pt.x*=camScale;
-        pt.y*=camScale;
-        pt.z*=camScale;
-
-        pt.x+=camCenterX;
-        pt.y+=camCenterY;
-        pt.z+=camCenterZ;
 
         pt.x += (vx - pt.x)/1024.0 * (1024.0-pt.z);
         pt.y += (vy - pt.y)/1024.0 * (1024.0-pt.z);

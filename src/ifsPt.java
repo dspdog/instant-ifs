@@ -15,6 +15,10 @@ class ifsPt {
     public double savedradius;
     public double savedrotation;
 
+    static ifsPt X_UNIT = new ifsPt(1.0,0,0);
+    static ifsPt Y_UNIT = new ifsPt(0.0,1.0,0);
+    static ifsPt Z_UNIT = new ifsPt(0.0,0,1.0);
+
     public ifsPt(){
         x = 0D; y = 0D; z = 0D;
         scale = 1D;
@@ -64,8 +68,16 @@ class ifsPt {
         return new ifsPt(this.x+pt.x, this.y+pt.y, this.z+pt.z);
     }
 
+    public ifsPt subtract(ifsPt pt){
+        return new ifsPt(this.x-pt.x, this.y-pt.y, this.z-pt.z);
+    }
+
+    public ifsPt scale(double s){
+        return new ifsPt(this.x*s, this.y*s, this.z*s);
+    }
+
     public double distanceXY(ifsPt pt){
-        return dist(pt.x-this.x,pt.y-this.y,0);
+        return dist(pt.x - this.x, pt.y - this.y, 0);
     }
 
     public static double dist(double x, double y, double z){
@@ -109,12 +121,6 @@ class ifsPt {
         double zp = this.x*Fx + this.y*Fy + this.z*Fz;
 
         return new ifsPt(xp,yp,zp);
-    }
-
-    public ifsPt getCameraRotatedPt(double pitch, double yaw, double roll){
-        ifsPt __pt = new ifsPt(this.x-512.0,this.y-512.0,this.z-512.0);
-        ifsPt ___pt = __pt.getRotatedPt(pitch, yaw, roll);
-        return new ifsPt(___pt.x+512.0,___pt.y+512.0,___pt.z+512.0);
     }
 
     public ifsPt getRotatedPt(double y, double z, double x){

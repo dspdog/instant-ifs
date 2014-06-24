@@ -12,7 +12,7 @@ public class ifsOverlays {
 
     public void drawArcs(Graphics rg){
         for(int i=0;i<myIfsSys.shape.pointsInUse;i++){
-            drawArc(rg, myIfsSys.shape.pts[i], i == myIfsSys.pointNearest, myIfsSys.isDragging, i==0);
+            drawArc(rg, myIfsSys.shape.pts[i], i == myIfsSys.pointNearest, myIfsSys.isDragging, i == 0);
         }
     }
 
@@ -32,7 +32,7 @@ public class ifsOverlays {
         int width = (int)(10/Math.sqrt(2));
         int height = (int)(10/Math.sqrt(2));
         _rg.setColor(Color.YELLOW);
-        drawRegularPolygon(_rg, x - width / 2, y - height / 2, radius, 3, -Math.PI/2); //upward pointd triangle
+        drawRegularPolygon(_rg, x - width / 2, y - height / 2, radius, 3, -Math.PI / 2); //upward pointd triangle
     }
 
     public void drawCentroid(Graphics _rg, int x, int y){
@@ -160,6 +160,38 @@ public class ifsOverlays {
         drawPolyline(xPts1, yPts1, zPts1, steps, _rg);
     }
 
+    public void drawDraggyArrows(Graphics rg){
+        for(int i=0;i<myIfsSys.shape.pointsInUse;i++){
+            drawArrows(rg, myIfsSys.shape.pts[i], i == myIfsSys.pointNearest, myIfsSys.isDragging, i == 0);
+        }
+    }
+
+    public void drawArrows(Graphics rg, ifsPt pt, boolean isNearest, boolean isDragging, boolean isCenter){
+        ifsPt centerPt = myIfsSys.theVolume.getCameraDistortedPt(pt);
+        ifsPt xArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.X_UNIT.scale(pt.radius*pt.scale)));
+        ifsPt yArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.Y_UNIT.scale(pt.radius*pt.scale)));
+        ifsPt zArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.Z_UNIT.scale(pt.radius*pt.scale)));
+        rg.setColor(Color.gray);
+        int buffer=8;
+        if(isNearest){
+            rg.setColor(Color.RED);
+            rg.drawString("X", (int)xArrow.x+buffer, (int)xArrow.y+buffer);
+        }
+        drawline(centerPt, xArrow, rg, false);
+
+        if(isNearest){
+            rg.setColor(Color.GREEN);
+            rg.drawString("Y", (int)yArrow.x+buffer, (int)yArrow.y+buffer);
+        }
+        drawline(centerPt, yArrow, rg, false);
+
+        if(isNearest){
+            rg.setColor(Color.BLUE);
+            rg.drawString("Z", (int)zArrow.x+buffer, (int)zArrow.y+buffer);
+        }
+        drawline(centerPt, zArrow, rg, false);
+    }
+
     public void drawPolyline(int[] x, int[] y, int[] z, int steps, Graphics rg){
         for (int i = 0; i < steps; i++) {
             if(myIfsSys.theVolume.volumeContains(new ifsPt(x[i],y[i],z[i]))){
@@ -168,6 +200,18 @@ public class ifsOverlays {
                 }
             }
 
+        }
+    }
+
+    public void drawline(ifsPt p1, ifsPt p2, Graphics rg, boolean isBold){
+        if(myIfsSys.theVolume.volumeContains(p1)){
+            if(myIfsSys.theVolume.volumeContains(p2)){
+                rg.drawLine((int)p1.x,(int)p1.y,(int)p2.x,(int)p2.y);
+                if(isBold){
+                    rg.drawLine((int)p1.x+1,(int)p1.y+1,(int)p2.x+1,(int)p2.y+1);
+                    rg.drawLine((int)p1.x-1,(int)p1.y-1,(int)p2.x-1,(int)p2.y-1);
+                }
+            }
         }
     }
 

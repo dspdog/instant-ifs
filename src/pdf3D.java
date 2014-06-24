@@ -19,6 +19,7 @@ public class pdf3D { //3d probabilty density function
     public int[] validX;
     public int[] validY;
     public int[] validZ;
+    public int[] validDir;
 
     Image sampleImage;
     Image sampleImageX;
@@ -44,7 +45,7 @@ public class pdf3D { //3d probabilty density function
         //loadImg("serp.png");
         
         //loadImgs3D("_x.png", "_y.png", "_z.png");
-        loadImgs3D("serp.png", "serp.png", "serp.png");
+        loadImgs3D("serp2.png", "serp2.png", "serp2.png");
     }
 
     public void sampleImg(File file, Image sampleImage, int missingDimension){
@@ -107,16 +108,16 @@ public class pdf3D { //3d probabilty density function
     }
 
     public void updateVolume(){
-        int i=0;
+
         validValues = 0;
         validX = new int[width*width*width];
         validY = new int[width*width*width];
         validZ = new int[width*width*width];
+        validDir = new int[width*width*width];
         for(int y=0; y<width; y++){
             for(int x=0; x<height; x++){
                 for(int z=0; z<depth; z++){
                     updateVolumePixel(x, y, z);
-                    i++;
                 }
             }
         }
@@ -127,19 +128,22 @@ public class pdf3D { //3d probabilty density function
         for(int y=edgePrune; y<width-edgePrune; y++){
             for(int x=edgePrune; x<height-edgePrune; x++){
                 for(int z=edgePrune; z<depth-edgePrune; z++){
-                    if(volume[x][y][z]>0 && isNearEdge(x,y,z, edgeUnit)){
+                    if(pointValid(x,y,z,edgeUnit)){
                         validX[validValues]=x;
                         validY[validValues]=y;
                         validZ[validValues]=z;
+
                         validValues++;
                     }
-                    i++;
                 }
             }
-
         }
 
         System.out.println(validValues + " valid %" + (100.0*validValues/512/512/512));
+    }
+
+    public boolean pointValid(int x, int y, int z, int edgeUnit){
+        return volume[x][y][z]>0 && isNearEdge(x,y,z, edgeUnit);
     }
 
     public boolean isNearEdge(int x, int y, int z, int unit){
