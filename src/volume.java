@@ -24,7 +24,7 @@ public class volume {
     public double XYProjection[][];
 
     public double ZBuffer[][];
-    public long ZBufferTime[][];
+    //public long ZBufferTime[][];
     public long dataPoints = 0;
 
     public int depthLeanX, depthLeanY;
@@ -32,6 +32,10 @@ public class volume {
     double camRoll;
     double camYaw;
     double camPitch;
+    double camScale;
+    double camCenterX;
+    double camCenterY;
+    double camCenterZ;
 
     ifsPt centroid;
     ifsPt highPt;
@@ -49,10 +53,16 @@ public class volume {
         antiAliasing = true;
         XYProjection = new double[width][height];
         ZBuffer = new double[width][height];
-        ZBufferTime = new long[width][height];
         camPitch=0;
         camRoll=0;
         camYaw=0;
+
+        camScale=2.0;
+
+        camCenterX=512.0;
+        camCenterY=512.0;
+        camCenterZ=512.0;
+
         //if(renderMode == RenderMode.VOLUMETRIC){
             //volume = new double[width][height][depth];
             volume = new smartVolume(width);
@@ -90,9 +100,13 @@ public class volume {
             for(int y=0; y<height; y++){
                 XYProjection[x][y]*=a;
                 ZBuffer[x][y]*=a;
-                ZBufferTime[x][y]*=a;
+                //ZBufferTime[x][y]*=a;
             }
         }
+    }
+
+    public boolean volumeContains(ifsPt pt){
+        return (pt.x>1 && pt.y>1 && pt.z>1 && pt.x<width-1 && pt.y<height-1 && pt.z<depth-1);
     }
 
     public ifsPt getCameraDistortedPt(ifsPt _pt){
@@ -102,25 +116,23 @@ public class volume {
                 camRoll / 180.0 * Math.PI
         );
 
-        double scale = 1.0;
-
         //pt.x += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
         //pt.y += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
 
         double vx = 512.0; //vanishing pt onscreen
         double vy = 512.0;
 
-        pt.x-=512;
-        pt.y-=512;
-        pt.z-=512;
+        pt.x-=camCenterX;
+        pt.y-=camCenterY;
+        pt.z-=camCenterZ;
 
-        pt.x*=scale;
-        pt.y*=scale;
-        pt.z*=scale;
+        pt.x*=camScale;
+        pt.y*=camScale;
+        pt.z*=camScale;
 
-        pt.x+=512;
-        pt.y+=512;
-        pt.z+=512;
+        pt.x+=camCenterX;
+        pt.y+=camCenterY;
+        pt.z+=camCenterZ;
 
         pt.x += (vx - pt.x)/1024.0 * (1024.0-pt.z);
         pt.y += (vy - pt.y)/1024.0 * (1024.0-pt.z);
@@ -132,11 +144,7 @@ public class volume {
 
         boolean maxMode = true;
 
-        ifsPt pt = _pt.getCameraRotatedPt(
-                camPitch / 180.0 * Math.PI,
-                camYaw / 180.0 * Math.PI,
-                camRoll / 180.0 * Math.PI
-        );
+        ifsPt pt = getCameraDistortedPt(_pt);
 
         centroid.x+=pt.x*alpha;
         centroid.y+=pt.y*alpha;
@@ -144,33 +152,7 @@ public class volume {
 
         dataPoints++;
 
-        double scale = 1.0;
-
-        //pt.x += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
-        //pt.y += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
-
-        double vx = 512.0; //vanishing pt onscreen
-        double vy = 512.0;
-
-        pt.x-=512;
-        pt.y-=512;
-        pt.z-=512;
-
-        pt.x*=scale;
-        pt.y*=scale;
-        pt.z*=scale;
-
-        pt.x+=512;
-        pt.y+=512;
-        pt.z+=512;
-
-        pt.x += (vx - pt.x)/1024.0 * (1024.0-pt.z);
-        pt.y += (vy - pt.y)/1024.0 * (1024.0-pt.z);
-
-  //      pt.y += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
-
-        if(pt.x>1 && pt.y>1 && pt.z>1 && pt.x<width-1 && pt.y<height-1 && pt.z<depth-1){
-
+        if(volumeContains(pt)){
             if(renderMode==renderMode.VOLUMETRIC){
                 if(antiAliasing){
                     double xDec = pt.x - (int)pt.x;
@@ -200,18 +182,18 @@ public class volume {
             totalSamples++;
             totalSamplesAlpha +=alpha;
 
-            if(antiAliasing){
-                double xDec = pt.x - (int)pt.x;
-                double yDec = pt.y - (int)pt.y;
-                double zDec = pt.z - (int)pt.z;
+            //if(antiAliasing){
+            //    double xDec = pt.x - (int)pt.x;
+            //    double yDec = pt.y - (int)pt.y;
+                //double zDec = pt.z - (int)pt.z;
 
-                XYProjection[(int)pt.x][(int)pt.y] += alpha*(1-xDec)*(1-yDec);
-                XYProjection[(int)pt.x+1][(int)pt.y] += alpha*xDec*(1-yDec);
-                XYProjection[(int)pt.x][(int)pt.y+1] += alpha*(1-xDec)*yDec;
-                XYProjection[(int)pt.x+1][(int)pt.y+1] += alpha*xDec*yDec;
-            }else{
+            //   XYProjection[(int)pt.x][(int)pt.y] += alpha*(1-xDec)*(1-yDec);
+                //XYProjection[(int)pt.x+1][(int)pt.y] += alpha*xDec*(1-yDec);
+                //XYProjection[(int)pt.x][(int)pt.y+1] += alpha*(1-xDec)*yDec;
+                //XYProjection[(int)pt.x+1][(int)pt.y+1] += alpha*xDec*yDec;
+            //}else{
                 XYProjection[(int)pt.x][(int)pt.y]+=alpha;
-            }
+            //}
 
             if(XYProjection[(int)pt.x][(int)pt.y]>dataMax){
                 dataMax= XYProjection[(int)pt.x][(int)pt.y];
@@ -236,7 +218,7 @@ public class volume {
                 ZBuffer[(int)pt.x+1][(int)pt.y] = Math.max(pt.z * xDec * (1 - yDec), ZBuffer[(int) pt.x + 1][(int) pt.y]);
                 ZBuffer[(int)pt.x][(int)pt.y+1] = Math.max(pt.z * (1 - xDec) * yDec, ZBuffer[(int) pt.x][(int) pt.y + 1]);
                 ZBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(pt.z * xDec * yDec, ZBuffer[(int) pt.x + 1][(int) pt.y + 1]);
-                ZBufferTime[(int)pt.x][(int)pt.y] = dataPoints;
+                //ZBufferTime[(int)pt.x][(int)pt.y] = dataPoints;
 
                 return res;
             }

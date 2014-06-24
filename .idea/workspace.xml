@@ -69,10 +69,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ifsys.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="277" column="0" selection-start="6817" selection-end="6817" vertical-scroll-proportion="-7.423077" vertical-offset="4465" max-vertical-offset="12597">
+            <state line="9" column="0" selection-start="281" selection-end="281" vertical-scroll-proportion="0.1761658" vertical-offset="0" max-vertical-offset="12886">
               <folding />
             </state>
           </provider>
@@ -108,7 +108,7 @@
       <file leaf-file-name="volume.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/volume.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="98" column="0" selection-start="2214" selection-end="2214" vertical-scroll-proportion="0.0" vertical-offset="1346" max-vertical-offset="7888">
+            <state line="40" column="17" selection-start="814" selection-end="814" vertical-scroll-proportion="-3.5" vertical-offset="521" max-vertical-offset="7582">
               <folding />
             </state>
           </provider>
@@ -132,10 +132,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ifsOverlays.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="ifsOverlays.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ifsOverlays.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="45" column="0" selection-start="1555" selection-end="1555" vertical-scroll-proportion="0.33333334" vertical-offset="555" max-vertical-offset="4981">
+            <state line="42" column="5" selection-start="1482" selection-end="1482" vertical-scroll-proportion="-5.4615383" vertical-offset="555" max-vertical-offset="4981">
               <folding />
             </state>
           </provider>
@@ -163,10 +163,10 @@
         <option value="$PROJECT_DIR$/src/ifsShape.java" />
         <option value="$PROJECT_DIR$/src/ifsMenu.java" />
         <option value="$PROJECT_DIR$/src/pdf3D.java" />
-        <option value="$PROJECT_DIR$/src/volume.java" />
         <option value="$PROJECT_DIR$/src/ifsPt.java" />
-        <option value="$PROJECT_DIR$/src/ifsys.java" />
         <option value="$PROJECT_DIR$/src/ifsOverlays.java" />
+        <option value="$PROJECT_DIR$/src/volume.java" />
+        <option value="$PROJECT_DIR$/src/ifsys.java" />
       </list>
     </option>
   </component>
@@ -857,23 +857,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/ifsOverlays.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="42" column="5" selection-start="1482" selection-end="1482" vertical-scroll-proportion="-5.4615383" vertical-offset="555" max-vertical-offset="4981">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/volume.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="98" column="0" selection-start="2214" selection-end="2214" vertical-scroll-proportion="0.0" vertical-offset="1397" max-vertical-offset="7888">
+        <state line="40" column="17" selection-start="814" selection-end="814" vertical-scroll-proportion="-3.5" vertical-offset="521" max-vertical-offset="7582">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="277" column="0" selection-start="6817" selection-end="6817" vertical-scroll-proportion="-7.423077" vertical-offset="4465" max-vertical-offset="12597">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/ifsOverlays.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="0" selection-start="1555" selection-end="1555" vertical-scroll-proportion="0.33333334" vertical-offset="555" max-vertical-offset="4981">
+        <state line="9" column="0" selection-start="281" selection-end="281" vertical-scroll-proportion="0.1761658" vertical-offset="0" max-vertical-offset="12886">
           <folding />
         </state>
       </provider>

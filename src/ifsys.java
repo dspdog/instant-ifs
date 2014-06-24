@@ -6,7 +6,9 @@ import java.awt.image.MemoryImageSource;
 public class ifsys extends Panel
     implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener, ActionListener
 {
-    mainthread game;
+    mainthread[] games;
+
+    int numThreads = Runtime.getRuntime().availableProcessors()/2;
     boolean quit;
     int screenwidth;
     int screenheight;
@@ -14,6 +16,7 @@ public class ifsys extends Panel
     int pixels[];
     Image render;
     Graphics rg;
+    static long tNo=0;
     long frameNo;
     long fps;
     long framesThisSecond;
@@ -85,7 +88,7 @@ public class ifsys extends Panel
     int overlayHideTime;
 
     public ifsys(){
-
+        System.out.println(numThreads + " threads");
 
         overlayHideTime=5000;
         started=false;
@@ -94,7 +97,15 @@ public class ifsys extends Panel
         altDown=false;
         ctrlDown=false;
         shiftDown=false;
-        game = new mainthread();
+
+        games = new mainthread[numThreads];
+
+        for(int i=0; i<games.length; i++){
+            games[i] = new mainthread();
+        }
+
+        //game = new mainthread();
+        //game2 = new mainthread();
         quit = false;
         framesHidden = true;
         infoHidden = false;
@@ -165,6 +176,7 @@ public class ifsys extends Panel
 
     public void init() {
         frameNo=0;
+
         start();
         shape.updateCenter();
         clearframe();
@@ -203,9 +215,10 @@ public class ifsys extends Panel
             while(!quit) 
                 try{
                     gamefunc();
-                    repaint();
-                    //if(frameNo%2==0)
-                    //clearframe();
+                    tNo++;
+                    if(tNo%numThreads==0){
+                        repaint();
+                    }
                     sleep(1L);
                 }
                 catch(InterruptedException e) {
@@ -231,7 +244,11 @@ public class ifsys extends Panel
         //genRandomNums();
 
         clearframe();
-        game.start();
+
+        for(int i=0; i<games.length; i++){
+            games[i].start();
+        }
+
         shape.setToPreset(0);
 
         started = true;
@@ -390,7 +407,7 @@ public class ifsys extends Panel
         pointDegreesYaw = thePt.rotationYaw +cumulativeRotationYaw;
         pointDegreesPitch = thePt.rotationPitch +cumulativeRotationPitch;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
 
-        int iters = (int)(samplesPerPdfScaler * scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
+        int iters = (int)(samplesPerPdfScaler * scale*scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
 
         iters=iters&(4095); //limit to 4095
 
