@@ -157,7 +157,18 @@ public class ifsOverlays {
     }
 
     public void drawPolyLineRotated(int[] xPts1, int[] yPts1, int[] zPts1, Graphics _rg, int steps){
-        _rg.drawPolyline(xPts1, yPts1, steps);
+        drawPolyline(xPts1, yPts1, zPts1, steps, _rg);
+    }
+
+    public void drawPolyline(int[] x, int[] y, int[] z, int steps, Graphics rg){
+        for (int i = 0; i < steps; i++) {
+            if(myIfsSys.theVolume.volumeContains(new ifsPt(x[i],y[i],z[i]))){
+                if(myIfsSys.theVolume.volumeContains(new ifsPt(x[(i+1)%steps],y[(i+1)%steps],z[(i+1)%steps]))){
+                    rg.drawLine(x[i],y[i],x[(i+1)%steps],y[(i+1)%steps]);
+                }
+            }
+
+        }
     }
 
     public void drawPolylineBolded(Graphics rg, int[] xPts, int[] yPts, int[] zPts, int steps, boolean isSelected){
