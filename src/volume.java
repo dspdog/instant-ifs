@@ -100,7 +100,6 @@ public class volume {
             for(int y=0; y<height; y++){
                 XYProjection[x][y]*=a;
                 ZBuffer[x][y]*=a;
-                //ZBufferTime[x][y]*=a;
             }
         }
     }
@@ -218,7 +217,6 @@ public class volume {
                 ZBuffer[(int)pt.x+1][(int)pt.y] = Math.max(pt.z * xDec * (1 - yDec), ZBuffer[(int) pt.x + 1][(int) pt.y]);
                 ZBuffer[(int)pt.x][(int)pt.y+1] = Math.max(pt.z * (1 - xDec) * yDec, ZBuffer[(int) pt.x][(int) pt.y + 1]);
                 ZBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(pt.z * xDec * yDec, ZBuffer[(int) pt.x + 1][(int) pt.y + 1]);
-                //ZBufferTime[(int)pt.x][(int)pt.y] = dataPoints;
 
                 return res;
             }

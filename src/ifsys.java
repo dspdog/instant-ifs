@@ -462,13 +462,6 @@ public class ifsys extends Panel
             samplesPerFrame =2;}
         if(samplesPerFrame >1310720){
             samplesPerFrame =1310720;}
-
-        if(potentialRadius>512){
-            potentialRadius=512;
-        }
-        if(potentialRadius<0){
-            potentialRadius=0;
-        }
     }
 
     public void gamefunc(){
