@@ -21,7 +21,6 @@ public class pdf3D { //3d probabilty density function
     public int[] validZ;
     public int[] validDir;
 
-    Image sampleImage;
     Image sampleImageX;
     Image sampleImageY;
     Image sampleImageZ;
@@ -39,19 +38,12 @@ public class pdf3D { //3d probabilty density function
         volume = new double[width][height][depth];
         samplePixels = new int[width*height];
 
-        //loadMap_XYGradient();
-        //loadMap_3DBlob();
-        //loadImg3D("serp2.jpg");
-        //loadImg("serp.png");
-        
-        //loadImgs3D("_x.png", "_y.png", "_z.png");
         loadImgs3D("serp2.png", "serp2.png", "serp2.png");
     }
 
     public void sampleImg(File file, Image sampleImage, int missingDimension){
         try {
             System.out.println("loading" + file.getCanonicalPath());
-            //sampleImage = getImage(file);
             PixelGrabber grabber = new PixelGrabber(sampleImage, 0, 0, -1, -1, false);
 
             if (grabber.grabPixels()) {
@@ -245,7 +237,6 @@ public class pdf3D { //3d probabilty density function
 
             }
 
-
             try{
                 root="file:/C:/Users/Labrats/Documents/GitHub/instant-ifs/img/";
                 URL theImgURL = new URL(root + name);
@@ -264,10 +255,6 @@ public class pdf3D { //3d probabilty density function
             e.printStackTrace();
             return null;
         }
-    }
-
-    public double distance(double x, double y, double z){
-        return Math.sqrt(x * x + y * y + z * z);
     }
 
     public static enum comboMode {

@@ -162,11 +162,15 @@ public class ifsOverlays {
 
     public void drawDraggyArrows(Graphics rg){
         for(int i=0;i<myIfsSys.shape.pointsInUse;i++){
-            drawArrows(rg, myIfsSys.shape.pts[i], i == myIfsSys.pointNearest, myIfsSys.isDragging, i == 0);
+            drawArrows(rg, myIfsSys.shape.pts[i], i == myIfsSys.pointSelected, myIfsSys.isDragging, i == 0);
         }
     }
 
     public void drawArrows(Graphics rg, ifsPt pt, boolean isNearest, boolean isDragging, boolean isCenter){
+
+        double d1, d2, d3, minDis=5000;
+        int selectedAxis=0;
+
         ifsPt centerPt = myIfsSys.theVolume.getCameraDistortedPt(pt);
         ifsPt xArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.X_UNIT.scale(pt.radius*pt.scale)));
         ifsPt yArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.Y_UNIT.scale(pt.radius*pt.scale)));
@@ -176,20 +180,44 @@ public class ifsOverlays {
         if(isNearest){
             rg.setColor(Color.RED);
             rg.drawString("X", (int)xArrow.x+buffer, (int)xArrow.y+buffer);
+            d1=ifsShape.distance(myIfsSys.mousex-xArrow.x, myIfsSys.mousey-xArrow.y, 0);
+            if(d1<minDis){minDis=d1; selectedAxis=1;}
         }
         drawline(centerPt, xArrow, rg, false);
 
         if(isNearest){
             rg.setColor(Color.GREEN);
             rg.drawString("Y", (int)yArrow.x+buffer, (int)yArrow.y+buffer);
+            d2=ifsShape.distance(myIfsSys.mousex-yArrow.x, myIfsSys.mousey-yArrow.y, 0);
+            if(d2<minDis){minDis=d2; selectedAxis=2;}
         }
         drawline(centerPt, yArrow, rg, false);
 
         if(isNearest){
             rg.setColor(Color.BLUE);
             rg.drawString("Z", (int)zArrow.x+buffer, (int)zArrow.y+buffer);
+            d3=ifsShape.distance(myIfsSys.mousex-zArrow.x, myIfsSys.mousey-zArrow.y, 0);
+            if(d3<minDis){minDis=d3; selectedAxis=3;}
         }
         drawline(centerPt, zArrow, rg, false);
+
+        if(isNearest)
+        switch (selectedAxis){
+            case 1:
+                rg.setColor(Color.RED);
+                drawline(centerPt, xArrow, rg, true);
+                break;
+            case 2:
+                rg.setColor(Color.GREEN);
+                drawline(centerPt, yArrow, rg, true);
+                break;
+            case 3:
+                rg.setColor(Color.BLUE);
+                drawline(centerPt, zArrow, rg, true);
+                break;
+            default:
+                break;
+        }
     }
 
     public void drawPolyline(int[] x, int[] y, int[] z, int steps, Graphics rg){
@@ -210,6 +238,12 @@ public class ifsOverlays {
                 if(isBold){
                     rg.drawLine((int)p1.x+1,(int)p1.y+1,(int)p2.x+1,(int)p2.y+1);
                     rg.drawLine((int)p1.x-1,(int)p1.y-1,(int)p2.x-1,(int)p2.y-1);
+
+                    rg.drawLine((int)p1.x-1,(int)p1.y+1,(int)p2.x-1,(int)p2.y+1);
+                    rg.drawLine((int)p1.x-1,(int)p1.y+1,(int)p2.x-1,(int)p2.y+1);
+
+                    rg.drawLine((int)p1.x+1,(int)p1.y-1,(int)p2.x+1,(int)p2.y-1);
+                    rg.drawLine((int)p1.x+1,(int)p1.y-1,(int)p2.x+1,(int)p2.y-1);
                 }
             }
         }

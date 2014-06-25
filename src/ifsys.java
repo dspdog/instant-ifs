@@ -533,7 +533,6 @@ public class ifsys extends Panel
         getMouseXYZ(e);
 
         selectedNearestPt();
-        //findNearestPt();
 
         if(e.getClickCount()==2){
             if(mousemode == 1){ //add point w/ double click
@@ -546,21 +545,6 @@ public class ifsys extends Panel
                 gamefunc();
             }
         }else{
-            startDragX = mousex;
-            startDragY = mousey;
-            startDragZ = mousez;
-            shape.updateCenter();
-
-            startDragPX = selectedPt.x;
-            startDragPY = selectedPt.y;
-            startDragPZ = selectedPt.z;
-
-            startDragDist = shape.distance(startDragX - selectedPt.x, startDragY - selectedPt.y, 0);
-            startDragAngleYaw = selectedPt.rotationYaw + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
-            startDragAnglePitch = selectedPt.rotationPitch + Math.atan2(startDragX - selectedPt.x, startDragY - selectedPt.y);
-
-            startDragScale = selectedPt.scale;
-
             requestFocus();
         }
     }
@@ -588,14 +572,9 @@ public class ifsys extends Panel
     public void mouseDragged(MouseEvent e){
         getMouseXYZ(e);
 
-        isDragging=true;
-        lastMoveTime = System.currentTimeMillis();
         if(mousemode == 1){ //left click to move a point/set
             setCursor (Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 
-            selectedPt.x = startDragPX + (mousex - startDragX);
-            selectedPt.y = startDragPY + (mousey - startDragY);
-            selectedPt.z = startDragPZ + (mousez - startDragZ);
         }
         else if(mousemode == 3){ //right click to rotate point/set
             setCursor (Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));

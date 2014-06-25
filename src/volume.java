@@ -121,8 +121,8 @@ public class volume {
         double vx = 512.0; //vanishing pt onscreen
         double vy = 512.0;
 
-        pt.x += (vx - pt.x)/1024.0 * (1024.0-pt.z);
-        pt.y += (vy - pt.y)/1024.0 * (1024.0-pt.z);
+        pt.x = (pt.x-vx)/1024.0*pt.z+vx;
+        pt.y = (pt.y-vy)/1024.0*pt.z+vy;
 
         return pt;
     }

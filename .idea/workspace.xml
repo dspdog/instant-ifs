@@ -72,7 +72,7 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="305" column="34" selection-start="7726" selection-end="7742" vertical-scroll-proportion="-27.076923" vertical-offset="4430" max-vertical-offset="12801">
+            <state line="576" column="0" selection-start="17581" selection-end="17581" vertical-scroll-proportion="-3.5" vertical-offset="9650" max-vertical-offset="12444">
               <folding />
             </state>
           </provider>
@@ -90,7 +90,7 @@
       <file leaf-file-name="ifsMenu.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ifsMenu.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="523" column="41" selection-start="20926" selection-end="20926" vertical-scroll-proportion="-9.423077" vertical-offset="8578" max-vertical-offset="9894">
+            <state line="467" column="13" selection-start="18011" selection-end="18011" vertical-scroll-proportion="-2.8461537" vertical-offset="7797" max-vertical-offset="9894">
               <folding />
             </state>
           </provider>
@@ -108,7 +108,7 @@
       <file leaf-file-name="volume.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/volume.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="111" column="19" selection-start="2489" selection-end="2489" vertical-scroll-proportion="-9.423077" vertical-offset="1574" max-vertical-offset="7344">
+            <state line="119" column="0" selection-start="2932" selection-end="2932" vertical-scroll-proportion="-14.0" vertical-offset="1591" max-vertical-offset="7344">
               <folding />
             </state>
           </provider>
@@ -123,19 +123,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pdf3D.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="pdf3D.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/pdf3D.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="47" column="55" selection-start="1135" selection-end="1135" vertical-scroll-proportion="0.42314336" vertical-offset="469" max-vertical-offset="4709">
+            <state line="248" column="0" selection-start="8415" selection-end="8415" vertical-scroll-proportion="-14.423077" vertical-offset="3756" max-vertical-offset="4488">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ifsOverlays.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="ifsOverlays.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsOverlays.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="185" column="46" selection-start="7015" selection-end="7015" vertical-scroll-proportion="-11.923077" vertical-offset="2512" max-vertical-offset="5610">
+            <state line="245" column="78" selection-start="9445" selection-end="9445" vertical-scroll-proportion="0.68739206" vertical-offset="3444" max-vertical-offset="6188">
               <folding>
                 <element signature="method#drawSpecialPoints#0;class#ifsOverlays#0" expanded="false" />
               </folding>
@@ -163,12 +163,12 @@
         <option value="$PROJECT_DIR$/src/subVolume.java" />
         <option value="$PROJECT_DIR$/src/smartVolume.java" />
         <option value="$PROJECT_DIR$/src/ifsShape.java" />
+        <option value="$PROJECT_DIR$/src/ifsPt.java" />
+        <option value="$PROJECT_DIR$/src/pdf3D.java" />
+        <option value="$PROJECT_DIR$/src/ifsys.java" />
         <option value="$PROJECT_DIR$/src/ifsMenu.java" />
         <option value="$PROJECT_DIR$/src/volume.java" />
-        <option value="$PROJECT_DIR$/src/ifsys.java" />
-        <option value="$PROJECT_DIR$/src/ifsPt.java" />
         <option value="$PROJECT_DIR$/src/ifsOverlays.java" />
-        <option value="$PROJECT_DIR$/src/pdf3D.java" />
       </list>
     </option>
   </component>
@@ -844,20 +844,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/volume.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="111" column="19" selection-start="2489" selection-end="2489" vertical-scroll-proportion="-9.423077" vertical-offset="1574" max-vertical-offset="7344">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/ifsMenu.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="523" column="41" selection-start="20926" selection-end="20926" vertical-scroll-proportion="-9.423077" vertical-offset="8578" max-vertical-offset="9894">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsPt.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="13" column="31" selection-start="381" selection-end="381" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3026">
@@ -865,26 +851,40 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ifsOverlays.java">
+    <entry file="file://$PROJECT_DIR$/src/pdf3D.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="185" column="46" selection-start="7015" selection-end="7015" vertical-scroll-proportion="-11.923077" vertical-offset="2512" max-vertical-offset="5610">
-          <folding>
-            <element signature="method#drawSpecialPoints#0;class#ifsOverlays#0" expanded="false" />
-          </folding>
+        <state line="248" column="0" selection-start="8415" selection-end="8415" vertical-scroll-proportion="-14.423077" vertical-offset="3756" max-vertical-offset="4488">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ifsMenu.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="467" column="13" selection-start="18011" selection-end="18011" vertical-scroll-proportion="-2.8461537" vertical-offset="7797" max-vertical-offset="9894">
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="305" column="34" selection-start="7726" selection-end="7742" vertical-scroll-proportion="-27.076923" vertical-offset="4430" max-vertical-offset="12801">
+        <state line="576" column="0" selection-start="17581" selection-end="17581" vertical-scroll-proportion="-3.5" vertical-offset="9650" max-vertical-offset="12444">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/pdf3D.java">
+    <entry file="file://$PROJECT_DIR$/src/volume.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="55" selection-start="1135" selection-end="1135" vertical-scroll-proportion="0.42314336" vertical-offset="469" max-vertical-offset="4709">
+        <state line="119" column="0" selection-start="2932" selection-end="2932" vertical-scroll-proportion="-14.0" vertical-offset="1591" max-vertical-offset="7344">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ifsOverlays.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="245" column="78" selection-start="9445" selection-end="9445" vertical-scroll-proportion="0.68739206" vertical-offset="3444" max-vertical-offset="6188">
+          <folding>
+            <element signature="method#drawSpecialPoints#0;class#ifsOverlays#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
