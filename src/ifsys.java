@@ -64,8 +64,9 @@ public class ifsys extends Panel
 
     //drag vars
         int mousemode; //current mouse button
-        double startDragX, startDragY, startDragZ;
-        double startDragPX, startDragPY, startDragPZ;
+    
+        double startDragX, startDragY;
+        double startDragPX, startDragPY;
         double startDragDist;
         double startDragAngleYaw;
         double startDragAnglePitch;
@@ -571,28 +572,6 @@ public class ifsys extends Panel
 
     public void mouseDragged(MouseEvent e){
         getMouseXYZ(e);
-
-        if(mousemode == 1){ //left click to move a point/set
-            setCursor (Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-
-        }
-        else if(mousemode == 3){ //right click to rotate point/set
-            setCursor (Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
-            double scaleDelta = 0;//shape.distance(mousex - selectedPt.x, mousey - selectedPt.y, mousez - shape.pts[0].z)/startDragDist;
-
-            scaleDelta = shape.distance(mousex - selectedPt.x, mousey - selectedPt.y, 0)/startDragDist;
-
-            if(rotateMode==0){
-                double rotationDelta = (Math.atan2(mousex - selectedPt.x, mousey - selectedPt.y)- startDragAngleYaw);
-                selectedPt.rotationYaw = Math.PI * 2 - rotationDelta;
-            }else if(rotateMode==1){
-                double rotationDelta = (Math.atan2(mousex - selectedPt.x, mousey - selectedPt.y)- startDragAnglePitch);
-                selectedPt.rotationPitch = Math.PI * 2 - rotationDelta;
-            }
-
-            selectedPt.scale = startDragScale*scaleDelta;
-        }
-
         shape.updateCenter();
         clearframe();
         gamefunc();

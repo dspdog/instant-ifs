@@ -72,7 +72,7 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="628" column="41" selection-start="19446" selection-end="19446" vertical-scroll-proportion="0.71268654" vertical-offset="10434" max-vertical-offset="12444">
+            <state line="66" column="4" selection-start="1455" selection-end="1455" vertical-scroll-proportion="0.45895523" vertical-offset="948" max-vertical-offset="12087">
               <folding />
             </state>
           </provider>
@@ -173,8 +173,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="482" />
-    <option name="y" value="113" />
+    <option name="x" value="483" />
+    <option name="y" value="273" />
     <option name="width" value="975" />
     <option name="height" value="732" />
   </component>
@@ -453,7 +453,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="482" y="113" width="975" height="732" extended-state="0" />
+    <frame x="483" y="273" width="975" height="732" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -883,7 +883,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="628" column="41" selection-start="19446" selection-end="19446" vertical-scroll-proportion="0.71268654" vertical-offset="10434" max-vertical-offset="12444">
+        <state line="66" column="4" selection-start="1455" selection-end="1455" vertical-scroll-proportion="0.45895523" vertical-offset="948" max-vertical-offset="12087">
           <folding />
         </state>
       </provider>
