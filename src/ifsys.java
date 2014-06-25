@@ -629,7 +629,7 @@ public class ifsys extends Panel
     public void mouseMoved(MouseEvent e){
         findNearestPt();
         getMouseXYZ(e);
-        gamefunc();
+        if(System.currentTimeMillis()-lastMoveTime>100){gamefunc();}
         lastMoveTime = System.currentTimeMillis();
     }
 

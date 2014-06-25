@@ -162,13 +162,13 @@ public class ifsOverlays {
 
     public void drawDraggyArrows(Graphics rg){
         for(int i=0;i<myIfsSys.shape.pointsInUse;i++){
-            drawArrows(rg, myIfsSys.shape.pts[i], i == myIfsSys.pointSelected, myIfsSys.isDragging, i == 0);
+            drawArrows(rg, myIfsSys.shape.pts[i], i == myIfsSys.pointSelected, myIfsSys.isDragging, i == 0, i==myIfsSys.pointNearest);
         }
     }
 
-    public void drawArrows(Graphics rg, ifsPt pt, boolean isNearest, boolean isDragging, boolean isCenter){
+    public void drawArrows(Graphics rg, ifsPt pt, boolean isSelected, boolean isDragging, boolean isCenter, boolean isNearest){
 
-        double d1, d2, d3, minDis=5000;
+        double d1, d2, d3, minDis=50;
         int selectedAxis=0;
 
         ifsPt centerPt = myIfsSys.theVolume.getCameraDistortedPt(pt);
@@ -177,43 +177,43 @@ public class ifsOverlays {
         ifsPt zArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.Z_UNIT.scale(pt.radius*pt.scale)));
         rg.setColor(Color.gray);
         int buffer=8;
-        if(isNearest){
+        if(isSelected){
             rg.setColor(Color.RED);
             rg.drawString("X", (int)xArrow.x+buffer, (int)xArrow.y+buffer);
             d1=ifsShape.distance(myIfsSys.mousex-xArrow.x, myIfsSys.mousey-xArrow.y, 0);
             if(d1<minDis){minDis=d1; selectedAxis=1;}
         }
-        drawline(centerPt, xArrow, rg, false);
+        drawline(centerPt, xArrow, rg, false, isSelected);
 
-        if(isNearest){
+        if(isSelected){
             rg.setColor(Color.GREEN);
             rg.drawString("Y", (int)yArrow.x+buffer, (int)yArrow.y+buffer);
             d2=ifsShape.distance(myIfsSys.mousex-yArrow.x, myIfsSys.mousey-yArrow.y, 0);
             if(d2<minDis){minDis=d2; selectedAxis=2;}
         }
-        drawline(centerPt, yArrow, rg, false);
+        drawline(centerPt, yArrow, rg, false, isSelected);
 
-        if(isNearest){
+        if(isSelected){
             rg.setColor(Color.BLUE);
             rg.drawString("Z", (int)zArrow.x+buffer, (int)zArrow.y+buffer);
             d3=ifsShape.distance(myIfsSys.mousex-zArrow.x, myIfsSys.mousey-zArrow.y, 0);
             if(d3<minDis){minDis=d3; selectedAxis=3;}
         }
-        drawline(centerPt, zArrow, rg, false);
+        drawline(centerPt, zArrow, rg, false, isSelected);
 
-        if(isNearest)
+        if(isSelected)
         switch (selectedAxis){
             case 1:
                 rg.setColor(Color.RED);
-                drawline(centerPt, xArrow, rg, true);
+                drawline(centerPt, xArrow, rg, true, true);
                 break;
             case 2:
                 rg.setColor(Color.GREEN);
-                drawline(centerPt, yArrow, rg, true);
+                drawline(centerPt, yArrow, rg, true, true);
                 break;
             case 3:
                 rg.setColor(Color.BLUE);
-                drawline(centerPt, zArrow, rg, true);
+                drawline(centerPt, zArrow, rg, true, true);
                 break;
             default:
                 break;
@@ -231,7 +231,7 @@ public class ifsOverlays {
         }
     }
 
-    public void drawline(ifsPt p1, ifsPt p2, Graphics rg, boolean isBold){
+    public void drawline(ifsPt p1, ifsPt p2, Graphics rg, boolean isBold, boolean arrowHead){
         if(myIfsSys.theVolume.volumeContains(p1)){
             if(myIfsSys.theVolume.volumeContains(p2)){
                 rg.drawLine((int)p1.x,(int)p1.y,(int)p2.x,(int)p2.y);
@@ -244,6 +244,19 @@ public class ifsOverlays {
 
                     rg.drawLine((int)p1.x+1,(int)p1.y-1,(int)p2.x+1,(int)p2.y-1);
                     rg.drawLine((int)p1.x+1,(int)p1.y-1,(int)p2.x+1,(int)p2.y-1);
+                }
+
+                if(arrowHead){
+                    ifsPt pUnit = p2.subtract(p1).scale(0.01);
+
+                    double divisions = 20;
+                    int baseSize = isBold ? 15 : 10;
+                    for(int i=0; i<divisions-1; i++){
+                        double width = baseSize*(1.0-i/divisions);
+                        ifsPt circle = p2.add(pUnit.scale(i));
+
+                        rg.fillOval((int)(circle.x-width/2),(int)(circle.y-width/2), (int)width,(int)width);
+                    }
                 }
             }
         }
@@ -294,10 +307,10 @@ public class ifsOverlays {
         rg.setColor(Color.WHITE);
         rg.drawImage(myIfsSys.thePdf.sampleImageX, x, y, size, size, myIfsSys);
         rg.drawString("PDF X", x, y-pady);
-        rg.drawImage(myIfsSys.thePdf.sampleImageY, x+size, y, size, size, myIfsSys);
-        rg.drawString("PDF Y", x+size, y-pady);
-        rg.drawImage(myIfsSys.thePdf.sampleImageZ, x+size*2, y, size, size, myIfsSys);
-        rg.drawString("PDF Z", x+size*2, y-pady);
+        rg.drawImage(myIfsSys.thePdf.sampleImageY, x + size, y, size, size, myIfsSys);
+        rg.drawString("PDF Y", x + size, y - pady);
+        rg.drawImage(myIfsSys.thePdf.sampleImageZ, x + size * 2, y, size, size, myIfsSys);
+        rg.drawString("PDF Z", x + size * 2, y - pady);
     }
 
     public void drawBoxBrackets(Graphics rg, int x, int y, int width, int height, int bracketSize){
@@ -306,16 +319,16 @@ public class ifsOverlays {
         rg.drawLine(x,y,x,y+bracketSize);
 
         //lower left
-        rg.drawLine(x,y+height,x+bracketSize,y+height);
-        rg.drawLine(x,y+height,x,y+height-bracketSize);
+        rg.drawLine(x, y + height, x + bracketSize, y + height);
+        rg.drawLine(x, y + height, x, y + height - bracketSize);
 
         //upper right
-        rg.drawLine(x+width,y,x+width-bracketSize,y);
-        rg.drawLine(x+width,y,x+width,y+bracketSize);
+        rg.drawLine(x + width, y, x + width - bracketSize, y);
+        rg.drawLine(x + width, y, x + width, y + bracketSize);
 
         //lower right
-        rg.drawLine(x+width,y+height,x+width-bracketSize,y+height);
-        rg.drawLine(x+width,y+height,x+width,y+height-bracketSize);
+        rg.drawLine(x + width, y + height, x + width - bracketSize, y + height);
+        rg.drawLine(x + width, y + height, x + width, y + height - bracketSize);
     }
 
     public void drawInfoBox(Graphics rg){
