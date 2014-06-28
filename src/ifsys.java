@@ -269,6 +269,10 @@ public class ifsys extends Panel
         int scaledColor2=0;
         //double[][] projection2 = theVolume.getScaledProjection(Math.pow(2,brightnessMultiplier));
         double[][] projection1 = theVolume.getScaledDepthProjection(Math.pow(2, rp.brightnessMultiplier));
+        //double[][] projectionR = theVolume.getScaledRedProjection(Math.pow(2, rp.brightnessMultiplier));
+        //double[][] projectionG = theVolume.getScaledGreenProjection(Math.pow(2, rp.brightnessMultiplier));
+        //double[][] projectionB = theVolume.getScaledBlueProjection(Math.pow(2, rp.brightnessMultiplier));
+
         boolean didProcess=false;
 
         if(!rp.renderThrottling || System.currentTimeMillis()-lastPostProcessTime>rp.postProcessPeriod){
@@ -465,11 +469,12 @@ public class ifsys extends Panel
      }
 
     public void mouseClicked(MouseEvent mouseevent){
+
     }
 
     public void mousePressed(MouseEvent e){
         mousemode = e.getButton();
-
+        theVolume.saveCam();
         getMouseXYZ(e);
 
         selectedNearestPt();
@@ -518,34 +523,45 @@ public class ifsys extends Panel
 
     public void mouseDragged(MouseEvent e){
         getMouseXYZ(e);
-        overlays.updateDraggyArrows();
-        double dragRatio = 0;
 
-        try{
-            dragRatio = mousePt.distTo(overlays.draggyPtCenter.XYOnly()) - overlays.draggyPtCenter.XYOnly().distTo(overlays.draggyPtArrow.XYOnly());
+        if(ctrlDown){
+            theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0;
+            theVolume.camRoll=theVolume.savedRoll + (mousePt.y-mouseStartDrag.y)/3.0;
 
-            switch (overlays.selectedAxis){
-                case X:
-                    selectedPt.x += dragRatio;
-                    break;
-                case Y:
-                    selectedPt.y += dragRatio;
-                    break;
-                case Z:
-                    selectedPt.z += dragRatio;
-                    break;
+            theVolume.camPitch = (theVolume.camPitch+360)%360;
+            theVolume.camRoll = (theVolume.camRoll+360)%360;
+
+            //mouseStartDrag.x=mousePt.x;
+        }else{
+            overlays.updateDraggyArrows();
+            double dragRatio = 0;
+
+            try{
+                dragRatio = mousePt.distTo(overlays.draggyPtCenter.XYOnly()) - overlays.draggyPtCenter.XYOnly().distTo(overlays.draggyPtArrow.XYOnly());
+
+                switch (overlays.selectedAxis){
+                    case X:
+                        selectedPt.x += dragRatio;
+                        break;
+                    case Y:
+                        selectedPt.y += dragRatio;
+                        break;
+                    case Z:
+                        selectedPt.z += dragRatio;
+                        break;
+                }
+
+                //other cases for negative motion...
+
+            }catch (Exception ex){
+                ex.printStackTrace();
             }
 
-            //other cases for negative motion...
-
-        }catch (Exception ex){
-            ex.printStackTrace();
+            shape.updateCenter();
         }
 
-        shape.updateCenter();
-        clearframe();
+        if(System.currentTimeMillis()-lastMoveTime>20){gamefunc(); clearframe();}
 
-        if(System.currentTimeMillis()-lastMoveTime>100){gamefunc();}
         lastMoveTime = System.currentTimeMillis();
     }
 

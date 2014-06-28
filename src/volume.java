@@ -24,6 +24,11 @@ public class volume {
     public double XYProjection[][];
 
     public double ZBuffer[][];
+
+    public double RBuffer[][];
+    public double GBuffer[][];
+    public double BBuffer[][];
+
     //public long ZBufferTime[][];
     public long dataPoints = 0;
 
@@ -36,6 +41,10 @@ public class volume {
     double camCenterX;
     double camCenterY;
     double camCenterZ;
+
+    double savedPitch;
+    double savedYaw;
+    double savedRoll;
 
     ifsPt centroid;
     ifsPt highPt;
@@ -53,6 +62,9 @@ public class volume {
         antiAliasing = true;
         XYProjection = new double[width][height];
         ZBuffer = new double[width][height];
+        RBuffer = new double[width][height];
+        GBuffer = new double[width][height];
+        BBuffer = new double[width][height];
         camPitch=0;
         camRoll=0;
         camYaw=0;
@@ -63,11 +75,7 @@ public class volume {
         camCenterY=512.0;
         camCenterZ=512.0;
 
-        //if(renderMode == RenderMode.VOLUMETRIC){
-            //volume = new double[width][height][depth];
-            volume = new smartVolume(width);
-        //}
-
+        volume = new smartVolume(width);
         centroid = new ifsPt(0,0,0);
     }
 
@@ -100,6 +108,9 @@ public class volume {
             for(int y=0; y<height; y++){
                 XYProjection[x][y]*=a;
                 ZBuffer[x][y]*=a;
+                RBuffer[x][y]*=a;
+                GBuffer[x][y]*=a;
+                BBuffer[x][y]*=a;
             }
         }
     }
@@ -172,18 +183,7 @@ public class volume {
             totalSamples++;
             totalSamplesAlpha +=alpha;
 
-            //if(antiAliasing){
-            //    double xDec = pt.x - (int)pt.x;
-            //    double yDec = pt.y - (int)pt.y;
-                //double zDec = pt.z - (int)pt.z;
-
-            //   XYProjection[(int)pt.x][(int)pt.y] += alpha*(1-xDec)*(1-yDec);
-                //XYProjection[(int)pt.x+1][(int)pt.y] += alpha*xDec*(1-yDec);
-                //XYProjection[(int)pt.x][(int)pt.y+1] += alpha*(1-xDec)*yDec;
-                //XYProjection[(int)pt.x+1][(int)pt.y+1] += alpha*xDec*yDec;
-            //}else{
-                XYProjection[(int)pt.x][(int)pt.y]+=alpha;
-            //}
+            XYProjection[(int)pt.x][(int)pt.y]+=alpha;
 
             if(XYProjection[(int)pt.x][(int)pt.y]>dataMax){
                 dataMax= XYProjection[(int)pt.x][(int)pt.y];
@@ -194,22 +194,47 @@ public class volume {
                 double xDec = pt.x - (int)pt.x;
                 double yDec = pt.y - (int)pt.y;
 
+                double rs=1, gs=1/2, bs=3;
+
                 boolean res=false;
 
                 if(pt.z * (1 - xDec) * (1 - yDec) > ZBuffer[(int) pt.x][(int) pt.y]){
                     res=true;
                     ZBuffer[(int)pt.x][(int)pt.y] = pt.z * (1 - xDec) * (1 - yDec);
+                    //RBuffer[(int)pt.x][(int)pt.y] = pt.z * rs * (1 - xDec) * (1 - yDec);
+                    //GBuffer[(int)pt.x][(int)pt.y] = pt.z * gs * (1 - xDec) * (1 - yDec);
+                   // BBuffer[(int)pt.x][(int)pt.y] = pt.z * bs * (1 - xDec) * (1 - yDec);
                 }
 
                 ZBuffer[(int)pt.x+1][(int)pt.y] = Math.max(pt.z * xDec * (1 - yDec), ZBuffer[(int) pt.x + 1][(int) pt.y]);
                 ZBuffer[(int)pt.x][(int)pt.y+1] = Math.max(pt.z * (1 - xDec) * yDec, ZBuffer[(int) pt.x][(int) pt.y + 1]);
                 ZBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(pt.z * xDec * yDec, ZBuffer[(int) pt.x + 1][(int) pt.y + 1]);
+/*
+                RBuffer[(int)pt.x+1][(int)pt.y] = Math.max(pt.z* rs * xDec * (1 - yDec), RBuffer[(int) pt.x + 1][(int) pt.y]);
+                RBuffer[(int)pt.x][(int)pt.y+1] = Math.max(pt.z* rs * (1 - xDec) * yDec, RBuffer[(int) pt.x][(int) pt.y + 1]);
+                RBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(pt.z* rs * xDec * yDec, RBuffer[(int) pt.x + 1][(int) pt.y + 1]);
+
+                GBuffer[(int)pt.x+1][(int)pt.y] = Math.max(pt.z* gs * xDec * (1 - yDec), GBuffer[(int) pt.x + 1][(int) pt.y]);
+                GBuffer[(int)pt.x][(int)pt.y+1] = Math.max(pt.z* gs * (1 - xDec) * yDec, GBuffer[(int) pt.x][(int) pt.y + 1]);
+                GBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(pt.z* gs * xDec * yDec, GBuffer[(int) pt.x + 1][(int) pt.y + 1]);
+
+                BBuffer[(int)pt.x+1][(int)pt.y] = Math.max(pt.z* bs * xDec * (1 - yDec), BBuffer[(int) pt.x + 1][(int) pt.y]);
+                BBuffer[(int)pt.x][(int)pt.y+1] = Math.max(pt.z* bs * (1 - xDec) * yDec, BBuffer[(int) pt.x][(int) pt.y + 1]);
+                BBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(pt.z* bs * xDec * yDec, BBuffer[(int) pt.x + 1][(int) pt.y + 1]);
+*/
+
 
                 return res;
             }
         }
 
         return false;
+    }
+
+    public void saveCam(){
+        savedPitch = camPitch;
+        savedYaw = camYaw;
+        savedRoll = camRoll;
     }
 
     public ifsPt getCentroid(){
@@ -224,6 +249,48 @@ public class volume {
         for(int x=0; x<width; x++){
             for(int y=0; y<height; y++){
                 scaled[x][y]= Math.min((int)(scaler*ZBuffer[x][y]), 255);
+            }
+        }
+
+        return scaled;
+    }
+
+    public double[][] getScaledRedProjection(double brightness){
+        double[][] scaled = new double[width][height];
+
+        double scaler = brightness;
+
+        for(int x=0; x<width; x++){
+            for(int y=0; y<height; y++){
+                scaled[x][y]= Math.min((int)(scaler*RBuffer[x][y]), 255);
+            }
+        }
+
+        return scaled;
+    }
+
+    public double[][] getScaledGreenProjection(double brightness){
+        double[][] scaled = new double[width][height];
+
+        double scaler = brightness;
+
+        for(int x=0; x<width; x++){
+            for(int y=0; y<height; y++){
+                scaled[x][y]= Math.min((int)(scaler*GBuffer[x][y]), 255);
+            }
+        }
+
+        return scaled;
+    }
+
+    public double[][] getScaledBlueProjection(double brightness){
+        double[][] scaled = new double[width][height];
+
+        double scaler = brightness;
+
+        for(int x=0; x<width; x++){
+            for(int y=0; y<height; y++){
+                scaled[x][y]= Math.min((int)(scaler*BBuffer[x][y]), 255);
             }
         }
 
