@@ -23,8 +23,7 @@ public class ifsys extends Panel
     long oneSecondAgo;
     long lastMoveTime;
 
-    boolean renderThrottling;
-    long postProcessPeriod;
+
     long lastPostProcessTime;
 
     double lastProcessedProjection[][];
@@ -33,22 +32,18 @@ public class ifsys extends Panel
     pdf3D thePdf;
 
     //user params
-        boolean framesHidden;
-        boolean infoHidden;
-        boolean usePDFSamples;
-        boolean guidesHidden;
-        double samplesPerFrame;
-        int iterations;
+
         int pointNearest, pointSelected;
         ifsPt selectedPt;
 
         boolean shiftDown;
         boolean ctrlDown;
         boolean altDown;
-        int mousex, mousey, mousez;
+        int mousex, mousey;
         int mouseScroll;
         int rotateMode;
-        double brightnessMultiplier;
+
+        RenderParams rp;
 
     double randomDoubles[];
     int randomInts[];
@@ -67,37 +62,16 @@ public class ifsys extends Panel
 
     ifsPt mousePt;
     ifsPt mouseStartDrag;
-    ifsPt moveDragAnchorFar;
-    ifsPt moveDragAnchorNear;
-    ifsPt moveDragAnchorArrow;
-
-        double startDragX, startDragY;
-        double startDragPX, startDragPY;
-        double startDragDist;
-        double startDragAngleYaw;
-        double startDragAnglePitch;
-        double startDragScale;
 
     boolean started;
     boolean isDragging;
 
     ifsOverlays overlays;
 
-    boolean holdFrame;
-
-    boolean usingFindEdges;
-    boolean usingThreshold;
-    int threshold;
-
-    boolean usingGaussian;
-    int potentialRadius;
-
-    int overlayHideTime;
 
     public ifsys(){
         System.out.println(numThreads + " threads");
 
-        overlayHideTime=5000;
         started=false;
         oneSecondAgo =0;
         framesThisSecond = 0;
@@ -111,18 +85,12 @@ public class ifsys extends Panel
             games[i] = new mainthread();
         }
 
-        //game = new mainthread();
-        //game2 = new mainthread();
         quit = false;
-        framesHidden = true;
-        infoHidden = false;
-        usePDFSamples = true;
-        guidesHidden = false;
+
         screenwidth = 1024;
         screenheight = 1024;
         pixels = new int[screenwidth * screenheight];
 
-        iterations = 1;
         mousemode = 0;
 
         maxPoints = 100;
@@ -138,26 +106,16 @@ public class ifsys extends Panel
 
         rotateMode=0;
         lastMoveTime=0;
-        brightnessMultiplier = 1;
+
 
         randomDoubles = new double[4096*4096];
         rndNum=0;
 
-        samplesPerFrame = 4096;
+
         samplesPerPdfScaler = 0.25; //decrease for higher fps while drawing PDFs
 
-        holdFrame=false;
+        rp = new RenderParams();
 
-        usingThreshold = false;
-        usingFindEdges = false;
-        threshold = 64;
-
-
-        usingGaussian =false;
-        potentialRadius=0;
-
-        renderThrottling=false;
-        postProcessPeriod=1000;
 
         thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
     }
@@ -270,12 +228,6 @@ public class ifsys extends Panel
         return rl;
     }
 
-    public double randomDouble(){
-        return Math.random();
-        //return randomLong()/Long.MAX_VALUE;
-        //return randomDoubles[(rndNum++)&16777215];
-    }
-
     public void update(Graphics gr){
         paint(gr);
     }
@@ -302,7 +254,7 @@ public class ifsys extends Panel
             //rg.drawImage(thePdf.sampleImage, getWidth() - 50, 0, 50, 50, this);
             rg.setColor(Color.blue);
 
-            if(!guidesHidden){
+            if(!rp.guidesHidden){
                 //overlays.drawArcs(rg);
                 //overlays.drawSpecialPoints(rg);
                 overlays.drawDraggyArrows(rg);
@@ -310,7 +262,7 @@ public class ifsys extends Panel
                 overlays.drawBox(rg, pointNearest);
             }
 
-            if(!infoHidden && pointNearest >=0){
+            if(!rp.infoHidden && pointNearest >=0){
                 overlays.drawInfoBox(rg);
             }
 
@@ -333,19 +285,15 @@ public class ifsys extends Panel
         int scaledColor = 0;
         int scaledColor2=0;
         //double[][] projection2 = theVolume.getScaledProjection(Math.pow(2,brightnessMultiplier));
-        double[][] projection1 = theVolume.getScaledDepthProjection(Math.pow(2, brightnessMultiplier));
+        double[][] projection1 = theVolume.getScaledDepthProjection(Math.pow(2, rp.brightnessMultiplier));
         boolean didProcess=false;
 
-        if(!renderThrottling || System.currentTimeMillis()-lastPostProcessTime>postProcessPeriod){
+        if(!rp.renderThrottling || System.currentTimeMillis()-lastPostProcessTime>rp.postProcessPeriod){
             didProcess=true;
-            //if(usingGaussian){
-                //projection = volume.getPotential2D(projection, potentialRadius);
-                //theVolume.volume = volume.getPotential3D(theVolume.volume, potentialRadius);
-            //}
-            if(usingThreshold){
-                projection1 = theVolume.getThreshold2D(projection1, threshold);
+            if(rp.usingThreshold){
+                projection1 = theVolume.getThreshold2D(projection1, rp.threshold);
             }
-            if(usingFindEdges){
+            if(rp.usingFindEdges){
                 projection1 = theVolume.findEdges2D(projection1);
             }
 
@@ -383,15 +331,14 @@ public class ifsys extends Panel
     }
 
     public void clearframe(){
-        //if(frameNo%2==0)
-        if(!holdFrame){
+        if(!rp.holdFrame){
             theVolume.clear();
         }
     }
 
     public void putPdfSample(ifsPt dpt, double cumulativeRotationYaw, double cumulativeRotationPitch, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown, int index){
 
-        double uncertainty = potentialRadius;
+        double uncertainty = rp.potentialRadius;
 
         double centerX = thePdf.sampleWidth/2;
         double centerY = thePdf.sampleHeight/2;
@@ -417,14 +364,14 @@ public class ifsys extends Panel
         double uncertaintyX = uncertainty*Math.random()-uncertainty/2;
         double uncertaintyY = uncertainty*Math.random()-uncertainty/2;
         double uncertaintyZ = uncertainty*Math.random()-uncertainty/2;
-        double distScaleDown = usingGaussian ? 1.0/(uncertaintyX*uncertaintyX+uncertaintyY*uncertaintyY+uncertaintyZ*uncertaintyZ) : 1.0;
+        double distScaleDown = rp.usingGaussian ? 1.0/(uncertaintyX*uncertaintyX+uncertaintyY*uncertaintyY+uncertaintyZ*uncertaintyZ) : 1.0;
 
         if(distScaleDown>1){distScaleDown=1;}
 
         int rndIndex;
-        double dx=randomDouble()-0.5;
-        double dy=randomDouble()-0.5;
-        double dz=randomDouble()-0.5;
+        double dx=Math.random()-0.5;
+        double dy=Math.random()-0.5;
+        double dz=Math.random()-0.5;
 
         rndIndex = (int)(Math.random()*thePdf.validValues);
 
@@ -456,29 +403,19 @@ public class ifsys extends Panel
         }
     }
 
-    public void limitParams(){
-        if(brightnessMultiplier <-16){
-            brightnessMultiplier =-16;}
-        if(brightnessMultiplier >16){
-            brightnessMultiplier =16;}
 
-        if(samplesPerFrame <2){
-            samplesPerFrame =2;}
-        if(samplesPerFrame >1310720){
-            samplesPerFrame =1310720;}
-    }
 
     public void gamefunc(){
 
-        limitParams();
+        rp.limitParams();
 
         theMenu.updateSideMenu();
 
-        guidesHidden = System.currentTimeMillis() - lastMoveTime > overlayHideTime;
+        rp.guidesHidden = System.currentTimeMillis() - lastMoveTime > overlays.hideTime;
 
         if(shape.pointsInUse != 0){
 
-            for(int a = 0; a < samplesPerFrame*samplesPerPdfScaler; a++){
+            for(int a = 0; a < rp.samplesPerFrame*samplesPerPdfScaler; a++){
                 int randomIndex = 0;
                 ifsPt dpt = new ifsPt(shape.pts[randomIndex]);
                 ifsPt rpt;
@@ -492,12 +429,12 @@ public class ifsys extends Panel
                 double cumulativeRotationPitch = 0;
                 //double cumulativeRotationRoll = 0;
 
-                double scaleDownMultiplier = Math.pow(shape.pointsInUse,iterations-1); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
+                double scaleDownMultiplier = Math.pow(shape.pointsInUse,rp.iterations-1); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
 
-                for(int d = 0; d < iterations; d++){
+                for(int d = 0; d < rp.iterations; d++){
                     scaleDownMultiplier/=shape.pointsInUse;
 
-                    randomIndex = 1 + (int)(randomDouble() * (double) (shape.pointsInUse-1));
+                    randomIndex = 1 + (int)(Math.random() * (double) (shape.pointsInUse-1));
 
                     if(d==0){randomIndex=0;}
 
@@ -513,7 +450,7 @@ public class ifsys extends Panel
                         dpt.z -= rpt.z;
                     }
 
-                    if(usePDFSamples)
+                    if(rp.usePDFSamples)
                         putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier, randomIndex);
                     cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;
                     cumulativeOpacity *= shape.pts[randomIndex].opacity;
@@ -541,7 +478,7 @@ public class ifsys extends Panel
 
         if(e.getClickCount()==2){
             if(mousemode == 1){ //add point w/ double click
-                shape.addPoint(mousex, mousey, mousez);
+                shape.addPoint(mousex, mousey, 0);
                 clearframe();
                 gamefunc();
             }else if(mousemode == 3){ //remove point w/ double right click
@@ -575,9 +512,8 @@ public class ifsys extends Panel
     public void getMouseXYZ(MouseEvent e){
         mousex = e.getX();
         mousey = e.getY();
-        mousez = 0;
 
-        mousePt = new ifsPt(mousex, mousey, mousez);
+        mousePt = new ifsPt(mousex, mousey, 0);
     }
 
     public void mouseDragged(MouseEvent e){
@@ -738,8 +674,8 @@ public class ifsys extends Panel
         if(e.getKeyChar() == '0'){
             shape.setToPreset(0);
             theVolume.clear();
-            iterations=8;
-            brightnessMultiplier=1;
+            rp.iterations=8;
+            rp.brightnessMultiplier=1;
             clearframe();
             gamefunc();
         }

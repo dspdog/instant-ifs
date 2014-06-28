@@ -11,7 +11,10 @@ public class ifsOverlays {
     ifsPt draggyPtArrow;
     ifsPt draggyPtCenter;
 
+    int hideTime;
+
     public ifsOverlays(ifsys _ifsys, Graphics rg){
+        hideTime = 5000;
         myIfsSys = _ifsys;
         theGraphics = rg;
         selectedAxis = DragAxis.X;
@@ -378,12 +381,8 @@ public class ifsOverlays {
         int xPad = 5;
 
         DecimalFormat df = new DecimalFormat("##.###");
-        ifsPt selectedPt = myIfsSys.selectedPt;
 
         rg.setColor(Color.white);
-        rg.drawString("Mouse XYZ (" + myIfsSys.mousex + ", " + myIfsSys.mousey + ", " + myIfsSys.mousez + ")", xPad, lineSize*1);
-        //rg.drawString("DepthLeanX (df): " + myIfsSys.theVolume.depthLeanX, xPad, lineSize*2);
-        //rg.drawString("DepthLeanY (ws): " + myIfsSys.theVolume.depthLeanY, xPad, lineSize*3);
 
         rg.drawString("Centroid: ("
                 + (int)(myIfsSys.theVolume.getCentroid().x) + ", "
@@ -411,7 +410,7 @@ public class ifsOverlays {
 
         rg.drawString("Dots: 10^" + df.format(Math.log10(myIfsSys.theVolume.totalSamples)), xPad, lineSize * 7);
 
-        if(myIfsSys.usingFindEdges)rg.drawString("Surface Area: 10^" + df.format(Math.log10(myIfsSys.theVolume.surfaceArea)), xPad, lineSize * 8);
+        if(myIfsSys.rp.usingFindEdges)rg.drawString("Surface Area: 10^" + df.format(Math.log10(myIfsSys.theVolume.surfaceArea)), xPad, lineSize * 8);
 
         double memoryUsedMB = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024*1024);
         double memoryMaxMB = Runtime.getRuntime().maxMemory()/(1024*1024);

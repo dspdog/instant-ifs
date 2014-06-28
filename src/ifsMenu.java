@@ -369,13 +369,13 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             shapeMenu.add(autoScaleButton);
 
             CheckboxMenuItem imgButton = new CheckboxMenuItem("PDF Samples"); //img samples toggle
-            imgButton.setState(is.usePDFSamples);
+            imgButton.setState(is.rp.usePDFSamples);
             imgButton.addItemListener(this);
             shapeMenu.add(imgButton);
 
         //GUIDES MENU
             CheckboxMenuItem infoButton = new CheckboxMenuItem("Info Box"); //info box toggle
-            infoButton.setState(!is.infoHidden);
+            infoButton.setState(!is.rp.infoHidden);
             infoButton.addItemListener(this);
             guidesMenu.add(infoButton);
 
@@ -407,18 +407,18 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 pitchSpinner.setValue(myIfsSys.selectedPt.rotationPitch/Math.PI*180);
                 yawSpinner.setValue(myIfsSys.selectedPt.rotationYaw/Math.PI*180);
 
-                brightnessSpinner.setValue(myIfsSys.brightnessMultiplier);
-                samplesSpinner.setValue(myIfsSys.samplesPerFrame);
-                iterationsSpinner.setValue(myIfsSys.iterations);
-                thresholdSpinner.setValue(myIfsSys.threshold);
-                potentialSpinner.setValue(myIfsSys.potentialRadius);
-                delaySpinner.setValue(myIfsSys.postProcessPeriod);
+                brightnessSpinner.setValue(myIfsSys.rp.brightnessMultiplier);
+                samplesSpinner.setValue(myIfsSys.rp.samplesPerFrame);
+                iterationsSpinner.setValue(myIfsSys.rp.iterations);
+                thresholdSpinner.setValue(myIfsSys.rp.threshold);
+                potentialSpinner.setValue(myIfsSys.rp.potentialRadius);
+                delaySpinner.setValue(myIfsSys.rp.postProcessPeriod);
 
-                frameHoldCheck.setSelected(myIfsSys.holdFrame);
-                thresholdCheck.setSelected(myIfsSys.usingThreshold);
-                potentialCheck.setSelected(myIfsSys.usingGaussian);
-                findEdgesCheck.setSelected(myIfsSys.usingFindEdges);
-                delayCheck.setSelected(myIfsSys.renderThrottling);
+                frameHoldCheck.setSelected(myIfsSys.rp.holdFrame);
+                thresholdCheck.setSelected(myIfsSys.rp.usingThreshold);
+                potentialCheck.setSelected(myIfsSys.rp.usingGaussian);
+                findEdgesCheck.setSelected(myIfsSys.rp.usingFindEdges);
+                delayCheck.setSelected(myIfsSys.rp.renderThrottling);
                 //System.out.println(renderModeCombo.setse);
                 renderModeCombo.setSelectedIndex(myIfsSys.theVolume.renderMode == volume.RenderMode.PROJECT_ONLY ? 1 : 0);
             }
@@ -457,14 +457,14 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             }
         //GUIDES MENU
             if(e.getItem()=="Info Box"){
-                myIfsSys.infoHidden = e.getStateChange()==2;
+                myIfsSys.rp.infoHidden = e.getStateChange()==2;
             }
         //SHAPE MENU
             if(e.getItem()=="AutoScale Points"){
                 myIfsSys.shape.autoScale = e.getStateChange()==1;
             }
             if(e.getItem()=="PDF Samples"){
-                myIfsSys.usePDFSamples = e.getStateChange()==1;
+                myIfsSys.rp.usePDFSamples = e.getStateChange()==1;
             }
     }
 
@@ -480,20 +480,20 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             myIfsSys.selectedPt.rotationPitch = Double.parseDouble(pitchSpinner.getValue().toString())/180.0*Math.PI;
             myIfsSys.selectedPt.rotationYaw = Double.parseDouble(yawSpinner.getValue().toString())/180.0*Math.PI;
 
-            myIfsSys.usingThreshold = thresholdCheck.isSelected();
-            myIfsSys.threshold = Integer.parseInt(thresholdSpinner.getValue().toString());
-            myIfsSys.iterations = Integer.parseInt(iterationsSpinner.getValue().toString());
-            myIfsSys.brightnessMultiplier = Double.parseDouble(brightnessSpinner.getValue().toString());
-            myIfsSys.samplesPerFrame = Double.parseDouble(samplesSpinner.getValue().toString());
+            myIfsSys.rp.usingThreshold = thresholdCheck.isSelected();
+            myIfsSys.rp.threshold = Integer.parseInt(thresholdSpinner.getValue().toString());
+            myIfsSys.rp.iterations = Integer.parseInt(iterationsSpinner.getValue().toString());
+            myIfsSys.rp.brightnessMultiplier = Double.parseDouble(brightnessSpinner.getValue().toString());
+            myIfsSys.rp.samplesPerFrame = Double.parseDouble(samplesSpinner.getValue().toString());
 
-            myIfsSys.renderThrottling = delayCheck.isSelected();
-            myIfsSys.postProcessPeriod = Long.parseLong(delaySpinner.getValue().toString());
+            myIfsSys.rp.renderThrottling = delayCheck.isSelected();
+            myIfsSys.rp.postProcessPeriod = Long.parseLong(delaySpinner.getValue().toString());
 
-            myIfsSys.holdFrame = frameHoldCheck.isSelected();
+            myIfsSys.rp.holdFrame = frameHoldCheck.isSelected();
 
-            myIfsSys.potentialRadius = Integer.parseInt(potentialSpinner.getValue().toString());
-            myIfsSys.usingGaussian = potentialCheck.isSelected();
-            myIfsSys.usingFindEdges = findEdgesCheck.isSelected();
+            myIfsSys.rp.potentialRadius = Integer.parseInt(potentialSpinner.getValue().toString());
+            myIfsSys.rp.usingGaussian = potentialCheck.isSelected();
+            myIfsSys.rp.usingFindEdges = findEdgesCheck.isSelected();
 
             myIfsSys.shape.updateCenter();
 
@@ -502,7 +502,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             myIfsSys.theVolume.camRoll = camRollSpinner.getValue() - 180;
             myIfsSys.theVolume.camScale = camScaleSpinner.getValue()/10.0;
 
-            if(!myIfsSys.holdFrame)
+            if(!myIfsSys.rp.holdFrame)
             myIfsSys.clearframe();
         }
     }
