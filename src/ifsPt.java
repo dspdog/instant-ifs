@@ -1,4 +1,4 @@
-class ifsPt {
+class ifsPt implements java.io.Serializable{
     public double x, y, z;
     public double scale;
     public double degreesYaw;

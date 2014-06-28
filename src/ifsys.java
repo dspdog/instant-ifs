@@ -693,6 +693,14 @@ public class ifsys extends Panel
         }
         */
 
+        if(e.getKeyChar() == 's'){
+            shape.saveToFile();
+        }
+
+        if(e.getKeyChar() == 'l'){
+            shape = shape.loadFromFile();
+        }
+
         if(e.getKeyChar() == '1'){
             clearframe();
             shape.setToPreset(1);

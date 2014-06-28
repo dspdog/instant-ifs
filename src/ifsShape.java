@@ -1,4 +1,6 @@
-class ifsShape{
+import java.io.*;
+
+class ifsShape implements java.io.Serializable {
     public ifsPt pts[];
 
     public double unitScale;
@@ -18,6 +20,41 @@ class ifsShape{
         for(int a=0; a< maxPoints; a++){
             pts[a] = new ifsPt();
         }
+    }
+
+    public void saveToFile(){
+        try
+        {
+            FileOutputStream fileOut =
+                    new FileOutputStream("shape.ser");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(this);
+
+            out.close();
+            fileOut.close();
+            System.out.println("saved to shape.ser");
+        }catch(Exception i)
+        {
+            i.printStackTrace();
+        }
+    }
+
+    public ifsShape loadFromFile(){
+        ifsShape loadedShape=null;
+        try
+        {
+            FileInputStream fileIn = new FileInputStream("shape.ser");
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            loadedShape = (ifsShape) in.readObject();
+            in.close();
+            fileIn.close();
+            System.out.println("loaded shape.ser");
+        }catch(Exception i)
+        {
+            i.printStackTrace();
+        }
+
+        return loadedShape;
     }
 
     /*public void centerByPt(int desiredX, int desiredY, int desiredZ, int centerX, int centerY, int centerZ){

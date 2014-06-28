@@ -69,10 +69,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ifsys.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="ifsys.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="611" column="68" selection-start="18492" selection-end="18492" vertical-scroll-proportion="-15.269231" vertical-offset="9939" max-vertical-offset="12699">
+            <state line="692" column="9" selection-start="20706" selection-end="20706" vertical-scroll-proportion="0.35924006" vertical-offset="11505" max-vertical-offset="12835">
               <folding />
             </state>
           </provider>
@@ -81,7 +81,7 @@
       <file leaf-file-name="ifsPt.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ifsPt.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="175" column="20" selection-start="4088" selection-end="4100" vertical-scroll-proportion="-17.884615" vertical-offset="2510" max-vertical-offset="3162">
+            <state line="3" column="29" selection-start="126" selection-end="126" vertical-scroll-proportion="-1.9615384" vertical-offset="0" max-vertical-offset="3162">
               <folding />
             </state>
           </provider>
@@ -99,7 +99,16 @@
       <file leaf-file-name="ifsShape.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ifsShape.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="317" column="1" selection-start="10953" selection-end="10953" vertical-scroll-proportion="0.0" vertical-offset="4682" max-vertical-offset="5491">
+            <state line="28" column="54" selection-start="782" selection-end="782" vertical-scroll-proportion="0.0" vertical-offset="408" max-vertical-offset="6120">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="volume.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/volume.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="284" column="0" selection-start="9100" selection-end="9243" vertical-scroll-proportion="0.0" vertical-offset="4405" max-vertical-offset="7344">
               <folding />
             </state>
           </provider>
@@ -108,7 +117,7 @@
       <file leaf-file-name="smartVolume.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/smartVolume.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="67" column="0" selection-start="2204" selection-end="2204" vertical-scroll-proportion="0.0" vertical-offset="636" max-vertical-offset="1241">
+            <state line="67" column="0" selection-start="2204" selection-end="2204" vertical-scroll-proportion="0.0" vertical-offset="279" max-vertical-offset="1241">
               <folding />
             </state>
           </provider>
@@ -123,10 +132,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ifsOverlays.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="ifsOverlays.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ifsOverlays.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="291" column="59" selection-start="11572" selection-end="11572" vertical-scroll-proportion="0.84596574" vertical-offset="4278" max-vertical-offset="7123">
+            <state line="291" column="59" selection-start="11572" selection-end="11572" vertical-scroll-proportion="-13.307693" vertical-offset="4278" max-vertical-offset="7123">
               <folding>
                 <element signature="method#drawSpecialPoints#0;class#ifsOverlays#0" expanded="false" />
               </folding>
@@ -153,21 +162,21 @@
         <option value="$PROJECT_DIR$/src/nestedVolume.java" />
         <option value="$PROJECT_DIR$/src/subVolume.java" />
         <option value="$PROJECT_DIR$/src/smartVolume.java" />
-        <option value="$PROJECT_DIR$/src/ifsShape.java" />
         <option value="$PROJECT_DIR$/src/pdf3D.java" />
         <option value="$PROJECT_DIR$/src/ifsMenu.java" />
         <option value="$PROJECT_DIR$/src/volume.java" />
-        <option value="$PROJECT_DIR$/src/ifsPt.java" />
-        <option value="$PROJECT_DIR$/src/ifsys.java" />
         <option value="$PROJECT_DIR$/src/ifsOverlays.java" />
+        <option value="$PROJECT_DIR$/src/ifsPt.java" />
+        <option value="$PROJECT_DIR$/src/ifsShape.java" />
+        <option value="$PROJECT_DIR$/src/ifsys.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="389" />
-    <option name="y" value="74" />
-    <option name="width" value="1070" />
-    <option name="height" value="899" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -481,7 +490,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="389" y="74" width="1070" height="899" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -502,7 +511,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.09371672" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3844156" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3193096" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -865,13 +874,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/smartVolume.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="67" column="0" selection-start="2204" selection-end="2204" vertical-scroll-proportion="0.0" vertical-offset="636" max-vertical-offset="1241">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/pdf3D.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="263" column="0" selection-start="8704" selection-end="8704" vertical-scroll-proportion="0.0" vertical-offset="3883" max-vertical-offset="4488">
@@ -879,40 +881,47 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/volume.java">
+    <entry file="file://$PROJECT_DIR$/src/ifsOverlays.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="110" column="17" selection-start="2437" selection-end="2437" vertical-scroll-proportion="0.3322314" vertical-offset="1601" max-vertical-offset="7344">
+        <state line="291" column="59" selection-start="11572" selection-end="11572" vertical-scroll-proportion="-13.307693" vertical-offset="4278" max-vertical-offset="7123">
+          <folding>
+            <element signature="method#drawSpecialPoints#0;class#ifsOverlays#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/smartVolume.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="67" column="0" selection-start="2204" selection-end="2204" vertical-scroll-proportion="0.0" vertical-offset="636" max-vertical-offset="1241">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ifsShape.java">
+    <entry file="file://$PROJECT_DIR$/src/volume.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="317" column="1" selection-start="10953" selection-end="10953" vertical-scroll-proportion="0.0" vertical-offset="4886" max-vertical-offset="5491">
+        <state line="284" column="0" selection-start="9100" selection-end="9243" vertical-scroll-proportion="0.0" vertical-offset="4405" max-vertical-offset="7344">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsPt.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="175" column="20" selection-start="4088" selection-end="4100" vertical-scroll-proportion="-17.884615" vertical-offset="2510" max-vertical-offset="3162">
+        <state line="3" column="29" selection-start="126" selection-end="126" vertical-scroll-proportion="-1.9615384" vertical-offset="0" max-vertical-offset="3162">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ifsShape.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="28" column="54" selection-start="782" selection-end="782" vertical-scroll-proportion="0.0" vertical-offset="408" max-vertical-offset="6120">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsys.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="611" column="68" selection-start="18492" selection-end="18492" vertical-scroll-proportion="-15.269231" vertical-offset="9939" max-vertical-offset="12699">
+        <state line="692" column="9" selection-start="20706" selection-end="20706" vertical-scroll-proportion="0.35924006" vertical-offset="11505" max-vertical-offset="12835">
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/ifsOverlays.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="291" column="59" selection-start="11572" selection-end="11572" vertical-scroll-proportion="0.84596574" vertical-offset="4278" max-vertical-offset="7123">
-          <folding>
-            <element signature="method#drawSpecialPoints#0;class#ifsOverlays#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
