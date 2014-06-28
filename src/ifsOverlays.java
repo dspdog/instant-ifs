@@ -346,7 +346,7 @@ public class ifsOverlays {
 
     public void drawPDF(Graphics rg){
         int size = 128;
-        int x=myIfsSys.screenwidth-size*3;
+        int x=myIfsSys.rp.screenwidth-size*3;
         int y=520;
         int pady = 5;
         rg.setColor(Color.WHITE);

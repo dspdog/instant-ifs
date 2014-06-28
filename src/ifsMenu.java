@@ -389,6 +389,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     }
 
     public void updateSideMenu(){
+        myIfsSys.rp.limitParams();
         autoChange = true;
         ptLabel.setText(" Point " + myIfsSys.pointSelected + " Properties:");
         if(inited && System.currentTimeMillis()-lastUiChange>100){
@@ -501,6 +502,8 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             myIfsSys.theVolume.camYaw = camYawSpinner.getValue() - 180;
             myIfsSys.theVolume.camRoll = camRollSpinner.getValue() - 180;
             myIfsSys.theVolume.camScale = camScaleSpinner.getValue()/10.0;
+
+            myIfsSys.lastMoveTime = System.currentTimeMillis();
 
             if(!myIfsSys.rp.holdFrame)
             myIfsSys.clearframe();

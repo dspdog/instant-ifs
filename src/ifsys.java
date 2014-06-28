@@ -6,12 +6,9 @@ import java.awt.image.MemoryImageSource;
 public class ifsys extends Panel
     implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener, ActionListener
 {
-    mainthread[] games;
-
+    mainthread[] threads;
     int numThreads = Runtime.getRuntime().availableProcessors()/2;
     boolean quit;
-    int screenwidth;
-    int screenheight;
 
     int pixels[];
     Image render;
@@ -45,9 +42,6 @@ public class ifsys extends Panel
 
         RenderParams rp;
 
-    double randomDoubles[];
-    int randomInts[];
-    int rndNum;
 
     double samplesPerPdfScaler;
 
@@ -72,6 +66,8 @@ public class ifsys extends Panel
     public ifsys(){
         System.out.println(numThreads + " threads");
 
+        rp = new RenderParams();
+
         started=false;
         oneSecondAgo =0;
         framesThisSecond = 0;
@@ -79,17 +75,15 @@ public class ifsys extends Panel
         ctrlDown=false;
         shiftDown=false;
 
-        games = new mainthread[numThreads];
+        threads = new mainthread[numThreads];
 
-        for(int i=0; i<games.length; i++){
-            games[i] = new mainthread();
+        for(int i=0; i< threads.length; i++){
+            threads[i] = new mainthread();
         }
 
         quit = false;
 
-        screenwidth = 1024;
-        screenheight = 1024;
-        pixels = new int[screenwidth * screenheight];
+        pixels = new int[rp.screenwidth * rp.screenheight];
 
         mousemode = 0;
 
@@ -100,7 +94,7 @@ public class ifsys extends Panel
         pointSelected =-1;
         isDragging = false;
 
-        theVolume = new volume(screenwidth, screenheight, 1024);
+        theVolume = new volume(rp.screenwidth, rp.screenheight, 1024);
         theVolume.clear();
         thePdf = new pdf3D();
 
@@ -108,13 +102,8 @@ public class ifsys extends Panel
         lastMoveTime=0;
 
 
-        randomDoubles = new double[4096*4096];
-        rndNum=0;
-
 
         samplesPerPdfScaler = 0.25; //decrease for higher fps while drawing PDFs
-
-        rp = new RenderParams();
 
 
         thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
@@ -122,16 +111,16 @@ public class ifsys extends Panel
 
     public static void main(String[] args) {
         ifsys is = new ifsys();
-        is.setSize(is.screenwidth, is.screenheight); // same size as defined in the HTML APPLET
+        is.setSize(is.rp.screenwidth, is.rp.screenheight); // same size as defined in the HTML APPLET
         JFrame frame = new JFrame("");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel sideMenu = new JPanel();
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, is, sideMenu);
         splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setDividerLocation(is.screenwidth);
+        splitPane.setDividerLocation(is.rp.screenwidth);
         frame.getContentPane().add(splitPane, BorderLayout.CENTER);
-        frame.setSize(is.screenwidth+200, is.screenheight);
+        frame.setSize(is.rp.screenwidth+200, is.rp.screenheight);
         frame.setVisible(true);
 
         is.theMenu = new ifsMenu(frame, is, sideMenu);
@@ -196,7 +185,7 @@ public class ifsys extends Panel
         addMouseMotionListener(this);
         addMouseWheelListener(this);
         addKeyListener(this);
-        render = createImage(screenwidth, screenheight);
+        render = createImage(rp.screenwidth, rp.screenheight);
         rg = render.getGraphics();
 
         overlays = new ifsOverlays(this, rg);
@@ -205,19 +194,13 @@ public class ifsys extends Panel
 
         clearframe();
 
-        for(int i=0; i<games.length; i++){
-            games[i].start();
+        for(int i=0; i< threads.length; i++){
+            threads[i].start();
         }
 
         shape.setToPreset(0);
 
         started = true;
-    }
-
-    public void genRandomNums(){
-        for(int i=0; i<randomDoubles.length; i++){
-            randomDoubles[i]=Math.random();
-        }
     }
 
     public long randomLong() {
@@ -249,7 +232,7 @@ public class ifsys extends Panel
             rg.setColor(Color.green);
             rg.fillRect(0,0,1024,1024);
 
-            rg.drawImage(createImage(new MemoryImageSource(screenwidth, screenheight, pixels, 0, screenwidth)), 0, 0, screenwidth, screenheight, this);
+            rg.drawImage(createImage(new MemoryImageSource(rp.screenwidth, rp.screenheight, pixels, 0, rp.screenwidth)), 0, 0, rp.screenwidth, rp.screenheight, this);
 
             //rg.drawImage(thePdf.sampleImage, getWidth() - 50, 0, 50, 50, this);
             rg.setColor(Color.blue);
@@ -276,7 +259,7 @@ public class ifsys extends Panel
 
 
 
-        gr.drawImage(render, 0, 0, screenwidth, screenheight, this);
+        gr.drawImage(render, 0, 0, rp.screenwidth, rp.screenheight, this);
     }
 
     public void generatePixels(){
@@ -380,9 +363,9 @@ public class ifsys extends Panel
         sampleZ = thePdf.validZ[rndIndex]+dz;
 
         for(int iter=0; iter<iters; iter++){
-            //if(iter%256==0){
-            //    rndIndex = (int)(Math.random()*thePdf.validValues);
-            //}
+            if(iter%256==0){
+                rndIndex = (int)(Math.random()*thePdf.validValues);
+            }
 
             ptColor = thePdf.volume[(int)sampleX][(int)sampleY][(int)sampleZ];
 
@@ -406,11 +389,7 @@ public class ifsys extends Panel
 
 
     public void gamefunc(){
-
-        rp.limitParams();
-
         theMenu.updateSideMenu();
-
         rp.guidesHidden = System.currentTimeMillis() - lastMoveTime > overlays.hideTime;
 
         if(shape.pointsInUse != 0){
@@ -607,34 +586,14 @@ public class ifsys extends Panel
         if(e.getKeyCode()==KeyEvent.VK_SHIFT)
             shiftDown=false;
 
-        /*
-        if(e.getKeyChar() == 'd'){
-            theVolume.depthLeanX-=20;
-            clearframe();
-        }
-
-        if(e.getKeyChar() == 'f'){
-            theVolume.depthLeanX+=20;
-            clearframe();
-        }
-
-        if(e.getKeyChar() == 'w'){
-            theVolume.depthLeanY-=20;
-            clearframe();
-        }
-
-        if(e.getKeyChar() == 's'){
-            theVolume.depthLeanY+=20;
-            clearframe();
-        }
-        */
-
         if(e.getKeyChar() == 's'){
             shape.saveToFile();
+            rp.saveToFile();
         }
 
         if(e.getKeyChar() == 'l'){
             shape = shape.loadFromFile();
+            rp = rp.loadFromFile();
         }
 
         if(e.getKeyChar() == '1'){

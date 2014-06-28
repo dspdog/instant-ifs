@@ -1,5 +1,12 @@
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
-public class RenderParams {
+public class RenderParams implements java.io.Serializable {
+
+    int screenwidth;
+    int screenheight;
 
     boolean framesHidden;
     boolean infoHidden;
@@ -23,6 +30,9 @@ public class RenderParams {
     long postProcessPeriod;
 
     public RenderParams(){
+        screenwidth = 1024;
+        screenheight = 1024;
+
         framesHidden = true;
         infoHidden = false;
         usePDFSamples = true;
@@ -51,5 +61,40 @@ public class RenderParams {
             samplesPerFrame =2;}
         if(samplesPerFrame >1310720){
             samplesPerFrame =1310720;}
+    }
+
+    public void saveToFile(){
+        try
+        {
+            FileOutputStream fileOut =
+                    new FileOutputStream("renderparams.ser");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(this);
+
+            out.close();
+            fileOut.close();
+            System.out.println("saved to renderparams.ser");
+        }catch(Exception i)
+        {
+            i.printStackTrace();
+        }
+    }
+
+    public RenderParams loadFromFile(){
+        RenderParams loadedShape=null;
+        try
+        {
+            FileInputStream fileIn = new FileInputStream("renderparams.ser");
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            loadedShape = (RenderParams) in.readObject();
+            in.close();
+            fileIn.close();
+            System.out.println("loaded renderparams.ser");
+        }catch(Exception i)
+        {
+            i.printStackTrace();
+        }
+
+        return loadedShape;
     }
 }
