@@ -173,7 +173,6 @@ public class ifsOverlays {
 
     public void drawArrows(Graphics rg, ifsPt pt, boolean isSelected, boolean isDragging, boolean isCenter, boolean isNearest){
         double d1, d2, d3, minDis=32;
-        DragAxis selectedAxis=DragAxis.X;
 
         ifsPt centerPt = myIfsSys.theVolume.getCameraDistortedPt(pt);
         ifsPt xArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.X_UNIT.scale(pt.radius*pt.scale)));

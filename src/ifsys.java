@@ -585,12 +585,36 @@ public class ifsys extends Panel
 
         try{
             dragRatio = (mousePt.distTo(moveDragAnchorNear) / moveDragAnchorNear.distTo(moveDragAnchorFar));
-            System.out.println(pointSelected + " Ratio: " + dragRatio);
+            System.out.println(pointSelected + " Ratio: " + dragRatio + " " + overlays.selectedAxis.toString());
 
             //ratio < 0.5 -- linear move negative
             //ratio > 0.5 -- linear move positive
 
-            //TODO move the pt to maintain 0.5 
+            //TODO move the pt to maintain 0.5
+
+            switch (overlays.selectedAxis){
+                case X:
+                    if(dragRatio>0.5){
+                        selectedPt.x+=1;
+                    }else{
+                        selectedPt.x-=1;
+                    }
+                    break;
+                case Y:
+                    if(dragRatio>0.5){
+                        selectedPt.y+=1;
+                    }else{
+                        selectedPt.y-=1;
+                    }
+                    break;
+                case Z:
+                    if(dragRatio>0.5){
+                        selectedPt.z+=1;
+                    }else{
+                        selectedPt.z-=1;
+                    }
+                    break;
+            }
 
             //other cases for negative motion...
 
