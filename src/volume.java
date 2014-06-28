@@ -51,6 +51,7 @@ public class volume {
     ifsPt highPtVolumetric;
 
     boolean antiAliasing;
+    boolean usePerspective;
 
     public volume(int w, int h, int d){
         width = w;
@@ -68,6 +69,7 @@ public class volume {
         camPitch=0;
         camRoll=0;
         camYaw=0;
+        usePerspective=true;
 
         camScale=2.0;
 
@@ -132,12 +134,16 @@ public class volume {
         double vx = 512.0; //vanishing pt onscreen
         double vy = 512.0;
        // pt.z = Math.sqrt(pt.z)*16;
-        pt.x = (pt.x-vx)/Math.sqrt(1024-pt.z)*16.0+vx;
-        pt.y = (pt.y-vy)/Math.sqrt(1024-pt.z)*16.0+vy;
+
+        if(usePerspective){
+            pt.x = (pt.x-vx)/Math.sqrt(1024-pt.z)*16.0+vx;
+            pt.y = (pt.y-vy)/Math.sqrt(1024-pt.z)*16.0+vy;
+        }
+
         pt.z /= 8.0;
         pt.z = Math.min(pt.z, 1020);
         pt.z = Math.max(pt.z, 4);
-      //  pt.z = Math.sqrt(pt.z)*16;
+
         return pt;
     }
 

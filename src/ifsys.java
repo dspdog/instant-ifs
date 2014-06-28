@@ -647,6 +647,11 @@ public class ifsys extends Panel
             clearframe();
         }
 
+        if(e.getKeyChar() == 'p'){
+            theVolume.usePerspective = !theVolume.usePerspective;
+            clearframe();
+        }
+
         if(e.getKeyChar() == 's'){
             shape.saveToFile();
             rp.saveToFile();
