@@ -29,7 +29,14 @@ public class RenderParams implements java.io.Serializable {
     boolean renderThrottling;
     long postProcessPeriod;
 
+    long gridDrawTime;
+    long gridRedrawTime;
+
     public RenderParams(){
+
+        gridRedrawTime=0;
+        gridDrawTime=0;
+
         screenwidth = 1024;
         screenheight = 1024;
 

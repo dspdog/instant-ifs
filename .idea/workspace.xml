@@ -72,16 +72,16 @@
       <file leaf-file-name="ifsys.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ifsys.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="392" column="55" selection-start="11646" selection-end="11646" vertical-scroll-proportion="-9.423077" vertical-offset="6368" max-vertical-offset="11050">
+            <state line="448" column="70" selection-start="13984" selection-end="13998" vertical-scroll-proportion="-4.8461537" vertical-offset="7439" max-vertical-offset="11407">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RenderParams.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="RenderParams.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/RenderParams.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="88" column="0" selection-start="2216" selection-end="2216" vertical-scroll-proportion="0.0" vertical-offset="1197" max-vertical-offset="1802">
+            <state line="33" column="0" selection-start="686" selection-end="686" vertical-scroll-proportion="0.27603304" vertical-offset="394" max-vertical-offset="1921">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -98,10 +98,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ifsMenu.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="ifsMenu.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ifsMenu.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="492" column="64" selection-start="19536" selection-end="19536" vertical-scroll-proportion="0.5570248" vertical-offset="7959" max-vertical-offset="9945">
+            <state line="492" column="64" selection-start="19536" selection-end="19536" vertical-scroll-proportion="0.0" vertical-offset="8673" max-vertical-offset="9945">
               <folding />
             </state>
           </provider>
@@ -119,7 +119,7 @@
       <file leaf-file-name="volume.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/volume.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="13" selection-start="155" selection-end="155" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="7344">
+            <state line="129" column="19" selection-start="3140" selection-end="3140" vertical-scroll-proportion="29.846153" vertical-offset="2901" max-vertical-offset="7344">
               <folding />
             </state>
           </provider>
@@ -177,10 +177,10 @@
         <option value="$PROJECT_DIR$/src/volume.java" />
         <option value="$PROJECT_DIR$/src/ifsPt.java" />
         <option value="$PROJECT_DIR$/src/ifsShape.java" />
-        <option value="$PROJECT_DIR$/src/RenderParams.java" />
         <option value="$PROJECT_DIR$/src/ifsOverlays.java" />
-        <option value="$PROJECT_DIR$/src/ifsys.java" />
         <option value="$PROJECT_DIR$/src/ifsMenu.java" />
+        <option value="$PROJECT_DIR$/src/ifsys.java" />
+        <option value="$PROJECT_DIR$/src/RenderParams.java" />
       </list>
     </option>
   </component>
@@ -870,13 +870,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/volume.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="13" selection-start="155" selection-end="155" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="7344">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.7.0_45/src.zip!/java/lang/Math.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="441" column="25" selection-start="17013" selection-end="17013" vertical-scroll-proportion="0.58512396" vertical-offset="6752" max-vertical-offset="25653">
@@ -894,22 +887,6 @@
     <entry file="file://$PROJECT_DIR$/src/ifsPt.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="3" column="29" selection-start="126" selection-end="126" vertical-scroll-proportion="51.0" vertical-offset="1377" max-vertical-offset="3162">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/RenderParams.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="88" column="0" selection-start="2216" selection-end="2216" vertical-scroll-proportion="0.0" vertical-offset="1197" max-vertical-offset="1802">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/ifsys.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="392" column="55" selection-start="11646" selection-end="11646" vertical-scroll-proportion="-9.423077" vertical-offset="6368" max-vertical-offset="11050">
           <folding />
         </state>
       </provider>
@@ -932,8 +909,31 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ifsMenu.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="492" column="64" selection-start="19536" selection-end="19536" vertical-scroll-proportion="0.5570248" vertical-offset="7959" max-vertical-offset="9945">
+        <state line="492" column="64" selection-start="19536" selection-end="19536" vertical-scroll-proportion="0.0" vertical-offset="8673" max-vertical-offset="9945">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/volume.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="129" column="19" selection-start="3140" selection-end="3140" vertical-scroll-proportion="29.846153" vertical-offset="2901" max-vertical-offset="7344">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ifsys.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="448" column="70" selection-start="13984" selection-end="13998" vertical-scroll-proportion="-4.8461537" vertical-offset="7439" max-vertical-offset="11407">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/RenderParams.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="33" column="0" selection-start="686" selection-end="686" vertical-scroll-proportion="0.27603304" vertical-offset="394" max-vertical-offset="1921">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
