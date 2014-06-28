@@ -84,6 +84,14 @@ class ifsPt {
         return Math.sqrt(x * x + y * y + z * z);
     }
 
+    public double distTo(ifsPt p){
+        return Math.sqrt((p.x-this.x) * (p.x-this.x) + (p.y-this.y) * (p.y-this.y) + (p.z-this.z) * (p.z-this.z));
+    }
+
+    public ifsPt XYOnly(){
+        return new ifsPt(this.x,this.y,0);
+    }
+
     public ifsPt getRotatedPt(double y, double z){
 
         double sx, sy, sz, cx, cy, cz;

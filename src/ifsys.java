@@ -64,7 +64,12 @@ public class ifsys extends Panel
 
     //drag vars
         int mousemode; //current mouse button
-    
+
+    ifsPt mousePt;
+    ifsPt mouseStartDrag;
+    ifsPt moveDragAnchorFar;
+    ifsPt moveDragAnchorNear;
+
         double startDragX, startDragY;
         double startDragPX, startDragPY;
         double startDragDist;
@@ -184,10 +189,7 @@ public class ifsys extends Panel
         gamefunc();
     }
 
-    public void findNearestPt(){
-
-        double minDist = 10000;
-       // int nearestIndex = -1;
+    public void findNearestPt(double minDist){
         for(int i=0; i<shape.pointsInUse; i++){
 
             ifsPt _pt = theVolume.getCameraDistortedPt(shape.pts[i]);
@@ -198,8 +200,6 @@ public class ifsys extends Panel
                 minDist=dist;
             }
         }
-
-        //pointNearest = shape.getNearestPtIndexXY(mousex, mousey);
     }
 
     public void selectedNearestPt(){
@@ -531,6 +531,7 @@ public class ifsys extends Panel
 
     public void mousePressed(MouseEvent e){
         mousemode = e.getButton();
+
         getMouseXYZ(e);
 
         selectedNearestPt();
@@ -547,6 +548,11 @@ public class ifsys extends Panel
             }
         }else{
             requestFocus();
+        }
+
+        if(pointSelected>-1){
+            moveDragAnchorFar = overlays.draggyPt.XYOnly();//overlays.draggyPt
+            moveDragAnchorNear = overlays.draggyPtCenter.XYOnly();
         }
     }
 
@@ -568,10 +574,29 @@ public class ifsys extends Panel
         mousex = e.getX();
         mousey = e.getY();
         mousez = 0;
+
+        mousePt = new ifsPt(mousex, mousey, mousez);
     }
 
     public void mouseDragged(MouseEvent e){
         getMouseXYZ(e);
+
+        double dragRatio = 0;
+
+        try{
+            dragRatio = (mousePt.distTo(moveDragAnchorNear) / moveDragAnchorNear.distTo(moveDragAnchorFar));
+            System.out.println(pointSelected + " Ratio: " + dragRatio);
+
+            //ratio < 0.5 -- linear move negative
+            //ratio > 0.5 -- linear move positive
+
+            //TODO move the pt to maintain 0.5 
+
+            //other cases for negative motion...
+
+        }catch (Exception ex){
+        }
+
         shape.updateCenter();
         clearframe();
         gamefunc();
@@ -606,7 +631,7 @@ public class ifsys extends Panel
     }
 
     public void mouseMoved(MouseEvent e){
-        findNearestPt();
+        findNearestPt(overlays.minInterestDist);
         getMouseXYZ(e);
         if(System.currentTimeMillis()-lastMoveTime>100){gamefunc();}
         lastMoveTime = System.currentTimeMillis();

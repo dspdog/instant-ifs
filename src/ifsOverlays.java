@@ -4,6 +4,11 @@ import java.text.DecimalFormat;
 public class ifsOverlays {
     ifsys myIfsSys;
     Graphics theGraphics;
+    DragAxis selectedAxis;
+    double minInterestDist=0;
+
+    ifsPt draggyPt;
+    ifsPt draggyPtCenter;
 
     public ifsOverlays(ifsys _ifsys, Graphics rg){
         myIfsSys = _ifsys;
@@ -167,21 +172,25 @@ public class ifsOverlays {
     }
 
     public void drawArrows(Graphics rg, ifsPt pt, boolean isSelected, boolean isDragging, boolean isCenter, boolean isNearest){
-
-        double d1, d2, d3, minDis=50;
-        int selectedAxis=0;
+        double d1, d2, d3, minDis=32;
+        DragAxis selectedAxis=DragAxis.X;
 
         ifsPt centerPt = myIfsSys.theVolume.getCameraDistortedPt(pt);
         ifsPt xArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.X_UNIT.scale(pt.radius*pt.scale)));
         ifsPt yArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.Y_UNIT.scale(pt.radius*pt.scale)));
         ifsPt zArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.Z_UNIT.scale(pt.radius*pt.scale)));
+
+        ifsPt xArrow2 = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.X_UNIT.scale(pt.radius*pt.scale*2)));
+        ifsPt yArrow2 = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.Y_UNIT.scale(pt.radius*pt.scale*2)));
+        ifsPt zArrow2 = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.Z_UNIT.scale(pt.radius*pt.scale*2)));
+
         rg.setColor(Color.gray);
         int buffer=8;
         if(isSelected){
             rg.setColor(Color.RED);
             rg.drawString("X", (int)xArrow.x+buffer, (int)xArrow.y+buffer);
             d1=ifsShape.distance(myIfsSys.mousex-xArrow.x, myIfsSys.mousey-xArrow.y, 0);
-            if(d1<minDis){minDis=d1; selectedAxis=1;}
+            if(d1<minDis){minDis=d1; selectedAxis=DragAxis.X;}
         }
         drawline(centerPt, xArrow, rg, false, isSelected);
 
@@ -189,7 +198,7 @@ public class ifsOverlays {
             rg.setColor(Color.GREEN);
             rg.drawString("Y", (int)yArrow.x+buffer, (int)yArrow.y+buffer);
             d2=ifsShape.distance(myIfsSys.mousex-yArrow.x, myIfsSys.mousey-yArrow.y, 0);
-            if(d2<minDis){minDis=d2; selectedAxis=2;}
+            if(d2<minDis){minDis=d2; selectedAxis=DragAxis.Y;}
         }
         drawline(centerPt, yArrow, rg, false, isSelected);
 
@@ -197,27 +206,41 @@ public class ifsOverlays {
             rg.setColor(Color.BLUE);
             rg.drawString("Z", (int)zArrow.x+buffer, (int)zArrow.y+buffer);
             d3=ifsShape.distance(myIfsSys.mousex-zArrow.x, myIfsSys.mousey-zArrow.y, 0);
-            if(d3<minDis){minDis=d3; selectedAxis=3;}
+            if(d3<minDis){minDis=d3; selectedAxis=DragAxis.Z;}
         }
         drawline(centerPt, zArrow, rg, false, isSelected);
 
-        if(isSelected)
-        switch (selectedAxis){
-            case 1:
-                rg.setColor(Color.RED);
-                drawline(centerPt, xArrow, rg, true, true);
-                break;
-            case 2:
-                rg.setColor(Color.GREEN);
-                drawline(centerPt, yArrow, rg, true, true);
-                break;
-            case 3:
-                rg.setColor(Color.BLUE);
-                drawline(centerPt, zArrow, rg, true, true);
-                break;
-            default:
-                break;
+        minInterestDist=minDis;
+
+        if(isSelected){
+            draggyPtCenter = new ifsPt(centerPt);
+            switch (selectedAxis){
+                case X:
+                    rg.setColor(Color.RED);
+                    drawline(centerPt, xArrow, rg, true, true);
+                    selectedAxis = DragAxis.X;
+                    draggyPt = new ifsPt(xArrow2);
+                    break;
+                case Y:
+                    rg.setColor(Color.GREEN);
+                    drawline(centerPt, yArrow, rg, true, true);
+                    selectedAxis = DragAxis.Y;
+                    draggyPt = new ifsPt(yArrow2);
+                    break;
+                case Z:
+                    rg.setColor(Color.BLUE);
+                    drawline(centerPt, zArrow, rg, true, true);
+                    selectedAxis = DragAxis.Z;
+                    draggyPt = new ifsPt(zArrow2);
+                    break;
+                default:
+                    break;
+            }
         }
+    }
+
+    enum DragAxis{
+        X, Y, Z
     }
 
     public void drawPolyline(int[] x, int[] y, int[] z, int steps, Graphics rg){
