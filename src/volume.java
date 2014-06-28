@@ -120,10 +120,13 @@ public class volume {
 
         double vx = 512.0; //vanishing pt onscreen
         double vy = 512.0;
-
-        pt.x = (pt.x-vx)/1024.0*pt.z+vx;
-        pt.y = (pt.y-vy)/1024.0*pt.z+vy;
-
+       // pt.z = Math.sqrt(pt.z)*16;
+        pt.x = (pt.x-vx)/Math.sqrt(1024-pt.z)*16.0+vx;
+        pt.y = (pt.y-vy)/Math.sqrt(1024-pt.z)*16.0+vy;
+        pt.z /= 8.0;
+        pt.z = Math.min(pt.z, 1020);
+        pt.z = Math.max(pt.z, 4);
+      //  pt.z = Math.sqrt(pt.z)*16;
         return pt;
     }
 
@@ -191,17 +194,13 @@ public class volume {
                 double xDec = pt.x - (int)pt.x;
                 double yDec = pt.y - (int)pt.y;
 
-                pt.z *= 0.25;
-                pt.z*=pt.z;
-                pt.z/=255.0;
-                pt.z*=pt.z;
-                pt.z/=255.0;
-
                 boolean res=false;
 
-                if(pt.z * (1 - xDec) * (1 - yDec) > ZBuffer[(int) pt.x][(int) pt.y]){res=true;}
+                if(pt.z * (1 - xDec) * (1 - yDec) > ZBuffer[(int) pt.x][(int) pt.y]){
+                    res=true;
+                    ZBuffer[(int)pt.x][(int)pt.y] = pt.z * (1 - xDec) * (1 - yDec);
+                }
 
-                ZBuffer[(int)pt.x][(int)pt.y] = Math.max(pt.z * (1 - xDec) * (1 - yDec), ZBuffer[(int) pt.x][(int) pt.y]);
                 ZBuffer[(int)pt.x+1][(int)pt.y] = Math.max(pt.z * xDec * (1 - yDec), ZBuffer[(int) pt.x + 1][(int) pt.y]);
                 ZBuffer[(int)pt.x][(int)pt.y+1] = Math.max(pt.z * (1 - xDec) * yDec, ZBuffer[(int) pt.x][(int) pt.y + 1]);
                 ZBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(pt.z * xDec * yDec, ZBuffer[(int) pt.x + 1][(int) pt.y + 1]);

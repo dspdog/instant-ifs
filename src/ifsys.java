@@ -448,17 +448,17 @@ public class ifsys extends Panel
     public void drawGrid(){
         if(System.currentTimeMillis() -  rp.gridDrawTime > rp.gridRedrawTime){
             rp.gridDrawTime = System.currentTimeMillis();
-            int z = 512;
+            int z = 512-32;
             for(int x=0; x<32; x++){
-                for(int y=0; y<1024; y++){
+                for(int y=0; y<1024; y+=4){
                     theVolume.putPixel(new ifsPt(
                             x*32,
                             y,
-                            z), 1.0);
+                            z), 0.00);
                     theVolume.putPixel(new ifsPt(
                             y,
                             x*32,
-                            z), 1.0);
+                            z), 0.00);
                 }
             }
         }
