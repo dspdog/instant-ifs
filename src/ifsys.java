@@ -525,11 +525,11 @@ public class ifsys extends Panel
         getMouseXYZ(e);
 
         if(ctrlDown){
-            theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0;
-            theVolume.camRoll=theVolume.savedRoll + (mousePt.y-mouseStartDrag.y)/3.0;
+            theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0;// + 360)%360;
+            theVolume.camRoll=theVolume.savedRoll + (mousePt.y-mouseStartDrag.y)/3.0;// + 360)%360;
 
-            theVolume.camPitch = (theVolume.camPitch+360)%360;
-            theVolume.camRoll = (theVolume.camRoll+360)%360;
+            //theVolume.camPitch = (theVolume.camPitch+360)%360;
+            //theVolume.camRoll = (theVolume.camRoll+360)%360;
 
             //mouseStartDrag.x=mousePt.x;
         }else{
@@ -622,6 +622,30 @@ public class ifsys extends Panel
             ctrlDown=false;
         if(e.getKeyCode()==KeyEvent.VK_SHIFT)
             shiftDown=false;
+
+        if(e.getKeyChar() == 'q'){
+            //TOP VIEW
+            theVolume.camPitch=0;
+            theVolume.camRoll=0;
+            theVolume.camYaw=0;
+            clearframe();
+        }
+
+        if(e.getKeyChar() == 'w'){
+            //SIDE VIEW
+            theVolume.camPitch=0;
+            theVolume.camRoll=-90;
+            theVolume.camYaw=0;
+            clearframe();
+        }
+
+        if(e.getKeyChar() == 'e'){
+            //FRONT VIEW
+            theVolume.camPitch=-90;
+            theVolume.camRoll=-90;
+            theVolume.camYaw=0;
+            clearframe();
+        }
 
         if(e.getKeyChar() == 's'){
             shape.saveToFile();
