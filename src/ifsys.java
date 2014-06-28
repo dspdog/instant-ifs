@@ -69,6 +69,7 @@ public class ifsys extends Panel
     ifsPt mouseStartDrag;
     ifsPt moveDragAnchorFar;
     ifsPt moveDragAnchorNear;
+    ifsPt moveDragAnchorArrow;
 
         double startDragX, startDragY;
         double startDragPX, startDragPY;
@@ -535,6 +536,8 @@ public class ifsys extends Panel
         getMouseXYZ(e);
 
         selectedNearestPt();
+        mouseStartDrag = new ifsPt(mousex, mousey, 0);
+        shape.saveState();
 
         if(e.getClickCount()==2){
             if(mousemode == 1){ //add point w/ double click
@@ -551,8 +554,7 @@ public class ifsys extends Panel
         }
 
         if(pointSelected>-1){
-            moveDragAnchorFar = overlays.draggyPt.XYOnly();//overlays.draggyPt
-            moveDragAnchorNear = overlays.draggyPtCenter.XYOnly();
+            overlays.updateDraggyArrows();
         }
     }
 
@@ -579,51 +581,38 @@ public class ifsys extends Panel
     }
 
     public void mouseDragged(MouseEvent e){
-        getMouseXYZ(e);
 
+
+        getMouseXYZ(e);
+        overlays.updateDraggyArrows();
         double dragRatio = 0;
 
         try{
-            dragRatio = (mousePt.distTo(moveDragAnchorNear) / moveDragAnchorNear.distTo(moveDragAnchorFar));
-            System.out.println(pointSelected + " Ratio: " + dragRatio + " " + overlays.selectedAxis.toString());
-
-            //ratio < 0.5 -- linear move negative
-            //ratio > 0.5 -- linear move positive
-
-            //TODO move the pt to maintain 0.5
+            dragRatio = mousePt.distTo(overlays.draggyPtCenter.XYOnly()) - overlays.draggyPtCenter.XYOnly().distTo(overlays.draggyPtArrow.XYOnly());
 
             switch (overlays.selectedAxis){
                 case X:
-                    if(dragRatio>0.5){
-                        selectedPt.x+=1;
-                    }else{
-                        selectedPt.x-=1;
-                    }
+                    selectedPt.x += dragRatio;
                     break;
                 case Y:
-                    if(dragRatio>0.5){
-                        selectedPt.y+=1;
-                    }else{
-                        selectedPt.y-=1;
-                    }
+                    selectedPt.y += dragRatio;
                     break;
                 case Z:
-                    if(dragRatio>0.5){
-                        selectedPt.z+=1;
-                    }else{
-                        selectedPt.z-=1;
-                    }
+                    selectedPt.z += dragRatio;
                     break;
             }
 
             //other cases for negative motion...
 
         }catch (Exception ex){
+            ex.printStackTrace();
         }
 
         shape.updateCenter();
         clearframe();
-        gamefunc();
+
+        if(System.currentTimeMillis()-lastMoveTime>100){gamefunc();}
+        lastMoveTime = System.currentTimeMillis();
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {
