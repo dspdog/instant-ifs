@@ -581,8 +581,6 @@ public class ifsys extends Panel
     }
 
     public void mouseDragged(MouseEvent e){
-
-
         getMouseXYZ(e);
         overlays.updateDraggyArrows();
         double dragRatio = 0;

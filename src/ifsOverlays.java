@@ -183,9 +183,14 @@ public class ifsOverlays {
         double d1, d2, d3, minDis=32;
 
         ifsPt centerPt = myIfsSys.theVolume.getCameraDistortedPt(pt);
-        ifsPt xArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.X_UNIT.scale(pt.radius*pt.scale)));
-        ifsPt yArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.Y_UNIT.scale(pt.radius*pt.scale)));
-        ifsPt zArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.Z_UNIT.scale(pt.radius*pt.scale)));
+        ifsPt xArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.X_UNIT.scale(pt.radius * pt.scale)));
+        ifsPt yArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.Y_UNIT.scale(pt.radius * pt.scale)));
+        ifsPt zArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.Z_UNIT.scale(pt.radius * pt.scale)));
+
+        ifsPt centerPt2 = (pt);
+        ifsPt xArrow2 = (pt.add(ifsPt.X_UNIT.scale(pt.radius * pt.scale)));
+        ifsPt yArrow2 = (pt.add(ifsPt.Y_UNIT.scale(pt.radius * pt.scale)));
+        ifsPt zArrow2 = (pt.add(ifsPt.Z_UNIT.scale(pt.radius * pt.scale)));
 
         if(draw)rg.setColor(Color.gray);
         int buffer=8;
@@ -195,7 +200,7 @@ public class ifsOverlays {
             d1=ifsShape.distance(myIfsSys.mousex-xArrow.x, myIfsSys.mousey-xArrow.y, 0);
             if(d1<minDis){minDis=d1; selectedAxis=DragAxis.X;}
         }
-        if(draw)drawline(centerPt, xArrow, rg, false, isSelected);
+        if(draw)drawLine3D(centerPt2, xArrow2, rg, false, isSelected);
 
         if(isSelected){
             if(draw)rg.setColor(Color.GREEN);
@@ -203,7 +208,7 @@ public class ifsOverlays {
             d2=ifsShape.distance(myIfsSys.mousex-yArrow.x, myIfsSys.mousey-yArrow.y, 0);
             if(d2<minDis){minDis=d2; selectedAxis=DragAxis.Y;}
         }
-        if(draw)drawline(centerPt, yArrow, rg, false, isSelected);
+        if(draw)drawLine3D(centerPt2, yArrow2, rg, false, isSelected);
 
         if(isSelected){
             if(draw)rg.setColor(Color.BLUE);
@@ -211,7 +216,7 @@ public class ifsOverlays {
             d3=ifsShape.distance(myIfsSys.mousex-zArrow.x, myIfsSys.mousey-zArrow.y, 0);
             if(d3<minDis){minDis=d3; selectedAxis=DragAxis.Z;}
         }
-        if(draw)drawline(centerPt, zArrow, rg, false, isSelected);
+        if(draw)drawLine3D(centerPt2, zArrow2, rg, false, isSelected);
 
         minInterestDist=minDis;
 
@@ -220,19 +225,19 @@ public class ifsOverlays {
             switch (selectedAxis){
                 case X:
                     if(draw)rg.setColor(Color.RED);
-                    if(draw)drawline(centerPt, xArrow, rg, true, true);
+                    if(draw)drawLine3D(centerPt2, xArrow2, rg, true, true);
                     selectedAxis = DragAxis.X;
                     draggyPtArrow = new ifsPt(xArrow);
                     break;
                 case Y:
                     if(draw)rg.setColor(Color.GREEN);
-                    if(draw)drawline(centerPt, yArrow, rg, true, true);
+                    if(draw)drawLine3D(centerPt2, yArrow2, rg, true, true);
                     selectedAxis = DragAxis.Y;
                     draggyPtArrow = new ifsPt(xArrow);
                     break;
                 case Z:
                     if(draw)rg.setColor(Color.BLUE);
-                    if(draw)drawline(centerPt, zArrow, rg, true, true);
+                    if(draw)drawLine3D(centerPt2, zArrow2, rg, true, true);
                     selectedAxis = DragAxis.Z;
                     draggyPtArrow = new ifsPt(zArrow);
                     break;
@@ -257,6 +262,17 @@ public class ifsOverlays {
         }
     }
 
+    public void drawLine3D(ifsPt p1, ifsPt p2, Graphics rg, boolean isBold, boolean arrowHead){
+        int subDivs = 20;
+        ifsPt ipt1;
+        ifsPt ipt2;
+        for(int i=0; i<subDivs-1; i++){
+            ipt1 = myIfsSys.theVolume.getCameraDistortedPt(p1.add(p2.subtract(p1).scale(1.0 / subDivs).scale(i)));
+            ipt2 = myIfsSys.theVolume.getCameraDistortedPt(p1.add(p2.subtract(p1).scale(1.0 / subDivs).scale(i + 1)));
+            drawline(ipt1, ipt2,rg, isBold, arrowHead && i==subDivs-2);
+        }
+      }
+    
     public void drawline(ifsPt p1, ifsPt p2, Graphics rg, boolean isBold, boolean arrowHead){
         if(myIfsSys.theVolume.volumeContains(p1)){
             if(myIfsSys.theVolume.volumeContains(p2)){
@@ -273,7 +289,7 @@ public class ifsOverlays {
                 }
 
                 if(arrowHead){
-                    ifsPt pUnit = p2.subtract(p1).scale(0.01);
+                    ifsPt pUnit = p2.subtract(p1).scale(0.2);
 
                     double divisions = 20;
                     int baseSize = isBold ? 15 : 10;
