@@ -38,9 +38,8 @@ public class volume {
     double camYaw;
     double camPitch;
     double camScale;
-    double camCenterX;
-    double camCenterY;
-    double camCenterZ;
+
+    ifsPt camCenter;
 
     double savedPitch;
     double savedYaw;
@@ -73,9 +72,7 @@ public class volume {
 
         camScale=2.0;
 
-        camCenterX=512.0;
-        camCenterY=512.0;
-        camCenterZ=512.0;
+        camCenter = new ifsPt(512.0,512.0,512.0);
 
         volume = new smartVolume(width);
         centroid = new ifsPt(0,0,0);
@@ -123,10 +120,10 @@ public class volume {
 
     public ifsPt getCameraDistortedPt(ifsPt _pt){
         ifsPt pt = _pt
-                .subtract(new ifsPt(camCenterX, camCenterY, camCenterZ))
+                .subtract(camCenter)
                 .getRotatedPt(camPitch / 180.0 * Math.PI, camYaw / 180.0 * Math.PI, camRoll / 180.0 * Math.PI)
                 .scale(camScale)
-                .add(new ifsPt(camCenterX, camCenterY, camCenterZ));
+                .add(camCenter);
 
         //pt.x += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
         //pt.y += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
@@ -238,6 +235,7 @@ public class volume {
     }
 
     public void saveCam(){
+        camCenter.saveState();
         savedPitch = camPitch;
         savedYaw = camYaw;
         savedRoll = camRoll;

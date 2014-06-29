@@ -520,6 +520,17 @@ public class ifsys extends Panel
                     selectedMovementAxis=ifsOverlays.DragAxis.X;
                     selectedPt.x = selectedPt.savedx + (mousePt.x-mouseStartDrag.x)/2.0;
                 }
+            }else{
+                selectedMovementAxis=ifsOverlays.DragAxis.NONE;
+
+                if(isLeftPressed && isRightPressed){
+                    theVolume.camCenter.z=theVolume.camCenter.savedz - ifsPt.Z_UNIT.getRotatedPt(theVolume.camPitch,theVolume.camYaw,theVolume.camRoll).scale((mousePt.y-mouseStartDrag.y)/2.0).z;
+                }else if(isLeftPressed){
+                    theVolume.camCenter.x=theVolume.camCenter.savedx - ifsPt.X_UNIT.getRotatedPt(theVolume.camPitch,theVolume.camYaw,theVolume.camRoll).scale((mousePt.x-mouseStartDrag.x)/2.0).x;
+                    theVolume.camCenter.y=theVolume.camCenter.savedy - ifsPt.Y_UNIT.getRotatedPt(theVolume.camPitch,theVolume.camYaw,theVolume.camRoll).scale((mousePt.y-mouseStartDrag.y)/2.0).y;
+                }else if(isRightPressed){
+                    //rotate camera?
+                }
             }
 
             gamefunc();
