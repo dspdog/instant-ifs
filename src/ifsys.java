@@ -539,7 +539,7 @@ public class ifsys extends Panel
             lastMoveTime = System.currentTimeMillis();
         }
     }
-
+ 
     public void mouseWheelMoved(MouseWheelEvent e) {
 
         lastMoveTime = System.currentTimeMillis();
@@ -549,19 +549,9 @@ public class ifsys extends Panel
         double changeFactor = 0.9;
 
         if(e.getWheelRotation()>0){ //scroll down
-            //decrease point opacity
-            selectedPt.opacity*=changeFactor;
-
+            theVolume.camScale*=changeFactor;
         }else{ //scroll up
-            //increase point opacity
-            selectedPt.opacity/=changeFactor;
-
-            if(selectedPt.opacity>1){ //values above 1 break the line function so instead we reduce the other points for the same effect
-                selectedPt.opacity=1.0D;
-                for(int i=0; i<shape.pointsInUse; i++){
-                    shape.pts[i].opacity*=changeFactor;
-                }
-            }
+            theVolume.camScale/=changeFactor;
         }
 
         clearframe();
