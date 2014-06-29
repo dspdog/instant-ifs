@@ -539,7 +539,7 @@ public class ifsys extends Panel
             lastMoveTime = System.currentTimeMillis();
         }
     }
- 
+
     public void mouseWheelMoved(MouseWheelEvent e) {
 
         lastMoveTime = System.currentTimeMillis();
