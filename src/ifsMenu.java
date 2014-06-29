@@ -56,7 +56,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
     long lastPdfPropertiesMouseMoved=0;
 
-    public void addLabeledFileChooser(JButton button, SpringLayout layout, String labelText, JPanel panel, double row, int col){
+    public void addLabeledFileChooser(SpringLayout layout, String labelText, JPanel panel, double row, int col){
         int width = 51;
         int totalCols = 3;
         int spinnerLeft = 5 + col*width;
@@ -65,100 +65,49 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         int vspace = 20;
         int topPad=5;
 
+        JButton button = new JButton(labelText);
 
         layout.putConstraint(SpringLayout.WEST, button, spinnerLeft, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.EAST, button, spinnerRight, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.NORTH, button, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
-
 
         button.addActionListener(this);
 
         panel.add(button);
     }
 
-    public void addLabeledCombobox(JComboBox comboBox, SpringLayout layout, String labelText, JPanel panel, double row){
-        int spinnerLeft = 70;
-        int spinnerRight = -5;
-        int labelToSpinner = -5;
+    public <T extends JComponent> void addLabeled(T comp, SpringLayout layout, String labelText, JPanel panel, double row){
+        int compLeft = 70;
+        int compRight = -5;
+        int compToSpinner = -5;
         int vspace = 20;
         int topPad=5;
 
         JLabel label = new JLabel(labelText);
 
-        layout.putConstraint(SpringLayout.EAST, label, labelToSpinner, SpringLayout.WEST, comboBox);
-        layout.putConstraint(SpringLayout.WEST, comboBox, spinnerLeft, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.EAST, comboBox, spinnerRight, SpringLayout.EAST, panel);
-        layout.putConstraint(SpringLayout.NORTH, comboBox, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.EAST, label, compToSpinner, SpringLayout.WEST, comp);
+        layout.putConstraint(SpringLayout.WEST, comp, compLeft, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.EAST, comp, compRight, SpringLayout.EAST, panel);
+        layout.putConstraint(SpringLayout.NORTH, comp, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
         layout.putConstraint(SpringLayout.NORTH, label, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
 
-        comboBox.addActionListener(this);
+        try{
+            ((JSlider)comp).addChangeListener(this);
+        }catch (Exception e){}
+        try{
+            ((JComboBox)comp).addActionListener(this);
+        }catch (Exception e){}
+        try{
+            ((JSpinner)comp).addChangeListener(this);
+        }catch (Exception e){}
+        try{
+            ((JCheckBox)comp).addChangeListener(this);
+        }catch (Exception e){}
 
         panel.add(label);
-        panel.add(comboBox);
+        panel.add(comp);
     }
 
-    public void addLabeledSpinner(JSpinner spinner, SpringLayout layout, String labelText, JPanel panel, double row){
-        int spinnerLeft = 70;
-        int spinnerRight = -5;
-        int labelToSpinner = -5;
-        int vspace = 20;
-        int topPad=5;
-
-        JLabel label = new JLabel(labelText);
-
-        layout.putConstraint(SpringLayout.EAST, label, labelToSpinner, SpringLayout.WEST, spinner);
-        layout.putConstraint(SpringLayout.WEST, spinner, spinnerLeft, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.EAST, spinner, spinnerRight, SpringLayout.EAST, panel);
-        layout.putConstraint(SpringLayout.NORTH, spinner, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.NORTH, label, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
-
-        spinner.addChangeListener(this);
-
-        panel.add(label);
-        panel.add(spinner);
-    }
-
-    public void addLabeledSlider(JSlider spinner, SpringLayout layout, String labelText, JPanel panel, double row){
-        int spinnerLeft = 70;
-        int spinnerRight = -5;
-        int labelToSpinner = -5;
-        int vspace = 15;
-        int topPad=5;
-
-        JLabel label = new JLabel(labelText);
-
-        layout.putConstraint(SpringLayout.EAST, label, labelToSpinner, SpringLayout.WEST, spinner);
-        layout.putConstraint(SpringLayout.WEST, spinner, spinnerLeft, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.EAST, spinner, spinnerRight, SpringLayout.EAST, panel);
-        layout.putConstraint(SpringLayout.NORTH, spinner, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.NORTH, label, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
-
-        spinner.addChangeListener(this);
-
-        panel.add(label);
-        panel.add(spinner);
-    }
-
-    public void addLabeledCheckbox(JCheckBox checkbox, SpringLayout layout, String labelText, JPanel panel, double row){
-        int spinnerLeft = 70;
-        int spinnerRight = -5;
-        int labelToSpinner = -5;
-        int vspace = 20;
-        int topPad=5;
-
-        JLabel label = new JLabel(labelText);
-
-        layout.putConstraint(SpringLayout.EAST, label, labelToSpinner, SpringLayout.WEST, checkbox);
-        layout.putConstraint(SpringLayout.WEST, checkbox, spinnerLeft, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.EAST, checkbox, spinnerRight, SpringLayout.EAST, panel);
-        layout.putConstraint(SpringLayout.NORTH, checkbox, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.NORTH, label, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
-
-        checkbox.addChangeListener(this);
-
-        panel.add(label);
-        panel.add(checkbox);
-    }
 
     public void setupPointPropertiesPanel(JPanel panel){
         xSpinner = new JSpinner();
@@ -178,12 +127,12 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
 
-        addLabeledSpinner(xSpinner, layout, "X", panel, 1);
-        addLabeledSpinner(ySpinner, layout, "Y", panel, 2);
-        addLabeledSpinner(zSpinner, layout, "Z", panel, 3);
-        addLabeledSpinner(scaleSpinner, layout, "Scale %", panel, 4);
-        addLabeledSpinner(pitchSpinner, layout, "Pitch°", panel, 6);
-        addLabeledSpinner(yawSpinner, layout, "Yaw°", panel, 7);
+        addLabeled(xSpinner, layout, "X", panel, 1);
+        addLabeled(ySpinner, layout, "Y", panel, 2);
+        addLabeled(zSpinner, layout, "Z", panel, 3);
+        addLabeled(scaleSpinner, layout, "Scale %", panel, 4);
+        addLabeled(pitchSpinner, layout, "Pitch°", panel, 6);
+        addLabeled(yawSpinner, layout, "Yaw°", panel, 7);
 
         panel.add(ptLabel);
     }
@@ -197,14 +146,10 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         panel.setLayout(layout);
         layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
 
-        JButton xImgButton = new JButton("X");
-        JButton yImgButton = new JButton("Y");
-        JButton zImgButton = new JButton("Z");
-
-        addLabeledFileChooser(xImgButton, layout, "", panel, 1, 0);
-        addLabeledFileChooser(yImgButton, layout, "", panel, 1, 1);
-        addLabeledFileChooser(zImgButton, layout, "", panel, 1, 2);
-        addLabeledCombobox(pdfModeCombo, layout, "Mix", panel, 3);
+        addLabeledFileChooser(layout, "X", panel, 1, 0);
+        addLabeledFileChooser(layout, "Y", panel, 1, 1);
+        addLabeledFileChooser(layout, "Z", panel, 1, 2);
+        addLabeled(pdfModeCombo, layout, "Mix", panel, 3);
 
         panel.addMouseMotionListener(this);
 
@@ -230,10 +175,10 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         panel.setLayout(layout);
         layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
 
-        addLabeledSlider(camPitchSpinner, layout, "Pitch", panel, 1);
-        addLabeledSlider(camYawSpinner, layout, "Yaw", panel, 2.35);
-        addLabeledSlider(camRollSpinner, layout, "Roll", panel, 3.7);
-        addLabeledSlider(camScaleSpinner, layout, "Scale", panel, 5);
+        addLabeled(camPitchSpinner, layout, "Pitch", panel, 1);
+        addLabeled(camYawSpinner, layout, "Yaw", panel, 2.35);
+        addLabeled(camRollSpinner, layout, "Roll", panel, 3.7);
+        addLabeled(camScaleSpinner, layout, "Scale", panel, 5);
 
         panel.add(cameraLabel);
     }
@@ -273,21 +218,21 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
 
-        addLabeledCombobox(renderModeCombo, layout, "Mode", panel,  0.7);
-        addLabeledSpinner(brightnessSpinner, layout, "Brightness", panel, 2);
-        addLabeledSpinner(samplesSpinner, layout, "Dots/Frame", panel, 3);
-        addLabeledSpinner(iterationsSpinner, layout, "Iterations", panel, 4);
+        addLabeled(renderModeCombo, layout, "Mode", panel, 0.7);
+        addLabeled(brightnessSpinner, layout, "Brightness", panel, 2);
+        addLabeled(samplesSpinner, layout, "Dots/Frame", panel, 3);
+        addLabeled(iterationsSpinner, layout, "Iterations", panel, 4);
 
-        addLabeledCheckbox(frameHoldCheck, layout, "Hold Frame", panel, 5.5);
+        addLabeled(frameHoldCheck, layout, "Hold Frame", panel, 5.5);
 
-        addLabeledSpinner(potentialSpinner, layout, "Blur", panel, 6.6);
-        addLabeledCheckbox(potentialCheck, layout, "Gaussian", panel, 7.6);
-        addLabeledSpinner(thresholdSpinner, layout, "Threshold", panel, 9);
-        addLabeledCheckbox(thresholdCheck, layout, "Threshold", panel, 10);
-        addLabeledCheckbox(findEdgesCheck, layout, "Find Edges", panel, 11);
+        addLabeled(potentialSpinner, layout, "Blur", panel, 6.6);
+        addLabeled(potentialCheck, layout, "Gaussian", panel, 7.6);
+        addLabeled(thresholdSpinner, layout, "Threshold", panel, 9);
+        addLabeled(thresholdCheck, layout, "Threshold", panel, 10);
+        addLabeled(findEdgesCheck, layout, "Find Edges", panel, 11);
 
-        addLabeledCheckbox(delayCheck, layout, "Framelimit", panel, 12.5);
-        addLabeledSpinner(delaySpinner, layout, "Wait X ms", panel, 13.6);
+        addLabeled(delayCheck, layout, "Framelimit", panel, 12.5);
+        addLabeled(delaySpinner, layout, "Wait X ms", panel, 13.6);
 
         panel.add(renderLabel);
     }
@@ -341,26 +286,12 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         renderMenu = new Menu("Render");
         shapeMenu = new Menu("Shape");
         guidesMenu = new Menu("Guides");
-        viewMenu = new Menu("View");
 
         //RENDER MENU
             CheckboxMenuItem aaButton = new CheckboxMenuItem("Anti-Aliasing"); //anti-aliasing toggle
             aaButton.setState(is.theVolume.antiAliasing);
             aaButton.addItemListener(this);
             renderMenu.add(aaButton);
-
-        //VIEW MENU
-            XYButton = new CheckboxMenuItem("XY");
-            XYButton.addItemListener(this);
-            viewMenu.add(XYButton);
-
-            XZButton = new CheckboxMenuItem("XZ");
-            XZButton.addItemListener(this);
-            viewMenu.add(XZButton);
-
-            YZButton = new CheckboxMenuItem("YZ");
-            YZButton.addItemListener(this);
-            viewMenu.add(YZButton);
 
         //SHAPE MENU
             CheckboxMenuItem autoScaleButton = new CheckboxMenuItem("AutoScale Points"); //autoscale toggle
@@ -382,7 +313,6 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             menuBar.add(renderMenu);
             menuBar.add(shapeMenu);
             menuBar.add(guidesMenu);
-            menuBar.add(viewMenu);
 
             f.setMenuBar(menuBar);
             inited=true;

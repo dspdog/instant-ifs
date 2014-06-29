@@ -10,6 +10,8 @@ public class ifsys extends Panel
     int numThreads = Runtime.getRuntime().availableProcessors()/2;
     boolean quit;
 
+    int threadNo=0;
+
     int pixels[];
     Image render;
     Graphics rg;
@@ -18,8 +20,9 @@ public class ifsys extends Panel
     long fps;
     long framesThisSecond;
     long oneSecondAgo;
-    long lastMoveTime;
-
+    static long lastMoveTime;
+    static long lastRenderTime;
+    static long lastClearTime;
 
     long lastPostProcessTime;
 
@@ -68,43 +71,24 @@ public class ifsys extends Panel
 
         rp = new RenderParams();
 
-        started=false;
-        oneSecondAgo =0;
-        framesThisSecond = 0;
-        altDown=false;
-        ctrlDown=false;
-        shiftDown=false;
-
         threads = new mainthread[numThreads];
 
         for(int i=0; i< threads.length; i++){
             threads[i] = new mainthread();
         }
 
-        quit = false;
-
         pixels = new int[rp.screenwidth * rp.screenheight];
-
-        mousemode = 0;
 
         maxPoints = 100;
         shape = new ifsShape(maxPoints);
-        mouseScroll = 0;
         pointNearest =-1;
         pointSelected =-1;
-        isDragging = false;
 
         theVolume = new volume(rp.screenwidth, rp.screenheight, 1024);
         theVolume.clear();
         thePdf = new pdf3D();
 
-        rotateMode=0;
-        lastMoveTime=0;
-
-
-
         samplesPerPdfScaler = 0.25; //decrease for higher fps while drawing PDFs
-
 
         thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
     }
@@ -190,8 +174,6 @@ public class ifsys extends Panel
 
         overlays = new ifsOverlays(this, rg);
 
-        //genRandomNums();
-
         clearframe();
 
         for(int i=0; i< threads.length; i++){
@@ -201,14 +183,6 @@ public class ifsys extends Panel
         shape.setToPreset(0);
 
         started = true;
-    }
-
-    public long randomLong() {
-        long rl = System.nanoTime();
-        rl ^= (rl << 21);
-        rl ^= (rl >>> 35);
-        rl ^= (rl << 4);
-        return rl;
     }
 
     public void update(Graphics gr){
@@ -221,9 +195,6 @@ public class ifsys extends Panel
         if(System.currentTimeMillis()- oneSecondAgo >=1000){
             oneSecondAgo = System.currentTimeMillis();
             fps= framesThisSecond;
-            //target framerate:
-            //samplesPerFrame *= fps/50.0;
-            //samplesPerFrame = Math.floor(samplesPerFrame);
             framesThisSecond =0;
         }
 
@@ -234,12 +205,9 @@ public class ifsys extends Panel
 
             rg.drawImage(createImage(new MemoryImageSource(rp.screenwidth, rp.screenheight, pixels, 0, rp.screenwidth)), 0, 0, rp.screenwidth, rp.screenheight, this);
 
-            //rg.drawImage(thePdf.sampleImage, getWidth() - 50, 0, 50, 50, this);
             rg.setColor(Color.blue);
 
             if(!rp.guidesHidden){
-                //overlays.drawArcs(rg);
-                //overlays.drawSpecialPoints(rg);
                 overlays.drawDraggyArrows(rg);
                 overlays.drawBox(rg, pointSelected);
                 overlays.drawBox(rg, pointNearest);
@@ -260,6 +228,7 @@ public class ifsys extends Panel
 
 
         gr.drawImage(render, 0, 0, rp.screenwidth, rp.screenheight, this);
+        lastRenderTime = System.currentTimeMillis();
     }
 
     public void generatePixels(){
@@ -318,8 +287,9 @@ public class ifsys extends Panel
     }
 
     public void clearframe(){
-        if(!rp.holdFrame){
+        if(!rp.holdFrame && System.currentTimeMillis() - lastClearTime > 20){
             theVolume.clear();
+            lastClearTime=System.currentTimeMillis();
         }
     }
 
@@ -393,6 +363,7 @@ public class ifsys extends Panel
 
 
     public void gamefunc(){
+
         theMenu.updateSideMenu();
         rp.guidesHidden = System.currentTimeMillis() - lastMoveTime > overlays.hideTime;
 
@@ -481,20 +452,6 @@ public class ifsys extends Panel
         mouseStartDrag = new ifsPt(mousex, mousey, 0);
         shape.saveState();
 
-        if(e.getClickCount()==2){
-            if(mousemode == 1){ //add point w/ double click
-                shape.addPoint(mousex, mousey, 0);
-                clearframe();
-                gamefunc();
-            }else if(mousemode == 3){ //remove point w/ double right click
-                shape.deletePoint(pointNearest);
-                clearframe();
-                gamefunc();
-            }
-        }else{
-            requestFocus();
-        }
-
         if(pointSelected>-1){
             overlays.updateDraggyArrows();
         }
@@ -522,47 +479,44 @@ public class ifsys extends Panel
     }
 
     public void mouseDragged(MouseEvent e){
-        getMouseXYZ(e);
 
-        if(ctrlDown){
-            theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0;// + 360)%360;
-            theVolume.camRoll=theVolume.savedRoll + (mousePt.y-mouseStartDrag.y)/3.0;// + 360)%360;
+        if(System.currentTimeMillis()-lastMoveTime>20){
 
-            //theVolume.camPitch = (theVolume.camPitch+360)%360;
-            //theVolume.camRoll = (theVolume.camRoll+360)%360;
+            getMouseXYZ(e);
 
-            //mouseStartDrag.x=mousePt.x;
-        }else{
-            overlays.updateDraggyArrows();
-            double dragRatio = 0;
+            if(ctrlDown){
+                theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0;
+                theVolume.camRoll=theVolume.savedRoll + (mousePt.y-mouseStartDrag.y)/3.0;
+            }else{
+                overlays.updateDraggyArrows();
+                double dragRatio;
 
-            try{
-                dragRatio = mousePt.distTo(overlays.draggyPtCenter.XYOnly()) - overlays.draggyPtCenter.XYOnly().distTo(overlays.draggyPtArrow.XYOnly());
+                try{
+                    dragRatio = mousePt.distTo(overlays.draggyPtCenter.XYOnly()) - overlays.draggyPtCenter.XYOnly().distTo(overlays.draggyPtArrow.XYOnly());
 
-                switch (overlays.selectedAxis){
-                    case X:
-                        selectedPt.x += dragRatio;
-                        break;
-                    case Y:
-                        selectedPt.y += dragRatio;
-                        break;
-                    case Z:
-                        selectedPt.z += dragRatio;
-                        break;
+                    switch (overlays.selectedAxis){
+                        case X:
+                            selectedPt.x += dragRatio;
+                            break;
+                        case Y:
+                            selectedPt.y += dragRatio;
+                            break;
+                        case Z:
+                            selectedPt.z += dragRatio;
+                            break;
+                    }
+                }catch (Exception ex){
+                    ex.printStackTrace();
                 }
 
-                //other cases for negative motion...
-
-            }catch (Exception ex){
-                ex.printStackTrace();
+                shape.updateCenter();
             }
 
-            shape.updateCenter();
+            gamefunc();
+            theMenu.camPitchSpinner.setValue(theMenu.camPitchSpinner.getValue());
+            clearframe();
+            lastMoveTime = System.currentTimeMillis();
         }
-
-        if(System.currentTimeMillis()-lastMoveTime>20){gamefunc(); clearframe();}
-
-        lastMoveTime = System.currentTimeMillis();
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {
@@ -705,7 +659,19 @@ public class ifsys extends Panel
             gamefunc();
         }
 
+        if(e.getKeyChar() == 'n'){
+            System.out.println("adding pt!");
+            shape.addPoint(512, 512, 512);
+            clearframe();
+            gamefunc();
+        }
 
+        if(e.getKeyChar() == 'm'){
+            System.out.println("deleting pt " + pointSelected);
+            shape.deletePoint(pointSelected);
+            clearframe();
+            gamefunc();
+        }
     }
 
     public void focusGained(FocusEvent focusevent){}
