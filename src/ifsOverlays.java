@@ -200,28 +200,24 @@ public class ifsOverlays {
         if(isSelected){
             if(draw)rg.setColor(Color.RED);
             if(draw)rg.drawString("X", (int)xArrow.x+buffer, (int)xArrow.y+buffer);
-            d1=ifsShape.distance(myIfsSys.mousex-xArrow.x, myIfsSys.mousey-xArrow.y, 0);
-            if(d1<minDis){minDis=d1; selectedAxis=DragAxis.X;}
         }
         if(draw)drawLine3D(centerPt2, xArrow2, rg, false, isSelected);
 
         if(isSelected){
             if(draw)rg.setColor(Color.GREEN);
             if(draw)rg.drawString("Y", (int)yArrow.x+buffer, (int)yArrow.y+buffer);
-            d2=ifsShape.distance(myIfsSys.mousex-yArrow.x, myIfsSys.mousey-yArrow.y, 0);
-            if(d2<minDis){minDis=d2; selectedAxis=DragAxis.Y;}
         }
         if(draw)drawLine3D(centerPt2, yArrow2, rg, false, isSelected);
 
         if(isSelected){
             if(draw)rg.setColor(Color.BLUE);
             if(draw)rg.drawString("Z", (int)zArrow.x+buffer, (int)zArrow.y+buffer);
-            d3=ifsShape.distance(myIfsSys.mousex-zArrow.x, myIfsSys.mousey-zArrow.y, 0);
-            if(d3<minDis){minDis=d3; selectedAxis=DragAxis.Z;}
         }
         if(draw)drawLine3D(centerPt2, zArrow2, rg, false, isSelected);
 
         minInterestDist=minDis;
+
+        selectedAxis = myIfsSys.selectedMovementAxis;
 
         if(isSelected){
             draggyPtCenter = new ifsPt(centerPt);
@@ -251,7 +247,7 @@ public class ifsOverlays {
     }
 
     enum DragAxis{
-        X, Y, Z
+        X, Y, Z, NONE
     }
 
     public void drawPolyline(int[] x, int[] y, int[] z, int steps, Graphics rg){

@@ -36,10 +36,16 @@ public class ifsys extends Panel
         int pointNearest, pointSelected;
         ifsPt selectedPt;
 
-        boolean shiftDown;
-        boolean ctrlDown;
-        boolean altDown;
-        int mousex, mousey;
+        static ifsOverlays.DragAxis selectedMovementAxis = ifsOverlays.DragAxis.NONE;
+
+        static boolean shiftDown;
+        static boolean ctrlDown;
+        static boolean altDown;
+
+        static boolean isLeftPressed=false;
+        static boolean isRightPressed=false;
+
+        static int mousex, mousey;
         int mouseScroll;
         int rotateMode;
 
@@ -444,6 +450,15 @@ public class ifsys extends Panel
     }
 
     public void mousePressed(MouseEvent e){
+        if (SwingUtilities.isLeftMouseButton (e))
+        {
+            isLeftPressed = true;
+        }
+        else if (SwingUtilities.isRightMouseButton (e))
+        {
+            isRightPressed = true;
+        }
+
         mousemode = e.getButton();
         theVolume.saveCam();
         getMouseXYZ(e);
@@ -458,8 +473,17 @@ public class ifsys extends Panel
     }
 
     public void mouseReleased(MouseEvent e){
+        if (SwingUtilities.isLeftMouseButton (e))
+        {
+            isLeftPressed = false;
+        }
+        else if (SwingUtilities.isRightMouseButton (e))
+        {
+            isRightPressed = false;
+        }
+
         setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-        mousemode = 0;
+        //mousemode = 0;
         isDragging=false;
     }
 
@@ -484,29 +508,18 @@ public class ifsys extends Panel
             if(altDown){
                 theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0;
                 theVolume.camRoll=theVolume.savedRoll + (mousePt.y-mouseStartDrag.y)/3.0;
-            }else{
-                overlays.updateDraggyArrows();
-                double dragRatio;
-
-                try{
-                    dragRatio = mousePt.distTo(overlays.draggyPtCenter.XYOnly()) - overlays.draggyPtCenter.XYOnly().distTo(overlays.draggyPtArrow.XYOnly());
-
-                    switch (overlays.selectedAxis){
-                        case X:
-                            selectedPt.x += dragRatio;
-                            break;
-                        case Y:
-                            selectedPt.y += dragRatio;
-                            break;
-                        case Z:
-                            selectedPt.z += dragRatio;
-                            break;
-                    }
-                }catch (Exception ex){
-                    ex.printStackTrace();
+            }else if(ctrlDown){
+                selectedMovementAxis=ifsOverlays.DragAxis.NONE;
+                if(isLeftPressed && isRightPressed){
+                    selectedMovementAxis=ifsOverlays.DragAxis.Z;
+                    selectedPt.z = selectedPt.savedz - (mousePt.y-mouseStartDrag.y)/2.0;
+                }else if(isLeftPressed){
+                    selectedMovementAxis=ifsOverlays.DragAxis.Y;
+                    selectedPt.y = selectedPt.savedy + (mousePt.y-mouseStartDrag.y)/2.0;
+                }else if(isRightPressed){
+                    selectedMovementAxis=ifsOverlays.DragAxis.X;
+                    selectedPt.x = selectedPt.savedx + (mousePt.x-mouseStartDrag.x)/2.0;
                 }
-
-                shape.updateCenter();
             }
 
             gamefunc();
