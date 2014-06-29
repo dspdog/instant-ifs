@@ -450,9 +450,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                     myIfsSys.theVolume.renderMode = volume.RenderMode.VOLUMETRIC;
                 }else if(cb.getSelectedItem() == volume.RenderMode.PROJECT_ONLY.toString()){
                     myIfsSys.theVolume.renderMode = volume.RenderMode.PROJECT_ONLY;
-
                 }else if(cb.getSelectedItem() == pdf3D.comboMode.ADD.toString()){
-                    System.out.println("OK");
                     myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.ADD;
                     myIfsSys.thePdf.updateVolume();
                 }else if(cb.getSelectedItem() == pdf3D.comboMode.AVERAGE.toString()){

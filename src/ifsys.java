@@ -479,12 +479,9 @@ public class ifsys extends Panel
     }
 
     public void mouseDragged(MouseEvent e){
-
         if(System.currentTimeMillis()-lastMoveTime>20){
-
             getMouseXYZ(e);
-
-            if(ctrlDown){
+            if(altDown){
                 theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0;
                 theVolume.camRoll=theVolume.savedRoll + (mousePt.y-mouseStartDrag.y)/3.0;
             }else{
