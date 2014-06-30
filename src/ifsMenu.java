@@ -30,7 +30,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     JSlider camPitchSpinner;
     JSlider camYawSpinner;
     JSlider camRollSpinner;
-    JSlider camScaleSpinner;
+    //JSlider camScaleSpinner;
 
     JSpinner scaleSpinner;
 
@@ -162,12 +162,12 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         camPitchSpinner = new JSlider();
         camYawSpinner = new JSlider();
         camRollSpinner = new JSlider();
-        camScaleSpinner = new JSlider();
+        //camScaleSpinner = new JSlider();
 
         camPitchSpinner.setMaximum(360);
         camYawSpinner.setMaximum(360);
         camRollSpinner.setMaximum(360);
-        camScaleSpinner.setMaximum(100);
+        //camScaleSpinner.setMaximum(100);
 
         int topPad=5;
 
@@ -178,7 +178,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         addLabeled(camPitchSpinner, layout, "Pitch", panel, 1);
         addLabeled(camYawSpinner, layout, "Yaw", panel, 2.35);
         addLabeled(camRollSpinner, layout, "Roll", panel, 3.7);
-        addLabeled(camScaleSpinner, layout, "Scale", panel, 5);
+        //addLabeled(camScaleSpinner, layout, "Scale", panel, 5);
 
         panel.add(cameraLabel);
     }
@@ -331,7 +331,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 camPitchSpinner.setValue((int)myIfsSys.theVolume.camPitch + 180);
                 camRollSpinner.setValue((int)myIfsSys.theVolume.camRoll + 180);
                 camYawSpinner.setValue((int)myIfsSys.theVolume.camYaw + 180);
-                camScaleSpinner.setValue((int)myIfsSys.theVolume.camScale*10);
+                //camScaleSpinner.setValue((int)myIfsSys.theVolume.camScale*10);
 
                 scaleSpinner.setValue(myIfsSys.selectedPt.scale * 100);
 
@@ -431,7 +431,9 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             myIfsSys.theVolume.camPitch = camPitchSpinner.getValue() - 180;
             myIfsSys.theVolume.camYaw = camYawSpinner.getValue() - 180;
             myIfsSys.theVolume.camRoll = camRollSpinner.getValue() - 180;
-            myIfsSys.theVolume.camScale = camScaleSpinner.getValue()/10.0;
+            //myIfsSys.theVolume.camScale = camScaleSpinner.getValue()/10.0;
+
+            //myIfsSys.theVolume.camScale = Math.max(0.1, myIfsSys.theVolume.camScale);
 
             myIfsSys.lastMoveTime = System.currentTimeMillis();
 

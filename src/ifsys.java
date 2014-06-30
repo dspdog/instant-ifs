@@ -464,6 +464,12 @@ public class ifsys extends Panel
         getMouseXYZ(e);
 
         selectedNearestPt();
+
+        if(e.getClickCount()==2){
+            theVolume.camCenter = new ifsPt(selectedPt);
+            clearframe();
+        }
+
         mouseStartDrag = new ifsPt(mousex, mousey, 0);
         shape.saveState();
 
@@ -553,6 +559,8 @@ public class ifsys extends Panel
         }else{ //scroll up
             theVolume.camScale/=changeFactor;
         }
+
+        theVolume.camScale = Math.max(0.1, theVolume.camScale);
 
         clearframe();
         gamefunc();
