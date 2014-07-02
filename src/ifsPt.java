@@ -93,6 +93,12 @@ class ifsPt implements java.io.Serializable{
         return Math.sqrt((p.x-this.x) * (p.x-this.x) + (p.y-this.y) * (p.y-this.y) + (p.z-this.z) * (p.z-this.z));
     }
 
+    public ifsPt interpolateTo(ifsPt dest, float factor){
+        //go from this to dest as factor goes from 0 to 1
+        ifsPt res = this.add(dest.subtract(this).scale(factor));
+        return res;
+    }
+
     public ifsPt XYOnly(){
         return new ifsPt(this.x,this.y,0);
     }

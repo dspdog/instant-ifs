@@ -13,8 +13,8 @@ public class pdf3D { //3d probabilty density function
     int sampleHeight;
     int sampleDepth;
 
-    public double volume[][][];
-
+    public float volume[][][];
+   // public float volume[][][];
     public int validValues = 0;
     public int[] validX;
     public int[] validY;
@@ -35,10 +35,10 @@ public class pdf3D { //3d probabilty density function
         width = 512;
         height = 512;
         depth = 512;
-        volume = new double[width][height][depth];
+        volume = new float[width][height][depth];
         samplePixels = new int[width*height];
 
-        loadImgs3D("serp2.png", "serp2.png", "serp2.png");
+        loadImgs3D("circle2.png", "circle2.png", "circle2.png");
     }
 
     public void sampleImg(File file, Image sampleImage, int missingDimension){
@@ -115,7 +115,7 @@ public class pdf3D { //3d probabilty density function
         }
 
         int edgeUnit = 1;
-        int edgePrune = 10;
+        int edgePrune = 4;
 
         for(int y=edgePrune; y<width-edgePrune; y++){
             for(int x=edgePrune; x<height-edgePrune; x++){
@@ -132,6 +132,9 @@ public class pdf3D { //3d probabilty density function
         }
 
         System.out.println(validValues + " valid %" + (100.0*validValues/512/512/512));
+
+
+
     }
 
     public boolean pointValid(int x, int y, int z, int edgeUnit){

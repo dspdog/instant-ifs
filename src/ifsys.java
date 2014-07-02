@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Point2D;
 import java.awt.image.MemoryImageSource;
 
 public class ifsys extends Panel
@@ -295,7 +296,18 @@ public class ifsys extends Panel
         }
     }
 
-    public void putPdfSample(ifsPt dpt, double cumulativeRotationYaw, double cumulativeRotationPitch, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown, int index){
+    public void putPdfSample(ifsPt _dpt, double cumulativeRotationYaw, double cumulativeRotationPitch, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown, int index, ifsPt odpt){
+        ifsPt dpt = _dpt;
+
+        boolean smearing = true;
+
+        if(smearing){
+            dpt = _dpt.interpolateTo(odpt, (float)Math.random());
+            if(odpt.x<1){dpt=_dpt;}//hack to prevent smearing from first pt
+        }
+
+        int duds = 0;
+        int nonduds = 0;
 
         double uncertainty = rp.potentialRadius;
 
@@ -316,9 +328,9 @@ public class ifsys extends Panel
         pointDegreesYaw = thePt.rotationYaw +cumulativeRotationYaw;
         pointDegreesPitch = thePt.rotationPitch +cumulativeRotationPitch;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
 
-        int iters = (int)(samplesPerPdfScaler * scale*scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
+        int iters = (int)(samplesPerPdfScaler * scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
 
-        iters=iters&(4095); //limit to 4095
+        //iters=iters&(4095); //limit to 4095
 
         double uncertaintyX = uncertainty*Math.random()-uncertainty/2;
         double uncertaintyY = uncertainty*Math.random()-uncertainty/2;
@@ -339,9 +351,6 @@ public class ifsys extends Panel
         sampleZ = thePdf.validZ[rndIndex]+dz;
 
         for(int iter=0; iter<iters; iter++){
-            if(iter%256==0){
-                rndIndex = (int)(Math.random()*thePdf.validValues);
-            }
 
             ptColor = thePdf.volume[(int)sampleX][(int)sampleY][(int)sampleZ];
 
@@ -353,12 +362,17 @@ public class ifsys extends Panel
             if(theVolume.putPixel(new ifsPt(dpt.x+rpt.x+(float)uncertaintyX,
                                          dpt.y+rpt.y+(float)uncertaintyY,
                                          dpt.z+rpt.z+(float)uncertaintyZ),(float)ptColor)){
-                rndIndex+=Math.random()*8+1;
-
+                rndIndex++;
+                nonduds++;
             }else{
-                rndIndex+=thePdf.validValues/thePdf.sampleHeight/2;
+                duds++;
+                rndIndex = (int)(Math.random()*thePdf.validValues);
+                sampleX = thePdf.validX[rndIndex]+dx;
+                sampleY = thePdf.validY[rndIndex]+dy;
+                sampleZ = thePdf.validZ[rndIndex]+dz;
             }
-            rndIndex=rndIndex%(thePdf.validValues | 1);
+
+            if(duds>4*nonduds){iter=iters;} //skips occluded pdfs
         }
     }
 
@@ -375,7 +389,7 @@ public class ifsys extends Panel
                 int randomIndex = 0;
                 ifsPt dpt = new ifsPt(shape.pts[randomIndex]);
                 ifsPt rpt;
-
+                Point2D ok;
                 double size, yaw, pitch;//, roll;
 
                 double cumulativeScale = 1.0;
@@ -394,6 +408,8 @@ public class ifsys extends Panel
 
                     if(d==0){randomIndex=0;}
 
+                    ifsPt olddpt = new ifsPt();
+
                     if(d!=0){
                         size = shape.pts[randomIndex].radius * cumulativeScale;
                         yaw = Math.PI/2D - shape.pts[randomIndex].degreesYaw + cumulativeRotationYaw;
@@ -401,13 +417,17 @@ public class ifsys extends Panel
 
                         rpt = new ifsPt(size,0,0).getRotatedPt(-pitch, -yaw);
 
+                        olddpt = new ifsPt(dpt);
+
                         dpt.x += rpt.x;
                         dpt.y += rpt.y;
                         dpt.z -= rpt.z;
                     }
 
-                    if(rp.usePDFSamples)
-                        putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier, randomIndex);
+                    if(rp.usePDFSamples){
+                        putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier, randomIndex, olddpt);
+                    }
+
                     cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;
                     cumulativeOpacity *= shape.pts[randomIndex].opacity;
 
