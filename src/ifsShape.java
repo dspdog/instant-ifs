@@ -3,7 +3,7 @@ import java.io.*;
 class ifsShape implements java.io.Serializable {
     public ifsPt pts[];
 
-    public double unitScale;
+    public float unitScale;
 
     public int pointsInUse;
     public boolean autoUpdateCenterEnabled;
@@ -14,7 +14,7 @@ class ifsShape implements java.io.Serializable {
         autoUpdateCenterEnabled =false;
         stateSaved = false;
         pointsInUse = 1;
-        unitScale = 115.47005383792515; //distance from center to one of the points in preset #1
+        unitScale = 115.47005383792515f; //distance from center to one of the points in preset #1
         autoScale = true;
         pts = new ifsPt[maxPoints];
         for(int a=0; a< maxPoints; a++){
@@ -77,28 +77,36 @@ class ifsShape implements java.io.Serializable {
         }
     }
 
-    public void addPoint(double x, double y, double z){
+    public void addPoint(float x, float y, float z){
         pts[pointsInUse].x = x;
         pts[pointsInUse].y = y;
         pts[pointsInUse].z = z;
-        pts[pointsInUse].scale = 0.5D;
-        pts[pointsInUse].rotationYaw = 0.0D;
-        pts[pointsInUse].rotationPitch = 0.0D;
-        //pts[pointsInUse].rotationRoll = 0.0D;
-        pts[pointsInUse].opacity = 1.0D;
+        pts[pointsInUse].scale = 0.5f;
+        pts[pointsInUse].rotationYaw = 0.0f;
+        pts[pointsInUse].rotationPitch = 0.0f;
+        //pts[pointsInUse].rotationRoll = 0.0f;
+        pts[pointsInUse].opacity = 1.0f;
         pointsInUse++;
         updateCenter();
     }
 
+    public void addPoint(double x, double y, double z){
+        addPoint((float)x, (float)y, (float)z);
+    }
+
     public void addPointScaled(double x, double y, double z, double scale){
+        addPointScaled((float) x, (float) y, (float) z, (float) scale);
+    }
+
+    public void addPointScaled(float x, float y, float z, float scale){
         pts[pointsInUse].x = x;
         pts[pointsInUse].y = y;
         pts[pointsInUse].z = z;
         pts[pointsInUse].scale = scale;
-        pts[pointsInUse].rotationYaw = 0.0D;
-        pts[pointsInUse].rotationPitch = 0.0D;
-        //pts[pointsInUse].rotationRoll = 0.0D;
-        pts[pointsInUse].opacity = 1.0D;
+        pts[pointsInUse].rotationYaw = 0.0f;
+        pts[pointsInUse].rotationPitch = 0.0f;
+        //pts[pointsInUse].rotationRoll = 0.0f;
+        pts[pointsInUse].opacity = 1.0f;
         pointsInUse++;
         updateCenter();
     }
@@ -112,12 +120,12 @@ class ifsShape implements java.io.Serializable {
             pts[a].rotationYaw = pts[a + 1].rotationYaw;
         }
 
-        pts[pointsInUse].x = 0.0D;
-        pts[pointsInUse].y = 0.0D;
+        pts[pointsInUse].x = 0.0f;
+        pts[pointsInUse].y = 0.0f;
 
-        pts[pointsInUse].scale = 0.5D;
-        pts[pointsInUse].rotationYaw = 0.0D;
-        pts[pointsInUse].rotationPitch = 0.0D;
+        pts[pointsInUse].scale = 0.5f;
+        pts[pointsInUse].rotationYaw = 0.0f;
+        pts[pointsInUse].rotationPitch = 0.0f;
         pointsInUse--;
 
         updateCenter();
@@ -133,18 +141,18 @@ class ifsShape implements java.io.Serializable {
 
     void updateRadiusDegrees(){
         //pts[0].degreesYaw = 0;
-        pts[0].degreesPitch = Math.PI/2;
+        pts[0].degreesPitch = (float)Math.PI/2;
         pts[0].radius = unitScale*pts[0].scale;
 
         for(int a = 1; a < pointsInUse; a++){
             pts[a].radius = autoScale ? distance(pts[a].x - pts[0].x, pts[a].y - pts[0].y,  pts[a].z - pts[0].z) : pts[0].radius;
-            pts[a].degreesYaw = Math.atan2(pts[a].x - pts[0].x, pts[a].y - pts[0].y);
-            pts[a].degreesPitch = Math.atan2(pts[a].radius, pts[a].z - pts[0].z);
+            pts[a].degreesYaw = (float)Math.atan2(pts[a].x - pts[0].x, pts[a].y - pts[0].y);
+            pts[a].degreesPitch = (float)Math.atan2(pts[a].radius, pts[a].z - pts[0].z);
         }
     }
 
     void updateCenter(){
-        double x = 0, y = 0;
+        float x = 0, y = 0;
 
         if(autoUpdateCenterEnabled){
             if(pointsInUse != 0){
@@ -158,48 +166,6 @@ class ifsShape implements java.io.Serializable {
         }
 
         updateRadiusDegrees();
-    }
-
-    public int getNearestPtIndexXY(double x, double y){
-        double olddist = 100000D;
-        int ptSelected = -1;
-        for(int a = 0; a < this.pointsInUse; a++)
-        {
-            double currentdist = this.distance((double) x - this.pts[a].x, (double) y - this.pts[a].y, 0);
-            if(currentdist < olddist){
-                olddist = currentdist;
-                ptSelected = a;
-            }
-        }
-        return ptSelected;
-    }
-
-    public int getNearestPtIndexXZ(double x, double y){
-        double olddist = 100000D;
-        int ptSelected = -1;
-        for(int a = 0; a < this.pointsInUse; a++)
-        {
-            double currentdist = this.distance((double) x - this.pts[a].x, (double) y - this.pts[a].z, 0);
-            if(currentdist < olddist){
-                olddist = currentdist;
-                ptSelected = a;
-            }
-        }
-        return ptSelected;
-    }
-
-    public int getNearestPtIndexYZ(double x, double y){
-        double olddist = 100000D;
-        int ptSelected = -1;
-        for(int a = 0; a < this.pointsInUse; a++)
-        {
-            double currentdist = this.distance((double) x - this.pts[a].y, (double) y - this.pts[a].z, 0);
-            if(currentdist < olddist){
-                olddist = currentdist;
-                ptSelected = a;
-            }
-        }
-        return ptSelected;
     }
 
     void updateCenterOnce(){
@@ -236,6 +202,25 @@ class ifsShape implements java.io.Serializable {
                 this.pts[0].z=centerz;
                 break;
 
+            case 9: // '\009'
+                clearPts();
+                pointsInUse=1;
+                centerx=512;
+                centery=512;
+                centerz=512;
+
+                double div = 3;
+
+                for(int i=0; i<div; i++){
+                    this.addPoint(
+                            Math.cos(Math.PI/div+i*Math.PI/2)*200+centerx,
+                            Math.sin(Math.PI/div+i*Math.PI/2)*200+centery,
+                            centerz-256);
+                }
+
+                this.pts[0].z=centerz;
+                break;
+
             case 1: // '\001'
 
                 clearPts();
@@ -256,108 +241,13 @@ class ifsShape implements java.io.Serializable {
                 }
                 this.pts[0].z=centerz;
                 break;
-            case 2: // '\002'
-                pointsInUse = 5;
-                pts[1].x = 190D;
-                pts[1].y = 120D;
-                pts[1].scale = 0.33333333333333331D;
-                pts[2].x = 430D;
-                pts[2].y = 360D;
-                pts[2].scale = 0.33333333333333331D;
-                pts[3].x = 430D;
-                pts[3].y = 120D;
-                pts[3].scale = 0.33333333333333331D;
-                pts[4].x = 190D;
-                pts[4].y = 360D;
-                pts[4].scale = 0.33333333333333331D;
-                break;
 
-            case 3: // '\003'
-                pointsInUse = 9;
-                pts[1].x = 190D;
-                pts[1].y = 120D;
-                pts[1].scale = 0.33333333333333331D;
-                pts[2].x = 430D;
-                pts[2].y = 360D;
-                pts[2].scale = 0.33333333333333331D;
-                pts[3].x = 430D;
-                pts[3].y = 120D;
-                pts[3].scale = 0.33333333333333331D;
-                pts[4].x = 190D;
-                pts[4].y = 360D;
-                pts[4].scale = 0.33333333333333331D;
-                pts[5].x = 310D;
-                pts[5].y = 120D;
-                pts[5].scale = 0.33333333333333331D;
-                pts[6].x = 310D;
-                pts[6].y = 360D;
-                pts[6].scale = 0.33333333333333331D;
-                pts[7].x = 190D;
-                pts[7].y = 240D;
-                pts[7].scale = 0.33333333333333331D;
-                pts[8].x = 430D;
-                pts[8].y = 240D;
-                pts[8].scale = 0.33333333333333331D;
-                break;
-
-            case 4: // '\004'
-                pointsInUse = 3;
-                pts[1].x = 430D;
-                pts[1].y = 240D;
-                pts[1].scale = 0.33333333333333331D;
-                pts[2].x = 190D;
-                pts[2].y = 240D;
-                pts[2].scale = 0.33333333333333331D;
-                break;
-
-            case 5: // '\005'
-                pointsInUse = 8;
-                pts[1].x = Math.cos(0.0D) * 100D + (double)(1024 / 2);
-                pts[1].y = Math.sin(0.0D) * 100D + (double)(1024 / 2);
-                pts[1].scale = 0.33333333333333331D;
-                pts[2].x = Math.cos((60D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
-                pts[2].y = Math.sin((60D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
-                pts[2].scale = 0.33333333333333331D;
-                pts[3].x = Math.cos((120D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
-                pts[3].y = Math.sin((120D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
-                pts[3].scale = 0.33333333333333331D;
-                pts[4].x = Math.cos((180D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
-                pts[4].y = Math.sin((180D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
-                pts[4].scale = 0.33333333333333331D;
-                pts[5].x = Math.cos((240D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
-                pts[5].y = Math.sin((240D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
-                pts[5].scale = 0.33333333333333331D;
-                pts[6].x = Math.cos((300D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
-                pts[6].y = Math.sin((300D * Math.PI) / 180D) * 100D + (double)(1024 / 2);
-                pts[6].scale = 0.33333333333333331D;
-                pts[7].x = 1024 / 2;
-                pts[7].y = 1024 / 2;
-                pts[7].scale = 0.33333333333333331D;
-                break;
-            case 6: // '\007'
-                pointsInUse = 6;
-                pts[1].x = 320D;
-                pts[1].y = 240D;
-                pts[1].scale = 0.33333333333333331D;
-                pts[2].x = 190D;
-                pts[2].y = 240D;
-                pts[2].scale = 0.33333333333333331D;
-                pts[3].x = 450D;
-                pts[3].y = 240D;
-                pts[3].scale = 0.33333333333333331D;
-                pts[4].x = 320D;
-                pts[4].y = 370D;
-                pts[4].scale = 0.33333333333333331D;
-                pts[5].x = 320D;
-                pts[5].y = 110D;
-                pts[5].scale = 0.33333333333333331D;
-                break;
         }
 
         updateCenterOnce();
     }
 
-    public static double distance(double x, double y, double z){
-        return Math.sqrt(x * x + y * y + z * z);
+    public static float distance(float x, float y, float z){
+        return (float)Math.sqrt(x * x + y * y + z * z);
     }
 }

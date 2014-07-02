@@ -403,13 +403,13 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     public void stateChanged(ChangeEvent e) {
         if(!autoChange){
             lastUiChange=System.currentTimeMillis();
-            myIfsSys.selectedPt.x = Double.parseDouble(xSpinner.getValue().toString());
-            myIfsSys.selectedPt.y = Double.parseDouble(ySpinner.getValue().toString());
-            myIfsSys.selectedPt.z = Double.parseDouble(zSpinner.getValue().toString());
-            myIfsSys.selectedPt.scale = 0.01 * Double.parseDouble(scaleSpinner.getValue().toString());
+            myIfsSys.selectedPt.x = (float)Double.parseDouble(xSpinner.getValue().toString());
+            myIfsSys.selectedPt.y = (float)Double.parseDouble(ySpinner.getValue().toString());
+            myIfsSys.selectedPt.z = (float)Double.parseDouble(zSpinner.getValue().toString());
+            myIfsSys.selectedPt.scale = (float)(0.01 * Double.parseDouble(scaleSpinner.getValue().toString()));
 
-            myIfsSys.selectedPt.rotationPitch = Double.parseDouble(pitchSpinner.getValue().toString())/180.0*Math.PI;
-            myIfsSys.selectedPt.rotationYaw = Double.parseDouble(yawSpinner.getValue().toString())/180.0*Math.PI;
+            myIfsSys.selectedPt.rotationPitch = (float)(Double.parseDouble(pitchSpinner.getValue().toString())/180.0*Math.PI);
+            myIfsSys.selectedPt.rotationYaw = (float)(Double.parseDouble(yawSpinner.getValue().toString())/180.0*Math.PI);
 
             myIfsSys.rp.usingThreshold = thresholdCheck.isSelected();
             myIfsSys.rp.threshold = Integer.parseInt(thresholdSpinner.getValue().toString());

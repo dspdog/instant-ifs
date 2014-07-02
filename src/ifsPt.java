@@ -1,33 +1,33 @@
 class ifsPt implements java.io.Serializable{
-    public double x, y, z;
-    public double scale;
-    public double degreesYaw;
-    public double degreesPitch;
-    public double radius;
-    public double rotationYaw;
-    public double rotationPitch;
-    public double opacity;
+    public float x, y, z;
+    public float scale;
+    public float degreesYaw;
+    public float degreesPitch;
+    public float radius;
+    public float rotationYaw;
+    public float rotationPitch;
+    public float opacity;
 
-    public double savedopacity;
-    public double savedx, savedy, savedz;
-    public double savedscale;
-    public double saveddegrees;
-    public double savedradius;
-    public double savedrotation;
+    public float savedopacity;
+    public float savedx, savedy, savedz;
+    public float savedscale;
+    public float saveddegrees;
+    public float savedradius;
+    public float savedrotation;
 
-    static ifsPt X_UNIT = new ifsPt(1.0,0,0);
-    static ifsPt Y_UNIT = new ifsPt(0.0,1.0,0);
-    static ifsPt Z_UNIT = new ifsPt(0.0,0,1.0);
+    static ifsPt X_UNIT = new ifsPt(1.0f,0,0);
+    static ifsPt Y_UNIT = new ifsPt(0,1.0f,0);
+    static ifsPt Z_UNIT = new ifsPt(0,0,1.0f);
 
     public ifsPt(){
-        x = 0D; y = 0D; z = 0D;
-        scale = 1D;
-        rotationYaw = 0.0D;
-        rotationPitch = 0.0D;
-        degreesYaw = 0D;
-        degreesPitch = 0D;
-        radius = 1D;
-        opacity = 1D;
+        x = 0f; y = 0f; z = 0f;
+        scale = 1f;
+        rotationYaw = 0.0f;
+        rotationPitch = 0.0f;
+        degreesYaw = 0f;
+        degreesPitch = 0f;
+        radius = 1f;
+        opacity = 1f;
     }
 
     public ifsPt(ifsPt pt){
@@ -52,16 +52,21 @@ class ifsPt implements java.io.Serializable{
         }
     }
 
-    public ifsPt(double _x, double _y, double _z){
+    public ifsPt(float _x, float _y, float _z){
         x = _x; y = _y; z = _z;
     }
 
-    public double cos(double i){
-        return Math.cos(i);
+    public ifsPt(double _x, double _y, double _z){
+        x = (float)_x; y = (float)_y; z = (float)_z;
     }
 
-    public double sin(double i){
-        return Math.sin(i);
+
+    public float cos(float i){
+        return (float)Math.cos(i);
+    }
+
+    public float sin(float i){
+        return (float)Math.sin(i);
     }
 
     public ifsPt add(ifsPt pt){
@@ -72,7 +77,7 @@ class ifsPt implements java.io.Serializable{
         return new ifsPt(this.x-pt.x, this.y-pt.y, this.z-pt.z);
     }
 
-    public ifsPt scale(double s){
+    public ifsPt scale(float s){
         return new ifsPt(this.x*s, this.y*s, this.z*s);
     }
 
@@ -80,7 +85,7 @@ class ifsPt implements java.io.Serializable{
         return dist(pt.x - this.x, pt.y - this.y, 0);
     }
 
-    public static double dist(double x, double y, double z){
+    public static double dist(float x, float y, float z){
         return Math.sqrt(x * x + y * y + z * z);
     }
 
@@ -93,12 +98,16 @@ class ifsPt implements java.io.Serializable{
     }
 
     public ifsPt getRotatedPt(double y, double z){
+        return getRotatedPt((float)y, (float)z);
+    }
 
-        double sx, sy, sz, cx, cy, cz;
+    public ifsPt getRotatedPt(float y, float z){
 
-        double Lx, Ly, Lz;
-        double Ux, Uy, Uz;
-        double Fx, Fy, Fz;
+        float sx, sy, sz, cx, cy, cz;
+
+        float Lx, Ly, Lz;
+        float Ux, Uy, Uz;
+        float Fx, Fy, Fz;
 
         sx = sin(0);//0-->x
         cx = cos(0);
@@ -124,20 +133,20 @@ class ifsPt implements java.io.Serializable{
         Fy = -sx*cy;
         Fz = cx*cy;
 
-        double xp = this.x*Lx + this.y*Ly + this.z*Lz;
-        double yp = this.x*Ux + this.y*Uy + this.z*Uz;
-        double zp = this.x*Fx + this.y*Fy + this.z*Fz;
+        float xp = (float)(this.x*Lx + this.y*Ly + this.z*Lz);
+        float yp = this.x*Ux + this.y*Uy + this.z*Uz;
+        float zp = this.x*Fx + this.y*Fy + this.z*Fz;
 
         return new ifsPt(xp,yp,zp);
     }
 
-    public ifsPt getRotatedPt(double y, double z, double x){
+    public ifsPt getRotatedPt(float y, float z, float x){
 
-        double sx, sy, sz, cx, cy, cz;
+        float sx, sy, sz, cx, cy, cz;
 
-        double Lx, Ly, Lz;
-        double Ux, Uy, Uz;
-        double Fx, Fy, Fz;
+        float Lx, Ly, Lz;
+        float Ux, Uy, Uz;
+        float Fx, Fy, Fz;
 
         sx = sin(x);//0-->x
         cx = cos(x);
@@ -163,9 +172,9 @@ class ifsPt implements java.io.Serializable{
         Fy = -sx*cy;
         Fz = cx*cy;
 
-        double xp = this.x*Lx + this.y*Ly + this.z*Lz;
-        double yp = this.x*Ux + this.y*Uy + this.z*Uz;
-        double zp = this.x*Fx + this.y*Fy + this.z*Fz;
+        float xp = this.x*Lx + this.y*Ly + this.z*Lz;
+        float yp = this.x*Ux + this.y*Uy + this.z*Uz;
+        float zp = this.x*Fx + this.y*Fy + this.z*Fz;
 
         return new ifsPt(xp,yp,zp);
     }

@@ -12,38 +12,38 @@ public class volume {
     long drawTime = 0;
     long totalSamples = 0;
 
-    double totalSamplesAlpha =0;
-    double dataMax=0;
-    double dataMaxVolumetric=0;
-    double dataMaxReset = 0;
+    float totalSamplesAlpha =0;
+    float dataMax=0;
+    float dataMaxVolumetric=0;
+    float dataMaxReset = 0;
 
-    double surfaceArea=0;
+    float surfaceArea=0;
 
     public smartVolume volume;
 
-    public double XYProjection[][];
+    public float XYProjection[][];
 
-    public double ZBuffer[][];
+    public float ZBuffer[][];
 
-    public double RBuffer[][];
-    public double GBuffer[][];
-    public double BBuffer[][];
+    public float RBuffer[][];
+    public float GBuffer[][];
+    public float BBuffer[][];
 
     //public long ZBufferTime[][];
     public long dataPoints = 0;
 
     public int depthLeanX, depthLeanY;
 
-    double camRoll;
-    double camYaw;
-    double camPitch;
-    double camScale;
+    float camRoll;
+    float camYaw;
+    float camPitch;
+    float camScale;
 
     ifsPt camCenter;
 
-    double savedPitch;
-    double savedYaw;
-    double savedRoll;
+    float savedPitch;
+    float savedYaw;
+    float savedRoll;
 
     ifsPt centroid;
     ifsPt highPt;
@@ -51,6 +51,8 @@ public class volume {
 
     boolean antiAliasing;
     boolean usePerspective;
+
+    boolean useZBuffer = true;
 
     public volume(int w, int h, int d){
         width = w;
@@ -60,19 +62,19 @@ public class volume {
         depthLeanY = 0;
         renderMode = RenderMode.PROJECT_ONLY;
         antiAliasing = true;
-        XYProjection = new double[width][height];
-        ZBuffer = new double[width][height];
-        RBuffer = new double[width][height];
-        GBuffer = new double[width][height];
-        BBuffer = new double[width][height];
+        XYProjection = new float[width][height];
+        ZBuffer = new float[width][height];
+        RBuffer = new float[width][height];
+        GBuffer = new float[width][height];
+        BBuffer = new float[width][height];
         camPitch=0;
         camRoll=0;
         camYaw=0;
         usePerspective=true;
 
-        camScale=2.0;
+        camScale=2.0f;
 
-        camCenter = new ifsPt(512.0,512.0,512.0);
+        camCenter = new ifsPt(512.0f,512.0f,512.0f);
 
         volume = new smartVolume(width);
         centroid = new ifsPt(0,0,0);
@@ -118,23 +120,25 @@ public class volume {
         return (pt.x>1 && pt.y>1 && pt.z>1 && pt.x<width-1 && pt.y<height-1 && pt.z<depth-1);
     }
 
+    final static float PFf = (float)Math.PI;
     public ifsPt getCameraDistortedPt(ifsPt _pt){
+
         ifsPt pt = _pt
                 .subtract(camCenter)
-                .getRotatedPt(camPitch / 180.0 * Math.PI, camYaw / 180.0 * Math.PI, camRoll / 180.0 * Math.PI)
+                .getRotatedPt(camPitch / 180.0f * PFf, camYaw / 180.0f * PFf, camRoll / 180.0f * PFf)
                 .scale(camScale)
                 .add(camCenter);
 
         //pt.x += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
         //pt.y += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
 
-        double vx = 512.0; //vanishing pt onscreen
-        double vy = 512.0;
+        float vx = 512.0f; //vanishing pt onscreen
+        float vy = 512.0f;
        // pt.z = Math.sqrt(pt.z)*16;
 
         if(usePerspective){
-            pt.x = (pt.x-vx)/Math.sqrt(1024-pt.z)*16.0+vx;
-            pt.y = (pt.y-vy)/Math.sqrt(1024-pt.z)*16.0+vy;
+            pt.x = (pt.x-vx)/(float)Math.sqrt(1024f-pt.z)*16.0f+vx;
+            pt.y = (pt.y-vy)/(float)Math.sqrt(1024f-pt.z)*16.0f+vy;
         }
 
         pt.z /= 8.0;
@@ -145,8 +149,10 @@ public class volume {
     }
 
     public boolean putPixel(ifsPt _pt, double alpha){
+        return putPixel(_pt, (float)alpha);
+    }
 
-        boolean maxMode = true;
+    public boolean putPixel(ifsPt _pt, float alpha){
 
         ifsPt pt = getCameraDistortedPt(_pt);
 
@@ -159,9 +165,9 @@ public class volume {
         if(volumeContains(pt)){
             if(renderMode==renderMode.VOLUMETRIC){
                 if(antiAliasing){
-                    double xDec = pt.x - (int)pt.x;
-                    double yDec = pt.y - (int)pt.y;
-                    double zDec = pt.z - (int)pt.z;
+                    float xDec = pt.x - (int)pt.x;
+                    float yDec = pt.y - (int)pt.y;
+                    float zDec = pt.z - (int)pt.z;
 
                     volume.putData((int) pt.x, (int) pt.y, (int) pt.z, alpha * (1 - xDec) * (1 - yDec) * (1 - zDec));
                     volume.putData((int) pt.x + 1, (int) pt.y, (int) pt.z, alpha * xDec * (1 - yDec) * (1 - zDec));
@@ -193,39 +199,20 @@ public class volume {
                 highPt = new ifsPt(pt);
             }
 
-            if(maxMode){
-                double xDec = pt.x - (int)pt.x;
-                double yDec = pt.y - (int)pt.y;
-
-                double rs=1, gs=1/2, bs=3;
+            if(useZBuffer){
+                float xDec = pt.x - (int)pt.x;
+                float yDec = pt.y - (int)pt.y;
 
                 boolean res=false;
 
                 if(pt.z * (1 - xDec) * (1 - yDec) > ZBuffer[(int) pt.x][(int) pt.y]){
                     res=true;
                     ZBuffer[(int)pt.x][(int)pt.y] = pt.z * (1 - xDec) * (1 - yDec);
-                    //RBuffer[(int)pt.x][(int)pt.y] = pt.z * rs * (1 - xDec) * (1 - yDec);
-                    //GBuffer[(int)pt.x][(int)pt.y] = pt.z * gs * (1 - xDec) * (1 - yDec);
-                   // BBuffer[(int)pt.x][(int)pt.y] = pt.z * bs * (1 - xDec) * (1 - yDec);
                 }
 
                 ZBuffer[(int)pt.x+1][(int)pt.y] = Math.max(pt.z * xDec * (1 - yDec), ZBuffer[(int) pt.x + 1][(int) pt.y]);
                 ZBuffer[(int)pt.x][(int)pt.y+1] = Math.max(pt.z * (1 - xDec) * yDec, ZBuffer[(int) pt.x][(int) pt.y + 1]);
                 ZBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(pt.z * xDec * yDec, ZBuffer[(int) pt.x + 1][(int) pt.y + 1]);
-/*
-                RBuffer[(int)pt.x+1][(int)pt.y] = Math.max(pt.z* rs * xDec * (1 - yDec), RBuffer[(int) pt.x + 1][(int) pt.y]);
-                RBuffer[(int)pt.x][(int)pt.y+1] = Math.max(pt.z* rs * (1 - xDec) * yDec, RBuffer[(int) pt.x][(int) pt.y + 1]);
-                RBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(pt.z* rs * xDec * yDec, RBuffer[(int) pt.x + 1][(int) pt.y + 1]);
-
-                GBuffer[(int)pt.x+1][(int)pt.y] = Math.max(pt.z* gs * xDec * (1 - yDec), GBuffer[(int) pt.x + 1][(int) pt.y]);
-                GBuffer[(int)pt.x][(int)pt.y+1] = Math.max(pt.z* gs * (1 - xDec) * yDec, GBuffer[(int) pt.x][(int) pt.y + 1]);
-                GBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(pt.z* gs * xDec * yDec, GBuffer[(int) pt.x + 1][(int) pt.y + 1]);
-
-                BBuffer[(int)pt.x+1][(int)pt.y] = Math.max(pt.z* bs * xDec * (1 - yDec), BBuffer[(int) pt.x + 1][(int) pt.y]);
-                BBuffer[(int)pt.x][(int)pt.y+1] = Math.max(pt.z* bs * (1 - xDec) * yDec, BBuffer[(int) pt.x][(int) pt.y + 1]);
-                BBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(pt.z* bs * xDec * yDec, BBuffer[(int) pt.x + 1][(int) pt.y + 1]);
-*/
-
 
                 return res;
             }
@@ -245,105 +232,26 @@ public class volume {
         return new ifsPt(centroid.x/ totalSamplesAlpha, centroid.y/ totalSamplesAlpha, centroid.z/ totalSamplesAlpha);
     }
 
-    public double[][] getScaledDepthProjection(double brightness){
-        double[][] scaled = new double[width][height];
+    public float[][] getScaledProjection(double brightness){
+        float[][] scaled = new float[width][height];
 
         double scaler = brightness;
 
-        for(int x=0; x<width; x++){
-            for(int y=0; y<height; y++){
-                scaled[x][y]= Math.min((int)(scaler*ZBuffer[x][y]), 255);
-            }
-        }
-
-        return scaled;
-    }
-
-    public double[][] getScaledRedProjection(double brightness){
-        double[][] scaled = new double[width][height];
-
-        double scaler = brightness;
-
-        for(int x=0; x<width; x++){
-            for(int y=0; y<height; y++){
-                scaled[x][y]= Math.min((int)(scaler*RBuffer[x][y]), 255);
-            }
-        }
-
-        return scaled;
-    }
-
-    public double[][] getScaledGreenProjection(double brightness){
-        double[][] scaled = new double[width][height];
-
-        double scaler = brightness;
-
-        for(int x=0; x<width; x++){
-            for(int y=0; y<height; y++){
-                scaled[x][y]= Math.min((int)(scaler*GBuffer[x][y]), 255);
-            }
-        }
-
-        return scaled;
-    }
-
-    public double[][] getScaledBlueProjection(double brightness){
-        double[][] scaled = new double[width][height];
-
-        double scaler = brightness;
-
-        for(int x=0; x<width; x++){
-            for(int y=0; y<height; y++){
-                scaled[x][y]= Math.min((int)(scaler*BBuffer[x][y]), 255);
-            }
-        }
-
-        return scaled;
-    }
-
-    public double[][] getScaledProjection(double brightness){
-        double[][] scaled = new double[width][height];
-
-        double scaler = 255.0/dataMax * brightness;
-
-        for(int x=0; x<width; x++){
-            for(int y=0; y<height; y++){
-                scaled[x][y]= Math.min((int)(scaler*XYProjection[x][y]), 255);
-            }
-        }
-
-        return scaled;
-    }
-
-    public static double[][] getPotential2D(double[][] map, int radius){ // map must be square!
-        int width = map.length;
-        double[][] res = new double[width][width];
-        double invDistance[][] = new double[radius*2][radius*2];
-        int x,y;
-        int x2,y2;
-        double d2;
-
-        for(x2=-radius; x2<radius; x2++){
-            for(y2=-radius; y2<radius; y2++){
-                d2 = (x2*x2+y2*y2);
-                if(d2<1){d2=1;}
-                invDistance[x2+radius][y2+radius] = 1.0/d2;
-                if(d2>radius){invDistance[x2+radius][y2+radius]=0;}
-            }
-        }
-
-        for(x=radius; x<width-radius; x++){
-            for(y=radius; y<width-radius; y++){
-                res[x][y]=0;
-                for(x2=-radius; x2<radius; x2++){
-                    for(y2=-radius; y2<radius; y2++){
-                        res[x][y]+=map[(x+x2)][(y+y2)]*invDistance[x2+radius][y2+radius]/2;
-                    }
+        if(useZBuffer){
+            for(int x=0; x<width; x++){
+                for(int y=0; y<height; y++){
+                    scaled[x][y]= Math.min((int)(scaler*ZBuffer[x][y]), 255);
                 }
-                res[x][y]=Math.min(res[x][y],255);
+            }
+        }else{
+            for(int x=0; x<width; x++){
+                for(int y=0; y<height; y++){
+                    scaled[x][y]= Math.min((int)(scaler*XYProjection[x][y]), 255);
+                }
             }
         }
-        return res;
+
+        return scaled;
     }
 
     public static void saveToAscii(smartVolume map){
@@ -369,74 +277,10 @@ public class volume {
         }
     }
 
-    public static smartVolume getPotential3D(smartVolume map, int radius){ // map must be square!
-        int size = map.size;
-
-        smartVolume res = new smartVolume(size);
-
-        double invDistance[][][] = new double[radius*2][radius*2][radius*2];
-        int x,y,z;
-        int x2,y2,z2;
-
-        double d2;
-
-        for(x2=-radius; x2<radius; x2++){
-            for(y2=-radius; y2<radius; y2++){
-                for(z2=-radius; z2<radius; z2++){
-                    d2 = (x2*x2 + y2*y2 + z2*z2);
-                    if(d2<1){d2=1;}
-                    invDistance[x2+radius][y2+radius][z2+radius] = 1.0/d2;
-                    if(d2>radius){invDistance[x2+radius][y2+radius][z2+radius]=0;}
-                }
-            }
-        }
-
-        double addition;
-        int x1,y1,z1;
-        //iterate through sub-domains, skipping empty ones
-
-        for(x1=0; x1<map.subRes; x1++){
-            for(y1=0; y1<map.subRes; y1++){
-                for(z1=0; z1<map.subRes; z1++){
-
-                    if(map.isNotEmpty(x1,y1,z1)){ //skip empty domains
-                        for(x=x1*subVolume.size; x<(x1+1)*subVolume.size; x++){
-                            for(y=y1*subVolume.size; y<(y1+1)*subVolume.size; y++){
-                                for(z=z1*subVolume.size; z<(z1+1)*subVolume.size; z++){
-                                    res.clearData(x,y,z);
-                                    addition=0;
-                                    for(x2=-radius; x2<radius; x2++){
-                                        for(y2=-radius; y2<radius; y2++){
-                                            for(z2=-radius; z2<radius; z2++){
-                                                addition+=map.getData(x+x2,y+y2,z+z2)*invDistance[x2+radius][y2+radius][z2+radius];
-                                            }
-                                        }
-                                    }
-                                    if(addition>0){
-                                        res.putData(x,y,z,addition/2);
-                                        res.clipData(x, y, z);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-
-                }
-            }
-            if(x1%10==0)
-                System.out.println("3D POTENTIAL " + x1 + "/" + map.subRes);
-        }
-
-
-
-        return res;
-    }
-
-    public static double[][] getProjectionCopy(double[][] map){
+    public static float[][] getProjectionCopy(float[][] map){
         int width = map.length;
 
-        double[][] res = new double[width][width];
+        float[][] res = new float[width][width];
         int x,y;
 
         for(x=0; x<width; x++){
@@ -448,12 +292,12 @@ public class volume {
         return res;
     }
 
-    public double[][] findEdges2D(double[][] map){
+    public float[][] findEdges2D(float[][] map){
         int width = map.length;
 
-        double total =0;
+        float total =0;
 
-        double[][] res = new double[width][width];
+        float[][] res = new float[width][width];
         int x,y;
 
         for(x=3; x<width-3; x++){
@@ -470,7 +314,7 @@ public class volume {
                 total+=edges1/255.0;
 
                 edges1 = Math.min(edges1, 255);
-                res[x][y]=edges1;
+                res[x][y]=(float)edges1;
             }
         }
 
@@ -479,10 +323,10 @@ public class volume {
         return res;
     }
 
-    public static double[][] getThreshold2D(double[][] map, int threshold){
+    public static float[][] getThreshold2D(float[][] map, int threshold){
         int width = map.length;
 
-        double[][] res = new double[width][width];
+        float[][] res = new float[width][width];
         int x,y;
 
         for(x=0; x<width; x++){

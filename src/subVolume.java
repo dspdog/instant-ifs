@@ -3,7 +3,7 @@ public class subVolume {
     static final int sizeMask = 15;
     static final int sizeLog2 = 4;
 
-    double[][][] data;
+    float[][][] data;
     boolean inited;
 
     public subVolume(){
@@ -11,7 +11,7 @@ public class subVolume {
     }
 
     public void init(){
-        data = new double[size][size][size];
+        data = new float[size][size][size];
         for(int x=0; x<size; x++){
             for(int y=0; x<size; x++){
                 for(int z=0; x<size; x++){
@@ -22,7 +22,7 @@ public class subVolume {
         inited=true;
     }
 
-    public void putData(int x, int y, int z, double val){
+    public void putData(int x, int y, int z, float val){
         if(inited){
             data[x][y][z]+=val;
         }else{
@@ -31,7 +31,7 @@ public class subVolume {
         }
     }
 
-    public double getData(int x, int y, int z){
+    public float getData(int x, int y, int z){
         if(inited){
             return data[x][y][z];
         }else{

@@ -26,7 +26,7 @@ public class ifsys extends Panel
 
     long lastPostProcessTime;
 
-    double lastProcessedProjection[][];
+    float lastProcessedProjection[][];
 
     volume theVolume;
     pdf3D thePdf;
@@ -241,12 +241,8 @@ public class ifsys extends Panel
         double scaler = 1;//255/theVolume.dataMax * brightnessMultiplier;
         double area = 0;
         int scaledColor = 0;
-        int scaledColor2=0;
-        //double[][] projection2 = theVolume.getScaledProjection(Math.pow(2,brightnessMultiplier));
-        double[][] projection1 = theVolume.getScaledDepthProjection(Math.pow(2, rp.brightnessMultiplier));
-        //double[][] projectionR = theVolume.getScaledRedProjection(Math.pow(2, rp.brightnessMultiplier));
-        //double[][] projectionG = theVolume.getScaledGreenProjection(Math.pow(2, rp.brightnessMultiplier));
-        //double[][] projectionB = theVolume.getScaledBlueProjection(Math.pow(2, rp.brightnessMultiplier));
+
+        float[][] projection1 = theVolume.getScaledProjection(Math.pow(2, rp.brightnessMultiplier));
 
         boolean didProcess=false;
 
@@ -354,9 +350,9 @@ public class ifsys extends Panel
 
             //put pixel
 
-            if(theVolume.putPixel(new ifsPt(dpt.x+rpt.x+uncertaintyX,
-                                         dpt.y+rpt.y+uncertaintyY,
-                                         dpt.z+rpt.z+uncertaintyZ),ptColor)){
+            if(theVolume.putPixel(new ifsPt(dpt.x+rpt.x+(float)uncertaintyX,
+                                         dpt.y+rpt.y+(float)uncertaintyY,
+                                         dpt.z+rpt.z+(float)uncertaintyZ),(float)ptColor)){
                 rndIndex+=Math.random()*8+1;
 
             }else{
@@ -419,7 +415,7 @@ public class ifsys extends Panel
                     cumulativeRotationPitch += shape.pts[randomIndex].rotationPitch;
                 }
 
-                theVolume.putPixel(dpt, cumulativeOpacity);
+                theVolume.putPixel(dpt, (float)cumulativeOpacity);
             }
         }
 
@@ -427,18 +423,22 @@ public class ifsys extends Panel
     }
 
     public void drawGrid(){
+        double xmax = 1024;
+        double ymax = 1024;
+        double gridspace = 32;
+
         if(System.currentTimeMillis() -  rp.gridDrawTime > rp.gridRedrawTime){
             rp.gridDrawTime = System.currentTimeMillis();
             int z = 512-32;
-            for(int x=0; x<32; x++){
-                for(int y=0; y<1024; y+=4){
+            for(int x=0; x<xmax/gridspace; x++){
+                for(int y=0; y<ymax; y+=4){
                     theVolume.putPixel(new ifsPt(
-                            x*32,
+                            x*gridspace,
                             y,
                             z), 0.00);
                     theVolume.putPixel(new ifsPt(
                             y,
-                            x*32,
+                            x*gridspace,
                             z), 0.00);
                 }
             }
@@ -512,28 +512,28 @@ public class ifsys extends Panel
         if(System.currentTimeMillis()-lastMoveTime>20){
             getMouseXYZ(e);
             if(altDown){
-                theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0;
-                theVolume.camRoll=theVolume.savedRoll + (mousePt.y-mouseStartDrag.y)/3.0;
+                theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0f;
+                theVolume.camRoll=theVolume.savedRoll + (mousePt.y-mouseStartDrag.y)/3.0f;
             }else if(ctrlDown){
                 selectedMovementAxis=ifsOverlays.DragAxis.NONE;
                 if(isLeftPressed && isRightPressed){
                     selectedMovementAxis=ifsOverlays.DragAxis.Z;
-                    selectedPt.z = selectedPt.savedz - (mousePt.y-mouseStartDrag.y)/2.0;
+                    selectedPt.z = selectedPt.savedz - (mousePt.y-mouseStartDrag.y)/2.0f;
                 }else if(isLeftPressed){
                     selectedMovementAxis=ifsOverlays.DragAxis.Y;
-                    selectedPt.y = selectedPt.savedy + (mousePt.y-mouseStartDrag.y)/2.0;
+                    selectedPt.y = selectedPt.savedy + (mousePt.y-mouseStartDrag.y)/2.0f;
                 }else if(isRightPressed){
                     selectedMovementAxis=ifsOverlays.DragAxis.X;
-                    selectedPt.x = selectedPt.savedx + (mousePt.x-mouseStartDrag.x)/2.0;
+                    selectedPt.x = selectedPt.savedx + (mousePt.x-mouseStartDrag.x)/2.0f;
                 }
             }else{
                 selectedMovementAxis=ifsOverlays.DragAxis.NONE;
 
                 if(isLeftPressed && isRightPressed){
-                    theVolume.camCenter.z=theVolume.camCenter.savedz - ifsPt.Z_UNIT.getRotatedPt(theVolume.camPitch,theVolume.camYaw,theVolume.camRoll).scale((mousePt.y-mouseStartDrag.y)/2.0).z;
+                    theVolume.camCenter.z=theVolume.camCenter.savedz - ifsPt.Z_UNIT.getRotatedPt(theVolume.camPitch,theVolume.camYaw,theVolume.camRoll).scale((mousePt.y-mouseStartDrag.y)/2.0f).z;
                 }else if(isLeftPressed){
-                    theVolume.camCenter.x=theVolume.camCenter.savedx - ifsPt.X_UNIT.getRotatedPt(theVolume.camPitch,theVolume.camYaw,theVolume.camRoll).scale((mousePt.x-mouseStartDrag.x)/2.0).x;
-                    theVolume.camCenter.y=theVolume.camCenter.savedy - ifsPt.Y_UNIT.getRotatedPt(theVolume.camPitch,theVolume.camYaw,theVolume.camRoll).scale((mousePt.y-mouseStartDrag.y)/2.0).y;
+                    theVolume.camCenter.x=theVolume.camCenter.savedx - ifsPt.X_UNIT.getRotatedPt(theVolume.camPitch,theVolume.camYaw,theVolume.camRoll).scale((mousePt.x-mouseStartDrag.x)/2.0f).x;
+                    theVolume.camCenter.y=theVolume.camCenter.savedy - ifsPt.Y_UNIT.getRotatedPt(theVolume.camPitch,theVolume.camYaw,theVolume.camRoll).scale((mousePt.y-mouseStartDrag.y)/2.0f).y;
                 }else if(isRightPressed){
                     //rotate camera?
                 }
@@ -560,7 +560,7 @@ public class ifsys extends Panel
             theVolume.camScale/=changeFactor;
         }
 
-        theVolume.camScale = Math.max(0.1, theVolume.camScale);
+        theVolume.camScale =(float) Math.max(0.1, theVolume.camScale);
 
         clearframe();
         gamefunc();
@@ -665,6 +665,15 @@ public class ifsys extends Panel
             shape.setToPreset(6);
         }
 
+
+        if(e.getKeyChar() == '9'){
+            clearframe();
+            shape.setToPreset(9);
+        }
+        if(e.getKeyChar() == '8'){
+            clearframe();
+            shape.setToPreset(8);
+        }
       //  if(e.getKeyChar() == 's'){
            // volume.saveToAscii(theVolume.volume);
      //   }
@@ -688,6 +697,12 @@ public class ifsys extends Panel
         if(e.getKeyChar() == 'm'){
             System.out.println("deleting pt " + pointSelected);
             shape.deletePoint(pointSelected);
+            clearframe();
+            gamefunc();
+        }
+
+        if(e.getKeyChar() == 'z'){
+            theVolume.useZBuffer = !theVolume.useZBuffer;
             clearframe();
             gamefunc();
         }

@@ -262,12 +262,12 @@ public class ifsOverlays {
     }
 
     public void drawLine3D(ifsPt p1, ifsPt p2, Graphics rg, boolean isBold, boolean arrowHead){
-        int subDivs = 20;
+        int subDivs = Math.min(50, (int)p1.distTo(p2));
         ifsPt ipt1;
         ifsPt ipt2;
         for(int i=0; i<subDivs-1; i++){
-            ipt1 = myIfsSys.theVolume.getCameraDistortedPt(p1.add(p2.subtract(p1).scale(1.0 / subDivs).scale(i)));
-            ipt2 = myIfsSys.theVolume.getCameraDistortedPt(p1.add(p2.subtract(p1).scale(1.0 / subDivs).scale(i + 1)));
+            ipt1 = myIfsSys.theVolume.getCameraDistortedPt(p1.add(p2.subtract(p1).scale(1.0f / subDivs).scale(i)));
+            ipt2 = myIfsSys.theVolume.getCameraDistortedPt(p1.add(p2.subtract(p1).scale(1.0f / subDivs).scale(i + 1)));
             drawline(ipt1, ipt2,rg, isBold, arrowHead && i==subDivs-2);
         }
       }
@@ -288,7 +288,7 @@ public class ifsOverlays {
                 }
 
                 if(arrowHead){
-                    ifsPt pUnit = p2.subtract(p1).scale(0.2);
+                    ifsPt pUnit = p2.subtract(p1).scale(0.2f);
 
                     double divisions = 20;
                     int baseSize = isBold ? 15 : 10;
