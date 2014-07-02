@@ -296,13 +296,16 @@ public class ifsys extends Panel
         }
     }
 
-    public void putPdfSample(ifsPt _dpt, double cumulativeRotationYaw, double cumulativeRotationPitch, double cumulativeScale, double cumulativeOpacity, ifsPt thePt, double scaleDown, int index, ifsPt odpt){
+    public void putPdfSample(ifsPt _dpt, double cumulativeRotationYaw, double cumulativeRotationPitch, double cumulativeScale, double cumulativeOpacity, ifsPt _thePt, ifsPt theOldPt, double scaleDown, int index, ifsPt odpt){
         ifsPt dpt = _dpt;
+        ifsPt thePt = _thePt;
 
         boolean smearing = true;
 
         if(smearing){
-            dpt = _dpt.interpolateTo(odpt, (float)Math.random());
+            float factor = (float)Math.random();
+            dpt = _dpt.interpolateTo(odpt, factor);
+            thePt = _thePt.interpolateTo(theOldPt, factor);
             if(odpt.x<1){dpt=_dpt;}//hack to prevent smearing from first pt
         }
 
@@ -404,6 +407,7 @@ public class ifsys extends Panel
                 for(int d = 0; d < rp.iterations; d++){
                     scaleDownMultiplier/=shape.pointsInUse;
 
+                    int oldRandomIndex = randomIndex;
                     randomIndex = 1 + (int)(Math.random() * (double) (shape.pointsInUse-1));
 
                     if(d==0){randomIndex=0;}
@@ -425,7 +429,7 @@ public class ifsys extends Panel
                     }
 
                     if(rp.usePDFSamples){
-                        putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], scaleDownMultiplier, randomIndex, olddpt);
+                        putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], shape.pts[oldRandomIndex], scaleDownMultiplier, randomIndex, olddpt);
                     }
 
                     cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;

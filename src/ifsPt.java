@@ -96,6 +96,10 @@ class ifsPt implements java.io.Serializable{
     public ifsPt interpolateTo(ifsPt dest, float factor){
         //go from this to dest as factor goes from 0 to 1
         ifsPt res = this.add(dest.subtract(this).scale(factor));
+
+        res.radius = this.radius + (dest.radius-this.radius)*factor;
+        res.scale = this.scale + (dest.scale-this.scale)*factor;
+
         return res;
     }
 

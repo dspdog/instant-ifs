@@ -213,8 +213,6 @@ public class volume {
                     ZBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(pt.z * xDec * yDec, ZBuffer[(int) pt.x + 1][(int) pt.y + 1]);
                 }
 
-
-
                 return res;
             }
         }
