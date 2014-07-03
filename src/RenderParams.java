@@ -29,11 +29,13 @@ public class RenderParams implements java.io.Serializable {
     boolean renderThrottling;
     long postProcessPeriod;
 
+    boolean drawGrid;
     long gridDrawTime;
     long gridRedrawTime;
 
     public RenderParams(){
 
+        drawGrid = true;
         gridRedrawTime=0;
         gridDrawTime=0;
 
@@ -47,7 +49,7 @@ public class RenderParams implements java.io.Serializable {
         iterations = 1;
         brightnessMultiplier = 1;
         holdFrame=false;
-        samplesPerFrame = 4096;
+        samplesPerFrame = 1024;
         usingThreshold = false;
         usingFindEdges = false;
         threshold = 64;

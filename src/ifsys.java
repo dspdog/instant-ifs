@@ -457,6 +457,7 @@ public class ifsys extends Panel
         double ymax = 1024;
         double gridspace = 32;
 
+        if(rp.drawGrid)
         if(System.currentTimeMillis() -  rp.gridDrawTime > rp.gridRedrawTime){
             rp.gridDrawTime = System.currentTimeMillis();
             int z = 512-32;
@@ -542,8 +543,7 @@ public class ifsys extends Panel
         if(System.currentTimeMillis()-lastMoveTime>20){
             getMouseXYZ(e);
             if(altDown){
-                theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0f;
-                theVolume.camRoll=theVolume.savedRoll + (mousePt.y-mouseStartDrag.y)/3.0f;
+                //
             }else if(ctrlDown){
                 selectedMovementAxis=ifsOverlays.DragAxis.NONE;
                 if(isLeftPressed && isRightPressed){
@@ -564,8 +564,10 @@ public class ifsys extends Panel
                 }else if(isLeftPressed){
                     theVolume.camCenter.x=theVolume.camCenter.savedx - ifsPt.X_UNIT.getRotatedPt(theVolume.camPitch,theVolume.camYaw,theVolume.camRoll).scale((mousePt.x-mouseStartDrag.x)/2.0f).x;
                     theVolume.camCenter.y=theVolume.camCenter.savedy - ifsPt.Y_UNIT.getRotatedPt(theVolume.camPitch,theVolume.camYaw,theVolume.camRoll).scale((mousePt.y-mouseStartDrag.y)/2.0f).y;
-                }else if(isRightPressed){
-                    //rotate camera?
+
+                }else if(isRightPressed){ //rotate camera
+                    theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0f;
+                    theVolume.camRoll=theVolume.savedRoll + (mousePt.y-mouseStartDrag.y)/3.0f;
                 }
             }
 
@@ -651,6 +653,11 @@ public class ifsys extends Panel
 
         if(e.getKeyChar() == 'p'){
             theVolume.usePerspective = !theVolume.usePerspective;
+            clearframe();
+        }
+
+        if(e.getKeyChar() == 'g'){
+            rp.drawGrid = !rp.drawGrid;
             clearframe();
         }
 
