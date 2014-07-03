@@ -29,11 +29,15 @@ public class RenderParams implements java.io.Serializable {
     boolean renderThrottling;
     long postProcessPeriod;
 
+    boolean smearPDF;
+
     boolean drawGrid;
     long gridDrawTime;
     long gridRedrawTime;
 
     public RenderParams(){
+
+        smearPDF = false;
 
         drawGrid = true;
         gridRedrawTime=0;

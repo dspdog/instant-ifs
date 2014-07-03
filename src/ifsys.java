@@ -300,9 +300,7 @@ public class ifsys extends Panel
         ifsPt dpt = _dpt;
         ifsPt thePt = _thePt;
 
-        boolean smearing = false;
-
-        if(smearing){
+        if(rp.smearPDF){
             float factor = (float)Math.random();
             dpt = _dpt.interpolateTo(odpt, factor);
             thePt = _thePt.interpolateTo(theOldPt, factor);
@@ -434,7 +432,7 @@ public class ifsys extends Panel
                         dpt.z -= rpt.z;
                     }
 
-                    if(rp.usePDFSamples){
+                    if(rp.usePDFSamples && !(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
                         putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], shape.pts[oldRandomIndex], scaleDownMultiplier, randomIndex, olddpt);
                     }
                     scaleDownMultiplier/=shape.pointsInUse;
@@ -670,6 +668,11 @@ public class ifsys extends Panel
         if(e.getKeyChar() == 'l'){
             shape = shape.loadFromFile();
             rp = rp.loadFromFile();
+        }
+
+        if(e.getKeyChar() == 'f'){
+            rp.smearPDF = !rp.smearPDF;
+            clearframe();
         }
 
         if(e.getKeyChar() == '1'){
