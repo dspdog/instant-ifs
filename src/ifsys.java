@@ -300,7 +300,7 @@ public class ifsys extends Panel
         ifsPt dpt = _dpt;
         ifsPt thePt = _thePt;
 
-        boolean smearing = true;
+        boolean smearing = false;
 
         if(smearing){
             float factor = (float)Math.random();
@@ -408,10 +408,10 @@ public class ifsys extends Panel
                 double cumulativeRotationPitch = 0;
                 //double cumulativeRotationRoll = 0;
 
-                double scaleDownMultiplier = Math.pow(shape.pointsInUse,rp.iterations-1); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
+                double scaleDownMultiplier = Math.pow(shape.pointsInUse,rp.iterations); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
 
                 for(int d = 0; d < rp.iterations; d++){
-                    scaleDownMultiplier/=shape.pointsInUse;
+
 
                     int oldRandomIndex = randomIndex;
                     randomIndex = 1 + (int)(Math.random() * (double) (shape.pointsInUse-1));
@@ -437,6 +437,7 @@ public class ifsys extends Panel
                     if(rp.usePDFSamples){
                         putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], shape.pts[oldRandomIndex], scaleDownMultiplier, randomIndex, olddpt);
                     }
+                    scaleDownMultiplier/=shape.pointsInUse;
 
                     cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;
                     cumulativeOpacity *= shape.pts[randomIndex].opacity;

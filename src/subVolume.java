@@ -1,9 +1,12 @@
 public class subVolume {
-    static final int size = 16;
-    static final int sizeMask = 15;
-    static final int sizeLog2 = 4;
+    static final int size = 64;
+    static final int sizeMask = 63;
+    static final int sizeLog2 = 6;
 
-    float[][][] data;
+    static final int sizeSq = size*size;
+    static final int sizeCu = size*size*size;
+
+    float[] data;
     boolean inited;
 
     public subVolume(){
@@ -11,29 +14,22 @@ public class subVolume {
     }
 
     public void init(){
-        data = new float[size][size][size];
-        for(int x=0; x<size; x++){
-            for(int y=0; x<size; x++){
-                for(int z=0; x<size; x++){
-                    data[x][y][z]=0;
-                }
-            }
-        }
+        data = new float[sizeCu];
         inited=true;
     }
 
     public void putData(int x, int y, int z, float val){
         if(inited){
-            data[x][y][z]+=val;
+            data[x+y*size+z*sizeSq]+=val;
         }else{
             init();
-            data[x][y][z]+=val;
+            data[x+y*size+z*sizeSq]+=val;
         }
     }
 
     public float getData(int x, int y, int z){
         if(inited){
-            return data[x][y][z];
+            return data[x+y*size+z*sizeSq];
         }else{
             return 0;
         }
@@ -41,13 +37,13 @@ public class subVolume {
 
     public void clearData(int x, int y, int z){
         if(inited){
-            data[x][y][z]=0;
+            data[x+y*size+z*sizeSq]=0;
         }
     }
 
     public void clipData(int x, int y, int z){
         if(inited){
-            data[x][y][z]=Math.min(data[x][y][z], 255);
+            data[x+y*size+z*sizeSq]=Math.min(data[x+y*size+z*sizeSq], 255);
         }
     }
 }
