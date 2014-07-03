@@ -373,6 +373,12 @@ public class ifsys extends Panel
                 sampleX = thePdf.validX[rndIndex]+dx;
                 sampleY = thePdf.validY[rndIndex]+dy;
                 sampleZ = thePdf.validZ[rndIndex]+dz;
+                while(sampleZ>105){
+                    rndIndex = (int)(Math.random()*thePdf.validValues);
+                    sampleX = thePdf.validX[rndIndex]+dx;
+                    sampleY = thePdf.validY[rndIndex]+dy;
+                    sampleZ = thePdf.validZ[rndIndex]+dz;
+                }
             }
 
             if(duds>4*nonduds){iter=iters;} //skips occluded pdfs
@@ -563,7 +569,6 @@ public class ifsys extends Panel
                 }
             }
 
-            gamefunc();
             theMenu.camPitchSpinner.setValue(theMenu.camPitchSpinner.getValue());
             clearframe();
             lastMoveTime = System.currentTimeMillis();

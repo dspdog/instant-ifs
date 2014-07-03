@@ -56,7 +56,58 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
     long lastPdfPropertiesMouseMoved=0;
 
-    public void addLabeledFileChooser(SpringLayout layout, String labelText, JPanel panel, double row, int col){
+    final ChangeListener updateNoClear = new ChangeListener() {
+        @Override
+        public void stateChanged(ChangeEvent e) {
+            if(!autoChange){
+                lastUiChange=System.currentTimeMillis();
+                myIfsSys.selectedPt.x = (float)Double.parseDouble(xSpinner.getValue().toString());
+                myIfsSys.selectedPt.y = (float)Double.parseDouble(ySpinner.getValue().toString());
+                myIfsSys.selectedPt.z = (float)Double.parseDouble(zSpinner.getValue().toString());
+                myIfsSys.selectedPt.scale = (float)(0.01 * Double.parseDouble(scaleSpinner.getValue().toString()));
+
+                myIfsSys.selectedPt.rotationPitch = (float)(Double.parseDouble(pitchSpinner.getValue().toString())/180.0*Math.PI);
+                myIfsSys.selectedPt.rotationYaw = (float)(Double.parseDouble(yawSpinner.getValue().toString())/180.0*Math.PI);
+
+                myIfsSys.rp.usingThreshold = thresholdCheck.isSelected();
+                myIfsSys.rp.threshold = Integer.parseInt(thresholdSpinner.getValue().toString());
+                myIfsSys.rp.iterations = Integer.parseInt(iterationsSpinner.getValue().toString());
+                myIfsSys.rp.brightnessMultiplier = Double.parseDouble(brightnessSpinner.getValue().toString());
+                myIfsSys.rp.samplesPerFrame = Double.parseDouble(samplesSpinner.getValue().toString());
+
+                myIfsSys.rp.renderThrottling = delayCheck.isSelected();
+                myIfsSys.rp.postProcessPeriod = Long.parseLong(delaySpinner.getValue().toString());
+
+                myIfsSys.rp.holdFrame = frameHoldCheck.isSelected();
+
+                myIfsSys.rp.potentialRadius = Integer.parseInt(potentialSpinner.getValue().toString());
+                myIfsSys.rp.usingGaussian = potentialCheck.isSelected();
+                myIfsSys.rp.usingFindEdges = findEdgesCheck.isSelected();
+
+                myIfsSys.shape.updateCenter();
+
+                myIfsSys.theVolume.camPitch = camPitchSpinner.getValue() - 180;
+                myIfsSys.theVolume.camYaw = camYawSpinner.getValue() - 180;
+                myIfsSys.theVolume.camRoll = camRollSpinner.getValue() - 180;
+                //myIfsSys.theVolume.camScale = camScaleSpinner.getValue()/10.0;
+
+                //myIfsSys.theVolume.camScale = Math.max(0.1, myIfsSys.theVolume.camScale);
+
+                myIfsSys.lastMoveTime = System.currentTimeMillis();
+            }
+        }
+    };
+
+    ChangeListener updateAndClear = new ChangeListener() {
+        @Override
+        public void stateChanged(ChangeEvent e) {
+            updateNoClear.stateChanged(e);
+            myIfsSys.clearframe();
+        }
+    };
+
+
+    public JButton addLabeledFileChooser(SpringLayout layout, String labelText, JPanel panel, double row, int col){
         int width = 51;
         int totalCols = 3;
         int spinnerLeft = 5 + col*width;
@@ -71,12 +122,14 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         layout.putConstraint(SpringLayout.EAST, button, spinnerRight, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.NORTH, button, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
 
-        button.addActionListener(this);
+        //button.addActionListener(this);
 
         panel.add(button);
+
+        return button;
     }
 
-    public <T extends JComponent> void addLabeled(T comp, SpringLayout layout, String labelText, JPanel panel, double row){
+    public <T extends JComponent> JComponent addLabeled(T comp, SpringLayout layout, String labelText, JPanel panel, double row){
         int compLeft = 70;
         int compRight = -5;
         int compToSpinner = -5;
@@ -91,21 +144,10 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         layout.putConstraint(SpringLayout.NORTH, comp, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
         layout.putConstraint(SpringLayout.NORTH, label, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
 
-        try{
-            ((JSlider)comp).addChangeListener(this);
-        }catch (Exception e){}
-        try{
-            ((JComboBox)comp).addActionListener(this);
-        }catch (Exception e){}
-        try{
-            ((JSpinner)comp).addChangeListener(this);
-        }catch (Exception e){}
-        try{
-            ((JCheckBox)comp).addChangeListener(this);
-        }catch (Exception e){}
-
         panel.add(label);
         panel.add(comp);
+
+        return comp;
     }
 
 
@@ -146,9 +188,11 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         panel.setLayout(layout);
         layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
 
-        addLabeledFileChooser(layout, "X", panel, 1, 0);
-        addLabeledFileChooser(layout, "Y", panel, 1, 1);
-        addLabeledFileChooser(layout, "Z", panel, 1, 2);
+        final Component parent = this;
+
+        addLabeledFileChooser(layout, "X", panel, 1, 0).addActionListener(this);
+        addLabeledFileChooser(layout, "Y", panel, 1, 1).addActionListener(this);
+        addLabeledFileChooser(layout, "Z", panel, 1, 2).addActionListener(this);
         addLabeled(pdfModeCombo, layout, "Mix", panel, 3);
 
         panel.addMouseMotionListener(this);
@@ -175,9 +219,9 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         panel.setLayout(layout);
         layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
 
-        addLabeled(camPitchSpinner, layout, "Pitch", panel, 1);
-        addLabeled(camYawSpinner, layout, "Yaw", panel, 2.35);
-        addLabeled(camRollSpinner, layout, "Roll", panel, 3.7);
+        ((JSlider)addLabeled(camPitchSpinner, layout, "Pitch", panel, 1)).addChangeListener(updateAndClear);
+        ((JSlider)addLabeled(camYawSpinner, layout, "Yaw", panel, 2.35)).addChangeListener(updateAndClear);
+        ((JSlider)addLabeled(camRollSpinner, layout, "Roll", panel, 3.7)).addChangeListener(updateAndClear);
         //addLabeled(camScaleSpinner, layout, "Scale", panel, 5);
 
         panel.add(cameraLabel);
@@ -218,21 +262,46 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
 
-        addLabeled(renderModeCombo, layout, "Mode", panel, 0.7);
-        addLabeled(brightnessSpinner, layout, "Brightness", panel, 2);
-        addLabeled(samplesSpinner, layout, "Dots/Frame", panel, 3);
-        addLabeled(iterationsSpinner, layout, "Iterations", panel, 4);
+        ((JComboBox)addLabeled(renderModeCombo, layout, "Mode", panel, 0.7)).addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JComboBox cb = (JComboBox)e.getSource();
+                if(cb.getSelectedItem() == volume.RenderMode.VOLUMETRIC.toString()){
+                    myIfsSys.theVolume.renderMode = volume.RenderMode.VOLUMETRIC;
+                }else if(cb.getSelectedItem() == volume.RenderMode.PROJECT_ONLY.toString()){
+                    myIfsSys.theVolume.renderMode = volume.RenderMode.PROJECT_ONLY;
+                }else if(cb.getSelectedItem() == pdf3D.comboMode.ADD.toString()){
+                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.ADD;
+                    myIfsSys.thePdf.updateVolume();
+                }else if(cb.getSelectedItem() == pdf3D.comboMode.AVERAGE.toString()){
+                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.AVERAGE;
+                    myIfsSys.thePdf.updateVolume();
+                }else if(cb.getSelectedItem() == pdf3D.comboMode.MULTIPLY.toString()){
+                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.MULTIPLY;
+                    myIfsSys.thePdf.updateVolume();
+                }else if(cb.getSelectedItem() == pdf3D.comboMode.MAX.toString()){
+                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.MAX;
+                    myIfsSys.thePdf.updateVolume();
+                }else if(cb.getSelectedItem() == pdf3D.comboMode.MIN.toString()){
+                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
+                    myIfsSys.thePdf.updateVolume();
+                }
+            }
+        });
 
-        addLabeled(frameHoldCheck, layout, "Hold Frame", panel, 5.5);
+        ((JSpinner)addLabeled(brightnessSpinner, layout, "Brightness", panel, 2)).addChangeListener(updateNoClear);
+        ((JSpinner)addLabeled(samplesSpinner, layout, "Dots/Frame", panel, 3)).addChangeListener(updateNoClear);
+        ((JSpinner)addLabeled(iterationsSpinner, layout, "Iterations", panel, 4)).addChangeListener(updateAndClear);
 
-        addLabeled(potentialSpinner, layout, "Blur", panel, 6.6);
-        addLabeled(potentialCheck, layout, "Gaussian", panel, 7.6);
-        addLabeled(thresholdSpinner, layout, "Threshold", panel, 9);
-        addLabeled(thresholdCheck, layout, "Threshold", panel, 10);
-        addLabeled(findEdgesCheck, layout, "Find Edges", panel, 11);
+        ((JCheckBox)addLabeled(frameHoldCheck, layout, "Hold Frame", panel, 5.5)).addChangeListener(updateNoClear);
 
-        addLabeled(delayCheck, layout, "Framelimit", panel, 12.5);
-        addLabeled(delaySpinner, layout, "Wait X ms", panel, 13.6);
+        ((JSpinner)addLabeled(potentialSpinner, layout, "Blur", panel, 6.6)).addChangeListener(updateNoClear);
+        ((JCheckBox)addLabeled(potentialCheck, layout, "Gaussian", panel, 7.6)).addChangeListener(updateNoClear);
+        ((JSpinner)addLabeled(thresholdSpinner, layout, "Threshold", panel, 9)).addChangeListener(updateNoClear);
+        ((JCheckBox)addLabeled(thresholdCheck, layout, "Threshold", panel, 10)).addChangeListener(updateNoClear);
+        ((JCheckBox)addLabeled(findEdgesCheck, layout, "Find Edges", panel, 11)).addChangeListener(updateNoClear);
+
+        ((JCheckBox)addLabeled(delayCheck, layout, "Framelimit", panel, 12.5)).addChangeListener(updateNoClear);
+        ((JSpinner)addLabeled(delaySpinner, layout, "Wait X ms", panel, 13.6)).addChangeListener(updateNoClear);
 
         panel.add(renderLabel);
     }
@@ -401,100 +470,26 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
     @Override
     public void stateChanged(ChangeEvent e) {
-        if(!autoChange){
-            lastUiChange=System.currentTimeMillis();
-            myIfsSys.selectedPt.x = (float)Double.parseDouble(xSpinner.getValue().toString());
-            myIfsSys.selectedPt.y = (float)Double.parseDouble(ySpinner.getValue().toString());
-            myIfsSys.selectedPt.z = (float)Double.parseDouble(zSpinner.getValue().toString());
-            myIfsSys.selectedPt.scale = (float)(0.01 * Double.parseDouble(scaleSpinner.getValue().toString()));
 
-            myIfsSys.selectedPt.rotationPitch = (float)(Double.parseDouble(pitchSpinner.getValue().toString())/180.0*Math.PI);
-            myIfsSys.selectedPt.rotationYaw = (float)(Double.parseDouble(yawSpinner.getValue().toString())/180.0*Math.PI);
-
-            myIfsSys.rp.usingThreshold = thresholdCheck.isSelected();
-            myIfsSys.rp.threshold = Integer.parseInt(thresholdSpinner.getValue().toString());
-            myIfsSys.rp.iterations = Integer.parseInt(iterationsSpinner.getValue().toString());
-            myIfsSys.rp.brightnessMultiplier = Double.parseDouble(brightnessSpinner.getValue().toString());
-            myIfsSys.rp.samplesPerFrame = Double.parseDouble(samplesSpinner.getValue().toString());
-
-            myIfsSys.rp.renderThrottling = delayCheck.isSelected();
-            myIfsSys.rp.postProcessPeriod = Long.parseLong(delaySpinner.getValue().toString());
-
-            myIfsSys.rp.holdFrame = frameHoldCheck.isSelected();
-
-            myIfsSys.rp.potentialRadius = Integer.parseInt(potentialSpinner.getValue().toString());
-            myIfsSys.rp.usingGaussian = potentialCheck.isSelected();
-            myIfsSys.rp.usingFindEdges = findEdgesCheck.isSelected();
-
-            myIfsSys.shape.updateCenter();
-
-            myIfsSys.theVolume.camPitch = camPitchSpinner.getValue() - 180;
-            myIfsSys.theVolume.camYaw = camYawSpinner.getValue() - 180;
-            myIfsSys.theVolume.camRoll = camRollSpinner.getValue() - 180;
-            //myIfsSys.theVolume.camScale = camScaleSpinner.getValue()/10.0;
-
-            //myIfsSys.theVolume.camScale = Math.max(0.1, myIfsSys.theVolume.camScale);
-
-            myIfsSys.lastMoveTime = System.currentTimeMillis();
-
-            if(!myIfsSys.rp.holdFrame)
-            myIfsSys.clearframe();
-        }
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) { //TODO do all this less hacky...
-        if(!autoChange){
-            //If coming from the combo boxs...
-            try{
-                JComboBox cb = (JComboBox)e.getSource();
-                if(cb.getSelectedItem() == volume.RenderMode.VOLUMETRIC.toString()){
-                    myIfsSys.theVolume.renderMode = volume.RenderMode.VOLUMETRIC;
-                }else if(cb.getSelectedItem() == volume.RenderMode.PROJECT_ONLY.toString()){
-                    myIfsSys.theVolume.renderMode = volume.RenderMode.PROJECT_ONLY;
-                }else if(cb.getSelectedItem() == pdf3D.comboMode.ADD.toString()){
-                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.ADD;
-                    myIfsSys.thePdf.updateVolume();
-                }else if(cb.getSelectedItem() == pdf3D.comboMode.AVERAGE.toString()){
-                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.AVERAGE;
-                    myIfsSys.thePdf.updateVolume();
-                }else if(cb.getSelectedItem() == pdf3D.comboMode.MULTIPLY.toString()){
-                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.MULTIPLY;
-                    myIfsSys.thePdf.updateVolume();
-                }else if(cb.getSelectedItem() == pdf3D.comboMode.MAX.toString()){
-                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.MAX;
-                    myIfsSys.thePdf.updateVolume();
-                }else if(cb.getSelectedItem() == pdf3D.comboMode.MIN.toString()){
-                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
-                    myIfsSys.thePdf.updateVolume();
-                }
-            }catch (Exception ex){
+    public void actionPerformed(ActionEvent e) {
+        JButton cb = (JButton)e.getSource();
 
+        if(cb.getText()=="X"){
+            pdfXImgFile = fc.showOpenDialog(this);
+            if(pdfXImgFile == JFileChooser.APPROVE_OPTION){
+                myIfsSys.thePdf.setSampleImageX(fc.getSelectedFile());
             }
-
-
-            //If coming from the pdf selections buttons...
-            try{
-                JButton cb = (JButton)e.getSource();
-
-                if(cb.getText()=="X"){
-                    pdfXImgFile = fc.showOpenDialog(this);
-                    if(pdfXImgFile == JFileChooser.APPROVE_OPTION){
-                        myIfsSys.thePdf.setSampleImageX(fc.getSelectedFile());
-                    }
-                }else if(cb.getText()=="Y"){
-                    pdfYImgFile = fc.showOpenDialog(this);
-                    if(pdfYImgFile == JFileChooser.APPROVE_OPTION){
-                        myIfsSys.thePdf.setSampleImageY(fc.getSelectedFile());
-                    }
-                }else if(cb.getText()=="Z"){
-                    pdfZImgFile = fc.showOpenDialog(this);
-                    if(pdfZImgFile == JFileChooser.APPROVE_OPTION){
-                        myIfsSys.thePdf.setSampleImageZ(fc.getSelectedFile());
-                    }
-                }
-            }catch (Exception ex){
-
+        }else if(cb.getText()=="Y"){
+            pdfYImgFile = fc.showOpenDialog(this);
+            if(pdfYImgFile == JFileChooser.APPROVE_OPTION){
+                myIfsSys.thePdf.setSampleImageY(fc.getSelectedFile());
+            }
+        }else if(cb.getText()=="Z"){
+            pdfZImgFile = fc.showOpenDialog(this);
+            if(pdfZImgFile == JFileChooser.APPROVE_OPTION){
+                myIfsSys.thePdf.setSampleImageZ(fc.getSelectedFile());
             }
         }
     }
@@ -507,7 +502,6 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     @Override
     public void mouseMoved(MouseEvent e) {
         //triggered by pdf properties panel
-
         lastPdfPropertiesMouseMoved=System.currentTimeMillis();
     }
 }
