@@ -193,7 +193,28 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         addLabeledFileChooser(layout, "X", panel, 1, 0).addActionListener(this);
         addLabeledFileChooser(layout, "Y", panel, 1, 1).addActionListener(this);
         addLabeledFileChooser(layout, "Z", panel, 1, 2).addActionListener(this);
-        addLabeled(pdfModeCombo, layout, "Mix", panel, 3);
+        ((JComboBox)addLabeled(pdfModeCombo, layout, "Mix", panel, 3)).addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JComboBox cb = (JComboBox)e.getSource();
+                if(cb.getSelectedItem() == pdf3D.comboMode.ADD.toString()){
+                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.ADD;
+                    myIfsSys.thePdf.updateVolume();
+                }else if(cb.getSelectedItem() == pdf3D.comboMode.AVERAGE.toString()){
+                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.AVERAGE;
+                    myIfsSys.thePdf.updateVolume();
+                }else if(cb.getSelectedItem() == pdf3D.comboMode.MULTIPLY.toString()){
+                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.MULTIPLY;
+                    myIfsSys.thePdf.updateVolume();
+                }else if(cb.getSelectedItem() == pdf3D.comboMode.MAX.toString()){
+                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.MAX;
+                    myIfsSys.thePdf.updateVolume();
+                }else if(cb.getSelectedItem() == pdf3D.comboMode.MIN.toString()){
+                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
+                    myIfsSys.thePdf.updateVolume();
+                }
+            }
+        });
 
         panel.addMouseMotionListener(this);
 
@@ -269,21 +290,6 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                     myIfsSys.theVolume.renderMode = volume.RenderMode.VOLUMETRIC;
                 }else if(cb.getSelectedItem() == volume.RenderMode.PROJECT_ONLY.toString()){
                     myIfsSys.theVolume.renderMode = volume.RenderMode.PROJECT_ONLY;
-                }else if(cb.getSelectedItem() == pdf3D.comboMode.ADD.toString()){
-                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.ADD;
-                    myIfsSys.thePdf.updateVolume();
-                }else if(cb.getSelectedItem() == pdf3D.comboMode.AVERAGE.toString()){
-                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.AVERAGE;
-                    myIfsSys.thePdf.updateVolume();
-                }else if(cb.getSelectedItem() == pdf3D.comboMode.MULTIPLY.toString()){
-                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.MULTIPLY;
-                    myIfsSys.thePdf.updateVolume();
-                }else if(cb.getSelectedItem() == pdf3D.comboMode.MAX.toString()){
-                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.MAX;
-                    myIfsSys.thePdf.updateVolume();
-                }else if(cb.getSelectedItem() == pdf3D.comboMode.MIN.toString()){
-                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
-                    myIfsSys.thePdf.updateVolume();
                 }
             }
         });

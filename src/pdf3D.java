@@ -14,12 +14,12 @@ public class pdf3D { //3d probabilty density function
     int sampleDepth;
 
     public float volume[];
-   // public float volume[][][];
+
     public int validValues = 0;
     public int[] validX;
     public int[] validY;
     public int[] validZ;
-    public int[] validDir;
+    public ifsPt validDir[];
 
     Image sampleImageX;
     Image sampleImageY;
@@ -105,7 +105,7 @@ public class pdf3D { //3d probabilty density function
         validX = new int[width*width*width];
         validY = new int[width*width*width];
         validZ = new int[width*width*width];
-        validDir = new int[width*width*width];
+        validDir = new ifsPt[width*width*width];
         for(int y=0; y<width; y++){
             for(int x=0; x<height; x++){
                 for(int z=0; z<depth; z++){
@@ -121,10 +121,10 @@ public class pdf3D { //3d probabilty density function
             for(int x=edgePrune; x<height-edgePrune; x++){
                 for(int z=edgePrune; z<depth-edgePrune; z++){
                     if(pointValid(x,y,z,edgeUnit)){
+                        validDir[validValues]=edgeVector(x,y,z, edgeUnit);
                         validX[validValues]=x;
                         validY[validValues]=y;
                         validZ[validValues]=z;
-
                         validValues++;
                     }
                 }
@@ -135,6 +135,23 @@ public class pdf3D { //3d probabilty density function
 
 
 
+    }
+
+    public ifsPt edgeVector(int x, int y, int z, int unit){
+        ifsPt thePt = new ifsPt(0,0,0);
+        float validPts = 0;
+        for(int x2=-unit; x2<unit+1; x2++){
+            for(int y2=-unit; y2<unit+1; y2++){
+                for(int z2=-unit; z2<unit+1; z2++){
+                    if(volume[(x+x2)+(y+y2)*width+(z+z2)*width*height]==0){
+                        thePt.add(new ifsPt(x2,y2,z2));
+                        validPts++;
+                    }
+                }
+            }
+        }
+
+        return thePt.scale(1.0f/validPts);
     }
 
     public boolean pointValid(int x, int y, int z, int edgeUnit){
