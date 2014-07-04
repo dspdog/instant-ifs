@@ -112,42 +112,7 @@ class ifsPt implements java.io.Serializable{
     }
 
     public ifsPt getRotatedPt(float y, float z){
-
-        float sx, sy, sz, cx, cy, cz;
-
-        float Lx, Ly, Lz;
-        float Ux, Uy, Uz;
-        float Fx, Fy, Fz;
-
-        sx = sin(0);//0-->x
-        cx = cos(0);
-
-        sy = sin(y);
-        cy = cos(y);
-
-        sz = sin(z);
-        cz = cos(z);
-
-        // determine left axis
-        Lx = cy*cz;
-        Ly = sx*sy*cz + cx*sz;
-        Lz = -cx*sy*cz + sx*sz;
-
-        // determine up axis
-        Ux = -cy*sz;
-        Uy = -sx*sy*sz + cx*cz;
-        Uz = cx*sy*sz + sx*cz;
-
-        // determine forward axis
-        Fx = sy;
-        Fy = -sx*cy;
-        Fz = cx*cy;
-
-        float xp = (float)(this.x*Lx + this.y*Ly + this.z*Lz);
-        float yp = this.x*Ux + this.y*Uy + this.z*Uz;
-        float zp = this.x*Fx + this.y*Fy + this.z*Fz;
-
-        return new ifsPt(xp,yp,zp);
+        return getRotatedPt(y, z, 0);
     }
 
     public ifsPt getRotatedPt(float y, float z, float x){
@@ -182,11 +147,10 @@ class ifsPt implements java.io.Serializable{
         Fy = -sx*cy;
         Fz = cx*cy;
 
-        float xp = this.x*Lx + this.y*Ly + this.z*Lz;
-        float yp = this.x*Ux + this.y*Uy + this.z*Uz;
-        float zp = this.x*Fx + this.y*Fy + this.z*Fz;
-
-        return new ifsPt(xp,yp,zp);
+        return new ifsPt(
+                this.x*Lx + this.y*Ly + this.z*Lz,
+                this.x*Ux + this.y*Uy + this.z*Uz,
+                this.x*Fx + this.y*Fy + this.z*Fz);
     }
 
     public void saveState(){

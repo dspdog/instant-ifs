@@ -353,7 +353,7 @@ public class ifsys extends Panel
 
         for(int iter=0; iter<iters; iter++){
 
-            ptColor = thePdf.volume[(int)sampleX][(int)sampleY][(int)sampleZ];
+            ptColor = thePdf.getVolumePt(sampleX,sampleY,sampleZ);//[(int)sampleX+(int)sampleY+(int)sampleZ];
 
             ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust*distScaleDown;
             rpt = new ifsPt((sampleX-centerX)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw); //placed point

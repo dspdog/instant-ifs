@@ -13,7 +13,7 @@ public class pdf3D { //3d probabilty density function
     int sampleHeight;
     int sampleDepth;
 
-    public float volume[][][];
+    public float volume[];
    // public float volume[][][];
     public int validValues = 0;
     public int[] validX;
@@ -35,7 +35,7 @@ public class pdf3D { //3d probabilty density function
         width = 512;
         height = 512;
         depth = 512;
-        volume = new float[width][height][depth];
+        volume = new float[width*height*depth];
         samplePixels = new int[width*height];
 
         loadImgs3D("circle2.png", "circle2.png", "circle2.png");
@@ -138,7 +138,7 @@ public class pdf3D { //3d probabilty density function
     }
 
     public boolean pointValid(int x, int y, int z, int edgeUnit){
-        return volume[x][y][z]>0 && isNearEdge(x,y,z, edgeUnit);
+        return volume[x+y*width+z*width*height]>0 && isNearEdge(x,y,z, edgeUnit);
     }
 
     public boolean isNearEdge(int x, int y, int z, int unit){
@@ -146,7 +146,7 @@ public class pdf3D { //3d probabilty density function
         for(int x2=-unit; x2<unit+1; x2++){
             for(int y2=-unit; y2<unit+1; y2++){
                 for(int z2=-unit; z2<unit+1; z2++){
-                    if(volume[x+x2][y+y2][z+z2]==0){
+                    if(volume[(x+x2)+(y+y2)*width+(z+z2)*width*height]==0){
                         return true;
                     }
                 }
@@ -156,29 +156,33 @@ public class pdf3D { //3d probabilty density function
         return false;
     }
 
+    public float getVolumePt(double x, double y, double z){
+        return volume[(int)x+(int)y*width+(int)z*width*height];
+    }
+
     public void updateVolumePixel(int x, int y, int z){
         switch(thePdfComboMode){
             case ADD:
-                volume[x][y][z] = samplePixelsX[y+z*width]+
+                volume[x+y*width+z*width*height] = samplePixelsX[y+z*width]+
                                   samplePixelsY[x+z*width]+
                                   samplePixelsZ[x+y*width];
                 break;
             case AVERAGE:
-                volume[x][y][z] = (samplePixelsX[y+z*width]+
+                volume[x+y*width+z*width*height] = (samplePixelsX[y+z*width]+
                                     samplePixelsY[x+z*width]+
                                     samplePixelsZ[x+y*width])/3;
                 break;
             case MULTIPLY:
-                volume[x][y][z] = samplePixelsX[y+z*width]*
+                volume[x+y*width+z*width*height] = samplePixelsX[y+z*width]*
                                   samplePixelsY[x+z*width]*
                                   samplePixelsZ[x+y*width]/255/255;
                 break;
             case MAX:
-                volume[x][y][z] = Math.max(Math.max(samplePixelsX[y+z*width],
+                volume[x+y*width+z*width*height] = Math.max(Math.max(samplePixelsX[y+z*width],
                                                     samplePixelsY[x+z*width]), samplePixelsZ[x+y*width]);
                 break;
             case MIN:
-                volume[x][y][z] = Math.min(Math.min(samplePixelsX[y + z * width],
+                volume[x+y*width+z*width*height] = Math.min(Math.min(samplePixelsX[y + z * width],
                         samplePixelsY[x + z * width]), samplePixelsZ[x + y * width]);
                 break;
 
