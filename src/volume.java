@@ -24,7 +24,7 @@ public class volume {
     public float XYProjection[][];
 
     public float ZBuffer[][];
-
+    public float CBuffer[][]; //chroma buffer...
     public float RBuffer[][];
     public float GBuffer[][];
     public float BBuffer[][];
@@ -64,6 +64,7 @@ public class volume {
         antiAliasing = true;
         XYProjection = new float[width][height];
         ZBuffer = new float[width][height];
+        CBuffer = new float[width][height];
         RBuffer = new float[width][height];
         GBuffer = new float[width][height];
         BBuffer = new float[width][height];
@@ -109,6 +110,7 @@ public class volume {
             for(int y=0; y<height; y++){
                 XYProjection[x][y]*=a;
                 ZBuffer[x][y]*=a;
+                CBuffer[x][y]*=a;
                 RBuffer[x][y]*=a;
                 GBuffer[x][y]*=a;
                 BBuffer[x][y]*=a;

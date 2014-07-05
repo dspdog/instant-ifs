@@ -16,9 +16,14 @@ public class pdf3D { //3d probabilty density function
     public float volume[];
 
     public int validValues = 0;
-    public int[] validX;
+    public int[] validX; //[0] is lenght of array. [1...] are x values of valid values
     public int[] validY;
     public int[] validZ;
+
+    public int[][] xSortMap;
+    public int[][] ySortMap;
+    public int[][] zSortMap;
+
     public ifsPt validDir[];
 
     Image sampleImageX;
@@ -31,12 +36,26 @@ public class pdf3D { //3d probabilty density function
 
     comboMode thePdfComboMode = comboMode.ADD;
 
+    int firstZ;
+    int lastZ;
+    int firstY;
+    int lastY;
+    int firstX;
+    int lastX;
+
     public pdf3D(){
         width = 512;
         height = 512;
         depth = 512;
         volume = new float[width*height*depth];
         samplePixels = new int[width*height];
+
+        firstZ=depth;
+        lastZ=0;
+        firstY=height;
+        lastY=0;
+        firstX=width;
+        lastX=0;
 
         loadImgs3D("circle2.png", "circle2.png", "circle2.png");
     }
@@ -105,6 +124,11 @@ public class pdf3D { //3d probabilty density function
         validX = new int[width*width*width];
         validY = new int[width*width*width];
         validZ = new int[width*width*width];
+
+        xSortMap = new int[depth][width*width];
+        ySortMap = new int[depth][width*width];
+        zSortMap = new int[depth][width*width];
+
         validDir = new ifsPt[width*width*width];
         for(int y=0; y<width; y++){
             for(int x=0; x<height; x++){
@@ -125,6 +149,24 @@ public class pdf3D { //3d probabilty density function
                         validX[validValues]=x;
                         validY[validValues]=y;
                         validZ[validValues]=z;
+
+                        xSortMap[x][0]++;
+                        ySortMap[y][0]++;
+                        zSortMap[z][0]++;
+
+                        xSortMap[x][xSortMap[x][0]]=validValues;
+                        ySortMap[y][ySortMap[y][0]]=validValues;
+                        zSortMap[z][zSortMap[z][0]]=validValues;
+
+                        lastX = Math.max(lastX,x);
+                        firstX = Math.min(firstX,x);
+
+                        lastY = Math.max(lastY,y);
+                        firstY = Math.min(firstY,y);
+
+                        lastZ = Math.max(lastZ,z);
+                        firstZ = Math.min(firstZ,z);
+
                         validValues++;
                     }
                 }

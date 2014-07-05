@@ -396,12 +396,12 @@ public class ifsOverlays {
 
             rg.drawString("Regions " + myIfsSys.theVolume.volume.getInitCount() + "/" + myIfsSys.theVolume.volume.totalRegions + " (" + (100*myIfsSys.theVolume.volume.getInitCount()/myIfsSys.theVolume.volume.totalRegions) + "%)", xPad, lineSize*14);
         }else{
-            rg.drawString("HighPt2D: ("
+            /*rg.drawString("HighPt2D: ("
                     + (int)(myIfsSys.theVolume.highPt.x) + ", "
                     + (int)(myIfsSys.theVolume.highPt.y) + ", "
                     + (int)(myIfsSys.theVolume.highPt.z) + ")", xPad,+ lineSize*5);
 
-            rg.drawString("DataMax2D: 10^" + df.format(Math.log10(myIfsSys.theVolume.dataMax)), xPad, lineSize * 6);
+            rg.drawString("DataMax2D: 10^" + df.format(Math.log10(myIfsSys.theVolume.dataMax)), xPad, lineSize * 6);*/
         }
 
         rg.drawString("Dots: 10^" + df.format(Math.log10(myIfsSys.theVolume.totalSamples)), xPad, lineSize * 7);
