@@ -119,7 +119,11 @@ public class volume {
     }
 
     public boolean volumeContains(ifsPt pt){
-        return (pt.x>1 && pt.y>1 && pt.z>1 && pt.x<width-1 && pt.y<height-1 && pt.z<depth-1);
+        return (pt.x>1 && pt.y>1 && pt.z>1 && pt.x<width-1 && pt.y<height-1);
+    }
+
+    public boolean volumeContains(ifsPt pt, int prune){
+        return (pt.x>prune && pt.y>prune && pt.z>prune && pt.x<width-prune && pt.y<height-prune);
     }
 
     final static float PFf = (float)Math.PI;
@@ -155,6 +159,47 @@ public class volume {
     }
 
     public boolean putPixel(ifsPt _pt, float alpha){
+        return old_putPixel(_pt, (float)alpha);
+    }
+
+    public boolean putPixel(ifsPt _pt, float alpha, int ptRadius){
+
+        ifsPt pt = getCameraDistortedPt(_pt);
+
+        centroid.x+=pt.x*alpha;
+        centroid.y+=pt.y*alpha;
+        centroid.z+=pt.z*alpha;
+
+        dataPoints++;
+
+        if(volumeContains(pt, ptRadius)){
+
+            totalSamples++;
+            totalSamplesAlpha +=alpha;
+
+            if(useZBuffer){
+                boolean res=false;
+
+                if(pt.z > ZBuffer[(int) pt.x][(int) pt.y]){
+                    res=true;
+
+                    for(int x1=-ptRadius; x1<ptRadius; x1++){
+                        for(int y1=-ptRadius; y1<ptRadius; y1++){
+                            //if(x1*x1+y1*y1<ptRadius)
+                            ZBuffer[(int)pt.x+x1][(int)pt.y+y1] = Math.max(pt.z,ZBuffer[(int)pt.x+x1][(int)pt.y+y1]);
+                        }
+                    }
+                }
+
+                return res;
+            }
+        }
+
+        return false;
+    }
+
+
+    public boolean old_putPixel(ifsPt _pt, float alpha){
 
         ifsPt pt = getCameraDistortedPt(_pt);
 
@@ -221,6 +266,7 @@ public class volume {
 
         return false;
     }
+
 
     public void saveCam(){
         camCenter.saveState();

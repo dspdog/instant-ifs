@@ -8,7 +8,7 @@ public class ifsys extends Panel
     implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener, ActionListener
 {
     mainthread[] threads;
-    int numThreads = Runtime.getRuntime().availableProcessors()/2;
+    int numThreads = 1;//Runtime.getRuntime().availableProcessors()/2;
     boolean quit;
 
     int threadNo=0;
@@ -157,9 +157,10 @@ public class ifsys extends Panel
                     gamefunc();
                     tNo++;
                     if(tNo%numThreads==0){
+                        if(theVolume.totalSamples>100)//TODO update
                         repaint();
                     }
-                    sleep(1L);
+                    sleep(1L);//TODO update
                 }
                 catch(InterruptedException e) {
                     e.printStackTrace();
@@ -349,11 +350,12 @@ public class ifsys extends Panel
         sampleX = thePdf.validX[seqIndex]+dx;
         sampleY = thePdf.validY[seqIndex]+dy;
         sampleZ = thePdf.validZ[seqIndex]+dz;
-        int iters = 1000; //(int)(samplesPerPdfScaler * scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
+        int iters = 2000; //(int)(samplesPerPdfScaler * scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
 
         for(int iter=0; iter<iters; iter++){
 
-            seqIndex = (int)(1.0*iter*thePdf.validValues/iters);
+            seqIndex = (int)((1.0*iter*thePdf.validValues/iters) + Math.random()*0);
+            seqIndex = seqIndex%(thePdf.validValues|1);
 
             ptColor = thePdf.getVolumePt(sampleX,sampleY,sampleZ);//[(int)sampleX+(int)sampleY+(int)sampleZ];
             ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust*distScaleDown;
@@ -363,7 +365,7 @@ public class ifsys extends Panel
 
             if(theVolume.putPixel(new ifsPt(dpt.x+rpt.x+(float)uncertaintyX,
                                          dpt.y+rpt.y+(float)uncertaintyY,
-                                         dpt.z+rpt.z+(float)uncertaintyZ),(float)ptColor)){
+                                         dpt.z+rpt.z+(float)uncertaintyZ),(float)ptColor, 5)){
                 //seqIndex++;
                 nonduds++;
             }else{
