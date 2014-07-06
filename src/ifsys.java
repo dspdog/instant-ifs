@@ -329,7 +329,6 @@ public class ifsys extends Panel
         pointDegreesYaw = thePt.rotationYaw +cumulativeRotationYaw;
         pointDegreesPitch = thePt.rotationPitch +cumulativeRotationPitch;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
 
-        int iters = (int)(samplesPerPdfScaler * scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
 
         //iters=iters&(4095); //limit to 4095
 
@@ -340,21 +339,23 @@ public class ifsys extends Panel
 
         if(distScaleDown>1){distScaleDown=1;}
 
-        int rndIndex;
-        double dx=Math.random()-0.5;
-        double dy=Math.random()-0.5;
-        double dz=Math.random()-0.5;
+        int seqIndex;
+        double dx=0;//Math.random()-0.5;
+        double dy=0;//Math.random()-0.5;
+        double dz=0;//Math.random()-0.5;
 
-        rndIndex = (int)(Math.random()*thePdf.validValues);
+        seqIndex = 0;//(int)(Math.random()*thePdf.validValues);
 
-        sampleX = thePdf.validX[rndIndex]+dx;
-        sampleY = thePdf.validY[rndIndex]+dy;
-        sampleZ = thePdf.validZ[rndIndex]+dz;
+        sampleX = thePdf.validX[seqIndex]+dx;
+        sampleY = thePdf.validY[seqIndex]+dy;
+        sampleZ = thePdf.validZ[seqIndex]+dz;
+        int iters = 1000; //(int)(samplesPerPdfScaler * scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
 
         for(int iter=0; iter<iters; iter++){
 
-            ptColor = thePdf.getVolumePt(sampleX,sampleY,sampleZ);//[(int)sampleX+(int)sampleY+(int)sampleZ];
+            seqIndex = (int)(1.0*iter*thePdf.validValues/iters);
 
+            ptColor = thePdf.getVolumePt(sampleX,sampleY,sampleZ);//[(int)sampleX+(int)sampleY+(int)sampleZ];
             ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust*distScaleDown;
             rpt = new ifsPt((sampleX-centerX)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw); //placed point
 
@@ -363,17 +364,18 @@ public class ifsys extends Panel
             if(theVolume.putPixel(new ifsPt(dpt.x+rpt.x+(float)uncertaintyX,
                                          dpt.y+rpt.y+(float)uncertaintyY,
                                          dpt.z+rpt.z+(float)uncertaintyZ),(float)ptColor)){
-                rndIndex++;
+                //seqIndex++;
                 nonduds++;
             }else{
                 duds++;
-                rndIndex = (int)(Math.random()*thePdf.validValues);
-                sampleX = thePdf.validX[rndIndex]+dx;
-                sampleY = thePdf.validY[rndIndex]+dy;
-                sampleZ = thePdf.validZ[rndIndex]+dz;
+                //seqIndex = (int)(Math.random()*thePdf.validValues);
+                sampleX = thePdf.validX[seqIndex]+dx;
+                sampleY = thePdf.validY[seqIndex]+dy;
+                sampleZ = thePdf.validZ[seqIndex]+dz;
             }
 
             if(duds>4*nonduds){iter=iters;} //skips occluded pdfs
+
         }
     }
 

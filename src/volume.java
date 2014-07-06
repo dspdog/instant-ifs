@@ -108,12 +108,12 @@ public class volume {
         dataPoints*=a;
         for(int x=0; x<width; x++){
             for(int y=0; y<height; y++){
-                XYProjection[x][y]*=a;
+               // XYProjection[x][y]*=a;
                 ZBuffer[x][y]*=a;
-                CBuffer[x][y]*=a;
-                RBuffer[x][y]*=a;
-                GBuffer[x][y]*=a;
-                BBuffer[x][y]*=a;
+                //CBuffer[x][y]*=a;
+                //RBuffer[x][y]*=a;
+                //GBuffer[x][y]*=a;
+               // BBuffer[x][y]*=a;
             }
         }
     }
@@ -194,12 +194,12 @@ public class volume {
             totalSamples++;
             totalSamplesAlpha +=alpha;
 
-            XYProjection[(int)pt.x][(int)pt.y]+=alpha;
+            //XYProjection[(int)pt.x][(int)pt.y]+=alpha;
 
-            if(XYProjection[(int)pt.x][(int)pt.y]>dataMax){
-                dataMax= XYProjection[(int)pt.x][(int)pt.y];
-                highPt = new ifsPt(pt);
-            }
+            //if(XYProjection[(int)pt.x][(int)pt.y]>dataMax){
+            //    dataMax= XYProjection[(int)pt.x][(int)pt.y];
+            //    highPt = new ifsPt(pt);
+            //}
 
             if(useZBuffer){
                 float xDec = pt.x - (int)pt.x;

@@ -130,13 +130,10 @@ public class pdf3D { //3d probabilty density function
         zSortMap = new int[depth][width*width];
 
         validDir = new ifsPt[width*width*width];
-        for(int y=0; y<width; y++){
-            for(int x=0; x<height; x++){
-                for(int z=0; z<depth; z++){
-                    updateVolumePixel(x, y, z);
-                }
-            }
-        }
+
+
+        updateVolumePixels();
+
 
         int edgeUnit = 1;
         int edgePrune = 4;
@@ -174,9 +171,6 @@ public class pdf3D { //3d probabilty density function
         }
 
         System.out.println(validValues + " valid %" + (100.0*validValues/512/512/512));
-
-
-
     }
 
     public ifsPt edgeVector(int x, int y, int z, int unit){
@@ -219,30 +213,62 @@ public class pdf3D { //3d probabilty density function
         return volume[(int)x+(int)y*width+(int)z*width*height];
     }
 
-    public void updateVolumePixel(int x, int y, int z){
+    public void updateVolumePixels(){
         switch(thePdfComboMode){
             case ADD:
-                volume[x+y*width+z*width*height] = samplePixelsX[y+z*width]+
-                                  samplePixelsY[x+z*width]+
-                                  samplePixelsZ[x+y*width];
+                for(int y=0; y<width; y++){
+                    for(int x=0; x<height; x++){
+                        for(int z=0; z<depth; z++){
+                            volume[x+y*width+z*width*height] = samplePixelsX[y+z*width]+
+                                    samplePixelsY[x+z*width]+
+                                    samplePixelsZ[x+y*width];
+                        }
+                    }
+                }
                 break;
             case AVERAGE:
-                volume[x+y*width+z*width*height] = (samplePixelsX[y+z*width]+
+                for(int y=0; y<width; y++){
+                    for(int x=0; x<height; x++){
+                        for(int z=0; z<depth; z++){
+                            volume[x+y*width+z*width*height] = (samplePixelsX[y+z*width]+
                                     samplePixelsY[x+z*width]+
                                     samplePixelsZ[x+y*width])/3;
+                        }
+                    }
+                }
                 break;
             case MULTIPLY:
-                volume[x+y*width+z*width*height] = samplePixelsX[y+z*width]*
-                                  samplePixelsY[x+z*width]*
-                                  samplePixelsZ[x+y*width]/255/255;
+                for(int y=0; y<width; y++){
+                    for(int x=0; x<height; x++){
+                        for(int z=0; z<depth; z++){
+                            volume[x+y*width+z*width*height] = samplePixelsX[y+z*width]*
+                                    samplePixelsY[x+z*width]*
+                                    samplePixelsZ[x+y*width]/255/255;
+                        }
+                    }
+                }
+
                 break;
             case MAX:
-                volume[x+y*width+z*width*height] = Math.max(Math.max(samplePixelsX[y+z*width],
-                                                    samplePixelsY[x+z*width]), samplePixelsZ[x+y*width]);
+                for(int y=0; y<width; y++){
+                    for(int x=0; x<height; x++){
+                        for(int z=0; z<depth; z++){
+                            volume[x+y*width+z*width*height] = Math.max(Math.max(samplePixelsX[y+z*width],
+                                    samplePixelsY[x+z*width]), samplePixelsZ[x+y*width]);
+
+                        }
+                    }
+                }
                 break;
             case MIN:
-                volume[x+y*width+z*width*height] = Math.min(Math.min(samplePixelsX[y + z * width],
-                        samplePixelsY[x + z * width]), samplePixelsZ[x + y * width]);
+                for(int y=0; y<width; y++){
+                    for(int x=0; x<height; x++){
+                        for(int z=0; z<depth; z++){
+                            volume[x+y*width+z*width*height] = Math.min(Math.min(samplePixelsX[y + z * width],
+                                    samplePixelsY[x + z * width]), samplePixelsZ[x + y * width]);
+                        }
+                    }
+                }
                 break;
 
         }
