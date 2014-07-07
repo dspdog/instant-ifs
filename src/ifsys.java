@@ -352,7 +352,46 @@ public class ifsys extends Panel
         sampleZ = thePdf.validZ[seqIndex]+dz;
         int iters = 2000; //(int)(samplesPerPdfScaler * scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
 
-        for(int iter=0; iter<iters; iter++){
+        ifsPt nxArrow = theVolume.getCameraDistortedPt(thePt.add(ifsPt.X_UNIT.scale(thePt.radius * thePt.scale)));
+        ifsPt nyArrow = theVolume.getCameraDistortedPt(thePt.add(ifsPt.Y_UNIT.scale(thePt.radius * thePt.scale)));
+        ifsPt nzArrow = theVolume.getCameraDistortedPt(thePt.add(ifsPt.Z_UNIT.scale(thePt.radius * thePt.scale)));
+        ifsPt pxArrow = theVolume.getCameraDistortedPt(thePt.subtract(ifsPt.X_UNIT.scale(thePt.radius * thePt.scale)));
+        ifsPt pyArrow = theVolume.getCameraDistortedPt(thePt.subtract(ifsPt.Y_UNIT.scale(thePt.radius * thePt.scale)));
+        ifsPt pzArrow = theVolume.getCameraDistortedPt(thePt.subtract(ifsPt.Z_UNIT.scale(thePt.radius * thePt.scale)));
+
+        float minZ = 10000;
+        int minDim = 0;
+        float[] zs = {pxArrow.z,pyArrow.z,pzArrow.z,nxArrow.z,nyArrow.z,nzArrow.z};
+
+        for(int i=0; i<zs.length; i++){
+            if(zs[i]<minZ){
+                minDim=i;
+                minZ=zs[i];
+            }
+        }
+
+        switch (minDim){
+            case 0:
+                //System.out.println("+X");
+                break;
+            case 1:
+                //System.out.println("+Y");
+                break;
+            case 2:
+                //System.out.println("+Z");
+                break;
+            case 3:
+                //System.out.println("-X");
+                break;
+            case 4:
+                //System.out.println("-Y");
+                break;
+            case 5:
+                //System.out.println("-Z");
+                break;
+        }
+
+        for(int iter=0; iter<iters/2; iter++){
 
             seqIndex = (int)((1.0*iter*thePdf.validValues/iters) + Math.random()*0);
             seqIndex = seqIndex%(thePdf.validValues|1);
@@ -365,7 +404,7 @@ public class ifsys extends Panel
 
             if(theVolume.putPixel(new ifsPt(dpt.x+rpt.x+(float)uncertaintyX,
                                          dpt.y+rpt.y+(float)uncertaintyY,
-                                         dpt.z+rpt.z+(float)uncertaintyZ),(float)ptColor, 5)){
+                                         dpt.z+rpt.z+(float)uncertaintyZ),(float)ptColor, 2)){
                 //seqIndex++;
                 nonduds++;
             }else{
