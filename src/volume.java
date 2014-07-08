@@ -164,6 +164,8 @@ public class volume {
 
     public boolean putPixel(ifsPt _pt, float alpha, int ptRadius){
 
+        if(ptRadius==0){return putPixel(_pt, alpha);}
+
         ifsPt pt = getCameraDistortedPt(_pt);
 
         centroid.x+=pt.x*alpha;

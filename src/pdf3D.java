@@ -20,10 +20,6 @@ public class pdf3D { //3d probabilty density function
     public int[] validY;
     public int[] validZ;
 
-    public int[][] xSortMap;
-    public int[][] ySortMap;
-    public int[][] zSortMap;
-
     public ifsPt validDir[];
 
     Image sampleImageX;
@@ -124,21 +120,14 @@ public class pdf3D { //3d probabilty density function
         validX = new int[width*width*width];
         validY = new int[width*width*width];
         validZ = new int[width*width*width];
-
-        xSortMap = new int[depth][width*width];
-        ySortMap = new int[depth][width*width];
-        zSortMap = new int[depth][width*width];
-
         validDir = new ifsPt[width*width*width];
 
-
         updateVolumePixels();
-
 
         int edgeUnit = 1;
         int edgePrune = 4;
 
-        for(int y=edgePrune; y<width-edgePrune; y++){
+        for(int y=edgePrune; y<width-edgePrune; y++){ //sorting by Y.....
             for(int x=edgePrune; x<height-edgePrune; x++){
                 for(int z=edgePrune; z<depth-edgePrune; z++){
                     if(pointValid(x,y,z,edgeUnit)){
@@ -146,23 +135,6 @@ public class pdf3D { //3d probabilty density function
                         validX[validValues]=x;
                         validY[validValues]=y;
                         validZ[validValues]=z;
-
-                        xSortMap[x][0]++;
-                        ySortMap[y][0]++;
-                        zSortMap[z][0]++;
-
-                        xSortMap[x][xSortMap[x][0]]=validValues;
-                        ySortMap[y][ySortMap[y][0]]=validValues;
-                        zSortMap[z][zSortMap[z][0]]=validValues;
-
-                        lastX = Math.max(lastX,x);
-                        firstX = Math.min(firstX,x);
-
-                        lastY = Math.max(lastY,y);
-                        firstY = Math.min(firstY,y);
-
-                        lastZ = Math.max(lastZ,z);
-                        firstZ = Math.min(firstZ,z);
 
                         validValues++;
                     }

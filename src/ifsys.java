@@ -8,7 +8,7 @@ public class ifsys extends Panel
     implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener, ActionListener
 {
     mainthread[] threads;
-    int numThreads = 1;//Runtime.getRuntime().availableProcessors()/2;
+    int numThreads = Runtime.getRuntime().availableProcessors()/2;
     boolean quit;
 
     int threadNo=0;
@@ -95,7 +95,7 @@ public class ifsys extends Panel
         theVolume.clear();
         thePdf = new pdf3D();
 
-        samplesPerPdfScaler = 0.25; //decrease for higher fps while drawing PDFs
+        samplesPerPdfScaler = 1; //decrease for higher fps while drawing PDFs
 
         thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
     }
@@ -157,7 +157,8 @@ public class ifsys extends Panel
                     gamefunc();
                     tNo++;
                     if(tNo%numThreads==0){
-                        if(theVolume.totalSamples>100)//TODO update
+                        drawGrid();
+                        if(theVolume.totalSamples>4096)//TODO update
                         repaint();
                     }
                     sleep(1L);//TODO update
@@ -330,8 +331,8 @@ public class ifsys extends Panel
         pointDegreesYaw = thePt.rotationYaw +cumulativeRotationYaw;
         pointDegreesPitch = thePt.rotationPitch +cumulativeRotationPitch;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
 
-
-        //iters=iters&(4095); //limit to 4095
+        int iters = (int)(samplesPerPdfScaler * scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
+        iters=iters&(4095); //limit to 4095
 
         double uncertaintyX = uncertainty*Math.random()-uncertainty/2;
         double uncertaintyY = uncertainty*Math.random()-uncertainty/2;
@@ -341,17 +342,17 @@ public class ifsys extends Panel
         if(distScaleDown>1){distScaleDown=1;}
 
         int seqIndex;
-        double dx=0;//Math.random()-0.5;
-        double dy=0;//Math.random()-0.5;
-        double dz=0;//Math.random()-0.5;
+        double dx=Math.random()-0.5;
+        double dy=Math.random()-0.5;
+        double dz=Math.random()-0.5;
 
-        seqIndex = 0;//(int)(Math.random()*thePdf.validValues);
+        seqIndex = (int)(Math.random()*thePdf.validValues);
 
         sampleX = thePdf.validX[seqIndex]+dx;
         sampleY = thePdf.validY[seqIndex]+dy;
         sampleZ = thePdf.validZ[seqIndex]+dz;
-        int iters = 2000; //(int)(samplesPerPdfScaler * scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
 
+/*
         ifsPt nxArrow = theVolume.getCameraDistortedPt(thePt.add(ifsPt.X_UNIT.scale(thePt.radius * thePt.scale)));
         ifsPt nyArrow = theVolume.getCameraDistortedPt(thePt.add(ifsPt.Y_UNIT.scale(thePt.radius * thePt.scale)));
         ifsPt nzArrow = theVolume.getCameraDistortedPt(thePt.add(ifsPt.Z_UNIT.scale(thePt.radius * thePt.scale)));
@@ -389,12 +390,9 @@ public class ifsys extends Panel
             case 5:
                 //System.out.println("-Z");
                 break;
-        }
+        }*/
 
-        for(int iter=0; iter<iters/2; iter++){
-
-            seqIndex = (int)((1.0*iter*thePdf.validValues/iters) + Math.random()*0);
-            seqIndex = seqIndex%(thePdf.validValues|1);
+        for(int iter=0; iter<iters; iter++){
 
             ptColor = thePdf.getVolumePt(sampleX,sampleY,sampleZ);//[(int)sampleX+(int)sampleY+(int)sampleZ];
             ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust*distScaleDown;
@@ -404,23 +402,21 @@ public class ifsys extends Panel
 
             if(theVolume.putPixel(new ifsPt(dpt.x+rpt.x+(float)uncertaintyX,
                                          dpt.y+rpt.y+(float)uncertaintyY,
-                                         dpt.z+rpt.z+(float)uncertaintyZ),(float)ptColor, 2)){
-                //seqIndex++;
+                                         dpt.z+rpt.z+(float)uncertaintyZ),(float)ptColor, rp.ptSize)){
+                seqIndex++;
                 nonduds++;
             }else{
                 duds++;
-                //seqIndex = (int)(Math.random()*thePdf.validValues);
+                seqIndex = (int)(Math.random()*thePdf.validValues);
                 sampleX = thePdf.validX[seqIndex]+dx;
                 sampleY = thePdf.validY[seqIndex]+dy;
                 sampleZ = thePdf.validZ[seqIndex]+dz;
             }
 
-            if(duds>4*nonduds){iter=iters;} //skips occluded pdfs
+            //if(duds>4*nonduds){iter=iters;} //skips occluded pdfs
 
         }
     }
-
-
 
     public void gamefunc(){
 
@@ -484,8 +480,6 @@ public class ifsys extends Panel
                 theVolume.putPixel(dpt, (float)cumulativeOpacity);
             }
         }
-
-        drawGrid();
     }
 
     public void drawGrid(){
@@ -496,7 +490,7 @@ public class ifsys extends Panel
         if(rp.drawGrid)
         if(System.currentTimeMillis() -  rp.gridDrawTime > rp.gridRedrawTime){
             rp.gridDrawTime = System.currentTimeMillis();
-            int z = 512-32;
+            int z = 0;
             for(int x=0; x<xmax/gridspace; x++){
                 for(int y=0; y<ymax; y+=4){
                     theVolume.putPixel(new ifsPt(
@@ -782,6 +776,14 @@ public class ifsys extends Panel
             theVolume.useZBuffer = !theVolume.useZBuffer;
             clearframe();
             gamefunc();
+        }
+
+        if(e.getKeyChar() == 'x'){
+            rp.ptSize++;
+            rp.ptSize = rp.ptSize % 4;
+            clearframe();
+            gamefunc();
+            System.out.println("PT SIZE "+ rp.ptSize);
         }
     }
 
