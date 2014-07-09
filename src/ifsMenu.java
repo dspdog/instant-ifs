@@ -169,12 +169,12 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
 
-        addLabeled(xSpinner, layout, "X", panel, 1);
-        addLabeled(ySpinner, layout, "Y", panel, 2);
-        addLabeled(zSpinner, layout, "Z", panel, 3);
-        addLabeled(scaleSpinner, layout, "Scale %", panel, 4);
-        addLabeled(pitchSpinner, layout, "Pitch°", panel, 6);
-        addLabeled(yawSpinner, layout, "Yaw°", panel, 7);
+        ((JSpinner)addLabeled(xSpinner, layout, "X", panel, 1)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(ySpinner, layout, "Y", panel, 2)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(zSpinner, layout, "Z", panel, 3)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(scaleSpinner, layout, "Scale %", panel, 4)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(pitchSpinner, layout, "Pitch°", panel, 6)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(yawSpinner, layout, "Yaw°", panel, 7)).addChangeListener(updateAndClear);
 
         panel.add(ptLabel);
     }
