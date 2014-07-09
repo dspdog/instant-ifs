@@ -8,7 +8,7 @@ public class RenderParams implements java.io.Serializable {
     int screenwidth;
     int screenheight;
 
-    int ptSize;
+    int dotSize;
 
     boolean framesHidden;
     boolean infoHidden;
@@ -39,7 +39,7 @@ public class RenderParams implements java.io.Serializable {
 
     public RenderParams(){
 
-        ptSize=0;
+        dotSize=0;
         smearPDF = false;
 
         drawGrid = true;
@@ -64,7 +64,7 @@ public class RenderParams implements java.io.Serializable {
         potentialRadius=0;
 
         renderThrottling=false;
-        postProcessPeriod=1000;
+        postProcessPeriod=100;
     }
 
     public void limitParams(){

@@ -398,7 +398,7 @@ public class ifsys extends Panel
 
             if(theVolume.putPixel(new ifsPt(dpt.x+rpt.x+(float)uncertaintyX,
                                          dpt.y+rpt.y+(float)uncertaintyY,
-                                         dpt.z+rpt.z+(float)uncertaintyZ),(float)ptColor, rp.ptSize)){
+                                         dpt.z+rpt.z+(float)uncertaintyZ),(float)ptColor, rp.dotSize)){
                 seqIndex++;
                 nonduds++;
             }else{
@@ -656,35 +656,6 @@ public class ifsys extends Panel
         if(e.getKeyCode()==KeyEvent.VK_SHIFT)
             shiftDown=false;
 
-        if(e.getKeyChar() == 'q'){
-            //TOP VIEW
-            theVolume.camPitch=0;
-            theVolume.camRoll=0;
-            theVolume.camYaw=0;
-            clearframe();
-        }
-
-        if(e.getKeyChar() == 'w'){
-            //SIDE VIEW
-            theVolume.camPitch=0;
-            theVolume.camRoll=-90;
-            theVolume.camYaw=0;
-            clearframe();
-        }
-
-        if(e.getKeyChar() == 'e'){
-            //FRONT VIEW
-            theVolume.camPitch=-90;
-            theVolume.camRoll=-90;
-            theVolume.camYaw=0;
-            clearframe();
-        }
-
-        if(e.getKeyChar() == 'p'){
-            theVolume.usePerspective = !theVolume.usePerspective;
-            clearframe();
-        }
-
         if(e.getKeyChar() == 'g'){
             rp.drawGrid = !rp.drawGrid;
             clearframe();
@@ -698,11 +669,6 @@ public class ifsys extends Panel
         if(e.getKeyChar() == 'l'){
             shape = shape.loadFromFile();
             rp = rp.loadFromFile();
-        }
-
-        if(e.getKeyChar() == 'f'){
-            rp.smearPDF = !rp.smearPDF;
-            clearframe();
         }
 
         if(e.getKeyChar() == '1'){
@@ -775,14 +741,6 @@ public class ifsys extends Panel
             theVolume.useZBuffer = !theVolume.useZBuffer;
             clearframe();
             gamefunc();
-        }
-
-        if(e.getKeyChar() == 'x'){
-            rp.ptSize++;
-            rp.ptSize = rp.ptSize % 4;
-            clearframe();
-            gamefunc();
-            System.out.println("PT SIZE "+ rp.ptSize);
         }
     }
 

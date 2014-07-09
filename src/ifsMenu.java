@@ -8,10 +8,6 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
     ifsys myIfsSys;
 
-    CheckboxMenuItem XYButton;
-    CheckboxMenuItem XZButton;
-    CheckboxMenuItem YZButton;
-
     JLabel ptLabel;
     JSpinner xSpinner;
     JSpinner ySpinner;
@@ -23,6 +19,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     JSpinner thresholdSpinner;
     JSpinner potentialSpinner;
     JSpinner delaySpinner;
+    JSpinner dotSizeSpinner;
 
     JSpinner pitchSpinner;
     JSpinner yawSpinner;
@@ -39,7 +36,9 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     JCheckBox potentialCheck;
     JCheckBox findEdgesCheck;
 
+    JCheckBox perspectiveCheck;
     JCheckBox delayCheck;
+    JCheckBox smearCheck;
 
     JComboBox renderModeCombo;
     JComboBox pdfModeCombo;
@@ -72,10 +71,13 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 myIfsSys.rp.usingThreshold = thresholdCheck.isSelected();
                 myIfsSys.rp.threshold = Integer.parseInt(thresholdSpinner.getValue().toString());
                 myIfsSys.rp.iterations = Integer.parseInt(iterationsSpinner.getValue().toString());
+                myIfsSys.rp.dotSize = Integer.parseInt(dotSizeSpinner.getValue().toString());
                 myIfsSys.rp.brightnessMultiplier = Double.parseDouble(brightnessSpinner.getValue().toString());
                 myIfsSys.rp.samplesPerFrame = Double.parseDouble(samplesSpinner.getValue().toString());
 
                 myIfsSys.rp.renderThrottling = delayCheck.isSelected();
+                myIfsSys.theVolume.usePerspective = !perspectiveCheck.isSelected();
+                myIfsSys.rp.smearPDF = smearCheck.isSelected();
                 myIfsSys.rp.postProcessPeriod = Long.parseLong(delaySpinner.getValue().toString());
 
                 myIfsSys.rp.holdFrame = frameHoldCheck.isSelected();
@@ -107,7 +109,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     };
 
 
-    public JButton addLabeledFileChooser(SpringLayout layout, String labelText, JPanel panel, double row, int col){
+    public JButton addLabeledButton(JButton theButton, SpringLayout layout, JPanel panel, double row, int col){
         int width = 51;
         int totalCols = 3;
         int spinnerLeft = 5 + col*width;
@@ -116,17 +118,15 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         int vspace = 20;
         int topPad=5;
 
-        JButton button = new JButton(labelText);
-
-        layout.putConstraint(SpringLayout.WEST, button, spinnerLeft, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.EAST, button, spinnerRight, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, button, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.WEST, theButton, spinnerLeft, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.EAST, theButton, spinnerRight, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.NORTH, theButton, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
 
         //button.addActionListener(this);
 
-        panel.add(button);
+        panel.add(theButton);
 
-        return button;
+        return theButton;
     }
 
     public <T extends JComponent> JComponent addLabeled(T comp, SpringLayout layout, String labelText, JPanel panel, double row){
@@ -182,6 +182,8 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     public void setupPdfPropertiesPanel(JPanel panel){
         JLabel renderLabel = new JLabel(" PDF Properties");
 
+        smearCheck = new JCheckBox();
+
         int topPad=5;
 
         SpringLayout layout = new SpringLayout();
@@ -190,9 +192,9 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         final Component parent = this;
 
-        addLabeledFileChooser(layout, "X", panel, 1, 0).addActionListener(this);
-        addLabeledFileChooser(layout, "Y", panel, 1, 1).addActionListener(this);
-        addLabeledFileChooser(layout, "Z", panel, 1, 2).addActionListener(this);
+        addLabeledButton(new JButton("X"), layout, panel, 1, 0).addActionListener(this);
+        addLabeledButton(new JButton("Y"), layout, panel, 1, 1).addActionListener(this);
+        addLabeledButton(new JButton("Z"), layout, panel, 1, 2).addActionListener(this);
         ((JComboBox)addLabeled(pdfModeCombo, layout, "Mix", panel, 3)).addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -215,6 +217,8 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 }
             }
         });
+
+        ((JCheckBox)addLabeled(smearCheck, layout, "Smear PDF", panel, 4.5)).addChangeListener(updateAndClear);
 
         panel.addMouseMotionListener(this);
 
@@ -240,10 +244,40 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         panel.setLayout(layout);
         layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
 
-        ((JSlider)addLabeled(camPitchSpinner, layout, "Pitch", panel, 1)).addChangeListener(updateAndClear);
-        ((JSlider)addLabeled(camYawSpinner, layout, "Yaw", panel, 2.35)).addChangeListener(updateAndClear);
-        ((JSlider)addLabeled(camRollSpinner, layout, "Roll", panel, 3.7)).addChangeListener(updateAndClear);
-        //addLabeled(camScaleSpinner, layout, "Scale", panel, 5);
+        ((JSlider)addLabeled(camPitchSpinner, layout, "Pitch", panel, 1+2)).addChangeListener(updateAndClear);
+        ((JSlider)addLabeled(camYawSpinner, layout, "Yaw", panel, 2.35+2)).addChangeListener(updateAndClear);
+        ((JSlider)addLabeled(camRollSpinner, layout, "Roll", panel, 3.7+2)).addChangeListener(updateAndClear);
+
+        ActionListener moveCamera = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton cb = (JButton)e.getSource();
+
+                if(cb.getText()=="YZ"){
+                    myIfsSys.theVolume.camPitch=-90;
+                    myIfsSys.theVolume.camRoll=-90;
+                    myIfsSys.theVolume.camYaw=0;
+                }else if(cb.getText()=="XY"){
+                    //TOP VIEW
+                    myIfsSys.theVolume.camPitch=0;
+                    myIfsSys.theVolume.camRoll=0;
+                    myIfsSys.theVolume.camYaw=0;
+                }else if(cb.getText()=="XZ"){
+                    //SIDE VIEW
+                    myIfsSys.theVolume.camPitch=0;
+                    myIfsSys.theVolume.camRoll=-90;
+                    myIfsSys.theVolume.camYaw=0;
+                }
+                myIfsSys.clearframe();
+            }
+        };
+
+        addLabeledButton(new JButton("XY"), layout, panel, 1, 0).addActionListener(moveCamera);
+        addLabeledButton(new JButton("YZ"), layout, panel, 1, 1).addActionListener(moveCamera);
+        addLabeledButton(new JButton("XZ"), layout, panel, 1, 2).addActionListener(moveCamera);
+
+        perspectiveCheck = new JCheckBox();
+        ((JCheckBox)addLabeled(perspectiveCheck, layout, "Ortho", panel, 7)).addChangeListener(updateAndClear);
 
         panel.add(cameraLabel);
     }
@@ -255,6 +289,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         thresholdSpinner = new JSpinner();
         potentialSpinner = new JSpinner();
         delaySpinner = new JSpinner();
+        dotSizeSpinner = new JSpinner();
 
         frameHoldCheck = new JCheckBox();
         thresholdCheck = new JCheckBox();
@@ -308,6 +343,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         ((JCheckBox)addLabeled(delayCheck, layout, "Framelimit", panel, 12.5)).addChangeListener(updateNoClear);
         ((JSpinner)addLabeled(delaySpinner, layout, "Wait X ms", panel, 13.6)).addChangeListener(updateNoClear);
+        ((JSpinner)addLabeled(dotSizeSpinner, layout, "Dot Size", panel, 14.7)).addChangeListener(updateNoClear);
 
         panel.add(renderLabel);
     }
@@ -351,7 +387,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         sideMenuLayout.putConstraint(SpringLayout.NORTH, splitPaneBig, padding, SpringLayout.NORTH, sideMenu);
 
 
-        splitPaneBig.setDividerLocation(512);
+        splitPaneBig.setDividerLocation(540);
         sideMenu.add(splitPaneBig);
 
         MenuBar menuBar;
@@ -420,6 +456,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 potentialSpinner.setValue(myIfsSys.rp.potentialRadius);
                 delaySpinner.setValue(myIfsSys.rp.postProcessPeriod);
 
+                perspectiveCheck.setSelected(!myIfsSys.theVolume.usePerspective);
                 frameHoldCheck.setSelected(myIfsSys.rp.holdFrame);
                 thresholdCheck.setSelected(myIfsSys.rp.usingThreshold);
                 potentialCheck.setSelected(myIfsSys.rp.usingGaussian);
