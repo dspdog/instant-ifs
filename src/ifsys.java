@@ -8,15 +8,12 @@ public class ifsys extends Panel
     implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener, ActionListener
 {
     mainthread[] threads;
-    int numThreads = Runtime.getRuntime().availableProcessors()/2;
+    int numThreads = 2; //Runtime.getRuntime().availableProcessors()/2;
     boolean quit;
-
-    int threadNo=0;
 
     int pixels[];
     Image render;
     Graphics rg;
-    static long tNo=0;
     long frameNo;
     long fps;
     long framesThisSecond;
@@ -52,9 +49,6 @@ public class ifsys extends Panel
 
         RenderParams rp;
 
-
-    double samplesPerPdfScaler;
-
     ifsShape shape;
 
     ifsMenu theMenu;
@@ -81,7 +75,7 @@ public class ifsys extends Panel
         threads = new mainthread[numThreads];
 
         for(int i=0; i< threads.length; i++){
-            threads[i] = new mainthread();
+            threads[i] = new mainthread(i==0);
         }
 
         pixels = new int[rp.screenwidth * rp.screenheight];
@@ -94,8 +88,6 @@ public class ifsys extends Panel
         theVolume = new volume(rp.screenwidth, rp.screenheight, 1024);
         theVolume.clear();
         thePdf = new pdf3D();
-
-        samplesPerPdfScaler = 1; //decrease for higher fps while drawing PDFs
 
         thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
     }
@@ -151,24 +143,28 @@ public class ifsys extends Panel
     }
 
     public class mainthread extends Thread{
+
+        boolean isFirst;
+
         public void run(){
             while(!quit) 
                 try{
                     gamefunc();
-                    tNo++;
-                    if(tNo%numThreads==0){
+                    if(isFirst){
                         drawGrid();
-                        if(theVolume.totalSamples>4096)//TODO update
+                        theMenu.updateSideMenu();
+                        //if(theVolume.totalSamples>40096)
                         repaint();
                     }
-                    sleep(1L);//TODO update
+                    sleep(1L);
                 }
                 catch(InterruptedException e) {
                     e.printStackTrace();
                 }
         }
 
-        public mainthread(){
+        public mainthread(boolean _isFirst){
+            isFirst=_isFirst;
         }
     }
 
@@ -284,9 +280,9 @@ public class ifsys extends Panel
                     area+=scaler*projection1[x][y];
                 }
             }
-        }else{
-            projection1 = lastProcessedProjection;
-        }
+        }//else{
+          //  projection1 = lastProcessedProjection;
+        //}
 
         if(didProcess)lastPostProcessTime=System.currentTimeMillis();
     }
@@ -331,7 +327,7 @@ public class ifsys extends Panel
         pointDegreesYaw = thePt.rotationYaw +cumulativeRotationYaw;
         pointDegreesPitch = thePt.rotationPitch +cumulativeRotationPitch;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
 
-        int iters = (int)(samplesPerPdfScaler * scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
+        int iters = (int)(scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
         iters=iters&(4095); //limit to 4095
 
         double uncertaintyX = uncertainty*Math.random()-uncertainty/2;
@@ -348,9 +344,9 @@ public class ifsys extends Panel
 
         seqIndex = (int)(Math.random()*thePdf.validValues);
 
-        sampleX = thePdf.validX[seqIndex]+dx;
-        sampleY = thePdf.validY[seqIndex]+dy;
-        sampleZ = thePdf.validZ[seqIndex]+dz;
+        sampleX = thePdf.validPts[seqIndex].x+dx;
+        sampleY = thePdf.validPts[seqIndex].y+dy;
+        sampleZ = thePdf.validPts[seqIndex].z+dz;
 
 /*
         ifsPt nxArrow = theVolume.getCameraDistortedPt(thePt.add(ifsPt.X_UNIT.scale(thePt.radius * thePt.scale)));
@@ -408,24 +404,22 @@ public class ifsys extends Panel
             }else{
                 duds++;
                 seqIndex = (int)(Math.random()*thePdf.validValues);
-                sampleX = thePdf.validX[seqIndex]+dx;
-                sampleY = thePdf.validY[seqIndex]+dy;
-                sampleZ = thePdf.validZ[seqIndex]+dz;
+                sampleX = thePdf.validPts[seqIndex].x+dx;
+                sampleY = thePdf.validPts[seqIndex].y+dy;
+                sampleZ = thePdf.validPts[seqIndex].z+dz;
             }
 
-            //if(duds>4*nonduds){iter=iters;} //skips occluded pdfs
+            if(duds>4*nonduds){iter=iters;} //skips occluded pdfs
 
         }
     }
 
     public void gamefunc(){
-
-        theMenu.updateSideMenu();
         rp.guidesHidden = System.currentTimeMillis() - lastMoveTime > overlays.hideTime;
 
         if(shape.pointsInUse != 0){
 
-            for(int a = 0; a < rp.samplesPerFrame*samplesPerPdfScaler; a++){
+            for(int a = 0; a < rp.samplesPerFrame; a++){
                 int randomIndex = 0;
                 ifsPt dpt = new ifsPt(shape.pts[randomIndex]);
                 ifsPt rpt;
@@ -466,7 +460,12 @@ public class ifsys extends Panel
                     }
 
                     if(rp.usePDFSamples && !(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
-                        putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], shape.pts[oldRandomIndex], scaleDownMultiplier, randomIndex, olddpt);
+                        try{//TODO why the err?
+                            putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], shape.pts[oldRandomIndex], scaleDownMultiplier, randomIndex, olddpt);
+                        }catch (Exception e){
+
+                        }
+
                     }
                     scaleDownMultiplier/=shape.pointsInUse;
 

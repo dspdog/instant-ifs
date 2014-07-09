@@ -16,10 +16,7 @@ public class pdf3D { //3d probabilty density function
     public float volume[];
 
     public int validValues = 0;
-    public int[] validX; //[0] is lenght of array. [1...] are x values of valid values
-    public int[] validY;
-    public int[] validZ;
-
+    public intPt[] validPts;
     public ifsPt validDir[];
 
     Image sampleImageX;
@@ -117,9 +114,8 @@ public class pdf3D { //3d probabilty density function
     public void updateVolume(){
 
         validValues = 0;
-        validX = new int[width*width*width];
-        validY = new int[width*width*width];
-        validZ = new int[width*width*width];
+        //validX = new int[width*width*width];
+        validPts = new intPt[width*width*width];
         validDir = new ifsPt[width*width*width];
 
         updateVolumePixels();
@@ -132,10 +128,7 @@ public class pdf3D { //3d probabilty density function
                 for(int z=edgePrune; z<depth-edgePrune; z++){
                     if(pointValid(x,y,z,edgeUnit)){
                         validDir[validValues]=edgeVector(x,y,z, edgeUnit);
-                        validX[validValues]=x;
-                        validY[validValues]=y;
-                        validZ[validValues]=z;
-
+                        validPts[validValues]=new intPt(x,y,z);
                         validValues++;
                     }
                 }
@@ -323,5 +316,12 @@ public class pdf3D { //3d probabilty density function
 
     public static enum comboMode {
         AVERAGE, ADD, MULTIPLY, MAX, MIN
+    }
+
+    public class intPt{
+        public int x,y,z;
+        public intPt(int _x, int _y, int _z){
+            x=_x;y=_y;z=_z;
+        }
     }
 }
