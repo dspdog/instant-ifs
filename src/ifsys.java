@@ -572,9 +572,7 @@ public class ifsys extends Panel
     public void mouseDragged(MouseEvent e){
         if(System.currentTimeMillis()-lastMoveTime>20){
             getMouseXYZ(e);
-            if(altDown){
-                //
-            }else if(ctrlDown){
+            if(ctrlDown){
                 selectedMovementAxis=ifsOverlays.DragAxis.NONE;
                 if(isLeftPressed && isRightPressed){
                     selectedMovementAxis=ifsOverlays.DragAxis.Z;
@@ -612,16 +610,25 @@ public class ifsys extends Panel
         lastMoveTime = System.currentTimeMillis();
 
         mouseScroll += e.getWheelRotation();
+        double scaleChangeFactor = 0.98;
+        double camChangeFactor = 0.9;
 
-        double changeFactor = 0.9;
+        if(ctrlDown){
+            if(e.getWheelRotation()>0){ //scroll down
+                selectedPt.scale*=scaleChangeFactor;
+            }else{ //scroll up
+                selectedPt.scale/=scaleChangeFactor;
+            }
+        }else{
+            if(e.getWheelRotation()>0){ //scroll down
+                theVolume.camScale*=camChangeFactor;
+            }else{ //scroll up
+                theVolume.camScale/=camChangeFactor;
+            }
 
-        if(e.getWheelRotation()>0){ //scroll down
-            theVolume.camScale*=changeFactor;
-        }else{ //scroll up
-            theVolume.camScale/=changeFactor;
+            theVolume.camScale =(float) Math.max(0.1, theVolume.camScale);
+
         }
-
-        theVolume.camScale =(float) Math.max(0.1, theVolume.camScale);
 
         clearframe();
         gamefunc();
