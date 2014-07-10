@@ -10,6 +10,8 @@ class ifsShape implements java.io.Serializable {
     public boolean stateSaved;
     public boolean autoScale;
 
+    public RenderParams rp;
+
     public ifsShape(int maxPoints){
         autoUpdateCenterEnabled =false;
         stateSaved = false;
@@ -22,33 +24,33 @@ class ifsShape implements java.io.Serializable {
         }
     }
 
-    public void saveToFile(){
+    public void saveToFile(String filename){
         try
         {
             FileOutputStream fileOut =
-                    new FileOutputStream("shape.ser");
+                    new FileOutputStream(filename);
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
             out.writeObject(this);
 
             out.close();
             fileOut.close();
-            System.out.println("saved to shape.ser");
+            System.out.println("saved to "+filename);
         }catch(Exception i)
         {
             i.printStackTrace();
         }
     }
 
-    public ifsShape loadFromFile(){
+    public ifsShape loadFromFile(String filename){
         ifsShape loadedShape=null;
         try
         {
-            FileInputStream fileIn = new FileInputStream("shape.ser");
+            FileInputStream fileIn = new FileInputStream(filename);
             ObjectInputStream in = new ObjectInputStream(fileIn);
             loadedShape = (ifsShape) in.readObject();
             in.close();
             fileIn.close();
-            System.out.println("loaded shape.ser");
+            System.out.println("loaded " + filename);
         }catch(Exception i)
         {
             i.printStackTrace();

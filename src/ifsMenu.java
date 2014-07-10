@@ -391,12 +391,22 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         sideMenu.add(splitPaneBig);
 
         MenuBar menuBar;
-        Menu renderMenu, shapeMenu, guidesMenu, viewMenu;
+        Menu fileMenu, renderMenu, shapeMenu, guidesMenu, viewMenu;
 
         menuBar = new MenuBar();
+        fileMenu = new Menu("File");
         renderMenu = new Menu("Render");
         shapeMenu = new Menu("Shape");
         guidesMenu = new Menu("Guides");
+
+        //FILE MENU
+            MenuItem saveButton = new MenuItem("Save Shape...");
+            saveButton.addActionListener(this);
+            fileMenu.add(saveButton);
+
+            MenuItem loadButton = new MenuItem("Load Shape...");
+            loadButton.addActionListener(this);
+            fileMenu.add(loadButton);
 
         //RENDER MENU
             CheckboxMenuItem aaButton = new CheckboxMenuItem("Anti-Aliasing"); //anti-aliasing toggle
@@ -421,9 +431,10 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             infoButton.addItemListener(this);
             guidesMenu.add(infoButton);
 
-            menuBar.add(renderMenu);
-            menuBar.add(shapeMenu);
-            menuBar.add(guidesMenu);
+            //menuBar.add(renderMenu);
+            //menuBar.add(shapeMenu);
+            //menuBar.add(guidesMenu);
+            menuBar.add(fileMenu);
 
             f.setMenuBar(menuBar);
             inited=true;
@@ -517,24 +528,51 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     }
 
     public void actionPerformed(ActionEvent e) {
-        JButton cb = (JButton)e.getSource();
+        JButton cb = new JButton();// = (JButton)e.getSource();
+        MenuItem mc = new MenuItem();// = (MenuItem)e.getSource();
+
+        try{
+            cb = (JButton)e.getSource();
+        }catch (Exception _e){
+
+        }
+
+        try{
+            mc = (MenuItem)e.getSource();
+            System.out.println(mc.getActionCommand());
+        }catch (Exception _e){
+
+        }
 
         if(cb.getText()=="X"){
             pdfXImgFile = fc.showOpenDialog(this);
             if(pdfXImgFile == JFileChooser.APPROVE_OPTION){
-                myIfsSys.thePdf.setSampleImageX(fc.getSelectedFile());
+                myIfsSys.thePdf.setSampleImage(fc.getSelectedFile(), pdf3D.Dimension.X);
             }
         }else if(cb.getText()=="Y"){
             pdfYImgFile = fc.showOpenDialog(this);
             if(pdfYImgFile == JFileChooser.APPROVE_OPTION){
-                myIfsSys.thePdf.setSampleImageY(fc.getSelectedFile());
+                myIfsSys.thePdf.setSampleImage(fc.getSelectedFile(), pdf3D.Dimension.Y);
             }
         }else if(cb.getText()=="Z"){
             pdfZImgFile = fc.showOpenDialog(this);
             if(pdfZImgFile == JFileChooser.APPROVE_OPTION){
-                myIfsSys.thePdf.setSampleImageZ(fc.getSelectedFile());
+                myIfsSys.thePdf.setSampleImage(fc.getSelectedFile(), pdf3D.Dimension.Z);
+            }
+        }else if(mc.getActionCommand()=="Save Shape..."){
+            pdfZImgFile = fc.showSaveDialog(this);
+            if(pdfZImgFile == JFileChooser.APPROVE_OPTION){
+                System.out.println("saving " + fc.getSelectedFile().getName());
+                myIfsSys.saveStuff(fc.getSelectedFile().getName());
+            }
+        }else if(mc.getActionCommand()=="Load Shape..."){
+            pdfZImgFile = fc.showOpenDialog(this);
+            if(pdfZImgFile == JFileChooser.APPROVE_OPTION){
+                System.out.println("loading " + fc.getSelectedFile().getName());
+                myIfsSys.loadStuff(fc.getSelectedFile().getName());
             }
         }
+
     }
 
     @Override

@@ -78,39 +78,4 @@ public class RenderParams implements java.io.Serializable {
         if(samplesPerFrame >1310720){
             samplesPerFrame =1310720;}
     }
-
-    public void saveToFile(){
-        try
-        {
-            FileOutputStream fileOut =
-                    new FileOutputStream("renderparams.ser");
-            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            out.writeObject(this);
-
-            out.close();
-            fileOut.close();
-            System.out.println("saved to renderparams.ser");
-        }catch(Exception i)
-        {
-            i.printStackTrace();
-        }
-    }
-
-    public RenderParams loadFromFile(){
-        RenderParams loadedShape=null;
-        try
-        {
-            FileInputStream fileIn = new FileInputStream("renderparams.ser");
-            ObjectInputStream in = new ObjectInputStream(fileIn);
-            loadedShape = (RenderParams) in.readObject();
-            in.close();
-            fileIn.close();
-            System.out.println("loaded renderparams.ser");
-        }catch(Exception i)
-        {
-            i.printStackTrace();
-        }
-
-        return loadedShape;
-    }
 }

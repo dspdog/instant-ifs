@@ -2,10 +2,10 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.PixelGrabber;
-import java.io.File;
+import java.io.*;
 import java.net.URL;
 
-public class pdf3D { //3d probabilty density function
+public class pdf3D implements java.io.Serializable{ //3d probabilty density function
 
     int width, height, depth;
 
@@ -50,10 +50,16 @@ public class pdf3D { //3d probabilty density function
         firstX=width;
         lastX=0;
 
+        //setSampleImage("circle2.png", Dimension.X);
+
         loadImgs3D("circle2.png", "circle2.png", "circle2.png");
     }
 
-    public void sampleImg(File file, Image sampleImage, int missingDimension){
+    enum Dimension{
+        X,Y,Z
+    }
+
+    public void sampleImg(File file, Image sampleImage, Dimension missingDimension){
         try {
             System.out.println("loading" + file.getCanonicalPath());
             PixelGrabber grabber = new PixelGrabber(sampleImage, 0, 0, -1, -1, false);
@@ -61,21 +67,21 @@ public class pdf3D { //3d probabilty density function
             if (grabber.grabPixels()) {
 
                 switch (missingDimension){
-                                case 0: //X
+                                case X: //X
                                     samplePixelsX = (int[]) grabber.getPixels();
 
                                     for(int i=0; i<width*height; i++){
                                         samplePixelsX[i] = samplePixelsX[i]&0xFF;
                                     }
                                     break;
-                                case 1: //Y
+                                case Y: //Y
                                     samplePixelsY = (int[]) grabber.getPixels();
 
                                     for(int i=0; i<width*height; i++){
                                         samplePixelsY[i] = samplePixelsY[i]&0xFF;
                                     }
                                     break;
-                                case 2: //Z
+                                case Z: //Z
                                     samplePixelsZ = (int[]) grabber.getPixels();
 
                                     for(int i=0; i<width*height; i++){
@@ -90,24 +96,9 @@ public class pdf3D { //3d probabilty density function
         }
     }
 
-    public void setSampleImageX(File file){
-        System.out.println("Img X: " + file.getAbsolutePath());
-        sampleImageX = getImage(file);
-        sampleImg(file, sampleImageX, 0);
-        updateVolume();
-    }
-
-    public void setSampleImageY(File file){
-        System.out.println("Img Y: " + file.getAbsolutePath());
-        sampleImageY = getImage(file);
-        sampleImg(file, sampleImageY, 1);
-        updateVolume();
-    }
-
-    public void setSampleImageZ(File file){
-        System.out.println("Img Z: " + file.getAbsolutePath());
-        sampleImageZ = getImage(file);
-        sampleImg(file, sampleImageZ, 2);
+    public void setSampleImage(File file, Dimension d){
+        System.out.println("Img " + d.toString() + ": " + file.getAbsolutePath());
+        sampleImg(file, getImage(file), d);
         updateVolume();
     }
 
@@ -241,7 +232,6 @@ public class pdf3D { //3d probabilty density function
     }
 
     public void loadImgs3D(String filenameX, String filenameY, String filenameZ){
-
         System.out.println("loadingX " + filenameX);
         System.out.println("loadingY " + filenameY);
         System.out.println("loadingZ " + filenameZ);
@@ -287,7 +277,7 @@ public class pdf3D { //3d probabilty density function
             String root;
 
             try{
-                root= "file:/C:/Users/user/workspace/instant-ifs/img/";
+                root= "file:/C:/Users/user/workspace/instant-ifs/instant-ifs/img/";
                 URL theImgURL = new URL(root + name);
                 return ImageIO.read(theImgURL);
             }catch (Exception e){
@@ -318,7 +308,7 @@ public class pdf3D { //3d probabilty density function
         AVERAGE, ADD, MULTIPLY, MAX, MIN
     }
 
-    public class intPt{
+    public class intPt implements Serializable{
         public int x,y,z;
         public intPt(int _x, int _y, int _z){
             x=_x;y=_y;z=_z;

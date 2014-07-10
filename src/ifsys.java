@@ -3,9 +3,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.awt.image.MemoryImageSource;
+import java.io.*;
 
 public class ifsys extends Panel
-    implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener, ActionListener
+    implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener, ActionListener, Serializable
 {
     mainthread[] threads;
     int numThreads = 2; //Runtime.getRuntime().availableProcessors()/2;
@@ -648,6 +649,24 @@ public class ifsys extends Panel
         gamefunc();
     }
 
+    public void loadStuff(String filename){
+        if(filename==""){
+            shape = shape.loadFromFile("shape.ser");
+        }else{
+            shape = shape.loadFromFile(filename);
+        }
+        rp = shape.rp;
+    }
+
+    public void saveStuff(String filename){
+        shape.rp = rp;
+        if(filename==""){
+            shape.saveToFile("shape.ser");
+        }else{
+            shape.saveToFile(filename);
+        }
+    }
+
     public void keyReleased(KeyEvent e){
         if(e.getKeyCode()==KeyEvent.VK_ALT)
             altDown=false;
@@ -662,13 +681,11 @@ public class ifsys extends Panel
         }
 
         if(e.getKeyChar() == 's'){
-            shape.saveToFile();
-            rp.saveToFile();
+            saveStuff("");
         }
 
         if(e.getKeyChar() == 'l'){
-            shape = shape.loadFromFile();
-            rp = rp.loadFromFile();
+            loadStuff("");
         }
 
         if(e.getKeyChar() == '1'){
