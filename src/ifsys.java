@@ -154,8 +154,9 @@ public class ifsys extends Panel
                     if(isFirst){
                         drawGrid();
                         theMenu.updateSideMenu();
-                        //if(theVolume.totalSamples>40096)
-                        repaint();
+                        if(theVolume.totalSamples>50000){
+                            repaint();
+                        }
                     }
                     sleep(1L);
                 }
@@ -242,48 +243,39 @@ public class ifsys extends Panel
         double area = 0;
         int scaledColor = 0;
 
-        float[][] projection1 = theVolume.getScaledProjection(Math.pow(2, rp.brightnessMultiplier));
+        float[][][] projections = theVolume.getScaledProjections(Math.pow(2, rp.brightnessMultiplier));
+        float[][] zProjection = projections[3];
+        float[][] rProjection = projections[0];
+        float[][] gProjection = projections[1];
+        float[][] bProjection = projections[2];
 
         boolean didProcess=false;
 
         if(!rp.renderThrottling || System.currentTimeMillis()-lastPostProcessTime>rp.postProcessPeriod){
             didProcess=true;
-            if(rp.usingThreshold){
-                projection1 = theVolume.getThreshold2D(projection1, rp.threshold);
-            }
-            if(rp.usingFindEdges){
-                projection1 = theVolume.findEdges2D(projection1);
-            }
-
-            lastProcessedProjection = theVolume.getProjectionCopy(projection1);
 
             int argb;
 
-            for(int x = 0; x < projection1.length; x++){
-                for(int y=0; y<projection1[x].length; y++){
+            for(int x = 0; x < zProjection.length; x++){
+                for(int y=0; y<zProjection[x].length; y++){
 
-                    if(projection1[x][y]==0){ //"half darkened spanish blue" for background
+                    if(zProjection[x][y]==0){ //"half darkened spanish blue" for background
                         argb = 255;
-
                         argb = (argb << 8) + 0;
                         argb = (argb << 8) + 112/2;
                         argb = (argb << 8) + 184/2;
                     }else{
-                        scaledColor = (int)projection1[x][y];
                         argb = 255;
-
-                        argb = (argb << 8) + scaledColor;
-                        argb = (argb << 8) + scaledColor;
-                        argb = (argb << 8) + scaledColor;
+                        argb = (argb << 8) + (int)rProjection[x][y];
+                        argb = (argb << 8) + (int)gProjection[x][y];
+                        argb = (argb << 8) + (int)bProjection[x][y];
                     }
 
-                    pixels[x+y*projection1.length] = argb;
-                    area+=scaler*projection1[x][y];
+                    pixels[x+y*zProjection.length] = argb;
+                    area+=scaler*zProjection[x][y];
                 }
             }
-        }//else{
-          //  projection1 = lastProcessedProjection;
-        //}
+        }
 
         if(didProcess)lastPostProcessTime=System.currentTimeMillis();
     }
@@ -399,7 +391,11 @@ public class ifsys extends Panel
 
             if(theVolume.putPixel(new ifsPt(dpt.x+rpt.x+(float)uncertaintyX,
                                          dpt.y+rpt.y+(float)uncertaintyY,
-                                         dpt.z+rpt.z+(float)uncertaintyZ),(float)ptColor, rp.dotSize)){
+                                         dpt.z+rpt.z+(float)uncertaintyZ),
+                                            (float)sampleX/4, //R
+                                            (float)sampleY/4, //G
+                                            (float)sampleZ/4, //B
+                                            (float)ptColor, rp.dotSize)){ //Z
                 seqIndex++;
                 nonduds++;
             }else{
@@ -476,8 +472,8 @@ public class ifsys extends Panel
                     cumulativeRotationYaw += shape.pts[randomIndex].rotationYaw;
                     cumulativeRotationPitch += shape.pts[randomIndex].rotationPitch;
                 }
-
-                theVolume.putPixel(dpt, (float)cumulativeOpacity);
+                if(!rp.usePDFSamples)
+                theVolume.putPixel(dpt, (float)cumulativeOpacity, 255, 255, 255);
             }
         }
     }
@@ -496,11 +492,11 @@ public class ifsys extends Panel
                     theVolume.putPixel(new ifsPt(
                             x*gridspace,
                             y,
-                            z), 0.00);
+                            z), 1.00, 128, 128, 128);
                     theVolume.putPixel(new ifsPt(
                             y,
                             x*gridspace,
-                            z), 0.00);
+                            z), 1.00, 128, 128, 128);
                 }
             }
         }

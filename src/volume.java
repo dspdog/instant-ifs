@@ -108,12 +108,10 @@ public class volume {
         dataPoints*=a;
         for(int x=0; x<width; x++){
             for(int y=0; y<height; y++){
-               // XYProjection[x][y]*=a;
                 ZBuffer[x][y]*=a;
-                //CBuffer[x][y]*=a;
-                //RBuffer[x][y]*=a;
-                //GBuffer[x][y]*=a;
-               // BBuffer[x][y]*=a;
+                RBuffer[x][y]*=a;
+                GBuffer[x][y]*=a;
+                BBuffer[x][y]*=a;
             }
         }
     }
@@ -154,17 +152,17 @@ public class volume {
         return pt;
     }
 
-    public boolean putPixel(ifsPt _pt, double alpha){
-        return putPixel(_pt, (float)alpha);
+    public boolean putPixel(ifsPt _pt, double alpha, float ptR, float ptG, float ptB){
+        return putPixel(_pt, (float)alpha, ptR, ptG, ptB);
     }
 
-    public boolean putPixel(ifsPt _pt, float alpha){
-        return old_putPixel(_pt, (float)alpha);
+    public boolean putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB){
+        return old_putPixel(_pt, (float)alpha, ptR, ptG, ptB);
     }
 
-    public boolean putPixel(ifsPt _pt, float alpha, int ptRadius){
+    public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, float alpha, int ptRadius){
 
-        if(ptRadius==0){return putPixel(_pt, alpha);}
+        if(ptRadius==0){return putPixel(_pt, alpha, ptR, ptG, ptB);}
 
         ifsPt pt = getCameraDistortedPt(_pt);
 
@@ -188,7 +186,13 @@ public class volume {
                     for(int x1=-ptRadius; x1<ptRadius; x1++){
                         for(int y1=-ptRadius; y1<ptRadius; y1++){
                             //if(x1*x1+y1*y1<ptRadius)
-                            ZBuffer[(int)pt.x+x1][(int)pt.y+y1] = Math.max(pt.z,ZBuffer[(int)pt.x+x1][(int)pt.y+y1]);
+                            if(ZBuffer[(int)pt.x+x1][(int)pt.y+y1]<pt.z){
+                                ZBuffer[(int)pt.x+x1][(int)pt.y+y1] = pt.z;
+                                RBuffer[(int)pt.x+x1][(int)pt.y+y1] = ptR;
+                                GBuffer[(int)pt.x+x1][(int)pt.y+y1] = ptG;
+                                BBuffer[(int)pt.x+x1][(int)pt.y+y1] = ptB;
+                            }
+
                         }
                     }
                 }
@@ -201,7 +205,7 @@ public class volume {
     }
 
 
-    public boolean old_putPixel(ifsPt _pt, float alpha){
+    public boolean old_putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB){
 
         ifsPt pt = getCameraDistortedPt(_pt);
 
@@ -241,12 +245,6 @@ public class volume {
             totalSamples++;
             totalSamplesAlpha +=alpha;
 
-            //XYProjection[(int)pt.x][(int)pt.y]+=alpha;
-
-            //if(XYProjection[(int)pt.x][(int)pt.y]>dataMax){
-            //    dataMax= XYProjection[(int)pt.x][(int)pt.y];
-            //    highPt = new ifsPt(pt);
-            //}
 
             if(useZBuffer){
                 float xDec = pt.x - (int)pt.x;
@@ -260,6 +258,21 @@ public class volume {
                     ZBuffer[(int)pt.x+1][(int)pt.y] = Math.max(pt.z * xDec * (1 - yDec), ZBuffer[(int) pt.x + 1][(int) pt.y]);
                     ZBuffer[(int)pt.x][(int)pt.y+1] = Math.max(pt.z * (1 - xDec) * yDec, ZBuffer[(int) pt.x][(int) pt.y + 1]);
                     ZBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(pt.z * xDec * yDec, ZBuffer[(int) pt.x + 1][(int) pt.y + 1]);
+
+                    RBuffer[(int)pt.x][(int)pt.y] = ptR * (1 - xDec) * (1 - yDec);
+                    RBuffer[(int)pt.x+1][(int)pt.y] = Math.max(ptR * xDec * (1 - yDec), RBuffer[(int) pt.x + 1][(int) pt.y]);
+                    RBuffer[(int)pt.x][(int)pt.y+1] = Math.max(ptR * (1 - xDec) * yDec, RBuffer[(int) pt.x][(int) pt.y + 1]);
+                    RBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(ptR * xDec * yDec, RBuffer[(int) pt.x + 1][(int) pt.y + 1]);
+
+                    GBuffer[(int)pt.x][(int)pt.y] = ptG * (1 - xDec) * (1 - yDec);
+                    GBuffer[(int)pt.x+1][(int)pt.y] = Math.max(ptG * xDec * (1 - yDec), GBuffer[(int) pt.x + 1][(int) pt.y]);
+                    GBuffer[(int)pt.x][(int)pt.y+1] = Math.max(ptG * (1 - xDec) * yDec, GBuffer[(int) pt.x][(int) pt.y + 1]);
+                    GBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(ptG * xDec * yDec, GBuffer[(int) pt.x + 1][(int) pt.y + 1]);
+
+                    BBuffer[(int)pt.x][(int)pt.y] = ptB * (1 - xDec) * (1 - yDec);
+                    BBuffer[(int)pt.x+1][(int)pt.y] = Math.max(ptB * xDec * (1 - yDec), BBuffer[(int) pt.x + 1][(int) pt.y]);
+                    BBuffer[(int)pt.x][(int)pt.y+1] = Math.max(ptB * (1 - xDec) * yDec, BBuffer[(int) pt.x][(int) pt.y + 1]);
+                    BBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(ptB * xDec * yDec, BBuffer[(int) pt.x + 1][(int) pt.y + 1]);
                 }
 
                 return res;
@@ -281,22 +294,20 @@ public class volume {
         return new ifsPt(centroid.x/ totalSamplesAlpha, centroid.y/ totalSamplesAlpha, centroid.z/ totalSamplesAlpha);
     }
 
-    public float[][] getScaledProjection(double brightness){
-        float[][] scaled = new float[width][height];
+    public float[][][] getScaledProjections(double brightness){
+        float[][][] scaled = new float[4][width][height];
 
-        double scaler = brightness;
+        int r=0;
+        int g=1;
+        int b=2;
+        int z=3;
 
-        if(useZBuffer){
-            for(int x=0; x<width; x++){
-                for(int y=0; y<height; y++){
-                    scaled[x][y]= Math.min((int)(scaler*ZBuffer[x][y]), 255);
-                }
-            }
-        }else{
-            for(int x=0; x<width; x++){
-                for(int y=0; y<height; y++){
-                    scaled[x][y]= Math.min((int)(scaler*XYProjection[x][y]), 255);
-                }
+        for(int x=0; x<width; x++){
+            for(int y=0; y<height; y++){
+                scaled[r][x][y]= Math.min((int)(brightness*RBuffer[x][y]), 255);
+                scaled[g][x][y]= Math.min((int)(brightness*GBuffer[x][y]), 255);
+                scaled[b][x][y]= Math.min((int)(brightness*BBuffer[x][y]), 255);
+                scaled[z][x][y]= Math.min((int)(brightness*ZBuffer[x][y]), 255);
             }
         }
 
@@ -385,6 +396,10 @@ public class volume {
         }
 
         return res;
+    }
+
+    public static enum VolumeProjection{
+        Z,R,G,B,C
     }
 
     public static enum RenderMode {

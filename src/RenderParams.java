@@ -21,10 +21,6 @@ public class RenderParams implements java.io.Serializable {
 
     boolean holdFrame;
 
-    boolean usingFindEdges;
-    boolean usingThreshold;
-    int threshold;
-
     boolean usingGaussian;
     int potentialRadius;
 
@@ -57,9 +53,7 @@ public class RenderParams implements java.io.Serializable {
         brightnessMultiplier = 1;
         holdFrame=false;
         samplesPerFrame = 1024;
-        usingThreshold = false;
-        usingFindEdges = false;
-        threshold = 64;
+
         usingGaussian =false;
         potentialRadius=0;
 

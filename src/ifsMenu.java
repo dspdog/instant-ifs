@@ -16,7 +16,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     JSpinner brightnessSpinner;
     JSpinner samplesSpinner;
     JSpinner iterationsSpinner;
-    JSpinner thresholdSpinner;
+
     JSpinner potentialSpinner;
     JSpinner delaySpinner;
     JSpinner dotSizeSpinner;
@@ -32,9 +32,8 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     JSpinner scaleSpinner;
 
     JCheckBox frameHoldCheck;
-    JCheckBox thresholdCheck;
+
     JCheckBox potentialCheck;
-    JCheckBox findEdgesCheck;
 
     JCheckBox perspectiveCheck;
     JCheckBox delayCheck;
@@ -68,14 +67,11 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 myIfsSys.selectedPt.rotationPitch = (float)(Double.parseDouble(pitchSpinner.getValue().toString())/180.0*Math.PI);
                 myIfsSys.selectedPt.rotationYaw = (float)(Double.parseDouble(yawSpinner.getValue().toString())/180.0*Math.PI);
 
-                myIfsSys.rp.usingThreshold = thresholdCheck.isSelected();
-                myIfsSys.rp.threshold = Integer.parseInt(thresholdSpinner.getValue().toString());
                 myIfsSys.rp.iterations = Integer.parseInt(iterationsSpinner.getValue().toString());
                 myIfsSys.rp.dotSize = Integer.parseInt(dotSizeSpinner.getValue().toString());
                 myIfsSys.rp.brightnessMultiplier = Double.parseDouble(brightnessSpinner.getValue().toString());
                 myIfsSys.rp.samplesPerFrame = Double.parseDouble(samplesSpinner.getValue().toString());
 
-                myIfsSys.rp.renderThrottling = delayCheck.isSelected();
                 myIfsSys.theVolume.usePerspective = !perspectiveCheck.isSelected();
                 myIfsSys.rp.smearPDF = smearCheck.isSelected();
                 myIfsSys.rp.postProcessPeriod = Long.parseLong(delaySpinner.getValue().toString());
@@ -84,7 +80,6 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
                 myIfsSys.rp.potentialRadius = Integer.parseInt(potentialSpinner.getValue().toString());
                 myIfsSys.rp.usingGaussian = potentialCheck.isSelected();
-                myIfsSys.rp.usingFindEdges = findEdgesCheck.isSelected();
 
                 myIfsSys.shape.updateCenter();
 
@@ -286,15 +281,15 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         brightnessSpinner = new JSpinner();
         samplesSpinner = new JSpinner();
         iterationsSpinner = new JSpinner();
-        thresholdSpinner = new JSpinner();
+
         potentialSpinner = new JSpinner();
         delaySpinner = new JSpinner();
         dotSizeSpinner = new JSpinner();
 
         frameHoldCheck = new JCheckBox();
-        thresholdCheck = new JCheckBox();
+
         potentialCheck = new JCheckBox();
-        findEdgesCheck = new JCheckBox();
+
         delayCheck = new JCheckBox();
 
         String[] renderModeStrings = {volume.RenderMode.VOLUMETRIC.toString(), volume.RenderMode.PROJECT_ONLY.toString()};
@@ -337,13 +332,10 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         ((JSpinner)addLabeled(potentialSpinner, layout, "Blur", panel, 6.6)).addChangeListener(updateNoClear);
         ((JCheckBox)addLabeled(potentialCheck, layout, "Gaussian", panel, 7.6)).addChangeListener(updateNoClear);
-        ((JSpinner)addLabeled(thresholdSpinner, layout, "Threshold", panel, 9)).addChangeListener(updateNoClear);
-        ((JCheckBox)addLabeled(thresholdCheck, layout, "Threshold", panel, 10)).addChangeListener(updateNoClear);
-        ((JCheckBox)addLabeled(findEdgesCheck, layout, "Find Edges", panel, 11)).addChangeListener(updateNoClear);
 
-        ((JCheckBox)addLabeled(delayCheck, layout, "Framelimit", panel, 12.5)).addChangeListener(updateNoClear);
-        ((JSpinner)addLabeled(delaySpinner, layout, "Wait X ms", panel, 13.6)).addChangeListener(updateNoClear);
-        ((JSpinner)addLabeled(dotSizeSpinner, layout, "Dot Size", panel, 14.7)).addChangeListener(updateNoClear);
+        ((JCheckBox)addLabeled(delayCheck, layout, "Framelimit", panel, 12.5-3)).addChangeListener(updateNoClear);
+        ((JSpinner)addLabeled(delaySpinner, layout, "Wait X ms", panel, 13.6-3)).addChangeListener(updateNoClear);
+        ((JSpinner)addLabeled(dotSizeSpinner, layout, "Dot Size", panel, 14.7-3)).addChangeListener(updateNoClear);
 
         panel.add(renderLabel);
     }
@@ -463,16 +455,12 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 brightnessSpinner.setValue(myIfsSys.rp.brightnessMultiplier);
                 samplesSpinner.setValue(myIfsSys.rp.samplesPerFrame);
                 iterationsSpinner.setValue(myIfsSys.rp.iterations);
-                thresholdSpinner.setValue(myIfsSys.rp.threshold);
                 potentialSpinner.setValue(myIfsSys.rp.potentialRadius);
                 delaySpinner.setValue(myIfsSys.rp.postProcessPeriod);
 
                 perspectiveCheck.setSelected(!myIfsSys.theVolume.usePerspective);
                 frameHoldCheck.setSelected(myIfsSys.rp.holdFrame);
-                thresholdCheck.setSelected(myIfsSys.rp.usingThreshold);
                 potentialCheck.setSelected(myIfsSys.rp.usingGaussian);
-                findEdgesCheck.setSelected(myIfsSys.rp.usingFindEdges);
-                delayCheck.setSelected(myIfsSys.rp.renderThrottling);
                 //System.out.println(renderModeCombo.setse);
                 renderModeCombo.setSelectedIndex(myIfsSys.theVolume.renderMode == volume.RenderMode.PROJECT_ONLY ? 1 : 0);
             }
