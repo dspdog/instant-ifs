@@ -52,7 +52,7 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
 
         //setSampleImage("circle2.png", Dimension.X);
 
-        loadImgs3D("circle2.png", "circle2.png", "circle2.png");
+        loadImgs3D("serp.png", "serp.png", "serp.png");
     }
 
     enum Dimension{
@@ -136,7 +136,7 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
             for(int y2=-unit; y2<unit+1; y2++){
                 for(int z2=-unit; z2<unit+1; z2++){
                     if(volume[(x+x2)+(y+y2)*width+(z+z2)*width*height]==0){
-                        thePt.add(new ifsPt(x2,y2,z2));
+                        thePt = thePt.add(new ifsPt(x2,y2,z2));
                         validPts++;
                     }
                 }

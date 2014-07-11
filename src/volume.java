@@ -24,7 +24,7 @@ public class volume {
     public float XYProjection[][];
 
     public float ZBuffer[][];
-    public float CBuffer[][]; //chroma buffer...
+    public float PBuffer[][]; //point selection buffer...
     public float RBuffer[][];
     public float GBuffer[][];
     public float BBuffer[][];
@@ -64,7 +64,7 @@ public class volume {
         antiAliasing = true;
         XYProjection = new float[width][height];
         ZBuffer = new float[width][height];
-        CBuffer = new float[width][height];
+        PBuffer = new float[width][height];
         RBuffer = new float[width][height];
         GBuffer = new float[width][height];
         BBuffer = new float[width][height];
@@ -109,6 +109,7 @@ public class volume {
         for(int x=0; x<width; x++){
             for(int y=0; y<height; y++){
                 ZBuffer[x][y]*=a;
+                PBuffer[x][y]=-1;
                 RBuffer[x][y]*=a;
                 GBuffer[x][y]*=a;
                 BBuffer[x][y]*=a;
@@ -247,32 +248,14 @@ public class volume {
 
 
             if(useZBuffer){
-                float xDec = pt.x - (int)pt.x;
-                float yDec = pt.y - (int)pt.y;
-
                 boolean res=false;
 
-                if(pt.z * (1 - xDec) * (1 - yDec) > ZBuffer[(int) pt.x][(int) pt.y]){
+                if(pt.z> ZBuffer[(int) pt.x][(int) pt.y]){
                     res=true;
-                    ZBuffer[(int)pt.x][(int)pt.y] = pt.z * (1 - xDec) * (1 - yDec);
-                    ZBuffer[(int)pt.x+1][(int)pt.y] = Math.max(pt.z * xDec * (1 - yDec), ZBuffer[(int) pt.x + 1][(int) pt.y]);
-                    ZBuffer[(int)pt.x][(int)pt.y+1] = Math.max(pt.z * (1 - xDec) * yDec, ZBuffer[(int) pt.x][(int) pt.y + 1]);
-                    ZBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(pt.z * xDec * yDec, ZBuffer[(int) pt.x + 1][(int) pt.y + 1]);
-
-                    RBuffer[(int)pt.x][(int)pt.y] = ptR * (1 - xDec) * (1 - yDec);
-                    RBuffer[(int)pt.x+1][(int)pt.y] = Math.max(ptR * xDec * (1 - yDec), RBuffer[(int) pt.x + 1][(int) pt.y]);
-                    RBuffer[(int)pt.x][(int)pt.y+1] = Math.max(ptR * (1 - xDec) * yDec, RBuffer[(int) pt.x][(int) pt.y + 1]);
-                    RBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(ptR * xDec * yDec, RBuffer[(int) pt.x + 1][(int) pt.y + 1]);
-
-                    GBuffer[(int)pt.x][(int)pt.y] = ptG * (1 - xDec) * (1 - yDec);
-                    GBuffer[(int)pt.x+1][(int)pt.y] = Math.max(ptG * xDec * (1 - yDec), GBuffer[(int) pt.x + 1][(int) pt.y]);
-                    GBuffer[(int)pt.x][(int)pt.y+1] = Math.max(ptG * (1 - xDec) * yDec, GBuffer[(int) pt.x][(int) pt.y + 1]);
-                    GBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(ptG * xDec * yDec, GBuffer[(int) pt.x + 1][(int) pt.y + 1]);
-
-                    BBuffer[(int)pt.x][(int)pt.y] = ptB * (1 - xDec) * (1 - yDec);
-                    BBuffer[(int)pt.x+1][(int)pt.y] = Math.max(ptB * xDec * (1 - yDec), BBuffer[(int) pt.x + 1][(int) pt.y]);
-                    BBuffer[(int)pt.x][(int)pt.y+1] = Math.max(ptB * (1 - xDec) * yDec, BBuffer[(int) pt.x][(int) pt.y + 1]);
-                    BBuffer[(int)pt.x+1][(int)pt.y+1] = Math.max(ptB * xDec * yDec, BBuffer[(int) pt.x + 1][(int) pt.y + 1]);
+                    ZBuffer[(int)pt.x][(int)pt.y] = pt.z;
+                    RBuffer[(int)pt.x][(int)pt.y] = ptR;
+                    GBuffer[(int)pt.x][(int)pt.y] = ptG;
+                    BBuffer[(int)pt.x][(int)pt.y] = ptB;
                 }
 
                 return res;
