@@ -8,6 +8,7 @@ import java.io.*;
 public class ifsys extends Panel
     implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener, ActionListener, Serializable
 {
+    paintThread thePaintThread;
     mainthread[] threads;
     int numThreads = 2; //Runtime.getRuntime().availableProcessors()/2;
     boolean quit;
@@ -24,8 +25,6 @@ public class ifsys extends Panel
     static long lastClearTime;
 
     long lastPostProcessTime;
-
-    float lastProcessedProjection[][];
 
     volume theVolume;
     pdf3D thePdf;
@@ -76,8 +75,10 @@ public class ifsys extends Panel
         threads = new mainthread[numThreads];
 
         for(int i=0; i< threads.length; i++){
-            threads[i] = new mainthread(i==0);
+            threads[i] = new mainthread();
         }
+
+        thePaintThread = new paintThread();
 
         pixels = new int[rp.screenwidth * rp.screenheight];
 
@@ -143,20 +144,13 @@ public class ifsys extends Panel
 
     }
 
-    public class mainthread extends Thread{
-
-        boolean isFirst;
-
+    public class paintThread extends Thread{
         public void run(){
-            while(!quit) 
+            while(!quit)
                 try{
-                    gamefunc();
-                    if(isFirst){
-                        drawGrid();
-                        theMenu.updateSideMenu();
-                        if(theVolume.totalSamples>50000){
-                            repaint();
-                        }
+                    theMenu.updateSideMenu();
+                    if(theVolume.totalSamples>50000){
+                        repaint();
                     }
                     sleep(1L);
                 }
@@ -165,8 +159,23 @@ public class ifsys extends Panel
                 }
         }
 
-        public mainthread(boolean _isFirst){
-            isFirst=_isFirst;
+        public paintThread(){
+        }
+    }
+
+    public class mainthread extends Thread{
+        public void run(){
+            while(!quit) 
+                try{
+                    gamefunc();
+                    sleep(1L);
+                }
+                catch(InterruptedException e) {
+                    e.printStackTrace();
+                }
+        }
+
+        public mainthread(){
         }
     }
 
@@ -190,9 +199,12 @@ public class ifsys extends Panel
         shape.setToPreset(0);
 
         started = true;
+
+        thePaintThread.start();
     }
 
     public void update(Graphics gr){
+        drawGrid();
         paint(gr);
     }
 
