@@ -39,7 +39,7 @@ public class RenderParams implements java.io.Serializable {
         smearPDF = false;
 
         drawGrid = true;
-        gridRedrawTime=5;
+        gridRedrawTime=10;
         gridDrawTime=0;
 
         screenwidth = 1024;

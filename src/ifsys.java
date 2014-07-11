@@ -401,12 +401,15 @@ public class ifsys extends Panel
 
             //put pixel
 
+            float colorDark = 4;
+            if(index==pointSelected){colorDark=4;}
+
             if(theVolume.putPixel(new ifsPt(dpt.x+rpt.x+(float)uncertaintyX,
                                          dpt.y+rpt.y+(float)uncertaintyY,
                                          dpt.z+rpt.z+(float)uncertaintyZ),
-                                            (float)sampleX/4, //R
-                                            (float)sampleY/4, //G
-                                            (float)sampleZ/4, //B
+                                            (float)sampleX/colorDark, //R
+                                            (float)sampleY/colorDark, //G
+                                            (float)sampleZ/colorDark, //B
                                             (float)ptColor, rp.dotSize)){ //Z
                 seqIndex++;
                 nonduds++;
@@ -491,12 +494,10 @@ public class ifsys extends Panel
     }
 
     public void drawGrid(){
-        double xmax = 1024;
-        double ymax = 1024;
-        double gridspace = 32;
-
-        if(rp.drawGrid)
-        if(System.currentTimeMillis() -  rp.gridDrawTime > rp.gridRedrawTime){
+        if(rp.drawGrid && System.currentTimeMillis() -  rp.gridDrawTime > rp.gridRedrawTime){
+            double xmax = 1024;
+            double ymax = 1024;
+            double gridspace = 32;
             rp.gridDrawTime = System.currentTimeMillis();
             int z = 0;
             for(int x=0; x<xmax/gridspace; x++){
@@ -504,11 +505,11 @@ public class ifsys extends Panel
                     theVolume.putPixel(new ifsPt(
                             x*gridspace,
                             y,
-                            z), 1.00, 128, 128, 128);
+                            z), 1.00, 64, 64, 64);
                     theVolume.putPixel(new ifsPt(
                             y,
                             x*gridspace,
-                            z), 1.00, 128, 128, 128);
+                            z), 1.00, 64, 64, 64);
                 }
             }
         }
