@@ -173,6 +173,8 @@ public class volume {
 
         dataPoints++;
 
+        float dark = pt.z/512f;
+
         if(volumeContains(pt, ptRadius)){
 
             totalSamples++;
@@ -189,9 +191,9 @@ public class volume {
                             //if(x1*x1+y1*y1<ptRadius)
                             if(ZBuffer[(int)pt.x+x1][(int)pt.y+y1]<pt.z){
                                 ZBuffer[(int)pt.x+x1][(int)pt.y+y1] = pt.z;
-                                RBuffer[(int)pt.x+x1][(int)pt.y+y1] = ptR;
-                                GBuffer[(int)pt.x+x1][(int)pt.y+y1] = ptG;
-                                BBuffer[(int)pt.x+x1][(int)pt.y+y1] = ptB;
+                                RBuffer[(int)pt.x+x1][(int)pt.y+y1] = ptR*dark;
+                                GBuffer[(int)pt.x+x1][(int)pt.y+y1] = ptG*dark;
+                                BBuffer[(int)pt.x+x1][(int)pt.y+y1] = ptB*dark;
                             }
 
                         }
@@ -215,6 +217,7 @@ public class volume {
         centroid.z+=pt.z*alpha;
 
         dataPoints++;
+        float dark = pt.z/512f;
 
         if(volumeContains(pt)){
             if(renderMode==renderMode.VOLUMETRIC){
@@ -253,9 +256,9 @@ public class volume {
                 if(pt.z> ZBuffer[(int) pt.x][(int) pt.y]){
                     res=true;
                     ZBuffer[(int)pt.x][(int)pt.y] = pt.z;
-                    RBuffer[(int)pt.x][(int)pt.y] = ptR;
-                    GBuffer[(int)pt.x][(int)pt.y] = ptG;
-                    BBuffer[(int)pt.x][(int)pt.y] = ptB;
+                    RBuffer[(int)pt.x][(int)pt.y] = ptR*dark;
+                    GBuffer[(int)pt.x][(int)pt.y] = ptG*dark;
+                    BBuffer[(int)pt.x][(int)pt.y] = ptB*dark;
                 }
 
                 return res;

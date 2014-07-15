@@ -347,6 +347,10 @@ public class ifsys extends Panel
         double dy=Math.random()-0.5;
         double dz=Math.random()-0.5;
 
+        if(!rp.usePDFSamples){
+            dx=0;dy=0;dz=0;
+        }
+
         seqIndex = (int)(Math.random()*thePdf.validValues);
 
         sampleX = thePdf.validPts[seqIndex].x+dx;
@@ -401,15 +405,15 @@ public class ifsys extends Panel
 
             //put pixel
 
-            float colorDark = 4;
-            if(index==pointSelected){colorDark=4;}
+
+            //if(index==pointSelected){colorDark=4;}
 
             if(theVolume.putPixel(new ifsPt(dpt.x+rpt.x+(float)uncertaintyX,
                                          dpt.y+rpt.y+(float)uncertaintyY,
                                          dpt.z+rpt.z+(float)uncertaintyZ),
-                                            (float)sampleX/colorDark, //R
-                                            (float)sampleY/colorDark, //G
-                                            (float)sampleZ/colorDark, //B
+                                            (float)dpt.x, //R
+                                            (float)dpt.y, //G
+                                            (float)dpt.z, //B
                                             (float)ptColor, rp.dotSize)){ //Z
                 seqIndex++;
                 nonduds++;
@@ -427,7 +431,7 @@ public class ifsys extends Panel
     }
 
     public void gamefunc(){
-        rp.guidesHidden = System.currentTimeMillis() - lastMoveTime > overlays.hideTime;
+        rp.guidesHidden = System.currentTimeMillis() - lastMoveTime > rp.linesHideTime;
 
         if(shape.pointsInUse != 0){
 
@@ -471,7 +475,7 @@ public class ifsys extends Panel
                         dpt.z -= rpt.z;
                     }
 
-                    if(rp.usePDFSamples && !(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
+                    if(!(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
                         try{//TODO why the err?
                             putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], shape.pts[oldRandomIndex], scaleDownMultiplier, randomIndex, olddpt);
                         }catch (Exception e){
@@ -487,8 +491,6 @@ public class ifsys extends Panel
                     cumulativeRotationYaw += shape.pts[randomIndex].rotationYaw;
                     cumulativeRotationPitch += shape.pts[randomIndex].rotationPitch;
                 }
-                if(!rp.usePDFSamples)
-                theVolume.putPixel(dpt, (float)cumulativeOpacity, 255, 255, 255);
             }
         }
     }
@@ -690,6 +692,11 @@ public class ifsys extends Panel
             ctrlDown=false;
         if(e.getKeyCode()==KeyEvent.VK_SHIFT)
             shiftDown=false;
+
+        if(e.getKeyChar() == 'p'){
+            rp.usePDFSamples = !rp.usePDFSamples;
+            clearframe();
+        }
 
         if(e.getKeyChar() == 'g'){
             rp.drawGrid = !rp.drawGrid;

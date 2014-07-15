@@ -33,9 +33,13 @@ public class RenderParams implements java.io.Serializable {
     long gridDrawTime;
     long gridRedrawTime;
 
+    long linesHideTime;
+
     public RenderParams(){
 
-        dotSize=0;
+        linesHideTime=1000;
+
+        dotSize=1;
         smearPDF = false;
 
         drawGrid = true;
