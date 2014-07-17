@@ -35,7 +35,11 @@ public class RenderParams implements java.io.Serializable {
 
     long linesHideTime;
 
+    boolean usingColors;
+
     public RenderParams(){
+
+        usingColors=true;
 
         linesHideTime=1000;
 

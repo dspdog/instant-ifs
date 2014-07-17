@@ -54,6 +54,8 @@ public class volume {
 
     boolean useZBuffer = true;
 
+    float zDarkenScaler;
+
     public volume(int w, int h, int d){
         width = w;
         height = h;
@@ -79,6 +81,7 @@ public class volume {
 
         volume = new smartVolume(width);
         centroid = new ifsPt(0,0,0);
+        zDarkenScaler=512f;
     }
 
     public void reset(){
@@ -108,11 +111,11 @@ public class volume {
         dataPoints*=a;
         for(int x=0; x<width; x++){
             for(int y=0; y<height; y++){
-                ZBuffer[x][y]*=a;
+                ZBuffer[x][y]=0;
                 PBuffer[x][y]=-1;
-                RBuffer[x][y]*=a;
-                GBuffer[x][y]*=a;
-                BBuffer[x][y]*=a;
+                RBuffer[x][y]=0;
+                GBuffer[x][y]=0;
+                BBuffer[x][y]=0;
             }
         }
     }
@@ -217,7 +220,7 @@ public class volume {
         centroid.z+=pt.z*alpha;
 
         dataPoints++;
-        float dark = pt.z/512f;
+        float dark = pt.z/zDarkenScaler;
 
         if(volumeContains(pt)){
             if(renderMode==renderMode.VOLUMETRIC){
@@ -322,6 +325,7 @@ public class volume {
             }
         }
     }
+
 
     public static float[][] getProjectionCopy(float[][] map){
         int width = map.length;

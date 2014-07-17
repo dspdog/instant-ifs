@@ -1,9 +1,13 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class ifsys extends Panel
     implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener, ActionListener, Serializable
@@ -208,6 +212,39 @@ public class ifsys extends Panel
         paint(gr);
     }
 
+
+    public void saveImg(){
+        BufferedWriter writer = null;
+        try {
+            //create a temporary file
+            String timeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(Calendar.getInstance().getTime()) + ".png";
+            File outputfile = new File(timeLog);
+            System.out.println("saved - " + outputfile.getAbsolutePath());
+            ImageIO.write(toBufferedImage(createImage(new MemoryImageSource(rp.screenwidth, rp.screenheight, pixels, 0, rp.screenwidth))), "png", outputfile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static BufferedImage toBufferedImage(Image img)
+    {
+        if (img instanceof BufferedImage)
+        {
+            return (BufferedImage) img;
+        }
+
+        // Create a buffered image with transparency
+        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+        // Draw the image on to the buffered image
+        Graphics2D bGr = bimage.createGraphics();
+        bGr.drawImage(img, 0, 0, null);
+        bGr.dispose();
+
+        // Return the buffered image
+        return bimage;
+    }
+
     public void paint(Graphics gr){
         frameNo++;
         framesThisSecond++;
@@ -408,12 +445,22 @@ public class ifsys extends Panel
 
             //if(index==pointSelected){colorDark=4;}
 
+            float r=255;
+            float g=255;
+            float b=255;
+
+            if(rp.usingColors){
+                r=dpt.x;
+                g=dpt.y;
+                b=dpt.z;
+            }
+
             if(theVolume.putPixel(new ifsPt(dpt.x+rpt.x+(float)uncertaintyX,
                                          dpt.y+rpt.y+(float)uncertaintyY,
                                          dpt.z+rpt.z+(float)uncertaintyZ),
-                                            (float)dpt.x, //R
-                                            (float)dpt.y, //G
-                                            (float)dpt.z, //B
+                                            r,
+                                            g,
+                                            b,
                                             (float)ptColor, rp.dotSize)){ //Z
                 seqIndex++;
                 nonduds++;
@@ -425,7 +472,7 @@ public class ifsys extends Panel
                 sampleZ = thePdf.validPts[seqIndex].z+dz;
             }
 
-            if(duds>4*nonduds){iter=iters;} //skips occluded pdfs
+            if(duds>4){iter=iters;} //skips occluded pdfs
 
         }
     }
@@ -439,7 +486,7 @@ public class ifsys extends Panel
                 int randomIndex = 0;
                 ifsPt dpt = new ifsPt(shape.pts[randomIndex]);
                 ifsPt rpt;
-                Point2D ok;
+
                 double size, yaw, pitch;//, roll;
 
                 double cumulativeScale = 1.0;
@@ -781,6 +828,35 @@ public class ifsys extends Panel
             theVolume.useZBuffer = !theVolume.useZBuffer;
             clearframe();
             gamefunc();
+        }
+
+        if(e.getKeyChar() == '-'){
+            theVolume.zDarkenScaler/=0.9;
+            System.out.println(theVolume.zDarkenScaler);
+            clearframe();
+            gamefunc();
+        }
+        if(e.getKeyChar() == '='){
+            theVolume.zDarkenScaler*=0.9;
+            System.out.println(theVolume.zDarkenScaler);
+            clearframe();
+            gamefunc();
+        }
+
+        if(e.getKeyChar() == '\\'){
+            rp.usingColors = !rp.usingColors;
+            clearframe();
+            gamefunc();
+        }
+
+        if(e.getKeyChar() == 'i'){
+            rp.infoHidden = !rp.infoHidden;
+            clearframe();
+            gamefunc();
+        }
+
+        if(e.getKeyChar() == 's'){
+            saveImg();
         }
     }
 
