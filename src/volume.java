@@ -6,9 +6,17 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class volume {
+    public static enum RenderMode {
+        VOLUMETRIC, PROJECT_ONLY
+    }
+
+    public static enum VolumeProjection{
+        Z,R,G,B,C
+    }
+
     int width, height, depth;
 
-    RenderMode renderMode;
+    public RenderMode renderMode = RenderMode.PROJECT_ONLY;
 
     long drawTime = 0;
     long totalSamples = 0;
@@ -339,22 +347,18 @@ public class volume {
 
             writer = new BufferedWriter(new FileWriter(logFile, true));
 
-
-            String str = "";
-
             for(int x=0; x<width;x++){
                 for(int y=0; y<height;y++){
                     for(int z=0; z<depth;z++){
                         if(volume.isNotEmpty(x,y,z)){
-                            str=x + " " + y + " " + z + "\n";
-                            writer.append(str);
+                            writer.append(x + " " + y + " " + z + "\n");
                         }
                     }
                 }
-                //writer.append(str);
-                //str="";
-                if(x%16==0)
-                System.out.println(x + "/" + width + " saved - " + (int)(100.0*x/width)+"%");
+
+                if(x%16==0){
+                    System.out.println(x + "/" + width + " saved - " + (int)(100.0*x/width)+"%");
+                }
             }
 
             System.out.println(logFile.getCanonicalPath());
@@ -430,13 +434,5 @@ public class volume {
         }
 
         return res;
-    }
-
-    public static enum VolumeProjection{
-        Z,R,G,B,C
-    }
-
-    public static enum RenderMode {
-        VOLUMETRIC, PROJECT_ONLY
     }
 }

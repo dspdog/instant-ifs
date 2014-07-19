@@ -2,7 +2,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
 import java.io.*;
@@ -383,70 +382,40 @@ public class ifsys extends Panel
         double dy=Math.random()-0.5;
         double dz=Math.random()-0.5;
 
-        if(theVolume.renderMode == volume.RenderMode.VOLUMETRIC){
-            dx=0;dy=0;dz=0;
-        }
+        boolean isInterior = false;
 
         if(!rp.usePDFSamples){
             dx=0;dy=0;dz=0;
         }
 
-        seqIndex = (int)(Math.random()*thePdf.validValues);
+        seqIndex = (int)(Math.random()*(thePdf.edgeValues));
 
-        sampleX = thePdf.validPts[seqIndex].x+dx;
-        sampleY = thePdf.validPts[seqIndex].y+dy;
-        sampleZ = thePdf.validPts[seqIndex].z+dz;
+        sampleX = thePdf.edgePts[seqIndex].x+dx;
+        sampleY = thePdf.edgePts[seqIndex].y+dy;
+        sampleZ = thePdf.edgePts[seqIndex].z+dz;
 
-/*
-        ifsPt nxArrow = theVolume.getCameraDistortedPt(thePt.add(ifsPt.X_UNIT.scale(thePt.radius * thePt.scale)));
-        ifsPt nyArrow = theVolume.getCameraDistortedPt(thePt.add(ifsPt.Y_UNIT.scale(thePt.radius * thePt.scale)));
-        ifsPt nzArrow = theVolume.getCameraDistortedPt(thePt.add(ifsPt.Z_UNIT.scale(thePt.radius * thePt.scale)));
-        ifsPt pxArrow = theVolume.getCameraDistortedPt(thePt.subtract(ifsPt.X_UNIT.scale(thePt.radius * thePt.scale)));
-        ifsPt pyArrow = theVolume.getCameraDistortedPt(thePt.subtract(ifsPt.Y_UNIT.scale(thePt.radius * thePt.scale)));
-        ifsPt pzArrow = theVolume.getCameraDistortedPt(thePt.subtract(ifsPt.Z_UNIT.scale(thePt.radius * thePt.scale)));
 
-        float minZ = 10000;
-        int minDim = 0;
-        float[] zs = {pxArrow.z,pyArrow.z,pzArrow.z,nxArrow.z,nyArrow.z,nzArrow.z};
-
-        for(int i=0; i<zs.length; i++){
-            if(zs[i]<minZ){
-                minDim=i;
-                minZ=zs[i];
+        if(theVolume.renderMode == volume.RenderMode.VOLUMETRIC){
+            dx=0;dy=0;dz=0;
+            seqIndex = (int)(Math.random()*(thePdf.edgeValues+thePdf.interiorValues));
+            if(seqIndex>=thePdf.edgeValues){
+                sampleX = thePdf.interiorPts[seqIndex-thePdf.edgeValues].x+dx;
+                sampleY = thePdf.interiorPts[seqIndex-thePdf.edgeValues].y+dy;
+                sampleZ = thePdf.interiorPts[seqIndex-thePdf.edgeValues].z+dz;
+                isInterior = true;
+            }else{
+                sampleX = thePdf.edgePts[seqIndex].x+dx;
+                sampleY = thePdf.edgePts[seqIndex].y+dy;
+                sampleZ = thePdf.edgePts[seqIndex].z+dz;
+                isInterior = false;
             }
         }
 
-        switch (minDim){
-            case 0:
-                //System.out.println("+X");
-                break;
-            case 1:
-                //System.out.println("+Y");
-                break;
-            case 2:
-                //System.out.println("+Z");
-                break;
-            case 3:
-                //System.out.println("-X");
-                break;
-            case 4:
-                //System.out.println("-Y");
-                break;
-            case 5:
-                //System.out.println("-Z");
-                break;
-        }*/
 
         for(int iter=0; iter<iters; iter++){
-
             ptColor = thePdf.getVolumePt(sampleX,sampleY,sampleZ);//[(int)sampleX+(int)sampleY+(int)sampleZ];
             ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust*distScaleDown;
             rpt = new ifsPt((sampleX-centerX)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw); //placed point
-
-            //put pixel
-
-
-            //if(index==pointSelected){colorDark=4;}
 
             float r=255;
             float g=255;
@@ -466,30 +435,33 @@ public class ifsys extends Panel
                                     r,
                                     g,
                                     b,
-                                    (float)ptColor, rp.dotSize)){ //Z
+                                    (float)ptColor, rp.dotSize) && theVolume.renderMode != volume.RenderMode.VOLUMETRIC){ //Z
                 seqIndex++;
             }else{
-                duds++;
-                seqIndex = (int)(Math.random()*thePdf.validValues);
-                sampleX = thePdf.validPts[seqIndex].x+dx;
-                sampleY = thePdf.validPts[seqIndex].y+dy;
-                sampleZ = thePdf.validPts[seqIndex].z+dz;
+                if(theVolume.renderMode == volume.RenderMode.VOLUMETRIC){
+                    seqIndex = (int)(Math.random()*(thePdf.edgeValues+thePdf.interiorValues));
+                    if(seqIndex>=thePdf.edgeValues){
+                        sampleX = thePdf.interiorPts[seqIndex-thePdf.edgeValues].x+dx;
+                        sampleY = thePdf.interiorPts[seqIndex-thePdf.edgeValues].y+dy;
+                        sampleZ = thePdf.interiorPts[seqIndex-thePdf.edgeValues].z+dz;
+                        isInterior = true;
+                    }else{
+                        sampleX = thePdf.edgePts[seqIndex].x+dx;
+                        sampleY = thePdf.edgePts[seqIndex].y+dy;
+                        sampleZ = thePdf.edgePts[seqIndex].z+dz;
+                        isInterior = false;
+                    }
+                }else{
+                    duds++;
+                    seqIndex = (int)(Math.random()*thePdf.edgeValues);
+                    sampleX = thePdf.edgePts[seqIndex].x+dx;
+                    sampleY = thePdf.edgePts[seqIndex].y+dy;
+                    sampleZ = thePdf.edgePts[seqIndex].z+dz;
+                    isInterior = false;
+                }
             }
 
-            /*if(rp.savingDots){
-                rp.savedDots++;
-                if(theDot.x>10)
-                    rp.savedString+=theDot.coordString()+"\n";
-                if(rp.savedDots%rp.saveInterval==0){
-                    rp.savedDots++;
-                    theVolume.saveToAscii(rp.savedString);
-                    rp.savedString="";
-                    System.out.println(rp.savedDots + " dots saved...");
-                }
-            }else{*/
-                if(duds>4){iter=iters;} //skips occluded pdfs
-            //}
-
+            if(duds>4){iter=iters;} //skips occluded pdfs
         }
     }
 
@@ -542,7 +514,7 @@ public class ifsys extends Panel
                         try{//TODO why the err?
                             putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], shape.pts[oldRandomIndex], scaleDownMultiplier, randomIndex, olddpt);
                         }catch (Exception e){
-
+                            //e.printStackTrace();
                         }
 
                     }
