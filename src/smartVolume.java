@@ -45,7 +45,7 @@ public class smartVolume { //partitions the space into subVolumes but ignores em
     }
 
     public boolean isNotEmpty(int x, int y, int z){
-        return data[x+y*subRes+z*subResSq].inited;
+        return getData(x,y,z) > 0.1;
     }
 
     public void putData(int x, int y, int z, float increment){

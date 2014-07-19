@@ -331,18 +331,32 @@ public class volume {
     }
 
     public void _saveToAscii(){
-        String str = "";
+
         BufferedWriter writer = null;
         try {
-            //create a temporary file
             String timeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate) + ".xyz";
             File logFile = new File(timeLog);
 
-            // This will output the full path where the file will be written to...
+            writer = new BufferedWriter(new FileWriter(logFile, true));
+
+
+            String str = "";
+
+            for(int x=0; x<width;x++){
+                for(int y=0; y<height;y++){
+                    for(int z=0; z<depth;z++){
+                        if(volume.isNotEmpty(x,y,z)){
+                            str+=x + " " + y + " " + z + "\n";
+                        }
+                    }
+                }
+                writer.append(str);
+                str="";
+                System.out.println(x + "/" + width + " saved");
+            }
+
             System.out.println(logFile.getCanonicalPath());
 
-            writer = new BufferedWriter(new FileWriter(logFile, true));
-            writer.append(str);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

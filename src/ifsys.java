@@ -383,9 +383,9 @@ public class ifsys extends Panel
         double dy=Math.random()-0.5;
         double dz=Math.random()-0.5;
 
-        //if(uncertainty==0){
-        //    dx=0;dy=0;dz=0;
-        //}
+        if(theVolume.renderMode == volume.RenderMode.VOLUMETRIC){
+            dx=0;dy=0;dz=0;
+        }
 
         if(!rp.usePDFSamples){
             dx=0;dy=0;dz=0;
