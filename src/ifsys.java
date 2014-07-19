@@ -431,11 +431,13 @@ public class ifsys extends Panel
                     dpt.y+rpt.y+(float)uncertaintyY,
                     dpt.z+rpt.z+(float)uncertaintyZ);
 
+            float sign = isInterior ? -1.0f : 1.0f;
+
             if(theVolume.putPixel(theDot,
                                     r,
                                     g,
                                     b,
-                                    (float)ptColor, rp.dotSize) && theVolume.renderMode != volume.RenderMode.VOLUMETRIC){ //Z
+                                    sign*(float)ptColor, rp.dotSize) && theVolume.renderMode != volume.RenderMode.VOLUMETRIC){ //Z
                 seqIndex++;
             }else{
                 if(theVolume.renderMode == volume.RenderMode.VOLUMETRIC){

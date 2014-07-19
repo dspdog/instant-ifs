@@ -67,7 +67,13 @@ public class volume {
 
     Date startDate;
 
+    long myVolume, mySurfaceArea;
+
     public volume(int w, int h, int d){
+
+        myVolume=0;
+        mySurfaceArea=0;
+
         startDate = Calendar.getInstance().getTime();
         width = w;
         height = h;
@@ -105,6 +111,8 @@ public class volume {
         dataMaxVolumetric=dataMaxReset;
 
         if(renderMode == renderMode.VOLUMETRIC){
+            mySurfaceArea=0;
+            myVolume=0;
             volume.reset();
         }
     }
@@ -222,37 +230,26 @@ public class volume {
         return false;
     }
 
-
     public boolean old_putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB){
 
-        ifsPt pt = getCameraDistortedPt(_pt);
+        boolean isInterior=false;
+        if(alpha<0){alpha=alpha*-1.0f;isInterior=true;}
 
-        centroid.x+=pt.x*alpha;
-        centroid.y+=pt.y*alpha;
-        centroid.z+=pt.z*alpha;
+        ifsPt pt = getCameraDistortedPt(_pt);
 
         dataPoints++;
         float dark = pt.z/zDarkenScaler;
 
         if(volumeContains(_pt)){
             if(renderMode==renderMode.VOLUMETRIC){
-                if(false){//bring back? - antiAliasing
-                    float xDec = _pt.x - (int)_pt.x;
-                    float yDec = _pt.y - (int)_pt.y;
-                    float zDec = _pt.z - (int)_pt.z;
-
-                    volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z, alpha * (1 - xDec) * (1 - yDec) * (1 - zDec));
-                    volume.putData((int) _pt.x + 1, (int) _pt.y, (int) _pt.z, alpha * xDec * (1 - yDec) * (1 - zDec));
-                    volume.putData((int) _pt.x, (int) _pt.y + 1, (int) _pt.z, alpha * (1 - xDec) * yDec * (1 - zDec));
-                    volume.putData((int) _pt.x + 1, (int) _pt.y + 1, (int) _pt.z, alpha * xDec * yDec * (1 - zDec));
-
-                    volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z + 1, alpha * (1 - xDec) * (1 - yDec) * zDec);
-                    volume.putData((int) _pt.x + 1, (int) _pt.y, (int) _pt.z + 1, alpha * xDec * (1 - yDec) * zDec);
-                    volume.putData((int) _pt.x, (int) _pt.y + 1, (int) _pt.z + 1, alpha * (1 - xDec) * yDec * zDec);
-                    volume.putData((int) _pt.x + 1, (int) _pt.y + 1, (int) _pt.z + 1, alpha * xDec * yDec * zDec);
-
-                }else{
-                    volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z + 1, alpha);
+                if(volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z + 1, alpha)){
+                    myVolume++;
+                    if(isInterior){
+                        volume.flagInterior((int) _pt.x, (int) _pt.y, (int) _pt.z + 1);
+                    }
+                    if(!volume.isInterior((int) _pt.x, (int) _pt.y, (int) _pt.z + 1)){
+                        mySurfaceArea++;
+                    }
                 }
 
                 if(volume.getData((int)pt.x, (int)pt.y, (int)pt.y)>dataMaxVolumetric){

@@ -7,6 +7,7 @@ public class subVolume {
     static final int sizeCu = size*size*size;
 
     float[] data;
+    boolean[] isInterior;
     boolean inited;
 
     public subVolume(){
@@ -15,6 +16,7 @@ public class subVolume {
 
     public void init(){
         data = new float[sizeCu];
+        isInterior = new boolean[sizeCu];
         inited=true;
     }
 
@@ -22,9 +24,16 @@ public class subVolume {
         if(!inited){
             init();
         }
-        boolean res = data[x+y*size+z*sizeSq]<0.01;
+        boolean isFirst = data[x+y*size+z*sizeSq]<0.01;
         data[x+y*size+z*sizeSq]+=val;
-        return res;
+        return isFirst;
+    }
+
+    public void flagInterior(int x, int y, int z){
+        if(!inited){
+            init();
+        }
+        isInterior[x+y*size+z*sizeSq]=true;
     }
 
     public float getData(int x, int y, int z){
@@ -35,9 +44,18 @@ public class subVolume {
         }
     }
 
+    public boolean getIsInterior(int x, int y, int z){
+        if(inited){
+            return isInterior[x+y*size+z*sizeSq];
+        }else{
+            return false;
+        }
+    }
+
     public void clearData(int x, int y, int z){
         if(inited){
             data[x+y*size+z*sizeSq]=0;
+            isInterior[x+y*size+z*sizeSq]=false;
         }
     }
 
