@@ -50,7 +50,7 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
         firstX=width;
         lastX=0;
 
-        loadImgs3D("circle2.png", "circle2.png", "circle2.png");
+        loadImgs3D("circle2.png", "circle.png", "flat2.png");
     }
 
     enum Dimension{

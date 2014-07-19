@@ -353,7 +353,8 @@ public class volume {
                 }
                 //writer.append(str);
                 //str="";
-                System.out.println(x + "/" + width + " saved");
+                if(x%16==0)
+                System.out.println(x + "/" + width + " saved - " + (int)(100.0*x/width)+"%");
             }
 
             System.out.println(logFile.getCanonicalPath());
