@@ -346,12 +346,13 @@ public class volume {
                 for(int y=0; y<height;y++){
                     for(int z=0; z<depth;z++){
                         if(volume.isNotEmpty(x,y,z)){
-                            str+=x + " " + y + " " + z + "\n";
+                            str=x + " " + y + " " + z + "\n";
+                            writer.append(str);
                         }
                     }
                 }
-                writer.append(str);
-                str="";
+                //writer.append(str);
+                //str="";
                 System.out.println(x + "/" + width + " saved");
             }
 
