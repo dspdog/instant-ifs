@@ -242,13 +242,19 @@ public class volume {
 
         if(volumeContains(_pt)){
             if(renderMode==renderMode.VOLUMETRIC){
-                if(volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z + 1, alpha)){
-                    myVolume++;
+                if(volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z + 1, alpha)){//if its the first point there
+                    myVolume++; //add it to volume
                     if(isInterior){
                         volume.flagInterior((int) _pt.x, (int) _pt.y, (int) _pt.z + 1);
-                    }
-                    if(!volume.isInterior((int) _pt.x, (int) _pt.y, (int) _pt.z + 1)){
+                     }else{
                         mySurfaceArea++;
+                    }
+                }else{//if theres already something there...
+                    if(!volume.isInterior((int) _pt.x, (int) _pt.y, (int) _pt.z + 1)){ //and its a surface
+                        if(isInterior){ //but this isnt...
+                            mySurfaceArea--;
+                            volume.flagInterior((int) _pt.x, (int) _pt.y, (int) _pt.z + 1);
+                        }
                     }
                 }
 
@@ -347,7 +353,7 @@ public class volume {
             for(int x=0; x<width;x++){
                 for(int y=0; y<height;y++){
                     for(int z=0; z<depth;z++){
-                        if(volume.isNotEmpty(x,y,z)){
+                        if(volume.isNotEmpty(x,y,z) && !volume.isInterior(x,y,z)){
                             writer.append(x + " " + y + " " + z + "\n");
                         }
                     }
