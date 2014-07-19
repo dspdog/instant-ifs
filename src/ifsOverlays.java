@@ -380,20 +380,20 @@ public class ifsOverlays {
 
         rg.setColor(Color.white);
 
-        rg.drawString("Centroid: ("
+        /*rg.drawString("Centroid: ("
                 + (int)(myIfsSys.theVolume.getCentroid().x) + ", "
                 + (int)(myIfsSys.theVolume.getCentroid().y) + ", "
-                + (int)(myIfsSys.theVolume.getCentroid().z) + ")", xPad, lineSize*4);
+                + (int)(myIfsSys.theVolume.getCentroid().z) + ")", xPad, lineSize*4);*/
 
         if(myIfsSys.theVolume.renderMode == volume.RenderMode.VOLUMETRIC){
-            rg.drawString("HighPt: ("
+            /*rg.drawString("HighPt: ("
                     + (int)(myIfsSys.theVolume.highPtVolumetric.x) + ", "
                     + (int)(myIfsSys.theVolume.highPtVolumetric.y) + ", "
                     + (int)(myIfsSys.theVolume.highPtVolumetric.z) + ")", xPad,+ lineSize*5);
 
-
+            */
             rg.drawString("DataMax 10^" + df.format(Math.log10(myIfsSys.theVolume.dataMaxVolumetric)), xPad, lineSize * 6);
-
+            rg.drawString("Volume 10^" + df.format(Math.log10(myIfsSys.theVolume.volume.volume)), xPad, lineSize * 8);
             rg.drawString("Regions " + myIfsSys.theVolume.volume.getInitCount() + "/" + myIfsSys.theVolume.volume.totalRegions + " (" + (100*myIfsSys.theVolume.volume.getInitCount()/myIfsSys.theVolume.volume.totalRegions) + "%)", xPad, lineSize*14);
         }else{
             /*rg.drawString("HighPt2D: ("

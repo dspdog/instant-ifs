@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class volume {
     int width, height, depth;
@@ -56,7 +57,10 @@ public class volume {
 
     float zDarkenScaler;
 
+    Date startDate;
+
     public volume(int w, int h, int d){
+        startDate = Calendar.getInstance().getTime();
         width = w;
         height = h;
         depth = d;
@@ -222,25 +226,25 @@ public class volume {
         dataPoints++;
         float dark = pt.z/zDarkenScaler;
 
-        if(volumeContains(pt)){
+        if(volumeContains(_pt)){
             if(renderMode==renderMode.VOLUMETRIC){
-                if(antiAliasing){
-                    float xDec = pt.x - (int)pt.x;
-                    float yDec = pt.y - (int)pt.y;
-                    float zDec = pt.z - (int)pt.z;
+                if(false){//bring back? - antiAliasing
+                    float xDec = _pt.x - (int)_pt.x;
+                    float yDec = _pt.y - (int)_pt.y;
+                    float zDec = _pt.z - (int)_pt.z;
 
-                    volume.putData((int) pt.x, (int) pt.y, (int) pt.z, alpha * (1 - xDec) * (1 - yDec) * (1 - zDec));
-                    volume.putData((int) pt.x + 1, (int) pt.y, (int) pt.z, alpha * xDec * (1 - yDec) * (1 - zDec));
-                    volume.putData((int) pt.x, (int) pt.y + 1, (int) pt.z, alpha * (1 - xDec) * yDec * (1 - zDec));
-                    volume.putData((int) pt.x + 1, (int) pt.y + 1, (int) pt.z, alpha * xDec * yDec * (1 - zDec));
+                    volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z, alpha * (1 - xDec) * (1 - yDec) * (1 - zDec));
+                    volume.putData((int) _pt.x + 1, (int) _pt.y, (int) _pt.z, alpha * xDec * (1 - yDec) * (1 - zDec));
+                    volume.putData((int) _pt.x, (int) _pt.y + 1, (int) _pt.z, alpha * (1 - xDec) * yDec * (1 - zDec));
+                    volume.putData((int) _pt.x + 1, (int) _pt.y + 1, (int) _pt.z, alpha * xDec * yDec * (1 - zDec));
 
-                    volume.putData((int) pt.x, (int) pt.y, (int) pt.z + 1, alpha * (1 - xDec) * (1 - yDec) * zDec);
-                    volume.putData((int) pt.x + 1, (int) pt.y, (int) pt.z + 1, alpha * xDec * (1 - yDec) * zDec);
-                    volume.putData((int) pt.x, (int) pt.y + 1, (int) pt.z + 1, alpha * (1 - xDec) * yDec * zDec);
-                    volume.putData((int) pt.x + 1, (int) pt.y + 1, (int) pt.z + 1, alpha * xDec * yDec * zDec);
+                    volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z + 1, alpha * (1 - xDec) * (1 - yDec) * zDec);
+                    volume.putData((int) _pt.x + 1, (int) _pt.y, (int) _pt.z + 1, alpha * xDec * (1 - yDec) * zDec);
+                    volume.putData((int) _pt.x, (int) _pt.y + 1, (int) _pt.z + 1, alpha * (1 - xDec) * yDec * zDec);
+                    volume.putData((int) _pt.x + 1, (int) _pt.y + 1, (int) _pt.z + 1, alpha * xDec * yDec * zDec);
 
                 }else{
-                    volume.putData((int) pt.x, (int) pt.y, (int) pt.z + 1, alpha);
+                    volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z + 1, alpha);
                 }
 
                 if(volume.getData((int)pt.x, (int)pt.y, (int)pt.y)>dataMaxVolumetric){
@@ -303,18 +307,42 @@ public class volume {
         return scaled;
     }
 
-    public static void saveToAscii(smartVolume map){
+    public void saveToAscii(String str){
         BufferedWriter writer = null;
         try {
             //create a temporary file
-            String timeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(Calendar.getInstance().getTime()) + ".txt";
+            String timeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate) + ".xyz";
             File logFile = new File(timeLog);
 
             // This will output the full path where the file will be written to...
             System.out.println(logFile.getCanonicalPath());
 
-            writer = new BufferedWriter(new FileWriter(logFile));
-            writer.write("Hello world!");
+            writer = new BufferedWriter(new FileWriter(logFile, true));
+            writer.append(str);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                // Close the writer regardless of what happens...
+                writer.close();
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    public void _saveToAscii(){
+        String str = "";
+        BufferedWriter writer = null;
+        try {
+            //create a temporary file
+            String timeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate) + ".xyz";
+            File logFile = new File(timeLog);
+
+            // This will output the full path where the file will be written to...
+            System.out.println(logFile.getCanonicalPath());
+
+            writer = new BufferedWriter(new FileWriter(logFile, true));
+            writer.append(str);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

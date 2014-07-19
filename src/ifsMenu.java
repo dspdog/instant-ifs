@@ -463,6 +463,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 potentialCheck.setSelected(myIfsSys.rp.usingGaussian);
                 //System.out.println(renderModeCombo.setse);
                 renderModeCombo.setSelectedIndex(myIfsSys.theVolume.renderMode == volume.RenderMode.PROJECT_ONLY ? 1 : 0);
+                dotSizeSpinner.setValue(myIfsSys.rp.dotSize);
             }
         }
 

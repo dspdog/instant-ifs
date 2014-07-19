@@ -37,13 +37,20 @@ public class RenderParams implements java.io.Serializable {
 
     boolean usingColors;
 
-    public RenderParams(){
+    boolean savingDots;
+    int saveInterval;
+    long savedDots;
+    String savedString="";
 
+    public RenderParams(){
+        savedDots=0;
+        savingDots=false;
+        saveInterval=2000;
         usingColors=true;
 
         linesHideTime=1000;
 
-        dotSize=1;
+        dotSize=0;
         smearPDF = false;
 
         drawGrid = true;

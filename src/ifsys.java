@@ -348,7 +348,6 @@ public class ifsys extends Panel
         }
 
         int duds = 0;
-        int nonduds = 0;
 
         double uncertainty = rp.potentialRadius;
 
@@ -383,6 +382,10 @@ public class ifsys extends Panel
         double dx=Math.random()-0.5;
         double dy=Math.random()-0.5;
         double dz=Math.random()-0.5;
+
+        //if(uncertainty==0){
+        //    dx=0;dy=0;dz=0;
+        //}
 
         if(!rp.usePDFSamples){
             dx=0;dy=0;dz=0;
@@ -455,15 +458,16 @@ public class ifsys extends Panel
                 b=dpt.z;
             }
 
-            if(theVolume.putPixel(new ifsPt(dpt.x+rpt.x+(float)uncertaintyX,
-                                         dpt.y+rpt.y+(float)uncertaintyY,
-                                         dpt.z+rpt.z+(float)uncertaintyZ),
-                                            r,
-                                            g,
-                                            b,
-                                            (float)ptColor, rp.dotSize)){ //Z
+            ifsPt theDot = new ifsPt(dpt.x+rpt.x+(float)uncertaintyX,
+                    dpt.y+rpt.y+(float)uncertaintyY,
+                    dpt.z+rpt.z+(float)uncertaintyZ);
+
+            if(theVolume.putPixel(theDot,
+                                    r,
+                                    g,
+                                    b,
+                                    (float)ptColor, rp.dotSize)){ //Z
                 seqIndex++;
-                nonduds++;
             }else{
                 duds++;
                 seqIndex = (int)(Math.random()*thePdf.validValues);
@@ -472,7 +476,19 @@ public class ifsys extends Panel
                 sampleZ = thePdf.validPts[seqIndex].z+dz;
             }
 
-            if(duds>4){iter=iters;} //skips occluded pdfs
+            /*if(rp.savingDots){
+                rp.savedDots++;
+                if(theDot.x>10)
+                    rp.savedString+=theDot.coordString()+"\n";
+                if(rp.savedDots%rp.saveInterval==0){
+                    rp.savedDots++;
+                    theVolume.saveToAscii(rp.savedString);
+                    rp.savedString="";
+                    System.out.println(rp.savedDots + " dots saved...");
+                }
+            }else{*/
+                if(duds>4){iter=iters;} //skips occluded pdfs
+            //}
 
         }
     }
@@ -857,6 +873,16 @@ public class ifsys extends Panel
 
         if(e.getKeyChar() == 's'){
             saveImg();
+        }
+
+        if(e.getKeyChar() == 'r'){
+            rp.savingDots=!rp.savingDots;
+            //rp.savedDots=0;
+            if(!rp.savingDots){
+                theVolume._saveToAscii();
+            }
+            theVolume.renderMode = rp.savingDots ? volume.RenderMode.VOLUMETRIC : volume.RenderMode.PROJECT_ONLY;
+            System.out.println("render mode: " + theVolume.renderMode);
         }
     }
 

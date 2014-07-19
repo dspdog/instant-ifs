@@ -5,6 +5,8 @@ public class smartVolume { //partitions the space into subVolumes but ignores em
     int subResCu;
     int totalRegions;
 
+    long volume=0;
+
     private subVolume[] data;
 
     boolean inited = false;
@@ -22,6 +24,7 @@ public class smartVolume { //partitions the space into subVolumes but ignores em
     }
 
     public void reset(){
+        volume=0;
         totalRegions=0;
         if(!inited){
             data = new subVolume[subResCu];
@@ -46,9 +49,13 @@ public class smartVolume { //partitions the space into subVolumes but ignores em
     }
 
     public void putData(int x, int y, int z, float increment){
+        if(
         data[(x>>subVolume.sizeLog2)
                 +(y>>subVolume.sizeLog2)*subRes
-                +(z>>subVolume.sizeLog2)*subResSq].putData(x&subVolume.sizeMask, y&subVolume.sizeMask, z&subVolume.sizeMask, increment);
+                +(z>>subVolume.sizeLog2)*subResSq].putData(x&subVolume.sizeMask, y&subVolume.sizeMask, z&subVolume.sizeMask, increment)
+        ){
+            volume++;
+        }
     }
 
     public void clearData(int x, int y, int z){

@@ -30,6 +30,10 @@ class ifsPt implements java.io.Serializable{
         opacity = 1f;
     }
 
+    public String coordString(){
+        return this.x + " " + this.y + " " + this.z;
+    }
+
     public ifsPt(ifsPt pt){
         x=pt.x;
         y=pt.y;

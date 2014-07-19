@@ -18,13 +18,13 @@ public class subVolume {
         inited=true;
     }
 
-    public void putData(int x, int y, int z, float val){
-        if(inited){
-            data[x+y*size+z*sizeSq]+=val;
-        }else{
+    public boolean putData(int x, int y, int z, float val){
+        if(!inited){
             init();
-            data[x+y*size+z*sizeSq]+=val;
         }
+        boolean res = data[x+y*size+z*sizeSq]<0.01;
+        data[x+y*size+z*sizeSq]+=val;
+        return res;
     }
 
     public float getData(int x, int y, int z){
