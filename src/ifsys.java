@@ -382,35 +382,14 @@ public class ifsys extends Panel
         double dy=Math.random()-0.5;
         double dz=Math.random()-0.5;
 
-        boolean isInterior = false;
-
-        if(!rp.usePDFSamples){
-            dx=0;dy=0;dz=0;
-        }
-
         seqIndex = (int)(Math.random()*(thePdf.edgeValues));
-
         sampleX = thePdf.edgePts[seqIndex].x+dx;
         sampleY = thePdf.edgePts[seqIndex].y+dy;
         sampleZ = thePdf.edgePts[seqIndex].z+dz;
 
-
         if(theVolume.renderMode == volume.RenderMode.VOLUMETRIC){
             dx=0;dy=0;dz=0;
-            seqIndex = (int)(Math.random()*(thePdf.edgeValues+thePdf.interiorValues));
-            if(seqIndex>=thePdf.edgeValues){
-                sampleX = thePdf.interiorPts[seqIndex-thePdf.edgeValues].x+dx;
-                sampleY = thePdf.interiorPts[seqIndex-thePdf.edgeValues].y+dy;
-                sampleZ = thePdf.interiorPts[seqIndex-thePdf.edgeValues].z+dz;
-                isInterior = true;
-            }else{
-                sampleX = thePdf.edgePts[seqIndex].x+dx;
-                sampleY = thePdf.edgePts[seqIndex].y+dy;
-                sampleZ = thePdf.edgePts[seqIndex].z+dz;
-                isInterior = false;
-            }
         }
-
 
         for(int iter=0; iter<iters; iter++){
             ptColor = thePdf.getVolumePt(sampleX,sampleY,sampleZ);//[(int)sampleX+(int)sampleY+(int)sampleZ];
@@ -431,36 +410,17 @@ public class ifsys extends Panel
                     dpt.y+rpt.y+(float)uncertaintyY,
                     dpt.z+rpt.z+(float)uncertaintyZ);
 
-            float sign = isInterior ? -1.0f : 1.0f;
-
-            if(theVolume.putPixel(theDot,
+            if(theVolume.putPixel(theDot,(float)ptColor,
                                     r,
                                     g,
-                                    b,
-                                    sign*(float)ptColor, rp.dotSize) && theVolume.renderMode != volume.RenderMode.VOLUMETRIC){ //Z
+                                    b)){ //Z
                 seqIndex++;
             }else{
-                if(theVolume.renderMode == volume.RenderMode.VOLUMETRIC){
-                    seqIndex = (int)(Math.random()*(thePdf.edgeValues+thePdf.interiorValues));
-                    if(seqIndex>=thePdf.edgeValues){
-                        sampleX = thePdf.interiorPts[seqIndex-thePdf.edgeValues].x+dx;
-                        sampleY = thePdf.interiorPts[seqIndex-thePdf.edgeValues].y+dy;
-                        sampleZ = thePdf.interiorPts[seqIndex-thePdf.edgeValues].z+dz;
-                        isInterior = true;
-                    }else{
-                        sampleX = thePdf.edgePts[seqIndex].x+dx;
-                        sampleY = thePdf.edgePts[seqIndex].y+dy;
-                        sampleZ = thePdf.edgePts[seqIndex].z+dz;
-                        isInterior = false;
-                    }
-                }else{
-                    duds++;
-                    seqIndex = (int)(Math.random()*thePdf.edgeValues);
-                    sampleX = thePdf.edgePts[seqIndex].x+dx;
-                    sampleY = thePdf.edgePts[seqIndex].y+dy;
-                    sampleZ = thePdf.edgePts[seqIndex].z+dz;
-                    isInterior = false;
-                }
+                duds++;
+                seqIndex = (int)(Math.random()*thePdf.edgeValues);
+                sampleX = thePdf.edgePts[seqIndex].x+dx;
+                sampleY = thePdf.edgePts[seqIndex].y+dy;
+                sampleZ = thePdf.edgePts[seqIndex].z+dz;
             }
 
             if(duds>4){iter=iters;} //skips occluded pdfs
@@ -486,7 +446,7 @@ public class ifsys extends Panel
                 double cumulativeRotationPitch = 0;
                 //double cumulativeRotationRoll = 0;
 
-                double scaleDownMultiplier = Math.pow(shape.pointsInUse,rp.iterations); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
+                double scaleDownMultiplier = 1; //Math.pow(shape.pointsInUse,rp.iterations); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
 
                 for(int d = 0; d < rp.iterations; d++){
 
@@ -853,7 +813,7 @@ public class ifsys extends Panel
             rp.savingDots=!rp.savingDots;
             //rp.savedDots=0;
             if(!rp.savingDots){
-                theVolume._saveToAscii();
+                theVolume._saveToAsciiSTL();
             }
             theVolume.renderMode = rp.savingDots ? volume.RenderMode.VOLUMETRIC : volume.RenderMode.PROJECT_ONLY;
             System.out.println("render mode: " + theVolume.renderMode);

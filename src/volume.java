@@ -232,9 +232,6 @@ public class volume {
 
     public boolean old_putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB){
 
-        boolean isInterior=false;
-        if(alpha<0){alpha=alpha*-1.0f;isInterior=true;}
-
         ifsPt pt = getCameraDistortedPt(_pt);
 
         dataPoints++;
@@ -242,20 +239,9 @@ public class volume {
 
         if(volumeContains(_pt)){
             if(renderMode==renderMode.VOLUMETRIC){
-                if(volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z + 1, alpha)){//if its the first point there
+                if(volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z, alpha)){//if its the first point there
                     myVolume++; //add it to volume
-                    if(isInterior){
-                        volume.flagInterior((int) _pt.x, (int) _pt.y, (int) _pt.z + 1);
-                     }else{
-                        mySurfaceArea++;
-                    }
-                }else{//if theres already something there...
-                    if(!volume.isInterior((int) _pt.x, (int) _pt.y, (int) _pt.z + 1)){ //and its a surface
-                        if(isInterior){ //but this isnt...
-                            mySurfaceArea--;
-                            volume.flagInterior((int) _pt.x, (int) _pt.y, (int) _pt.z + 1);
-                        }
-                    }
+
                 }
 
                 if(volume.getData((int)pt.x, (int)pt.y, (int)pt.y)>dataMaxVolumetric){
@@ -318,30 +304,7 @@ public class volume {
         return scaled;
     }
 
-    public void saveToAscii(String str){
-        BufferedWriter writer = null;
-        try {
-            //create a temporary file
-            String timeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate) + ".xyz";
-            File logFile = new File(timeLog);
-
-            // This will output the full path where the file will be written to...
-            System.out.println(logFile.getCanonicalPath());
-
-            writer = new BufferedWriter(new FileWriter(logFile, true));
-            writer.append(str);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                // Close the writer regardless of what happens...
-                writer.close();
-            } catch (Exception e) {
-            }
-        }
-    }
-
-    public void _saveToAscii(){
+    public void _saveToAscii(){ //save point cloud to ascii
 
         BufferedWriter writer = null;
         try {
@@ -350,10 +313,10 @@ public class volume {
 
             writer = new BufferedWriter(new FileWriter(logFile, true));
 
-            for(int x=0; x<width;x++){
-                for(int y=0; y<height;y++){
-                    for(int z=0; z<depth;z++){
-                        if(volume.isNotEmpty(x,y,z) && !volume.isInterior(x,y,z)){
+            for(int x=1; x<width-1;x++){
+                for(int y=1; y<height-1;y++){
+                    for(int z=1; z<depth-1;z++){
+                        if(volume.isNotEmpty(x,y,z) && volume.edges(x, y, z, 1)>6){
                             writer.append(x + " " + y + " " + z + "\n");
                         }
                     }
@@ -377,6 +340,94 @@ public class volume {
         }
     }
 
+    public void _saveToAsciiSTL(){
+
+        /*
+         solid cube_corner
+          facet normal 0.0 -1.0 0.0
+            outer loop
+              vertex 0.0 0.0 0.0
+              vertex 1.0 0.0 0.0
+              vertex 0.0 0.0 1.0
+            endloop
+          endfacet
+        endsolid
+         */
+
+        BufferedWriter writer = null;
+        try {
+            String timeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate) + ".stl";
+            File logFile = new File(timeLog);
+
+            writer = new BufferedWriter(new FileWriter(logFile, true));
+            writer.append("solid ifs_shape\n");
+            for(int _x=1; _x<width-1;_x++){
+                for(int _y=1; _y<height-1;_y++){
+                    for(int _z=1; _z<depth-1;_z++){
+
+                        boolean currentValid=volume.isNotEmpty(_x,_y,_z);
+
+                        if(currentValid){
+
+                            float x=_x;
+                            float y=_y;
+                            float z=_z;
+
+                            boolean x1Valid=true;//volume.isNotEmpty(_x+1,_y,_z) && !volume.isInterior(_x+1,_y,_z);
+                            boolean y1Valid=true;//volume.isNotEmpty(_x,_y+1,_z) && !volume.isInterior(_x,_y+1,_z);
+                            boolean z1Valid=true;//volume.isNotEmpty(_x,_y,_z+1) && !volume.isInterior(_x,_y,_z+1);
+
+                            boolean x1z1Valid=true;//volume.isNotEmpty(_x+1,_y,_z+1) && !volume.isInterior(_x+1,_y,_z+1);
+                            boolean x1y1Valid=true;//volume.isNotEmpty(_x+1,_y+1,_z) && !volume.isInterior(_x+1,_y+1,_z);
+                            boolean y1z1Valid=true;//volume.isNotEmpty(_x,_y+1,_z+1) && !volume.isInterior(_x,_y+1,_z+1);
+
+                            if(x1Valid && y1Valid && x1y1Valid){
+                                writer.append("facet normal 0.0 0.0 1.0\nouter loop\n");
+                                writer.append("vertex " + x + " " + y + " " + z +"\n");
+                                writer.append("vertex " + x + " " + (y+1) + " " + z +"\n");
+                                writer.append("vertex " + (x+1) + " " + (y+1) + " " + z +"\n");
+                                //writer.append("vertex " + (x+1) + " " + y + " " + z +"\n");
+                                writer.append("endloop\nendfacet\n");
+                            }
+                            if(x1Valid && z1Valid && x1z1Valid){
+                                writer.append("facet normal 0.0 1.0 0.0\nouter loop\n");
+                                writer.append("vertex " + x + " " + y + " " + z +"\n");
+                                writer.append("vertex " + (x+1) + " " + y + " " + z +"\n");
+                                writer.append("vertex " + (x+1) + " " + y + " " + (z+1) +"\n");
+                                //writer.append("vertex " + x + " " + y + " " + (z+1) +"\n");
+                                writer.append("endloop\nendfacet\n");
+                            }
+                            if(z1Valid && y1Valid && y1z1Valid){
+                                writer.append("facet normal 1.0 0.0 0.0\nouter loop\n");
+                                writer.append("vertex " + x + " " + y + " " + z +"\n");
+                                writer.append("vertex " + x + " " + y + " " + (z+1) +"\n");
+                                writer.append("vertex " + x + " " + (y+1) + " " + (z+1) +"\n");
+                                //writer.append("vertex " + x + " " + (y+1) + " " + z +"\n");
+                                writer.append("endloop\nendfacet\n");
+                            }
+                        }
+                    }
+                }
+
+                if(_x%16==0){
+                    System.out.println(_x + "/" + width + " saved - " + (int)(100.0*_x/width)+"%");
+                }
+            }
+
+            writer.append("endsolid ifs_shape\n");
+
+            System.out.println(logFile.getCanonicalPath());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                // Close the writer regardless of what happens...
+                writer.close();
+            } catch (Exception e) {
+            }
+        }
+    }
 
     public static float[][] getProjectionCopy(float[][] map){
         int width = map.length;

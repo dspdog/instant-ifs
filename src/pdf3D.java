@@ -15,10 +15,8 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
     public float volume[];
 
     public int edgeValues = 0;
-    public int interiorValues = 0;
+
     public intPt[] edgePts;
-    public intPt[] interiorPts;
-    //public ifsPt validDir[];
 
     Image sampleImageX;
     Image sampleImageY;
@@ -51,7 +49,7 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
         firstX=width;
         lastX=0;
 
-        loadImgs3D("circle2.png", "circle2.png", "circle2.png");
+        loadImgs3D("circle2.png", "circle.png", "flat2.png");
     }
 
     enum Dimension{
@@ -102,28 +100,21 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
     }
 
     public void updateVolume(){
-
         edgeValues = 0;
-        //validX = new int[width*width*width];
         edgePts = new intPt[width*width*width];
-        interiorPts = new intPt[width*width*width];
-        //validDir = new ifsPt[width*width*width];
 
         updateVolumePixels();
 
         int edgeUnit = 1;
-        int edgePrune = 4;
+        int edgePrune = 1;
 
-        for(int y=edgePrune; y<width-edgePrune; y++){ //sorting by Y.....
+        for(int y=edgePrune; y<width-edgePrune; y++){
             for(int x=edgePrune; x<height-edgePrune; x++){
                 for(int z=edgePrune; z<depth-edgePrune; z++){
                     if(pointValid(x,y,z)){
                         if(isNearEdge(x,y,z, edgeUnit)){
                             edgePts[edgeValues]=new intPt(x,y,z);
                             edgeValues++;
-                        }else{
-                            interiorPts[interiorValues]=new intPt(x,y,z);
-                            interiorValues++;
                         }
                     }
                 }
@@ -131,24 +122,6 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
         }
 
         System.out.println(edgeValues + " edges %" + (100.0* edgeValues /512/512/512));
-        System.out.println(interiorValues + " interior %" + (100.0* interiorValues /512/512/512));
-    }
-
-    public ifsPt edgeVector(int x, int y, int z, int unit){
-        ifsPt thePt = new ifsPt(0,0,0);
-        float validPts = 0;
-        for(int x2=-unit; x2<unit+1; x2++){
-            for(int y2=-unit; y2<unit+1; y2++){
-                for(int z2=-unit; z2<unit+1; z2++){
-                    if(volume[(x+x2)+(y+y2)*width+(z+z2)*width*height]==0){
-                        thePt = thePt.add(new ifsPt(x2,y2,z2));
-                        validPts++;
-                    }
-                }
-            }
-        }
-
-        return thePt.scale(1.0f/validPts);
     }
 
     public boolean pointValid(int x, int y, int z){
@@ -157,9 +130,9 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
 
     public boolean isNearEdge(int x, int y, int z, int unit){
 
-        for(int x2=-unit; x2<unit+1; x2++){
-            for(int y2=-unit; y2<unit+1; y2++){
-                for(int z2=-unit; z2<unit+1; z2++){
+        for(int x2=-unit; x2<=unit; x2++){
+            for(int y2=-unit; y2<=unit; y2++){
+                for(int z2=-unit; z2<=unit; z2++){
                     if(volume[(x+x2)+(y+y2)*width+(z+z2)*width*height]==0){
                         return true;
                     }
