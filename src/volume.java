@@ -1,6 +1,7 @@
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -340,20 +341,102 @@ public class volume {
         }
     }
 
+    protected void addCube(BufferedWriter writer, int x, int y, int z) throws IOException {
+
+        boolean x1Valid=volume.isNotEmpty(x+1,y,z);
+        boolean y1Valid=volume.isNotEmpty(x,y+1,z);
+        boolean z1Valid=volume.isNotEmpty(x,y,z+1);
+
+        boolean xn1Valid=volume.isNotEmpty(x-1,y,z);
+        boolean yn1Valid=volume.isNotEmpty(x,y-1,z);
+        boolean zn1Valid=volume.isNotEmpty(x,y,z-1);
+
+        if(!zn1Valid){   //XY plane1
+            writer.append("facet normal 0.0 0.0 1.0\nouter loop\n");
+            writer.append("vertex " + x + " " + y + " " + z +"\n");
+            writer.append("vertex " + x + " " + (y+1) + " " + z +"\n");
+            writer.append("vertex " + (x+1) + " " + (y+1) + " " + z +"\n");
+            writer.append("endloop\nendfacet\n");
+
+            writer.append("facet normal 0.0 0.0 1.0\nouter loop\n");
+            writer.append("vertex " + x + " " + y + " " + z +"\n");
+            writer.append("vertex " + (x+1) + " " + y + " " + z +"\n");
+            writer.append("vertex " + (x+1) + " " + (y+1) + " " + z +"\n");
+            writer.append("endloop\nendfacet\n");
+        }
+
+        if(!z1Valid){   //XY plane2
+            writer.append("facet normal 0.0 0.0 1.0\nouter loop\n");
+            writer.append("vertex " + x + " " + y + " " + (z+1) +"\n");
+            writer.append("vertex " + x + " " + (y+1) + " " + (z+1) +"\n");
+            writer.append("vertex " + (x+1) + " " + (y+1) + " " + (z+1) +"\n");
+            writer.append("endloop\nendfacet\n");
+
+            writer.append("facet normal 0.0 0.0 1.0\nouter loop\n");
+            writer.append("vertex " + x + " " + y + " " + (z+1) +"\n");
+            writer.append("vertex " + (x+1) + " " + y + " " + (z+1) +"\n");
+            writer.append("vertex " + (x+1) + " " + (y+1) + " " + (z+1) +"\n");
+            writer.append("endloop\nendfacet\n");
+        }
+
+        if(!yn1Valid){   //XZ plane1
+            writer.append("facet normal 0.0 1.0 0.0\nouter loop\n");
+            writer.append("vertex " + x + " " + y + " " + z +"\n");
+            writer.append("vertex " + (x+1) + " " + y + " " + z +"\n");
+            writer.append("vertex " + (x+1) + " " + y + " " + (z+1) +"\n");
+            writer.append("endloop\nendfacet\n");
+
+            writer.append("facet normal 0.0 1.0 0.0\nouter loop\n");
+            writer.append("vertex " + x + " " + y + " " + z +"\n");
+            writer.append("vertex " + (x+1) + " " + y + " " + (z+1) +"\n");
+            writer.append("vertex " + x + " " + y + " " + (z+1) +"\n");
+            writer.append("endloop\nendfacet\n");
+        }
+
+        if(!y1Valid){   //XZ plane2
+            writer.append("facet normal 0.0 1.0 0.0\nouter loop\n");
+            writer.append("vertex " + x + " " + (y+1) + " " + z +"\n");
+            writer.append("vertex " + (x+1) + " " + (y+1) + " " + z +"\n");
+            writer.append("vertex " + (x+1) + " " + (y+1) + " " + (z+1) +"\n");
+            writer.append("endloop\nendfacet\n");
+
+            writer.append("facet normal 0.0 1.0 0.0\nouter loop\n");
+            writer.append("vertex " + x + " " + (y+1) + " " + z +"\n");
+            writer.append("vertex " + (x+1) + " " + (y+1) + " " + (z+1) +"\n");
+            writer.append("vertex " + x + " " + (y+1) + " " + (z+1) +"\n");
+            writer.append("endloop\nendfacet\n");
+        }
+
+        if(!xn1Valid){   //ZY plane1
+            writer.append("facet normal 1.0 0.0 0.0\nouter loop\n");
+            writer.append("vertex " + x + " " + y + " " + z +"\n");
+            writer.append("vertex " + x + " " + y + " " + (z+1) +"\n");
+            writer.append("vertex " + x + " " + (y+1) + " " + (z+1) +"\n");
+            writer.append("endloop\nendfacet\n");
+
+            writer.append("facet normal 1.0 0.0 0.0\nouter loop\n");
+            writer.append("vertex " + x + " " + y + " " + z +"\n");
+            writer.append("vertex " + x + " " + (y+1) + " " + z +"\n");
+            writer.append("vertex " + x + " " + (y+1) + " " + (z+1) +"\n");
+            writer.append("endloop\nendfacet\n");
+        }
+
+        if(!x1Valid){   //ZY plane2
+            writer.append("facet normal 1.0 0.0 0.0\nouter loop\n");
+            writer.append("vertex " + (x+1) + " " + y + " " + z +"\n");
+            writer.append("vertex " + (x+1) + " " + y + " " + (z+1) +"\n");
+            writer.append("vertex " + (x+1) + " " + (y+1) + " " + (z+1) +"\n");
+            writer.append("endloop\nendfacet\n");
+
+            writer.append("facet normal 1.0 0.0 0.0\nouter loop\n");
+            writer.append("vertex " + (x+1) + " " + y + " " + z +"\n");
+            writer.append("vertex " + (x+1) + " " + (y+1) + " " + z +"\n");
+            writer.append("vertex " + (x+1) + " " + (y+1) + " " + (z+1) +"\n");
+            writer.append("endloop\nendfacet\n");
+        }
+    }
+
     public void _saveToAsciiSTL(){
-
-        /*
-         solid cube_corner
-          facet normal 0.0 -1.0 0.0
-            outer loop
-              vertex 0.0 0.0 0.0
-              vertex 1.0 0.0 0.0
-              vertex 0.0 0.0 1.0
-            endloop
-          endfacet
-        endsolid
-         */
-
         BufferedWriter writer = null;
         try {
             String timeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate) + ".stl";
@@ -364,47 +447,9 @@ public class volume {
             for(int _x=1; _x<width-1;_x++){
                 for(int _y=1; _y<height-1;_y++){
                     for(int _z=1; _z<depth-1;_z++){
-
                         boolean currentValid=volume.isNotEmpty(_x,_y,_z);
-
                         if(currentValid){
-
-                            float x=_x;
-                            float y=_y;
-                            float z=_z;
-
-                            boolean x1Valid=true;//volume.isNotEmpty(_x+1,_y,_z) && !volume.isInterior(_x+1,_y,_z);
-                            boolean y1Valid=true;//volume.isNotEmpty(_x,_y+1,_z) && !volume.isInterior(_x,_y+1,_z);
-                            boolean z1Valid=true;//volume.isNotEmpty(_x,_y,_z+1) && !volume.isInterior(_x,_y,_z+1);
-
-                            boolean x1z1Valid=true;//volume.isNotEmpty(_x+1,_y,_z+1) && !volume.isInterior(_x+1,_y,_z+1);
-                            boolean x1y1Valid=true;//volume.isNotEmpty(_x+1,_y+1,_z) && !volume.isInterior(_x+1,_y+1,_z);
-                            boolean y1z1Valid=true;//volume.isNotEmpty(_x,_y+1,_z+1) && !volume.isInterior(_x,_y+1,_z+1);
-
-                            if(x1Valid && y1Valid && x1y1Valid){
-                                writer.append("facet normal 0.0 0.0 1.0\nouter loop\n");
-                                writer.append("vertex " + x + " " + y + " " + z +"\n");
-                                writer.append("vertex " + x + " " + (y+1) + " " + z +"\n");
-                                writer.append("vertex " + (x+1) + " " + (y+1) + " " + z +"\n");
-                                //writer.append("vertex " + (x+1) + " " + y + " " + z +"\n");
-                                writer.append("endloop\nendfacet\n");
-                            }
-                            if(x1Valid && z1Valid && x1z1Valid){
-                                writer.append("facet normal 0.0 1.0 0.0\nouter loop\n");
-                                writer.append("vertex " + x + " " + y + " " + z +"\n");
-                                writer.append("vertex " + (x+1) + " " + y + " " + z +"\n");
-                                writer.append("vertex " + (x+1) + " " + y + " " + (z+1) +"\n");
-                                //writer.append("vertex " + x + " " + y + " " + (z+1) +"\n");
-                                writer.append("endloop\nendfacet\n");
-                            }
-                            if(z1Valid && y1Valid && y1z1Valid){
-                                writer.append("facet normal 1.0 0.0 0.0\nouter loop\n");
-                                writer.append("vertex " + x + " " + y + " " + z +"\n");
-                                writer.append("vertex " + x + " " + y + " " + (z+1) +"\n");
-                                writer.append("vertex " + x + " " + (y+1) + " " + (z+1) +"\n");
-                                //writer.append("vertex " + x + " " + (y+1) + " " + z +"\n");
-                                writer.append("endloop\nendfacet\n");
-                            }
+                            addCube(writer,_x,_y,_z);
                         }
                     }
                 }
@@ -422,7 +467,6 @@ public class volume {
             e.printStackTrace();
         } finally {
             try {
-                // Close the writer regardless of what happens...
                 writer.close();
             } catch (Exception e) {
             }
