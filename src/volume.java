@@ -3,8 +3,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class volume {
     public static enum RenderMode {
@@ -70,8 +72,10 @@ public class volume {
 
     long myVolume, mySurfaceArea;
 
-    public volume(int w, int h, int d){
+    List<ifsTriangle> theTriangles;
 
+    public volume(int w, int h, int d){
+        theTriangles = new ArrayList<ifsTriangle>();
         myVolume=0;
         mySurfaceArea=0;
 
@@ -187,11 +191,11 @@ public class volume {
    // }
 
     public boolean putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop){
-        return old_putPixel(_pt, (float)alpha, ptR, ptG, ptB, rp, useCrop, false);
+        return old_putPixel(_pt, (float)alpha, ptR, ptG, ptB, rp, useCrop, false, false);
     }
 
-    public boolean putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark){
-        return old_putPixel(_pt, (float)alpha, ptR, ptG, ptB, rp, useCrop, noDark);
+    public boolean putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric){
+        return old_putPixel(_pt, (float)alpha, ptR, ptG, ptB, rp, useCrop, noDark, noVolumetric);
     }
 /*
     public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, float alpha, int ptRadius){
@@ -240,7 +244,7 @@ public class volume {
         return false;
     }
 */
-    public boolean old_putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark){
+    public boolean old_putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric){
 
         ifsPt pt = getCameraDistortedPt(_pt);
 
@@ -251,7 +255,7 @@ public class volume {
 
         if(useCrop){doDraw=croppedVolumeContains(_pt, rp);}else{doDraw=volumeContains(pt);}
         if(doDraw){
-            if(renderMode==renderMode.VOLUMETRIC){
+            if(renderMode==renderMode.VOLUMETRIC && !noVolumetric){
                 if(volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z, 100)){//if its the first point there
                     myVolume++; //add it to volume
                 }
@@ -352,7 +356,7 @@ public class volume {
         }
     }
 
-    protected void addCube(BufferedWriter writer, int x, int y, int z) throws IOException {
+    protected void addCubeAscii(BufferedWriter writer, int x, int y, int z) throws IOException {
 
         myVolume++;
 
@@ -458,6 +462,58 @@ public class volume {
         }
     }
 
+    protected void addCubeTriangles(int x, int y, int z) {
+
+        myVolume++;
+
+        boolean x1Valid=volume.isNotEmpty(x+1,y,z);
+        boolean y1Valid=volume.isNotEmpty(x,y+1,z);
+        boolean z1Valid=volume.isNotEmpty(x,y,z+1);
+
+        boolean xn1Valid=volume.isNotEmpty(x-1,y,z);
+        boolean yn1Valid=volume.isNotEmpty(x,y-1,z);
+        boolean zn1Valid=volume.isNotEmpty(x,y,z-1);
+
+        if(x1Valid && y1Valid && z1Valid && xn1Valid && yn1Valid && zn1Valid){}//skip "surrounded" cubes
+        else{
+            if(!zn1Valid){   //XY plane1
+                mySurfaceArea++;
+                theTriangles.add(new ifsTriangle(new ifsPt(x,y,z), new ifsPt(x,y+1,z), new ifsPt(x+1,y+1,z)));
+                theTriangles.add(new ifsTriangle(new ifsPt(x,y,z), new ifsPt(x+1,y,z), new ifsPt(x+1,y+1,z)));
+            }
+
+            if(!z1Valid){   //XY plane2
+                mySurfaceArea++;
+                theTriangles.add(new ifsTriangle(new ifsPt(x,y,z+1), new ifsPt(x,y+1,z+1), new ifsPt(x+1,y+1,z+1)));
+                theTriangles.add(new ifsTriangle(new ifsPt(x,y,z+1), new ifsPt(x+1,y,z+1), new ifsPt(x+1,y+1,z+1)));
+            }
+
+            if(!yn1Valid){   //XZ plane1
+                mySurfaceArea++;
+                theTriangles.add(new ifsTriangle(new ifsPt(x,y,z), new ifsPt(x+1,y,z), new ifsPt(x+1,y,z+1)));
+                theTriangles.add(new ifsTriangle(new ifsPt(x,y,z), new ifsPt(x+1,y,z+1), new ifsPt(x,y,z+1)));
+            }
+
+            if(!y1Valid){   //XZ plane2
+                mySurfaceArea++;
+                theTriangles.add(new ifsTriangle(new ifsPt(x,y+1,z), new ifsPt(x+1,y+1,z), new ifsPt(x+1,y+1,z+1)));
+                theTriangles.add(new ifsTriangle(new ifsPt(x,y+1,z), new ifsPt(x+1,y+1,z+1), new ifsPt(x,y+1,z+1)));
+            }
+
+            if(!xn1Valid){   //ZY plane1
+                mySurfaceArea++;
+                theTriangles.add(new ifsTriangle(new ifsPt(x,y,z), new ifsPt(x,y,z+1), new ifsPt(x,y+1,z+1)));
+                theTriangles.add(new ifsTriangle(new ifsPt(x,y,z), new ifsPt(x,y+1,z), new ifsPt(x,y+1,z+1)));
+            }
+
+            if(!x1Valid){   //ZY plane2
+                mySurfaceArea++;
+                theTriangles.add(new ifsTriangle(new ifsPt(x+1,y,z), new ifsPt(x+1,y,z+1), new ifsPt(x+1,y+1,z+1)));
+                theTriangles.add(new ifsTriangle(new ifsPt(x+1,y,z), new ifsPt(x+1,y+1,z), new ifsPt(x+1,y+1,z+1)));
+            }
+        }
+    }
+
     public void _saveToAsciiSTL(){
         mySurfaceArea=0;
         myVolume=0;
@@ -474,7 +530,8 @@ public class volume {
                     for(int _z=1; _z<depth-1;_z++){
                         boolean currentValid=volume.isNotEmpty(_x,_y,_z);
                         if(currentValid){
-                            addCube(writer,_x,_y,_z);
+                            addCubeAscii(writer, _x, _y, _z);
+                            //addCubeTriangles(theTriangles, _x, _y, _z);
                         }
                     }
                 }
@@ -498,6 +555,34 @@ public class volume {
             } catch (Exception e) {
             }
         }
+    }
+
+    public void _saveToBinarySTL(){
+        mySurfaceArea=0;
+        myVolume=0;
+
+        String timeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate) + ".stl";
+        //File logFile = new File(timeLog);
+
+        for(int _x=1; _x<width-1;_x++){
+            for(int _y=1; _y<height-1;_y++){
+                for(int _z=1; _z<depth-1;_z++){
+                    boolean currentValid=volume.isNotEmpty(_x,_y,_z);
+                    if(currentValid){
+                        addCubeTriangles( _x, _y, _z);
+                    }
+                }
+            }
+
+            if(_x%16==0){
+                System.out.println(_x + "/" + width + " generated - " + (int)(100.0*_x/width)+"%");
+            }
+        }
+
+        System.out.println("SURFACE " + mySurfaceArea);
+        System.out.println("VOLUME " + myVolume);
+        System.out.println(theTriangles.size());
+
     }
 
     public static float[][] getProjectionCopy(float[][] map){
@@ -559,5 +644,78 @@ public class volume {
         }
 
         return res;
+    }
+
+    public void drawGrid(RenderParams rp){
+        if(rp.drawGrid && System.currentTimeMillis() -  rp.gridDrawTime > rp.gridRedrawTime){
+            double xmax = 1024;
+            double ymax = 1024;
+            double gridspace = subVolume.size;
+            rp.gridDrawTime = System.currentTimeMillis();
+            int z = 0;
+
+            for(int x=0; x<xmax/gridspace; x++){
+                for(int y=0; y<ymax; y+=4){
+                    this.putPixel(new ifsPt(
+                            x * gridspace,
+                            y,
+                            z), 1.00f, 64, 64, 64, rp, false, false, true);
+                    this.putPixel(new ifsPt(
+                            y,
+                            x * gridspace,
+                            z), 1.00f, 64, 64, 64, rp, false, false, true);
+
+
+                    this.putPixel(new ifsPt(
+                            x * gridspace,
+                            z,
+                            y), 1.00f, 64, 64, 64, rp, false, false, true);
+                    this.putPixel(new ifsPt(
+                            y,
+                            z,
+                            x * gridspace), 1.00f, 64, 64, 64, rp, false, false, true);
+
+                    this.putPixel(new ifsPt(
+                            z,
+                            y,
+                            x * gridspace), 1.00f, 64, 64, 64, rp, false, false, true);
+                    this.putPixel(new ifsPt(
+                            z,
+                            x * gridspace,
+                            y), 1.00f, 64, 64, 64, rp, false, false, true);
+                }
+            }
+
+
+            for(int i=0; i<ymax; i+=2){
+                this.putPixel(new ifsPt(
+                        rp.xMin,
+                        i,
+                        0), 1.00f, 64, 0, 0, rp, false, true, true);
+                this.putPixel(new ifsPt(
+                        rp.xMax,
+                        i,
+                        0), 1.00f, 64, 0, 0, rp, false, true, true);
+
+                this.putPixel(new ifsPt(
+                        0,
+                        rp.yMin,
+                        i), 1.00f, 0, 64, 0, rp, false, true, true);
+                this.putPixel(new ifsPt(
+                        0,
+                        rp.yMax,
+                        i), 1.00f, 0, 64, 0, rp, false, true, true);
+
+                this.putPixel(new ifsPt(
+                        i,
+                        0,
+                        rp.zMin), 1.00f, 0, 0, 64, rp, false, true, true);
+                this.putPixel(new ifsPt(
+                        i,
+                        0,
+                        rp.zMax), 1.00f, 0, 0, 64, rp, false, true, true);
+            }
+
+        }
     }
 }

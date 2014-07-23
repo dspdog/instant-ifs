@@ -208,7 +208,7 @@ public class ifsys extends Panel
     }
 
     public void update(Graphics gr){
-        drawGrid();
+        theVolume.drawGrid(rp);
         paint(gr);
     }
 
@@ -495,79 +495,6 @@ public class ifsys extends Panel
             }
         }
     }
-
-    public void drawGrid(){
-        if(rp.drawGrid && System.currentTimeMillis() -  rp.gridDrawTime > rp.gridRedrawTime){
-            double xmax = 1024;
-            double ymax = 1024;
-            double gridspace = 32;
-            rp.gridDrawTime = System.currentTimeMillis();
-            int z = 0;
-
-            for(int x=0; x<xmax/gridspace; x++){
-                for(int y=0; y<ymax; y+=4){
-                    theVolume.putPixel(new ifsPt(
-                            x*gridspace,
-                            y,
-                            z), 1.00f, 64, 64, 64, rp, false);
-                    theVolume.putPixel(new ifsPt(
-                            y,
-                            x*gridspace,
-                            z), 1.00f, 64, 64, 64, rp, false);
-
-
-                    theVolume.putPixel(new ifsPt(
-                            x*gridspace,
-                            z,
-                            y), 1.00f, 64, 64, 64, rp, false);
-                    theVolume.putPixel(new ifsPt(
-                            y,
-                            z,
-                            x*gridspace), 1.00f, 64, 64, 64, rp, false);
-
-                    theVolume.putPixel(new ifsPt(
-                            z,
-                            y,
-                            x*gridspace), 1.00f, 64, 64, 64, rp, false);
-                    theVolume.putPixel(new ifsPt(
-                            z,
-                            x*gridspace,
-                            y), 1.00f, 64, 64, 64, rp, false);
-                }
-            }
-
-
-            for(int i=0; i<ymax; i+=2){
-                theVolume.putPixel(new ifsPt(
-                        rp.xMin,
-                        i,
-                        0), 1.00f, 64, 0, 0, rp, false, true);
-                theVolume.putPixel(new ifsPt(
-                        rp.xMax,
-                        i,
-                        0), 1.00f, 64, 0, 0, rp, false, true);
-
-                theVolume.putPixel(new ifsPt(
-                        0,
-                        rp.yMin,
-                        i), 1.00f, 0, 64, 0, rp, false, true);
-                theVolume.putPixel(new ifsPt(
-                        0,
-                        rp.yMax,
-                        i), 1.00f, 0, 64, 0, rp, false, true);
-
-                theVolume.putPixel(new ifsPt(
-                        i,
-                        0,
-                        rp.zMin), 1.00f, 0, 0, 64, rp, false, true);
-                theVolume.putPixel(new ifsPt(
-                        i,
-                        0,
-                        rp.zMax), 1.00f, 0, 0, 64, rp, false, true);
-            }
-
-        }
-     }
 
     public void mouseClicked(MouseEvent mouseevent){
 
@@ -868,7 +795,7 @@ public class ifsys extends Panel
             rp.savingDots=!rp.savingDots;
             //rp.savedDots=0;
             if(!rp.savingDots){
-                theVolume._saveToAsciiSTL();
+                theVolume._saveToBinarySTL();
             }
             theVolume.renderMode = rp.savingDots ? volume.RenderMode.VOLUMETRIC : volume.RenderMode.PROJECT_ONLY;
             System.out.println("render mode: " + theVolume.renderMode);
