@@ -42,6 +42,8 @@ public class RenderParams implements java.io.Serializable {
     long savedDots;
     String savedString="";
 
+    int xMin, xMax, yMin, yMax, zMin, zMax;
+
     public RenderParams(){
         savedDots=0;
         savingDots=false;
@@ -59,6 +61,9 @@ public class RenderParams implements java.io.Serializable {
 
         screenwidth = 1024;
         screenheight = 1024;
+
+        xMin=0; yMin=0; zMin=0;
+        xMax=1024; yMax=1024; zMax=1024;
 
         framesHidden = true;
         infoHidden = false;
@@ -86,5 +91,14 @@ public class RenderParams implements java.io.Serializable {
             samplesPerFrame =2;}
         if(samplesPerFrame >1310720){
             samplesPerFrame =1310720;}
+        if(xMin>xMax){
+            xMax=xMin+1;
+        }
+        if(yMin>yMax){
+            yMax=yMin+1;
+        }
+        if(zMin>zMax){
+            zMax=zMin+1;
+        }
     }
 }

@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -367,8 +368,11 @@ public class ifsys extends Panel
         pointDegreesYaw = thePt.rotationYaw +cumulativeRotationYaw;
         pointDegreesPitch = thePt.rotationPitch +cumulativeRotationPitch;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
 
-        int iters = (int)(scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
-        iters=iters&(4095); //limit to 4095
+        int iters;// = (int)(scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
+        //iters=iters&(4095); //limit to 4095
+        //if(rp.smearPDF){
+            iters=Math.min(1000000, thePdf.edgeValues);
+        //}
 
         double uncertaintyX = uncertainty*Math.random()-uncertainty/2;
         double uncertaintyY = uncertainty*Math.random()-uncertainty/2;
@@ -413,7 +417,7 @@ public class ifsys extends Panel
             if(theVolume.putPixel(theDot,(float)ptColor,
                                     r,
                                     g,
-                                    b)){ //Z
+                                    b, rp, true)){ //Z
                 seqIndex++;
             }else{
                 duds++;
@@ -499,18 +503,69 @@ public class ifsys extends Panel
             double gridspace = 32;
             rp.gridDrawTime = System.currentTimeMillis();
             int z = 0;
+
             for(int x=0; x<xmax/gridspace; x++){
                 for(int y=0; y<ymax; y+=4){
                     theVolume.putPixel(new ifsPt(
                             x*gridspace,
                             y,
-                            z), 1.00, 64, 64, 64);
+                            z), 1.00f, 64, 64, 64, rp, false);
                     theVolume.putPixel(new ifsPt(
                             y,
                             x*gridspace,
-                            z), 1.00, 64, 64, 64);
+                            z), 1.00f, 64, 64, 64, rp, false);
+
+
+                    theVolume.putPixel(new ifsPt(
+                            x*gridspace,
+                            z,
+                            y), 1.00f, 64, 64, 64, rp, false);
+                    theVolume.putPixel(new ifsPt(
+                            y,
+                            z,
+                            x*gridspace), 1.00f, 64, 64, 64, rp, false);
+
+                    theVolume.putPixel(new ifsPt(
+                            z,
+                            y,
+                            x*gridspace), 1.00f, 64, 64, 64, rp, false);
+                    theVolume.putPixel(new ifsPt(
+                            z,
+                            x*gridspace,
+                            y), 1.00f, 64, 64, 64, rp, false);
                 }
             }
+
+
+            for(int i=0; i<ymax; i+=2){
+                theVolume.putPixel(new ifsPt(
+                        rp.xMin,
+                        i,
+                        0), 1.00f, 64, 0, 0, rp, false, true);
+                theVolume.putPixel(new ifsPt(
+                        rp.xMax,
+                        i,
+                        0), 1.00f, 64, 0, 0, rp, false, true);
+
+                theVolume.putPixel(new ifsPt(
+                        0,
+                        rp.yMin,
+                        i), 1.00f, 0, 64, 0, rp, false, true);
+                theVolume.putPixel(new ifsPt(
+                        0,
+                        rp.yMax,
+                        i), 1.00f, 0, 64, 0, rp, false, true);
+
+                theVolume.putPixel(new ifsPt(
+                        i,
+                        0,
+                        rp.zMin), 1.00f, 0, 0, 64, rp, false, true);
+                theVolume.putPixel(new ifsPt(
+                        i,
+                        0,
+                        rp.zMax), 1.00f, 0, 0, 64, rp, false, true);
+            }
+
         }
      }
 

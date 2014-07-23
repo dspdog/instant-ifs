@@ -21,6 +21,13 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     JSpinner delaySpinner;
     JSpinner dotSizeSpinner;
 
+    JSpinner xMinSpinner;
+    JSpinner xMaxSpinner;
+    JSpinner yMinSpinner;
+    JSpinner yMaxSpinner;
+    JSpinner zMinSpinner;
+    JSpinner zMaxSpinner;
+
     JSpinner pitchSpinner;
     JSpinner yawSpinner;
 
@@ -91,6 +98,13 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 //myIfsSys.theVolume.camScale = Math.max(0.1, myIfsSys.theVolume.camScale);
 
                 myIfsSys.lastMoveTime = System.currentTimeMillis();
+
+                myIfsSys.rp.xMin = Integer.parseInt(xMinSpinner.getValue().toString());
+                myIfsSys.rp.xMax = Integer.parseInt(xMaxSpinner.getValue().toString());
+                myIfsSys.rp.yMin = Integer.parseInt(yMinSpinner.getValue().toString());
+                myIfsSys.rp.yMax = Integer.parseInt(yMaxSpinner.getValue().toString());
+                myIfsSys.rp.zMin = Integer.parseInt(zMinSpinner.getValue().toString());
+                myIfsSys.rp.zMax = Integer.parseInt(zMaxSpinner.getValue().toString());
             }
         }
     };
@@ -337,6 +351,21 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         ((JSpinner)addLabeled(delaySpinner, layout, "Wait X ms", panel, 13.6-3)).addChangeListener(updateNoClear);
         ((JSpinner)addLabeled(dotSizeSpinner, layout, "Dot Size", panel, 14.7-3)).addChangeListener(updateNoClear);
 
+
+        xMaxSpinner=new JSpinner();
+        xMinSpinner=new JSpinner();
+        yMaxSpinner=new JSpinner();
+        yMinSpinner=new JSpinner();
+        zMaxSpinner=new JSpinner();
+        zMinSpinner=new JSpinner();
+
+        ((JSpinner)addLabeled(xMinSpinner, layout, "Xmin", panel, 13.6)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(xMaxSpinner, layout, "Xmax", panel, 14.6)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(yMinSpinner, layout, "Ymin", panel, 15.6)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(yMaxSpinner, layout, "Ymax", panel, 16.6)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(zMinSpinner, layout, "Zmin", panel, 17.6)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(zMaxSpinner, layout, "Zmax", panel, 18.6)).addChangeListener(updateAndClear);
+
         panel.add(renderLabel);
     }
 
@@ -370,7 +399,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         splitPaneTop.setDividerLocation(200);
 
         splitPaneBottom.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        splitPaneBottom.setDividerLocation(200);
+        splitPaneBottom.setDividerLocation(170);
 
         int padding=0;
         sideMenuLayout.putConstraint(SpringLayout.EAST, splitPaneBig, padding, SpringLayout.EAST, sideMenu);
@@ -378,8 +407,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         sideMenuLayout.putConstraint(SpringLayout.SOUTH, splitPaneBig, padding, SpringLayout.SOUTH, sideMenu);
         sideMenuLayout.putConstraint(SpringLayout.NORTH, splitPaneBig, padding, SpringLayout.NORTH, sideMenu);
 
-
-        splitPaneBig.setDividerLocation(540);
+        splitPaneBig.setDividerLocation(640);
         sideMenu.add(splitPaneBig);
 
         MenuBar menuBar;
@@ -464,6 +492,13 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 //System.out.println(renderModeCombo.setse);
                 renderModeCombo.setSelectedIndex(myIfsSys.theVolume.renderMode == volume.RenderMode.PROJECT_ONLY ? 1 : 0);
                 dotSizeSpinner.setValue(myIfsSys.rp.dotSize);
+
+                xMinSpinner.setValue(myIfsSys.rp.xMin);
+                xMaxSpinner.setValue(myIfsSys.rp.xMax);
+                yMinSpinner.setValue(myIfsSys.rp.yMin);
+                yMaxSpinner.setValue(myIfsSys.rp.yMax);
+                zMinSpinner.setValue(myIfsSys.rp.zMin);
+                zMaxSpinner.setValue(myIfsSys.rp.zMax);
             }
         }
 

@@ -145,6 +145,11 @@ public class volume {
         return (pt.x>1 && pt.y>1 && pt.z>1 && pt.x<width-1 && pt.y<height-1);
     }
 
+    public boolean croppedVolumeContains(ifsPt pt, RenderParams rp){
+        //return (pt.x>1 && pt.y>1 && pt.z>1 && pt.x<width-1 && pt.y<height-1);
+        return (pt.x>=rp.xMin && pt.y>=rp.yMin && pt.z>=rp.zMin && pt.x<=rp.xMax && pt.y<=rp.yMax && pt.z<=rp.zMax);
+    }
+
     public boolean volumeContains(ifsPt pt, int prune){
         return (pt.x>prune && pt.y>prune && pt.z>prune && pt.x<width-prune && pt.y<height-prune);
     }
@@ -177,14 +182,18 @@ public class volume {
         return pt;
     }
 
-    public boolean putPixel(ifsPt _pt, double alpha, float ptR, float ptG, float ptB){
-        return putPixel(_pt, (float)alpha, ptR, ptG, ptB);
+   // public boolean putPixel(ifsPt _pt, double alpha, float ptR, float ptG, float ptB){
+   //     return putPixel(_pt, (float)alpha, ptR, ptG, ptB);
+   // }
+
+    public boolean putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop){
+        return old_putPixel(_pt, (float)alpha, ptR, ptG, ptB, rp, useCrop, false);
     }
 
-    public boolean putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB){
-        return old_putPixel(_pt, (float)alpha, ptR, ptG, ptB);
+    public boolean putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark){
+        return old_putPixel(_pt, (float)alpha, ptR, ptG, ptB, rp, useCrop, noDark);
     }
-
+/*
     public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, float alpha, int ptRadius){
 
         if(ptRadius==0){return putPixel(_pt, alpha, ptR, ptG, ptB);}
@@ -230,24 +239,26 @@ public class volume {
 
         return false;
     }
-
-    public boolean old_putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB){
+*/
+    public boolean old_putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark){
 
         ifsPt pt = getCameraDistortedPt(_pt);
 
         dataPoints++;
         float dark = pt.z/zDarkenScaler;
+        if(noDark){dark = 1.0f;}
+        boolean doDraw = false;
 
-        if(volumeContains(_pt)){
+        if(useCrop){doDraw=croppedVolumeContains(_pt, rp);}else{doDraw=volumeContains(pt);}
+        if(doDraw){
             if(renderMode==renderMode.VOLUMETRIC){
-                if(volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z, alpha)){//if its the first point there
+                if(volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z, 100)){//if its the first point there
                     myVolume++; //add it to volume
-
                 }
 
-                if(volume.getData((int)pt.x, (int)pt.y, (int)pt.y)>dataMaxVolumetric){
-                    dataMaxVolumetric= volume.getData((int)pt.x, (int)pt.y, (int)pt.y);//volume[(int)pt.x][(int)pt.y][(int)pt.z];
-                    highPtVolumetric = new ifsPt(pt);
+                if(volume.getData((int)_pt.x, (int)_pt.y, (int)_pt.y)>dataMaxVolumetric){
+                    dataMaxVolumetric= volume.getData((int)_pt.x, (int)_pt.y, (int)_pt.y);//volume[(int)pt.x][(int)pt.y][(int)pt.z];
+                    highPtVolumetric = new ifsPt(_pt);
                 }
             }
 
@@ -343,6 +354,8 @@ public class volume {
 
     protected void addCube(BufferedWriter writer, int x, int y, int z) throws IOException {
 
+        myVolume++;
+
         boolean x1Valid=volume.isNotEmpty(x+1,y,z);
         boolean y1Valid=volume.isNotEmpty(x,y+1,z);
         boolean z1Valid=volume.isNotEmpty(x,y,z+1);
@@ -351,92 +364,104 @@ public class volume {
         boolean yn1Valid=volume.isNotEmpty(x,y-1,z);
         boolean zn1Valid=volume.isNotEmpty(x,y,z-1);
 
-        if(!zn1Valid){   //XY plane1
-            writer.append("facet normal 0.0 0.0 1.0\nouter loop\n");
-            writer.append("vertex " + x + " " + y + " " + z +"\n");
-            writer.append("vertex " + x + " " + (y+1) + " " + z +"\n");
-            writer.append("vertex " + (x+1) + " " + (y+1) + " " + z +"\n");
-            writer.append("endloop\nendfacet\n");
+        if(x1Valid && y1Valid && z1Valid && xn1Valid && yn1Valid && zn1Valid){}//skip "surrounded" cubes
+        else{
+            if(!zn1Valid){   //XY plane1
+                mySurfaceArea++;
+                writer.append("facet normal 0.0 0.0 1.0\nouter loop\n");
+                writer.append("vertex " + x + " " + y + " " + z +"\n");
+                writer.append("vertex " + x + " " + (y+1) + " " + z +"\n");
+                writer.append("vertex " + (x+1) + " " + (y+1) + " " + z +"\n");
+                writer.append("endloop\nendfacet\n");
 
-            writer.append("facet normal 0.0 0.0 1.0\nouter loop\n");
-            writer.append("vertex " + x + " " + y + " " + z +"\n");
-            writer.append("vertex " + (x+1) + " " + y + " " + z +"\n");
-            writer.append("vertex " + (x+1) + " " + (y+1) + " " + z +"\n");
-            writer.append("endloop\nendfacet\n");
-        }
+                writer.append("facet normal 0.0 0.0 1.0\nouter loop\n");
+                writer.append("vertex " + x + " " + y + " " + z +"\n");
+                writer.append("vertex " + (x+1) + " " + y + " " + z +"\n");
+                writer.append("vertex " + (x+1) + " " + (y+1) + " " + z +"\n");
+                writer.append("endloop\nendfacet\n");
+            }
 
-        if(!z1Valid){   //XY plane2
-            writer.append("facet normal 0.0 0.0 1.0\nouter loop\n");
-            writer.append("vertex " + x + " " + y + " " + (z+1) +"\n");
-            writer.append("vertex " + x + " " + (y+1) + " " + (z+1) +"\n");
-            writer.append("vertex " + (x+1) + " " + (y+1) + " " + (z+1) +"\n");
-            writer.append("endloop\nendfacet\n");
+            if(!z1Valid){   //XY plane2
+                mySurfaceArea++;
+                writer.append("facet normal 0.0 0.0 1.0\nouter loop\n");
+                writer.append("vertex " + x + " " + y + " " + (z+1) +"\n");
+                writer.append("vertex " + x + " " + (y+1) + " " + (z+1) +"\n");
+                writer.append("vertex " + (x+1) + " " + (y+1) + " " + (z+1) +"\n");
+                writer.append("endloop\nendfacet\n");
 
-            writer.append("facet normal 0.0 0.0 1.0\nouter loop\n");
-            writer.append("vertex " + x + " " + y + " " + (z+1) +"\n");
-            writer.append("vertex " + (x+1) + " " + y + " " + (z+1) +"\n");
-            writer.append("vertex " + (x+1) + " " + (y+1) + " " + (z+1) +"\n");
-            writer.append("endloop\nendfacet\n");
-        }
+                writer.append("facet normal 0.0 0.0 1.0\nouter loop\n");
+                writer.append("vertex " + x + " " + y + " " + (z+1) +"\n");
+                writer.append("vertex " + (x+1) + " " + y + " " + (z+1) +"\n");
+                writer.append("vertex " + (x+1) + " " + (y+1) + " " + (z+1) +"\n");
+                writer.append("endloop\nendfacet\n");
+            }
 
-        if(!yn1Valid){   //XZ plane1
-            writer.append("facet normal 0.0 1.0 0.0\nouter loop\n");
-            writer.append("vertex " + x + " " + y + " " + z +"\n");
-            writer.append("vertex " + (x+1) + " " + y + " " + z +"\n");
-            writer.append("vertex " + (x+1) + " " + y + " " + (z+1) +"\n");
-            writer.append("endloop\nendfacet\n");
+            if(!yn1Valid){   //XZ plane1
+                mySurfaceArea++;
+                writer.append("facet normal 0.0 1.0 0.0\nouter loop\n");
+                writer.append("vertex " + x + " " + y + " " + z +"\n");
+                writer.append("vertex " + (x+1) + " " + y + " " + z +"\n");
+                writer.append("vertex " + (x+1) + " " + y + " " + (z+1) +"\n");
+                writer.append("endloop\nendfacet\n");
 
-            writer.append("facet normal 0.0 1.0 0.0\nouter loop\n");
-            writer.append("vertex " + x + " " + y + " " + z +"\n");
-            writer.append("vertex " + (x+1) + " " + y + " " + (z+1) +"\n");
-            writer.append("vertex " + x + " " + y + " " + (z+1) +"\n");
-            writer.append("endloop\nendfacet\n");
-        }
+                writer.append("facet normal 0.0 1.0 0.0\nouter loop\n");
+                writer.append("vertex " + x + " " + y + " " + z +"\n");
+                writer.append("vertex " + (x+1) + " " + y + " " + (z+1) +"\n");
+                writer.append("vertex " + x + " " + y + " " + (z+1) +"\n");
+                writer.append("endloop\nendfacet\n");
+            }
 
-        if(!y1Valid){   //XZ plane2
-            writer.append("facet normal 0.0 1.0 0.0\nouter loop\n");
-            writer.append("vertex " + x + " " + (y+1) + " " + z +"\n");
-            writer.append("vertex " + (x+1) + " " + (y+1) + " " + z +"\n");
-            writer.append("vertex " + (x+1) + " " + (y+1) + " " + (z+1) +"\n");
-            writer.append("endloop\nendfacet\n");
+            if(!y1Valid){   //XZ plane2
+                mySurfaceArea++;
+                writer.append("facet normal 0.0 1.0 0.0\nouter loop\n");
+                writer.append("vertex " + x + " " + (y+1) + " " + z +"\n");
+                writer.append("vertex " + (x+1) + " " + (y+1) + " " + z +"\n");
+                writer.append("vertex " + (x+1) + " " + (y+1) + " " + (z+1) +"\n");
+                writer.append("endloop\nendfacet\n");
 
-            writer.append("facet normal 0.0 1.0 0.0\nouter loop\n");
-            writer.append("vertex " + x + " " + (y+1) + " " + z +"\n");
-            writer.append("vertex " + (x+1) + " " + (y+1) + " " + (z+1) +"\n");
-            writer.append("vertex " + x + " " + (y+1) + " " + (z+1) +"\n");
-            writer.append("endloop\nendfacet\n");
-        }
+                writer.append("facet normal 0.0 1.0 0.0\nouter loop\n");
+                writer.append("vertex " + x + " " + (y+1) + " " + z +"\n");
+                writer.append("vertex " + (x+1) + " " + (y+1) + " " + (z+1) +"\n");
+                writer.append("vertex " + x + " " + (y+1) + " " + (z+1) +"\n");
+                writer.append("endloop\nendfacet\n");
+            }
 
-        if(!xn1Valid){   //ZY plane1
-            writer.append("facet normal 1.0 0.0 0.0\nouter loop\n");
-            writer.append("vertex " + x + " " + y + " " + z +"\n");
-            writer.append("vertex " + x + " " + y + " " + (z+1) +"\n");
-            writer.append("vertex " + x + " " + (y+1) + " " + (z+1) +"\n");
-            writer.append("endloop\nendfacet\n");
+            if(!xn1Valid){   //ZY plane1
+                mySurfaceArea++;
+                writer.append("facet normal 1.0 0.0 0.0\nouter loop\n");
+                writer.append("vertex " + x + " " + y + " " + z +"\n");
+                writer.append("vertex " + x + " " + y + " " + (z+1) +"\n");
+                writer.append("vertex " + x + " " + (y+1) + " " + (z+1) +"\n");
+                writer.append("endloop\nendfacet\n");
 
-            writer.append("facet normal 1.0 0.0 0.0\nouter loop\n");
-            writer.append("vertex " + x + " " + y + " " + z +"\n");
-            writer.append("vertex " + x + " " + (y+1) + " " + z +"\n");
-            writer.append("vertex " + x + " " + (y+1) + " " + (z+1) +"\n");
-            writer.append("endloop\nendfacet\n");
-        }
+                writer.append("facet normal 1.0 0.0 0.0\nouter loop\n");
+                writer.append("vertex " + x + " " + y + " " + z +"\n");
+                writer.append("vertex " + x + " " + (y+1) + " " + z +"\n");
+                writer.append("vertex " + x + " " + (y+1) + " " + (z+1) +"\n");
+                writer.append("endloop\nendfacet\n");
+            }
 
-        if(!x1Valid){   //ZY plane2
-            writer.append("facet normal 1.0 0.0 0.0\nouter loop\n");
-            writer.append("vertex " + (x+1) + " " + y + " " + z +"\n");
-            writer.append("vertex " + (x+1) + " " + y + " " + (z+1) +"\n");
-            writer.append("vertex " + (x+1) + " " + (y+1) + " " + (z+1) +"\n");
-            writer.append("endloop\nendfacet\n");
+            if(!x1Valid){   //ZY plane2
+                mySurfaceArea++;
+                writer.append("facet normal 1.0 0.0 0.0\nouter loop\n");
+                writer.append("vertex " + (x+1) + " " + y + " " + z +"\n");
+                writer.append("vertex " + (x+1) + " " + y + " " + (z+1) +"\n");
+                writer.append("vertex " + (x+1) + " " + (y+1) + " " + (z+1) +"\n");
+                writer.append("endloop\nendfacet\n");
 
-            writer.append("facet normal 1.0 0.0 0.0\nouter loop\n");
-            writer.append("vertex " + (x+1) + " " + y + " " + z +"\n");
-            writer.append("vertex " + (x+1) + " " + (y+1) + " " + z +"\n");
-            writer.append("vertex " + (x+1) + " " + (y+1) + " " + (z+1) +"\n");
-            writer.append("endloop\nendfacet\n");
+                writer.append("facet normal 1.0 0.0 0.0\nouter loop\n");
+                writer.append("vertex " + (x+1) + " " + y + " " + z +"\n");
+                writer.append("vertex " + (x+1) + " " + (y+1) + " " + z +"\n");
+                writer.append("vertex " + (x+1) + " " + (y+1) + " " + (z+1) +"\n");
+                writer.append("endloop\nendfacet\n");
+            }
         }
     }
 
     public void _saveToAsciiSTL(){
+        mySurfaceArea=0;
+        myVolume=0;
+
         BufferedWriter writer = null;
         try {
             String timeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate) + ".stl";
@@ -462,6 +487,8 @@ public class volume {
             writer.append("endsolid ifs_shape\n");
 
             System.out.println(logFile.getCanonicalPath());
+            System.out.println("SURFACE " + mySurfaceArea);
+            System.out.println("VOLUME " + myVolume);
 
         } catch (Exception e) {
             e.printStackTrace();
