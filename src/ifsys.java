@@ -453,8 +453,6 @@ public class ifsys extends Panel
                 double scaleDownMultiplier = 1; //Math.pow(shape.pointsInUse,rp.iterations); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
 
                 for(int d = 0; d < rp.iterations; d++){
-
-
                     int oldRandomIndex = randomIndex;
                     randomIndex = 1 + (int)(Math.random() * (double) (shape.pointsInUse-1));
 
@@ -476,21 +474,25 @@ public class ifsys extends Panel
                         dpt.z -= rpt.z;
                     }
 
-                    if(!(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
-                        try{//TODO why the err?
-                            putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], shape.pts[oldRandomIndex], scaleDownMultiplier, randomIndex, olddpt);
-                        }catch (Exception e){
-                            //e.printStackTrace();
+                    if(!theVolume.croppedVolumeContains(dpt, rp)){ //skip points if they leave the cropped area -- TODO make this optional
+                        d=rp.iterations;
+                    }else{
+                        if(!(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
+                            try{//TODO why the err?
+                                putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], shape.pts[oldRandomIndex], scaleDownMultiplier, randomIndex, olddpt);
+                            }catch (Exception e){
+                                //e.printStackTrace();
+                            }
+
                         }
+                        scaleDownMultiplier/=shape.pointsInUse;
 
+                        cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;
+                        cumulativeOpacity *= shape.pts[randomIndex].opacity;
+
+                        cumulativeRotationYaw += shape.pts[randomIndex].rotationYaw;
+                        cumulativeRotationPitch += shape.pts[randomIndex].rotationPitch;
                     }
-                    scaleDownMultiplier/=shape.pointsInUse;
-
-                    cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;
-                    cumulativeOpacity *= shape.pts[randomIndex].opacity;
-
-                    cumulativeRotationYaw += shape.pts[randomIndex].rotationYaw;
-                    cumulativeRotationPitch += shape.pts[randomIndex].rotationPitch;
                 }
             }
         }

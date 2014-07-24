@@ -1,12 +1,9 @@
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class volume {
     public static enum RenderMode {
@@ -72,10 +69,10 @@ public class volume {
 
     long myVolume, mySurfaceArea;
 
-    List<ifsTriangle> theTriangles;
+    LinkedList<ifsTriangle> theTriangles;
 
     public volume(int w, int h, int d){
-        theTriangles = new ArrayList<ifsTriangle>();
+        theTriangles = new LinkedList<ifsTriangle>();
         myVolume=0;
         mySurfaceArea=0;
 
@@ -561,7 +558,7 @@ public class volume {
         mySurfaceArea=0;
         myVolume=0;
 
-        String timeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate) + ".stl";
+        String timeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate)+ ".stl";
         //File logFile = new File(timeLog);
 
         for(int _x=1; _x<width-1;_x++){
@@ -579,9 +576,46 @@ public class volume {
             }
         }
 
-        System.out.println("SURFACE " + mySurfaceArea);
-        System.out.println("VOLUME " + myVolume);
-        System.out.println(theTriangles.size());
+        System.out.println("saving stl...");
+        byte[] title = new byte[80];
+
+        try(FileChannel ch=new RandomAccessFile(timeLog , "rw").getChannel())
+        {
+            int totalTriangles = theTriangles.size();
+
+            ByteBuffer bb= ByteBuffer.allocate(10000).order(ByteOrder.LITTLE_ENDIAN);
+            bb.put(title); // Header (80 bytes)
+            bb.putInt(totalTriangles); // Number of triangles (UINT32)
+            int triNo=0;
+            for(ifsTriangle tri : theTriangles){
+                if(triNo<totalTriangles){
+                    bb.putFloat(0).putFloat(0).putFloat(0); //TODO normals?
+                    bb.putFloat(tri.pts[0].x).putFloat(tri.pts[0].y).putFloat(tri.pts[0].z);
+                    bb.putFloat(tri.pts[1].x).putFloat(tri.pts[1].y).putFloat(tri.pts[1].z);
+                    bb.putFloat(tri.pts[2].x).putFloat(tri.pts[2].y).putFloat(tri.pts[2].z);
+                    bb.putShort((short)12); //TODO colors?
+
+                    bb.flip();
+                    ch.write(bb);
+                    bb.clear();
+
+                    triNo++;
+                    if(triNo%256==0){
+                        System.out.println("TRI "+triNo+"/"+totalTriangles + " saved - " + (int)(100.0*triNo/totalTriangles)+"%");
+                    }
+                }
+            }
+            ch.close();
+
+            System.out.println("done! " + timeLog);
+
+            System.out.println("SURFACE " + mySurfaceArea);
+            System.out.println("VOLUME " + myVolume);
+            System.out.println("TRIANGLES " + theTriangles.size());
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
     }
 
