@@ -91,8 +91,9 @@ public class volume {
         GBuffer = new float[width][height];
         BBuffer = new float[width][height];
         camPitch=0;
-        camRoll=0;
+        camRoll=-90;
         camYaw=0;
+
         usePerspective=true;
 
         camScale=2.0f;
