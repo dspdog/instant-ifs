@@ -86,8 +86,7 @@ public class ifsys extends Panel
 
         pixels = new int[rp.screenwidth * rp.screenheight];
 
-        maxPoints = 100;
-        shape = new ifsShape(maxPoints);
+        shape = new ifsShape();
         pointNearest =-1;
         pointSelected =-1;
 
@@ -305,8 +304,12 @@ public class ifsys extends Panel
 
             int argb;
 
-            for(int x = 0; x < zProjection.length; x++){
-                for(int y=0; y<zProjection[x].length; y++){
+            float gradient;
+
+            for(int x = 1; x < zProjection.length-1; x++){
+                for(int y=1; y<zProjection[x].length-1; y++){
+
+                    gradient = 1.0f-Math.abs(zProjection[x][y]-zProjection[x-1][y-1])/255.0f;
 
                     if(zProjection[x][y]==0){ //"half darkened spanish blue" for background
                         argb = 255;
@@ -315,9 +318,9 @@ public class ifsys extends Panel
                         argb = (argb << 8) + 184/2;
                     }else{
                         argb = 255;
-                        argb = (argb << 8) + (int)rProjection[x][y];
-                        argb = (argb << 8) + (int)gProjection[x][y];
-                        argb = (argb << 8) + (int)bProjection[x][y];
+                        argb = (argb << 8) + (int)(rProjection[x][y]*gradient);
+                        argb = (argb << 8) + (int)(gProjection[x][y]*gradient);
+                        argb = (argb << 8) + (int)(bProjection[x][y]*gradient);
                     }
 
                     pixels[x+y*zProjection.length] = argb;

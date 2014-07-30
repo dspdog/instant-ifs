@@ -64,6 +64,19 @@ class ifsPt implements java.io.Serializable{
         x = (float)_x; y = (float)_y; z = (float)_z;
     }
 
+    public float randomPlusMinus(){
+        return (float)(Math.random()*2.0-1.0);
+    }
+
+    public void perturb(float intensity){
+        //change all the properties slightly...
+        scale+=randomPlusMinus()*0.1*intensity;
+        rotationPitch+=randomPlusMinus()*intensity;
+        rotationYaw+=randomPlusMinus()*intensity;
+        x+=randomPlusMinus()*intensity;
+        y+=randomPlusMinus()*intensity;
+        z+=randomPlusMinus()*intensity;
+    }
 
     public float cos(float i){
         return (float)Math.cos(i);

@@ -1,4 +1,6 @@
 import java.io.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 class ifsShape implements java.io.Serializable {
     public ifsPt pts[];
@@ -12,31 +14,32 @@ class ifsShape implements java.io.Serializable {
 
     public RenderParams rp;
 
-    public ifsShape(int maxPoints){
+    public ifsShape(){
         autoUpdateCenterEnabled =false;
         stateSaved = false;
         pointsInUse = 1;
         unitScale = 115.47005383792515f; //distance from center to one of the points in preset #1
         autoScale = true;
-        pts = new ifsPt[maxPoints];
-        for(int a=0; a< maxPoints; a++){
+        pts = new ifsPt[1000];
+        for(int a=0; a< 1000; a++){
             pts[a] = new ifsPt();
         }
     }
 
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
     public void saveToFile(String filename){
-        try
-        {
+        try{
             FileOutputStream fileOut =
                     new FileOutputStream(filename);
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
             out.writeObject(this);
-
             out.close();
             fileOut.close();
             System.out.println("saved to "+filename);
-        }catch(Exception i)
-        {
+        }catch(Exception i){
             i.printStackTrace();
         }
     }
@@ -57,6 +60,30 @@ class ifsShape implements java.io.Serializable {
         }
 
         return loadedShape;
+    }
+
+    public ArrayList<ifsShape> getPerturbedVersions(int total, float intensity){
+        ArrayList<ifsShape> _perturbedVersions;
+        _perturbedVersions = new ArrayList<ifsShape>();
+        for(int i=0; i<total; i++){
+            _perturbedVersions.add(this.getPerturbedShape(intensity));
+        }
+        return  _perturbedVersions;
+    }
+
+    public ifsShape getPerturbedShape(float intensity){
+        ifsShape pShape = null;
+        try {
+            pShape = (ifsShape)this.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+
+        for(int i=0; i<pShape.pointsInUse; i++){
+            pShape.pts[i].perturb(intensity);
+        }
+
+        return pShape;
     }
 
     /*public void centerByPt(int desiredX, int desiredY, int desiredZ, int centerX, int centerY, int centerZ){
