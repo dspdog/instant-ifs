@@ -595,6 +595,8 @@ public class ifsys extends Panel
     public void mouseDragged(MouseEvent e){
         if(System.currentTimeMillis()-lastMoveTime>20){
             getMouseXYZ(e);
+            float xDelta = (mousePt.x-mouseStartDrag.x);
+            float yDelta = (mousePt.y-mouseStartDrag.y);
 
             if(isRightPressed){ //rotate camera
                 theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0f;
@@ -603,49 +605,18 @@ public class ifsys extends Panel
                 ifsPt xtra = new ifsPt(0,0,0);
                 switch (selectedMovementAxis){
                     case X:
-                        if(overlays.draggyPtCenter.x<overlays.draggyPtArrow.x){
-                            xtra.x+=(mousePt.x-mouseStartDrag.x)/2.0f;
-                        }else{
-                            xtra.x-=(mousePt.x-mouseStartDrag.x)/2.0f;
-                        }
-
-                        if(overlays.draggyPtCenter.y<overlays.draggyPtArrow.y){
-                            xtra.x+= (mousePt.y-mouseStartDrag.y)/2.0f;
-                        }else{
-                            xtra.x-= (mousePt.y-mouseStartDrag.y)/2.0f;
-                        }
-
+                        xtra.x+=xDelta/2.0f*(overlays.draggyPtCenter.x<overlays.draggyPtArrow.x?1:-1);
+                        xtra.x+=yDelta/2.0f*(overlays.draggyPtCenter.y<overlays.draggyPtArrow.y?1:-1);
                         selectedPt.x = selectedPt.savedx + xtra.x;
-
                         break;
                     case Y:
-                        if(overlays.draggyPtCenter.x<overlays.draggyPtArrow.x){
-                            xtra.y+=(mousePt.x-mouseStartDrag.x)/2.0f;
-                        }else{
-                            xtra.y-=(mousePt.x-mouseStartDrag.x)/2.0f;
-                        }
-
-                        if(overlays.draggyPtCenter.y<overlays.draggyPtArrow.y){
-                            xtra.y+= (mousePt.y-mouseStartDrag.y)/2.0f;
-                        }else{
-                            xtra.y-= (mousePt.y-mouseStartDrag.y)/2.0f;
-                        }
-
+                        xtra.y+=xDelta/2.0f*(overlays.draggyPtCenter.x<overlays.draggyPtArrow.x?1:-1);
+                        xtra.y+=yDelta/2.0f*(overlays.draggyPtCenter.y<overlays.draggyPtArrow.y?1:-1);
                         selectedPt.y = selectedPt.savedy + xtra.y;
                         break;
                     case Z:
-                        if(overlays.draggyPtCenter.x<overlays.draggyPtArrow.x){
-                            xtra.z+=(mousePt.x-mouseStartDrag.x)/2.0f;
-                        }else{
-                            xtra.z-=(mousePt.x-mouseStartDrag.x)/2.0f;
-                        }
-
-                        if(overlays.draggyPtCenter.y<overlays.draggyPtArrow.y){
-                            xtra.z+= (mousePt.y-mouseStartDrag.y)/2.0f;
-                        }else{
-                            xtra.z-= (mousePt.y-mouseStartDrag.y)/2.0f;
-                        }
-
+                        xtra.z+=xDelta/2.0f*(overlays.draggyPtCenter.x<overlays.draggyPtArrow.x?1:-1);
+                        xtra.z+=yDelta/2.0f*(overlays.draggyPtCenter.y<overlays.draggyPtArrow.y?1:-1);
                         selectedPt.z = selectedPt.savedz + xtra.z;
                         break;
                     default:
