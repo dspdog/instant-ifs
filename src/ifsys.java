@@ -359,6 +359,7 @@ public class ifsys extends Panel
 
     public void clearframe(){
         if(!rp.holdFrame && System.currentTimeMillis() - lastClearTime > 20){
+            shape.clearBuckets();
             theVolume.clear();
             lastClearTime=System.currentTimeMillis();
         }
@@ -480,9 +481,23 @@ public class ifsys extends Panel
 
                 double scaleDownMultiplier = 1; //Math.pow(shape.pointsInUse,rp.iterations); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
 
+                int bucketIndex=0;
+                int nextBucketIndex=0;
+
                 for(int d = 0; d < rp.iterations; d++){
                     int oldRandomIndex = randomIndex;
-                    randomIndex = 1 + (int)(Math.random() * (double) (shape.pointsInUse-1));
+                    if(bucketIndex*(shape.pointsInUse-1)<shape.buckets.length){
+                        randomIndex = shape.smallestIndexAtThisNode(bucketIndex*(shape.pointsInUse-1))+1; //send new data where its needed most...
+                    }else{
+                        randomIndex = 1 + (int)(Math.random() * (double) (shape.pointsInUse-1));
+                    }
+
+                    nextBucketIndex = bucketIndex*(shape.pointsInUse-1)+randomIndex-1;
+                    if(nextBucketIndex<shape.buckets.length){
+                        bucketIndex=nextBucketIndex;
+                    }
+
+                    shape.buckets[bucketIndex]++;
 
                     if(d==0){randomIndex=0;}
 

@@ -14,6 +14,36 @@ class ifsShape implements java.io.Serializable {
 
     public RenderParams rp;
 
+    int[] buckets = new int[1000000]; //used for "load balancing" across the branches
+
+    public int smallestIndexAtThisNode(int node){
+        int min=Integer.MAX_VALUE;
+        int minIndex=0;
+        ArrayList<Integer> winners = new ArrayList<Integer>(); //chooses a random "winner" in the event of a "tie"
+
+        for(int i=node; i<node+this.pointsInUse-1; i++){
+            if(buckets[i]<=min){
+                if(buckets[i]==min){
+                    winners.add(i-node);
+                }else{
+                    winners.clear();
+                }
+                min=buckets[i];
+                minIndex=i-node;
+            }
+        }
+
+        if(winners.size()>0){
+            return winners.get((int)(Math.random()*winners.size()));
+        }else{
+            return minIndex;
+        }
+    }
+
+    public void clearBuckets(){
+        buckets = new int[1000000];
+    }
+
     public ifsShape(){
         autoUpdateCenterEnabled =false;
         stateSaved = false;
