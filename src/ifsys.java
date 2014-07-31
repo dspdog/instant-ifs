@@ -310,11 +310,28 @@ public class ifsys extends Panel
             int argb;
 
             float gradient=1f;
+            float maxslope=0;
+            float maxslope2=0;
 
             for(int x = 1; x < zProjection.length-1; x++){
                 for(int y=1; y<zProjection[x].length-1; y++){
                     if(rp.useShadows){
-                        gradient = 1.0f-Math.abs(zProjection[x][y]-zProjection[x-1][y-1])/255.0f;
+                        maxslope2 = 1.0f / (float)Math.sqrt(2.0) * Math.max(Math.max((zProjection[x-1][y-1]-zProjection[x][y]),
+                                            (zProjection[x+1][y+1]-zProjection[x][y])),
+                                   Math.max((zProjection[x+1][y-1]-zProjection[x][y]),
+                                            (zProjection[x-1][y+1]-zProjection[x][y])));
+
+                        maxslope = Math.max(Math.max((zProjection[x-1][y]-zProjection[x][y]),
+                                (zProjection[x+1][y]-zProjection[x][y])),
+                                Math.max((zProjection[x][y-1]-zProjection[x][y]),
+                                        (zProjection[x][y+1]-zProjection[x][y])));
+
+                        maxslope = Math.max(maxslope,maxslope2);
+
+                        if(maxslope>5){maxslope=255;}
+
+                        gradient = 1.0f-maxslope/255.0f;
+
                     }
 
                     if(zProjection[x][y]==0){ //"half darkened spanish blue" for background

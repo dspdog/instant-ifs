@@ -12,9 +12,7 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
     int sampleHeight;
     int sampleDepth;
 
-    int sampleXMin, sampleXMax;
-    int sampleYMin, sampleYMax;
-    int sampleZMin, sampleZMax;
+    intPt sampleMin, sampleMax;
 
     public float volume[];
 
@@ -32,13 +30,6 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
 
     comboMode thePdfComboMode = comboMode.ADD;
 
-    int firstZ;
-    int lastZ;
-    int firstY;
-    int lastY;
-    int firstX;
-    int lastX;
-
     public pdf3D(){
         width = 512;
         height = 512;
@@ -46,15 +37,8 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
         volume = new float[width*height*depth];
         samplePixels = new int[width*height];
 
-        firstZ=depth;
-        lastZ=0;
-        firstY=height;
-        lastY=0;
-        firstX=width;
-        lastX=0;
-
         loadImgs3D("circle2b.png", "circle2b.png", "flat2.png");
-        //buildVolumeEdgePixels_Disk(50);
+        //loadImgs3D("g.png", "e.png", "b.png");
     }
 
     enum Dimension{
@@ -138,32 +122,10 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
         return volume[(int)x+(int)y*width+(int)z*width*height];
     }
 
-    public void buildVolumeEdgePixels_Disk(float radius){
-        samplePixelsX=new int[width*width];
-        samplePixelsY=new int[width*width];
-        samplePixelsZ=new int[width*width];
-
-        for(int y=0; y<width; y++){
-            for(int x=0; x<height; x++){
-                if(ifsPt.dist(x-height/2,y-width/2,0)<=radius){
-                    volume[x+y*width+256*width*height]=255;
-                    samplePixelsX[y+256*width]=255;
-                    samplePixelsY[x+256*width]=255;
-                    samplePixelsZ[x+y*width]=255;
-                }else{
-                    volume[x+y*width+256*width*height]=0;
-                    samplePixelsX[y+256*width]=0;
-                    samplePixelsY[x+256*width]=0;
-                    samplePixelsZ[x+y*width]=0;
-                }
-            }
-        }
-    }
-
     public void updateVolumePixels(int edgeUnit){
-        for(int y=sampleYMin; y<sampleYMax; y++){
-            for(int x=sampleXMin; x<sampleXMax; x++){
-                for(int z=sampleZMin; z<sampleZMax; z++){
+        for(int y=sampleMin.y; y<sampleMax.y; y++){
+            for(int x=sampleMin.x; x<sampleMax.x; x++){
+                for(int z=sampleMin.z; z<sampleMax.z; z++){
                     switch(thePdfComboMode){
                         case ADD:
                             volume[x+y*width+z*width*height] = samplePixelsX[y+z*width]+
@@ -225,8 +187,8 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
                 samplePixelsY = (int[]) grabberY.getPixels();
                 samplePixelsZ = (int[]) grabberZ.getPixels();
 
-                sampleXMin=512;sampleYMin=512;sampleZMin=512;
-                sampleXMax=0;sampleYMax=0;sampleZMax=0;
+                sampleMin=new intPt(width,width,width);
+                sampleMax=new intPt(width,width,width);
 
                 for(int x=0; x<width; x++){
                     for(int y=0; y<height; y++){
@@ -234,42 +196,42 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
                         samplePixelsY[x+y*width] = samplePixelsY[x+y*width]&0xFF;
                         samplePixelsZ[x+y*width] = samplePixelsZ[x+y*width]&0xFF;
                         if(samplePixelsX[x+y*width]>0){
-                            if(x<sampleXMin){
-                                sampleXMin=x;
+                            if(x<sampleMin.x){
+                                sampleMin.x=x;
                             }
-                            if(x>sampleXMax){
-                                sampleXMax=x;
+                            if(x>sampleMax.x){
+                                sampleMax.x=x;
                             }
                         }
                         if(samplePixelsY[x+y*width]>0){
-                            if(x<sampleYMin){
-                                sampleYMin=x;
+                            if(x<sampleMin.y){
+                                sampleMin.y=x;
                             }
-                            if(x>sampleYMax){
-                                sampleYMax=x;
+                            if(x>sampleMax.y){
+                                sampleMax.y=x;
                             }
                         }
                         if(samplePixelsZ[x+y*width]>0){
-                            if(x<sampleZMin){
-                                sampleZMin=x;
+                            if(x<sampleMin.z){
+                                sampleMin.z=x;
                             }
-                            if(x>sampleZMax){
-                                sampleZMax=x;
+                            if(x>sampleMax.z){
+                                sampleMax.z=x;
                             }
                         }
                     }
                 }
 
-                sampleXMax = Math.min(sampleXMax, 511);
-                sampleYMax = Math.min(sampleYMax, 511);
-                sampleZMax = Math.min(sampleZMax, 511);
-                sampleXMin = Math.max(sampleXMin, 1);
-                sampleYMin = Math.max(sampleYMin, 1);
-                sampleZMin = Math.max(sampleZMin, 1);
+                sampleMax.x = Math.min(sampleMax.x, width-1);
+                sampleMax.y = Math.min(sampleMax.y, width-1);
+                sampleMax.z = Math.min(sampleMax.z, width-1);
+                sampleMin.x = Math.max(sampleMin.x, 1);
+                sampleMin.y = Math.max(sampleMin.y, 1);
+                sampleMin.z = Math.max(sampleMin.z, 1);
 
                 updateVolume();
                 System.out.println("built " + sampleWidth + " " + sampleHeight + " " + sampleDepth);
-                System.out.println("Range " + sampleXMin + "-" + sampleXMax + " , " + sampleYMin + "-" + sampleYMax + " , " + sampleZMin + "-" + sampleZMax);
+                System.out.println("Range " + sampleMin.x + "-" + sampleMax.x + " , " + sampleMin.y + "-" + sampleMax.y + " , " + sampleMin.z + "-" + sampleMax.z);
             }
         }catch (InterruptedException e) {
             e.printStackTrace();
