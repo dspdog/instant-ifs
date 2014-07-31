@@ -49,6 +49,7 @@ public class ifsys extends Panel
         static boolean isLeftPressed=false;
         static boolean isRightPressed=false;
 
+        static boolean mousedown;
         static int mousex, mousey;
         int mouseScroll;
         int rotateMode;
@@ -530,12 +531,15 @@ public class ifsys extends Panel
     }
 
     public void mousePressed(MouseEvent e){
+        isDragging=true;
         if (SwingUtilities.isLeftMouseButton (e))
         {
+            mousedown = true;
             isLeftPressed = true;
         }
         else if (SwingUtilities.isRightMouseButton (e))
         {
+            mousedown = true;
             isRightPressed = true;
         }
 

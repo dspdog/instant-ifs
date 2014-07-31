@@ -217,13 +217,15 @@ public class ifsOverlays {
 
         minInterestDist=minDis;
 
-        int selectedMinDist = 20;
-        if(dz<dx && dz<dy){selectedAxis = DragAxis.Z; if(dz>selectedMinDist){selectedAxis=DragAxis.NONE;}}
-        if(dy<dx && dy<dz){selectedAxis = DragAxis.Y; if(dy>selectedMinDist){selectedAxis=DragAxis.NONE;}}
-        if(dx<dz && dx<dy){selectedAxis = DragAxis.X; if(dx>selectedMinDist){selectedAxis=DragAxis.NONE;}}
 
         if(isSelected){
-            myIfsSys.selectedMovementAxis = selectedAxis;
+            if(!myIfsSys.isDragging){
+                int selectedMinDist = 20;
+                if(dz<dx && dz<dy){selectedAxis = DragAxis.Z; if(dz>selectedMinDist){selectedAxis=DragAxis.NONE;}}
+                if(dy<dx && dy<dz){selectedAxis = DragAxis.Y; if(dy>selectedMinDist){selectedAxis=DragAxis.NONE;}}
+                if(dx<dz && dx<dy){selectedAxis = DragAxis.X; if(dx>selectedMinDist){selectedAxis=DragAxis.NONE;}}
+                myIfsSys.selectedMovementAxis = selectedAxis;
+            }
 
             draggyPtCenter = new ifsPt(centerPt);
             switch (selectedAxis){
