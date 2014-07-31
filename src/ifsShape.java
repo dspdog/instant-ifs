@@ -14,7 +14,8 @@ class ifsShape implements java.io.Serializable {
 
     public RenderParams rp;
 
-    int[] buckets = new int[1000000]; //used for "load balancing" across the branches
+    static int numBuckets = 10_000_000;
+    int[] buckets = new int[numBuckets]; //used for "load balancing" across the branches
 
     public int smallestIndexAtThisNode(int node){
         int min=Integer.MAX_VALUE;
@@ -41,7 +42,7 @@ class ifsShape implements java.io.Serializable {
     }
 
     public void clearBuckets(){
-        buckets = new int[1000000];
+        buckets = new int[numBuckets];
     }
 
     public ifsShape(){
