@@ -598,6 +598,9 @@ public class ifsys extends Panel
             float xDelta = (mousePt.x-mouseStartDrag.x);
             float yDelta = (mousePt.y-mouseStartDrag.y);
 
+            boolean xPos = overlays.draggyPtCenter.x<overlays.draggyPtArrow.x;
+            boolean yPos = overlays.draggyPtCenter.y<overlays.draggyPtArrow.y;
+
             if(isRightPressed){ //rotate camera
                 theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0f;
                 theVolume.camRoll=theVolume.savedRoll + (mousePt.y-mouseStartDrag.y)/3.0f;
@@ -605,18 +608,18 @@ public class ifsys extends Panel
                 ifsPt xtra = new ifsPt(0,0,0);
                 switch (selectedMovementAxis){
                     case X:
-                        xtra.x+=xDelta/2.0f*(overlays.draggyPtCenter.x<overlays.draggyPtArrow.x?1:-1);
-                        xtra.x+=yDelta/2.0f*(overlays.draggyPtCenter.y<overlays.draggyPtArrow.y?1:-1);
+                        xtra.x+=xDelta/2.0f*(xPos?1:-1);
+                        xtra.x+=yDelta/2.0f*(yPos?1:-1);
                         selectedPt.x = selectedPt.savedx + xtra.x;
                         break;
                     case Y:
-                        xtra.y+=xDelta/2.0f*(overlays.draggyPtCenter.x<overlays.draggyPtArrow.x?1:-1);
-                        xtra.y+=yDelta/2.0f*(overlays.draggyPtCenter.y<overlays.draggyPtArrow.y?1:-1);
+                        xtra.y+=xDelta/2.0f*(xPos?1:-1);
+                        xtra.y+=yDelta/2.0f*(yPos?1:-1);
                         selectedPt.y = selectedPt.savedy + xtra.y;
                         break;
                     case Z:
-                        xtra.z+=xDelta/2.0f*(overlays.draggyPtCenter.x<overlays.draggyPtArrow.x?1:-1);
-                        xtra.z+=yDelta/2.0f*(overlays.draggyPtCenter.y<overlays.draggyPtArrow.y?1:-1);
+                        xtra.z+=xDelta/2.0f*(xPos?1:-1);
+                        xtra.z+=yDelta/2.0f*(yPos?1:-1);
                         selectedPt.z = selectedPt.savedz + xtra.z;
                         break;
                     default:
