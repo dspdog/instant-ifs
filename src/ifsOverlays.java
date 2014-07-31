@@ -7,7 +7,6 @@ public class ifsOverlays {
     DragAxis selectedAxis;
     double minInterestDist=0;
 
-    ifsPt draggyPt;
     ifsPt draggyPtArrow;
     ifsPt draggyPtCenter;
 
@@ -239,7 +238,7 @@ public class ifsOverlays {
                     if(draw)rg.setColor(Color.GREEN);
                     if(draw)drawLine3D(centerPt2, yArrow2, rg, true, true);
                     selectedAxis = DragAxis.Y;
-                    draggyPtArrow = new ifsPt(xArrow);
+                    draggyPtArrow = new ifsPt(yArrow);
                     break;
                 case Z:
                     if(draw)rg.setColor(Color.BLUE);
