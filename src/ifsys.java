@@ -591,31 +591,25 @@ public class ifsys extends Panel
     public void mouseDragged(MouseEvent e){
         if(System.currentTimeMillis()-lastMoveTime>20){
             getMouseXYZ(e);
-            if(ctrlDown){
-                selectedMovementAxis=ifsOverlays.DragAxis.NONE;
-                if(isLeftPressed && isRightPressed){
-                    selectedMovementAxis=ifsOverlays.DragAxis.Z;
-                    selectedPt.z = selectedPt.savedz - (mousePt.y-mouseStartDrag.y)/2.0f;
-                }else if(isLeftPressed){
-                    selectedMovementAxis=ifsOverlays.DragAxis.Y;
-                    selectedPt.y = selectedPt.savedy + (mousePt.y-mouseStartDrag.y)/2.0f;
-                }else if(isRightPressed){
-                    selectedMovementAxis=ifsOverlays.DragAxis.X;
+
+            System.out.println(selectedMovementAxis.toString());
+            switch (selectedMovementAxis){
+                case X:
                     selectedPt.x = selectedPt.savedx + (mousePt.x-mouseStartDrag.x)/2.0f;
-                }
-            }else{
-                selectedMovementAxis=ifsOverlays.DragAxis.NONE;
+                    break;
+                case Y:
+                    selectedPt.y = selectedPt.savedy + (mousePt.x-mouseStartDrag.x)/2.0f;
+                    break;
+                case Z:
+                    selectedPt.z = selectedPt.savedz - (mousePt.x-mouseStartDrag.x)/2.0f;
+                    break;
+                default:
+                    break;
+            }
 
-                if(isLeftPressed && isRightPressed){
-                    theVolume.camCenter.z=theVolume.camCenter.savedz - ifsPt.Z_UNIT.getRotatedPt(theVolume.camPitch,theVolume.camYaw,theVolume.camRoll).scale((mousePt.y-mouseStartDrag.y)/2.0f).z;
-                }else if(isLeftPressed){
-                    theVolume.camCenter.x=theVolume.camCenter.savedx - ifsPt.X_UNIT.getRotatedPt(theVolume.camPitch,theVolume.camYaw,theVolume.camRoll).scale((mousePt.x-mouseStartDrag.x)/2.0f).x;
-                    theVolume.camCenter.y=theVolume.camCenter.savedy - ifsPt.Y_UNIT.getRotatedPt(theVolume.camPitch,theVolume.camYaw,theVolume.camRoll).scale((mousePt.y-mouseStartDrag.y)/2.0f).y;
-
-                }else if(isRightPressed){ //rotate camera
-                    theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0f;
-                    theVolume.camRoll=theVolume.savedRoll + (mousePt.y-mouseStartDrag.y)/3.0f;
-                }
+            if(isRightPressed){ //rotate camera
+                theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0f;
+                theVolume.camRoll=theVolume.savedRoll + (mousePt.y-mouseStartDrag.y)/3.0f;
             }
 
             theMenu.camPitchSpinner.setValue(theMenu.camPitchSpinner.getValue());
