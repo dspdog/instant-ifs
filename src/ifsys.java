@@ -7,6 +7,7 @@ import java.awt.image.MemoryImageSource;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class ifsys extends Panel
@@ -18,6 +19,7 @@ public class ifsys extends Panel
     boolean quit;
 
     int pixels[];
+    int bgpixels[];
     Image render;
     Graphics rg;
     long frameNo;
@@ -54,6 +56,8 @@ public class ifsys extends Panel
         RenderParams rp;
 
     ifsShape shape;
+    ArrayList<ifsShape> shapeList;
+    int shapeIndex=0;
 
     ifsMenu theMenu;
 
@@ -254,8 +258,9 @@ public class ifsys extends Panel
         }
 
         generatePixels();
+
         try{ //TODO why does this err?
-            rg.setColor(Color.green);
+            rg.setColor(new Color(0,112/2,184/2));
             rg.fillRect(0,0,1024,1024);
 
             rg.drawImage(createImage(new MemoryImageSource(rp.screenwidth, rp.screenheight, pixels, 0, rp.screenwidth)), 0, 0, rp.screenwidth, rp.screenheight, this);
@@ -304,18 +309,20 @@ public class ifsys extends Panel
 
             int argb;
 
-            float gradient;
+            float gradient=1f;
 
             for(int x = 1; x < zProjection.length-1; x++){
                 for(int y=1; y<zProjection[x].length-1; y++){
-
-                    gradient = 1.0f-Math.abs(zProjection[x][y]-zProjection[x-1][y-1])/255.0f;
+                    if(rp.useShadows){
+                        gradient = 1.0f-Math.abs(zProjection[x][y]-zProjection[x-1][y-1])/255.0f;
+                    }
 
                     if(zProjection[x][y]==0){ //"half darkened spanish blue" for background
-                        argb = 255;
-                        argb = (argb << 8) + 0;
-                        argb = (argb << 8) + 112/2;
-                        argb = (argb << 8) + 184/2;
+                        //argb = 255;
+                        //argb = (argb << 8) + 0;
+                        //argb = (argb << 8) + 112/2;
+                        //argb = (argb << 8) + 184/2;
+                        argb=0;
                     }else{
                         argb = 255;
                         argb = (argb << 8) + (int)(rProjection[x][y]*gradient);
@@ -478,7 +485,7 @@ public class ifsys extends Panel
                     }
 
                     if(!theVolume.croppedVolumeContains(dpt, rp)){ //skip points if they leave the cropped area -- TODO make this optional
-                        d=rp.iterations;
+                        break;
                     }else{
                         if(!(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
                             try{//TODO why the err?
@@ -761,11 +768,11 @@ public class ifsys extends Panel
             gamefunc();
         }
 
-        if(e.getKeyChar() == 'z'){
-            theVolume.useZBuffer = !theVolume.useZBuffer;
-            clearframe();
-            gamefunc();
-        }
+       // if(e.getKeyChar() == 'z'){
+       //     theVolume.useZBuffer = !theVolume.useZBuffer;
+       //     clearframe();
+       //     gamefunc();
+       // }
 
         if(e.getKeyChar() == '-'){
             theVolume.zDarkenScaler/=0.9;
@@ -794,6 +801,32 @@ public class ifsys extends Panel
 
         if(e.getKeyChar() == 's'){
             saveImg();
+        }
+
+        if(e.getKeyChar() == 'h'){
+            rp.useShadows = !rp.useShadows;
+        }
+
+        if(e.getKeyChar() == 'e'){
+            shapeList = shape.getPerturbedVersions(100,0.1f);
+            System.out.println(shapeList.size());
+            shapeIndex=0;
+        }
+
+        if(e.getKeyChar() == 'z'){
+            shapeIndex--;shapeIndex=(shapeIndex+100)%100;
+            shape=shapeList.get(shapeIndex);
+            System.out.println("SHAPE #"+ shapeIndex);
+            clearframe();
+            gamefunc();
+        }
+
+        if(e.getKeyChar() == 'x'){
+            shapeIndex++;shapeIndex=(shapeIndex+100)%100;
+            shape=shapeList.get(shapeIndex);
+            System.out.println("SHAPE #"+ shapeIndex);
+            clearframe();
+            gamefunc();
         }
 
         if(e.getKeyChar() == 'r'){

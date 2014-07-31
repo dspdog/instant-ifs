@@ -1,3 +1,5 @@
+import java.util.Random;
+
 class ifsPt implements java.io.Serializable{
     public float x, y, z;
     public float scale;
@@ -64,18 +66,16 @@ class ifsPt implements java.io.Serializable{
         x = (float)_x; y = (float)_y; z = (float)_z;
     }
 
-    public float randomPlusMinus(){
-        return (float)(Math.random()*2.0-1.0);
-    }
-
     public void perturb(float intensity){
+        Random rnd = new Random();
+
         //change all the properties slightly...
-        scale+=randomPlusMinus()*0.1*intensity;
-        rotationPitch+=randomPlusMinus()*intensity;
-        rotationYaw+=randomPlusMinus()*intensity;
-        x+=randomPlusMinus()*intensity;
-        y+=randomPlusMinus()*intensity;
-        z+=randomPlusMinus()*intensity;
+        scale*=(1+rnd.nextGaussian()*intensity);
+        rotationPitch+=rnd.nextGaussian()*intensity;
+        rotationYaw+=rnd.nextGaussian()*intensity;
+        x+=rnd.nextGaussian()*intensity*10;
+        y+=rnd.nextGaussian()*intensity*10;
+        z+=rnd.nextGaussian()*intensity*10;
     }
 
     public float cos(float i){

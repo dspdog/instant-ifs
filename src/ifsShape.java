@@ -26,10 +26,6 @@ class ifsShape implements java.io.Serializable {
         }
     }
 
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
-
     public void saveToFile(String filename){
         try{
             FileOutputStream fileOut =
@@ -72,14 +68,11 @@ class ifsShape implements java.io.Serializable {
     }
 
     public ifsShape getPerturbedShape(float intensity){
-        ifsShape pShape = null;
-        try {
-            pShape = (ifsShape)this.clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
+        ifsShape pShape = new ifsShape();
+        pShape.pointsInUse=this.pointsInUse;
 
         for(int i=0; i<pShape.pointsInUse; i++){
+            pShape.pts[i] = new ifsPt(this.pts[i], true);
             pShape.pts[i].perturb(intensity);
         }
 

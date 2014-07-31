@@ -201,19 +201,19 @@ public class ifsOverlays {
             if(draw)rg.setColor(Color.RED);
             if(draw)rg.drawString("X", (int)xArrow.x+buffer, (int)xArrow.y+buffer);
         }
-        if(draw)drawLine3D(centerPt2, xArrow2, rg, false, isSelected);
+        if(draw)drawLine3D(centerPt2, xArrow2, rg, isNearest && !isSelected, isSelected);
 
         if(isSelected){
             if(draw)rg.setColor(Color.GREEN);
             if(draw)rg.drawString("Y", (int)yArrow.x+buffer, (int)yArrow.y+buffer);
         }
-        if(draw)drawLine3D(centerPt2, yArrow2, rg, false, isSelected);
+        if(draw)drawLine3D(centerPt2, yArrow2, rg, isNearest && !isSelected, isSelected);
 
         if(isSelected){
             if(draw)rg.setColor(Color.BLUE);
             if(draw)rg.drawString("Z", (int)zArrow.x+buffer, (int)zArrow.y+buffer);
         }
-        if(draw)drawLine3D(centerPt2, zArrow2, rg, false, isSelected);
+        if(draw)drawLine3D(centerPt2, zArrow2, rg, isNearest && !isSelected, isSelected);
 
         minInterestDist=minDis;
 

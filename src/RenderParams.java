@@ -29,6 +29,8 @@ public class RenderParams implements java.io.Serializable {
 
     boolean smearPDF;
 
+    boolean useShadows;
+
     boolean drawGrid;
     long gridDrawTime;
     long gridRedrawTime;
@@ -45,6 +47,7 @@ public class RenderParams implements java.io.Serializable {
     int xMin, xMax, yMin, yMax, zMin, zMax;
 
     public RenderParams(){
+        useShadows=false;
         savedDots=0;
         savingDots=false;
         saveInterval=2000;
