@@ -183,7 +183,7 @@ public class ifsOverlays {
     }
 
     public void drawArrows(Graphics rg, ifsPt pt, boolean isSelected, boolean isDragging, boolean isCenter, boolean isNearest, boolean draw){
-        double d1, d2, d3, minDis=32;
+        double dx=1000, dy=1000, dz=1000, minDis=32;
 
         ifsPt centerPt = myIfsSys.theVolume.getCameraDistortedPt(pt);
         ifsPt xArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.X_UNIT.scale(pt.radius * pt.scale)));
@@ -201,23 +201,28 @@ public class ifsOverlays {
             if(draw)rg.setColor(Color.RED);
             if(draw)rg.drawString("X", (int)xArrow.x+buffer, (int)xArrow.y+buffer);
         }
-        if(draw)drawLine3D(centerPt2, xArrow2, rg, isNearest && !isSelected, isSelected);
+        if(draw)dx = drawLine3D(centerPt2, xArrow2, rg, isNearest && !isSelected, isSelected);
 
         if(isSelected){
             if(draw)rg.setColor(Color.GREEN);
             if(draw)rg.drawString("Y", (int)yArrow.x+buffer, (int)yArrow.y+buffer);
         }
-        if(draw)drawLine3D(centerPt2, yArrow2, rg, isNearest && !isSelected, isSelected);
+        if(draw)dy = drawLine3D(centerPt2, yArrow2, rg, isNearest && !isSelected, isSelected);
 
         if(isSelected){
             if(draw)rg.setColor(Color.BLUE);
             if(draw)rg.drawString("Z", (int)zArrow.x+buffer, (int)zArrow.y+buffer);
         }
-        if(draw)drawLine3D(centerPt2, zArrow2, rg, isNearest && !isSelected, isSelected);
+        if(draw)dz = drawLine3D(centerPt2, zArrow2, rg, isNearest && !isSelected, isSelected);
 
         minInterestDist=minDis;
 
-        selectedAxis = myIfsSys.selectedMovementAxis;
+        //selectedAxis = myIfsSys.selectedMovementAxis;
+
+        int selectedMinDist = 20;
+        if(dz<dx && dz<dy){selectedAxis = DragAxis.Z; if(dz>selectedMinDist){selectedAxis=DragAxis.NONE;}}
+        if(dy<dx && dy<dz){selectedAxis = DragAxis.Y; if(dy>selectedMinDist){selectedAxis=DragAxis.NONE;}}
+        if(dx<dz && dx<dy){selectedAxis = DragAxis.X; if(dx>selectedMinDist){selectedAxis=DragAxis.NONE;}}
 
         if(isSelected){
             draggyPtCenter = new ifsPt(centerPt);
@@ -261,15 +266,24 @@ public class ifsOverlays {
         }
     }
 
-    public void drawLine3D(ifsPt p1, ifsPt p2, Graphics rg, boolean isBold, boolean arrowHead){
+    public int drawLine3D(ifsPt p1, ifsPt p2, Graphics rg, boolean isBold, boolean arrowHead){
         int subDivs = Math.min(50, (int)p1.distTo(p2));
+        int distMin = 1000, dist;
         ifsPt ipt1;
         ifsPt ipt2;
+        ifsPt mpt = new ifsPt(myIfsSys.mousePt);
+
         for(int i=0; i<subDivs-1; i++){
             ipt1 = myIfsSys.theVolume.getCameraDistortedPt(p1.add(p2.subtract(p1).scale(1.0f / subDivs).scale(i)));
             ipt2 = myIfsSys.theVolume.getCameraDistortedPt(p1.add(p2.subtract(p1).scale(1.0f / subDivs).scale(i + 1)));
+            mpt.z=ipt1.z;
+            dist = (int)ipt1.distTo(mpt);
+            if(dist < distMin){
+                distMin=dist;
+            }
             drawline(ipt1, ipt2,rg, isBold, arrowHead && i==subDivs-2);
         }
+        return distMin;
       }
     
     public void drawline(ifsPt p1, ifsPt p2, Graphics rg, boolean isBold, boolean arrowHead){

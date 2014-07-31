@@ -825,7 +825,7 @@ public class ifsys extends Panel
         }
 
         if(e.getKeyChar() == 'e'){
-            shapeList = shape.getPerturbedVersions(100,0.1f);
+            shapeList = shape.getPerturbedVersions(100,0.2f);
             System.out.println(shapeList.size());
             shapeIndex=0;
         }
