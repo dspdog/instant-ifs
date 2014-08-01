@@ -5,7 +5,6 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -622,27 +621,44 @@ public class ifsys extends Panel
                 theVolume.camRoll=theVolume.savedRoll + (mousePt.y-mouseStartDrag.y)/3.0f;
             }else{
                 ifsPt xtra = new ifsPt(0,0,0);
-                switch (selectedMovementAxis){
-                    case X:
-                        xtra.x+=xDelta/2.0f*(xPos?1:-1);
-                        xtra.x+=yDelta/2.0f*(yPos?1:-1);
-                        selectedPt.x = selectedPt.savedx + xtra.x;
-                        break;
-                    case Y:
-                        xtra.y+=xDelta/2.0f*(xPos?1:-1);
-                        xtra.y+=yDelta/2.0f*(yPos?1:-1);
-                        selectedPt.y = selectedPt.savedy + xtra.y;
-                        break;
-                    case Z:
-                        xtra.z+=xDelta/2.0f*(xPos?1:-1);
-                        xtra.z+=yDelta/2.0f*(yPos?1:-1);
-                        selectedPt.z = selectedPt.savedz + xtra.z;
-                        break;
-                    default:
-                        break;
+
+                if(ctrlDown){
+                    xtra.x+=xDelta/100.0f;
+                    xtra.y+=yDelta/100.0f;
+                    selectedPt.rotationPitch = selectedPt.savedrotationpitch + xtra.y;
+                    selectedPt.rotationYaw = selectedPt.savedrotationyaw + xtra.x;
+                }else if(altDown){
+                    xtra.x+=xDelta/100.0f;
+                    xtra.y+=yDelta/100.0f;
+
+                    for(int i=1; i<shape.pointsInUse; i++){
+                        shape.pts[i].rotationPitch = shape.pts[i].savedrotationpitch + xtra.y;
+                        shape.pts[i].rotationYaw = shape.pts[i].savedrotationyaw + xtra.x;
+                    }
+                }else{
+                    switch (selectedMovementAxis){
+                        case X:
+                            xtra.x+=xDelta/2.0f*(xPos?1:-1);
+                            xtra.x+=yDelta/2.0f*(yPos?1:-1);
+                            selectedPt.x = selectedPt.savedx + xtra.x;
+                            break;
+                        case Y:
+                            xtra.y+=xDelta/2.0f*(xPos?1:-1);
+                            xtra.y+=yDelta/2.0f*(yPos?1:-1);
+                            selectedPt.y = selectedPt.savedy + xtra.y;
+                            break;
+                        case Z:
+                            xtra.z+=xDelta/2.0f*(xPos?1:-1);
+                            xtra.z+=yDelta/2.0f*(yPos?1:-1);
+                            selectedPt.z = selectedPt.savedz + xtra.z;
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
 
+            shape.updateRadiusDegrees();
             theMenu.camPitchSpinner.setValue(theMenu.camPitchSpinner.getValue());
             clearframe();
             lastMoveTime = System.currentTimeMillis();
