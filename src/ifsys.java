@@ -679,6 +679,16 @@ public class ifsys extends Panel
             }else{ //scroll up
                 selectedPt.scale/=scaleChangeFactor;
             }
+        }else if(altDown){
+            if(e.getWheelRotation()>0){ //scroll down
+                for(int i=1; i<shape.pointsInUse; i++){
+                    shape.pts[i].radius*=scaleChangeFactor;
+                }
+            }else{ //scroll up
+                for(int i=1; i<shape.pointsInUse; i++){
+                    shape.pts[i].radius/=scaleChangeFactor;
+                }
+            }
         }else{
             if(e.getWheelRotation()>0){ //scroll down
                 theVolume.camScale*=camChangeFactor;
