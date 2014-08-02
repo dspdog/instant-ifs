@@ -26,6 +26,8 @@ public class volume {
     float dataMaxVolumetric=0;
     float dataMaxReset = 0;
 
+    float perspectiveScale;
+
     float surfaceArea=0;
 
     public smartVolume volume;
@@ -75,7 +77,7 @@ public class volume {
         theTriangles = new LinkedList<ifsTriangle>();
         myVolume=0;
         mySurfaceArea=0;
-
+        perspectiveScale=160f;
         startDate = Calendar.getInstance().getTime();
         width = w;
         height = h;
@@ -173,8 +175,8 @@ public class volume {
        // pt.z = Math.sqrt(pt.z)*16;
 
         if(usePerspective){
-            pt.x = (pt.x-vx)/(float)Math.sqrt(1024f-pt.z)*16.0f+vx;
-            pt.y = (pt.y-vy)/(float)Math.sqrt(1024f-pt.z)*16.0f+vy;
+            pt.x = (pt.x-vx)/(float)Math.sqrt(1024f-pt.z)*perspectiveScale/10f+vx;
+            pt.y = (pt.y-vy)/(float)Math.sqrt(1024f-pt.z)*perspectiveScale/10f+vy;
         }
 
         pt.z /= 8.0;

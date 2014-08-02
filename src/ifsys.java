@@ -105,7 +105,14 @@ public class ifsys extends Panel
         ifsys is = new ifsys();
         is.setSize(is.rp.screenwidth, is.rp.screenheight); // same size as defined in the HTML APPLET
 
-        JDesktopPane desktop = new JDesktopPane();
+        JDesktopPane desktop = new javax.swing.JDesktopPane() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.setColor(new Color(0,112/2,184/2));
+                g.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
 
         desktop.add(is);
         desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
@@ -887,6 +894,22 @@ public class ifsys extends Panel
             clearframe();
             gamefunc();
         }
+
+        switch(e.getKeyChar()){
+            case '.':
+                theVolume.perspectiveScale*=0.9;
+                //System.out.println(theVolume.perspectiveScale);
+                clearframe();
+                gamefunc();
+                break;
+            case '/':
+                theVolume.perspectiveScale/=0.9;
+                //System.out.println(theVolume.perspectiveScale);
+                clearframe();
+                gamefunc();
+                break;
+        }
+
 
         if(e.getKeyChar() == 's'){
             saveImg();
