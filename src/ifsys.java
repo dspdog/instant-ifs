@@ -104,20 +104,41 @@ public class ifsys extends Panel
     public static void main(String[] args) {
         ifsys is = new ifsys();
         is.setSize(is.rp.screenwidth, is.rp.screenheight); // same size as defined in the HTML APPLET
-        JFrame frame = new JFrame("");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel sideMenu = new JPanel();
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, is, sideMenu);
-        splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setDividerLocation(is.rp.screenwidth);
-        frame.getContentPane().add(splitPane, BorderLayout.CENTER);
-        frame.setSize(is.rp.screenwidth+200, is.rp.screenheight);
-        frame.setVisible(true);
+        JDesktopPane desktop = new JDesktopPane();
 
-        is.theMenu = new ifsMenu(frame, is, sideMenu);
+        desktop.add(is);
+        desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+        JFrame parentFrame = new JFrame();
+        parentFrame.getContentPane().add(desktop, BorderLayout.CENTER);
+        parentFrame.setSize(is.rp.screenwidth+200+16, is.rp.screenheight);
+        parentFrame.setVisible(true);
+        parentFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        is.theMenu = new ifsMenu(parentFrame, is);
 
         is.init();
+
+        setupMiniFrame(is.theMenu.cameraProperties, 200, 200,   is.rp.screenwidth,0, "Camera Properties", desktop);
+        setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth,200, "PDF Properties", desktop);
+        setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth,400, "Render Properties", desktop);
+        setupMiniFrame(is.theMenu.pointProperties, 200, 200,    is.rp.screenwidth,850, "Point Properties", desktop);
+    }
+
+    static void setupMiniFrame(JPanel panel, int width, int height, int x, int y, String title, JDesktopPane desktop){
+        boolean resizable = true;
+        boolean closeable = true;
+        boolean maximizable = false;
+        boolean iconifiable = false;
+
+        JInternalFrame theInternalFrame = new JInternalFrame(title, resizable, closeable, maximizable,
+                iconifiable);
+        desktop.add(theInternalFrame);
+        theInternalFrame.setSize(width, height);
+        theInternalFrame.setLocation(x,y);
+        theInternalFrame.setVisible(true);
+        theInternalFrame.getContentPane().add(panel);
+        theInternalFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
 
     public void init() {

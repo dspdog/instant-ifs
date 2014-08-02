@@ -49,6 +49,11 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     JComboBox renderModeCombo;
     JComboBox pdfModeCombo;
 
+    JPanel pointProperties = new JPanel();
+    JPanel renderProperties = new JPanel();
+    JPanel pdfProperties = new JPanel();
+    JPanel cameraProperties = new JPanel();
+
     int pdfXImgFile = 0;
     int pdfYImgFile = 0;
     int pdfZImgFile = 0;
@@ -369,15 +374,15 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         panel.add(renderLabel);
     }
 
-    public ifsMenu(Frame f, ifsys is, JPanel sideMenu){
+    public ifsMenu(Frame f, ifsys is){
 
         inited=false;
 
         myIfsSys = is;
-        JPanel pointProperties = new JPanel();
-        JPanel renderProperties = new JPanel();
-        JPanel pdfProperties = new JPanel();
-        JPanel cameraProperties = new JPanel();
+        pointProperties = new JPanel();
+        renderProperties = new JPanel();
+        pdfProperties = new JPanel();
+        cameraProperties = new JPanel();
 
         //SIDE MENU
 
@@ -387,7 +392,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         setupCameraPropertiesPanel(cameraProperties);
 
         SpringLayout sideMenuLayout = new SpringLayout();
-        sideMenu.setLayout(sideMenuLayout);
+        //sideMenu.setLayout(sideMenuLayout);
 
         JSplitPane splitPaneBottom = new JSplitPane(JSplitPane.VERTICAL_SPLIT, cameraProperties, pdfProperties);
         JSplitPane splitPaneTop = new JSplitPane(JSplitPane.VERTICAL_SPLIT, pointProperties, renderProperties);
@@ -402,13 +407,13 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         splitPaneBottom.setDividerLocation(170);
 
         int padding=0;
-        sideMenuLayout.putConstraint(SpringLayout.EAST, splitPaneBig, padding, SpringLayout.EAST, sideMenu);
-        sideMenuLayout.putConstraint(SpringLayout.WEST, splitPaneBig, padding, SpringLayout.WEST, sideMenu);
-        sideMenuLayout.putConstraint(SpringLayout.SOUTH, splitPaneBig, padding, SpringLayout.SOUTH, sideMenu);
-        sideMenuLayout.putConstraint(SpringLayout.NORTH, splitPaneBig, padding, SpringLayout.NORTH, sideMenu);
+        //sideMenuLayout.putConstraint(SpringLayout.EAST, splitPaneBig, padding, SpringLayout.EAST, sideMenu);
+        //sideMenuLayout.putConstraint(SpringLayout.WEST, splitPaneBig, padding, SpringLayout.WEST, sideMenu);
+        //sideMenuLayout.putConstraint(SpringLayout.SOUTH, splitPaneBig, padding, SpringLayout.SOUTH, sideMenu);
+        //sideMenuLayout.putConstraint(SpringLayout.NORTH, splitPaneBig, padding, SpringLayout.NORTH, sideMenu);
 
         splitPaneBig.setDividerLocation(640);
-        sideMenu.add(splitPaneBig);
+        //sideMenu.add(splitPaneBig);
 
         MenuBar menuBar;
         Menu fileMenu, renderMenu, shapeMenu, guidesMenu, viewMenu;
