@@ -215,7 +215,7 @@ public class ifsys extends Panel
     }
 
     public void start(){
-        setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        //setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         addMouseListener(this);
         addMouseMotionListener(this);
         addMouseWheelListener(this);
@@ -790,53 +790,14 @@ public class ifsys extends Panel
             clearframe();
         }
 
-        if(e.getKeyChar() == 's'){
-            saveStuff("");
-        }
+        //if(e.getKeyChar() == 's'){
+        //    saveStuff("");
+        //}
 
         if(e.getKeyChar() == 'l'){
             loadStuff("");
         }
 
-        if(e.getKeyChar() == '1'){
-            clearframe();
-            shape.setToPreset(1);
-        }
-
-        if(e.getKeyChar() == '2'){
-            clearframe();
-            shape.setToPreset(2);
-        }
-
-        if(e.getKeyChar() == '3'){
-            clearframe();
-            shape.setToPreset(3);
-        }
-
-        if(e.getKeyChar() == '4'){
-            clearframe();
-            shape.setToPreset(4);
-        }
-
-        if(e.getKeyChar() == '5'){
-            clearframe();
-            shape.setToPreset(5);
-        }
-
-        if(e.getKeyChar() == '6'){
-            clearframe();
-            shape.setToPreset(6);
-        }
-
-
-        if(e.getKeyChar() == '9'){
-            clearframe();
-            shape.setToPreset(9);
-        }
-        if(e.getKeyChar() == '8'){
-            clearframe();
-            shape.setToPreset(8);
-        }
       //  if(e.getKeyChar() == 's'){
            // volume.saveToAscii(theVolume.volume);
      //   }
@@ -883,41 +844,54 @@ public class ifsys extends Panel
             gamefunc();
         }
 
-        if(e.getKeyChar() == '\\'){
-            rp.usingColors = !rp.usingColors;
-            clearframe();
-            gamefunc();
-        }
-
-        if(e.getKeyChar() == 'i'){
-            rp.infoHidden = !rp.infoHidden;
-            clearframe();
-            gamefunc();
-        }
-
         switch(e.getKeyChar()){
-            case '.':
-                theVolume.perspectiveScale*=0.9;
-                //System.out.println(theVolume.perspectiveScale);
+            case 'i':
+                rp.infoHidden = !rp.infoHidden;
                 clearframe();
                 gamefunc();
                 break;
-            case '/':
-                theVolume.perspectiveScale/=0.9;
-                //System.out.println(theVolume.perspectiveScale);
+            case '\\':
+                rp.usingColors = !rp.usingColors;
                 clearframe();
                 gamefunc();
+                break;
+            case 'h':
+                rp.useShadows = !rp.useShadows;
                 break;
         }
 
+        //if(e.getKeyChar() == 's'){
+        //    saveStuff("");
+        //    saveImg();
+        //}
+
+        if(e.getKeyChar() == 'w'){
+            theVolume.camCenter.y-=10;
+            clearframe();
+            gamefunc();
+        }
 
         if(e.getKeyChar() == 's'){
-            saveImg();
+            theVolume.camCenter.y+=10;
+            clearframe();
+            gamefunc();
         }
 
-        if(e.getKeyChar() == 'h'){
-            rp.useShadows = !rp.useShadows;
+        if(e.getKeyChar() == 'a'){
+            theVolume.camCenter.x-=10;
+            clearframe();
+            gamefunc();
         }
+
+        if(e.getKeyChar() == 'd'){
+            theVolume.camCenter.x+=10;
+            clearframe();
+            gamefunc();
+        }
+
+
+
+
 
         if(e.getKeyChar() == 'e'){
             shapeList = shape.getPerturbedVersions(100,0.2f);
@@ -947,6 +921,14 @@ public class ifsys extends Panel
             if(!rp.savingDots){
                 theVolume._saveToBinarySTL();
             }
+            theVolume.renderMode = rp.savingDots ? volume.RenderMode.VOLUMETRIC : volume.RenderMode.PROJECT_ONLY;
+            System.out.println("render mode: " + theVolume.renderMode);
+        }
+
+        if(e.getKeyChar() == 't'){
+            rp.savingDots=!rp.savingDots;
+            rp.savedDots=0;
+
             theVolume.renderMode = rp.savingDots ? volume.RenderMode.VOLUMETRIC : volume.RenderMode.PROJECT_ONLY;
             System.out.println("render mode: " + theVolume.renderMode);
         }

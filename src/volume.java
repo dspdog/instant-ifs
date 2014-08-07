@@ -258,11 +258,12 @@ public class volume {
             if(renderMode==renderMode.VOLUMETRIC && !noVolumetric){
                 if(volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z, 100)){//if its the first point there
                     myVolume++; //add it to volume
-                }
-
-                if(volume.getData((int)_pt.x, (int)_pt.y, (int)_pt.y)>dataMaxVolumetric){
-                    dataMaxVolumetric= volume.getData((int)_pt.x, (int)_pt.y, (int)_pt.y);//volume[(int)pt.x][(int)pt.y][(int)pt.z];
-                    highPtVolumetric = new ifsPt(_pt);
+                    if(volume.getData((int)_pt.x+1, (int)_pt.y, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
+                    if(volume.getData((int)_pt.x,   (int)_pt.y+1, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
+                    if(volume.getData((int)_pt.x,   (int)_pt.y, (int)_pt.z+1)>0){mySurfaceArea--;}else{mySurfaceArea++;}
+                    if(volume.getData((int)_pt.x-1, (int)_pt.y, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
+                    if(volume.getData((int)_pt.x,   (int)_pt.y-1, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
+                    if(volume.getData((int)_pt.x,   (int)_pt.y, (int)_pt.z-1)>0){mySurfaceArea--;}else{mySurfaceArea++;}
                 }
             }
 

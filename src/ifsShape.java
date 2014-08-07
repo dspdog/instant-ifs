@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Random;
 
 class ifsShape implements java.io.Serializable {
     public ifsPt pts[];
@@ -99,12 +100,18 @@ class ifsShape implements java.io.Serializable {
     }
 
     public ifsShape getPerturbedShape(float intensity){
+        boolean staySymmetric = true;
         ifsShape pShape = new ifsShape();
         pShape.pointsInUse=this.pointsInUse;
+        long seed = (long)(Math.random()*Long.MAX_VALUE);
 
         for(int i=0; i<pShape.pointsInUse; i++){
             pShape.pts[i] = new ifsPt(this.pts[i], true);
-            pShape.pts[i].perturb(intensity);
+            if(staySymmetric){
+                pShape.pts[i].perturb(intensity, seed);
+            }else{
+                pShape.pts[i].perturb(intensity);
+            }
         }
 
         return pShape;

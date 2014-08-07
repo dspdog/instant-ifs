@@ -395,39 +395,20 @@ public class ifsOverlays {
 
         rg.setColor(Color.white);
 
-        /*rg.drawString("Centroid: ("
-                + (int)(myIfsSys.theVolume.getCentroid().x) + ", "
-                + (int)(myIfsSys.theVolume.getCentroid().y) + ", "
-                + (int)(myIfsSys.theVolume.getCentroid().z) + ")", xPad, lineSize*4);*/
-
         if(myIfsSys.theVolume.renderMode == volume.RenderMode.VOLUMETRIC){
-            /*rg.drawString("HighPt: ("
-                    + (int)(myIfsSys.theVolume.highPtVolumetric.x) + ", "
-                    + (int)(myIfsSys.theVolume.highPtVolumetric.y) + ", "
-                    + (int)(myIfsSys.theVolume.highPtVolumetric.z) + ")", xPad,+ lineSize*5);
 
-            */
-            rg.drawString("DataMax 10^" + df.format(Math.log10(myIfsSys.theVolume.dataMaxVolumetric)), xPad, lineSize * 6);
             rg.drawString("Volume 10^" + df.format(Math.log10(myIfsSys.theVolume.myVolume)) + " (" + myIfsSys.theVolume.myVolume + ")", xPad, lineSize * 1);
-            //rg.drawString("Surface Area 10^" + df.format(Math.log10(myIfsSys.theVolume.mySurfaceArea)) + " (" + myIfsSys.theVolume.mySurfaceArea + ")", xPad, lineSize * 2);
-            rg.drawString("Regions " + myIfsSys.theVolume.volume.getInitCount() + "/" + myIfsSys.theVolume.volume.totalRegions + " (" + (100*myIfsSys.theVolume.volume.getInitCount()/myIfsSys.theVolume.volume.totalRegions) + "%)", xPad, lineSize*14);
-        }else{
-            /*rg.drawString("HighPt2D: ("
-                    + (int)(myIfsSys.theVolume.highPt.x) + ", "
-                    + (int)(myIfsSys.theVolume.highPt.y) + ", "
-                    + (int)(myIfsSys.theVolume.highPt.z) + ")", xPad,+ lineSize*5);
+            rg.drawString("Surface 10^" + df.format(Math.log10(myIfsSys.theVolume.mySurfaceArea)) + " (" + myIfsSys.theVolume.mySurfaceArea + ")", xPad, lineSize * 2);
+            rg.drawString("Ratio S/V 10^" + df.format(Math.log10((float)myIfsSys.theVolume.mySurfaceArea / (float)myIfsSys.theVolume.myVolume)) + " (" + (float)myIfsSys.theVolume.mySurfaceArea / (float)myIfsSys.theVolume.myVolume + ")", xPad, lineSize * 3);
 
-            rg.drawString("DataMax2D: 10^" + df.format(Math.log10(myIfsSys.theVolume.dataMax)), xPad, lineSize * 6);*/
+            rg.drawString("Regions " + myIfsSys.theVolume.volume.getInitCount() + "/" + myIfsSys.theVolume.volume.totalRegions + " (" + (100*myIfsSys.theVolume.volume.getInitCount()/myIfsSys.theVolume.volume.totalRegions) + "%)", xPad, lineSize*14);
         }
 
         rg.drawString("Dots: 10^" + df.format(Math.log10(myIfsSys.theVolume.totalSamples)), xPad, lineSize * 7);
 
-        //if(myIfsSys.rp.usingFindEdges)rg.drawString("Surface Area: 10^" + df.format(Math.log10(myIfsSys.theVolume.surfaceArea)), xPad, lineSize * 8);
-
         double memoryUsedMB = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024*1024);
         double memoryMaxMB = Runtime.getRuntime().maxMemory()/(1024*1024);
-        
-        //rg.drawString("Render " + myIfsSys.theVolume.width + "x" + myIfsSys.theVolume.height + "x" + myIfsSys.theVolume.depth + " - " + myIfsSys.theVolume.renderMode.toString(), xPad, lineSize * 9);
+
         rg.drawString("Memory " + (int)memoryUsedMB +" / " + (int)memoryMaxMB + "MB (" + (int)(100*memoryUsedMB/memoryMaxMB) + "%)", xPad, lineSize * 9);
 
         double time = (System.currentTimeMillis()-myIfsSys.theVolume.drawTime)/1000.0;

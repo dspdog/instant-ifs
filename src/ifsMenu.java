@@ -194,7 +194,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     }
 
     public void setupPdfPropertiesPanel(JPanel panel){
-        JLabel renderLabel = new JLabel(" PDF Properties");
+        //JLabel renderLabel = new JLabel(" PDF Properties");
 
         smearCheck = new JCheckBox();
 
@@ -206,10 +206,10 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         final Component parent = this;
 
-        addLabeledButton(new JButton("X"), layout, panel, 1, 0).addActionListener(this);
-        addLabeledButton(new JButton("Y"), layout, panel, 1, 1).addActionListener(this);
-        addLabeledButton(new JButton("Z"), layout, panel, 1, 2).addActionListener(this);
-        ((JComboBox)addLabeled(pdfModeCombo, layout, "Mix", panel, 3)).addActionListener(new ActionListener() {
+        addLabeledButton(new JButton("X"), layout, panel, 0, 0).addActionListener(this);
+        addLabeledButton(new JButton("Y"), layout, panel, 0, 1).addActionListener(this);
+        addLabeledButton(new JButton("Z"), layout, panel, 0, 2).addActionListener(this);
+        ((JComboBox)addLabeled(pdfModeCombo, layout, "Mix", panel, 2)).addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JComboBox cb = (JComboBox)e.getSource();
@@ -232,16 +232,12 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             }
         });
 
-        ((JCheckBox)addLabeled(smearCheck, layout, "Smear PDF", panel, 4.5)).addChangeListener(updateAndClear);
+        ((JCheckBox)addLabeled(smearCheck, layout, "Smear PDF", panel, 3.5)).addChangeListener(updateAndClear);
 
         panel.addMouseMotionListener(this);
-
-        panel.add(renderLabel);
     }
 
     public void setupCameraPropertiesPanel(JPanel panel){
-        JLabel cameraLabel = new JLabel(" Camera Properties");
-
         camPitchSpinner = new JSlider();
         camYawSpinner = new JSlider();
         camRollSpinner = new JSlider();
@@ -252,16 +248,13 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         camRollSpinner.setMaximum(360);
         camScaleSpinner.setMaximum(500);
 
-        int topPad=5;
-
         SpringLayout layout = new SpringLayout();
         panel.setLayout(layout);
-        layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
 
-        ((JSlider)addLabeled(camPitchSpinner, layout, "Pitch", panel, 1+2)).addChangeListener(updateAndClear);
-        ((JSlider)addLabeled(camYawSpinner, layout, "Yaw", panel, 2.35+2)).addChangeListener(updateAndClear);
-        ((JSlider)addLabeled(camRollSpinner, layout, "Roll", panel, 3.7+2)).addChangeListener(updateAndClear);
-        ((JSlider)addLabeled(camScaleSpinner, layout, "FOV", panel, 5+2)).addChangeListener(updateAndClear);
+        ((JSlider)addLabeled(camPitchSpinner, layout, "Pitch", panel, 1+1)).addChangeListener(updateAndClear);
+        ((JSlider)addLabeled(camYawSpinner, layout, "Yaw", panel, 2.35+1)).addChangeListener(updateAndClear);
+        ((JSlider)addLabeled(camRollSpinner, layout, "Roll", panel, 3.7+1)).addChangeListener(updateAndClear);
+        ((JSlider)addLabeled(camScaleSpinner, layout, "FOV", panel, 5+1)).addChangeListener(updateAndClear);
 
         ActionListener moveCamera = new ActionListener() {
             @Override
@@ -287,14 +280,12 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             }
         };
 
-        addLabeledButton(new JButton("XY"), layout, panel, 1, 0).addActionListener(moveCamera);
-        addLabeledButton(new JButton("YZ"), layout, panel, 1, 1).addActionListener(moveCamera);
-        addLabeledButton(new JButton("XZ"), layout, panel, 1, 2).addActionListener(moveCamera);
+        addLabeledButton(new JButton("XY"), layout, panel, 0, 0).addActionListener(moveCamera);
+        addLabeledButton(new JButton("YZ"), layout, panel, 0, 1).addActionListener(moveCamera);
+        addLabeledButton(new JButton("XZ"), layout, panel, 0, 2).addActionListener(moveCamera);
 
         perspectiveCheck = new JCheckBox();
-        ((JCheckBox)addLabeled(perspectiveCheck, layout, "Ortho", panel, 9)).addChangeListener(updateAndClear);
-
-        panel.add(cameraLabel);
+        ((JCheckBox)addLabeled(perspectiveCheck, layout, "Ortho", panel, 8)).addChangeListener(updateAndClear);
     }
 
     public void setupRenderPropertiesPanel(JPanel panel){
@@ -324,14 +315,8 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         renderModeCombo = new JComboBox(renderModeStrings);
         pdfModeCombo = new JComboBox(pdfModeStrings);
 
-        JLabel renderLabel = new JLabel(" Render Properties");
-
-        int topPad=5;
-
         SpringLayout layout = new SpringLayout();
         panel.setLayout(layout);
-
-        layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
 
         ((JComboBox)addLabeled(renderModeCombo, layout, "Mode", panel, 0.7)).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -371,8 +356,6 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         ((JSpinner)addLabeled(yMaxSpinner, layout, "Ymax", panel, 16.6)).addChangeListener(updateAndClear);
         ((JSpinner)addLabeled(zMinSpinner, layout, "Zmin", panel, 17.6)).addChangeListener(updateAndClear);
         ((JSpinner)addLabeled(zMaxSpinner, layout, "Zmax", panel, 18.6)).addChangeListener(updateAndClear);
-
-        panel.add(renderLabel);
     }
 
     public ifsMenu(Frame f, ifsys is){
