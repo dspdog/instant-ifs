@@ -239,11 +239,7 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
     }
 
     public Image getImage(String name){
-            //URL theImgURL = new URL("file:/C:/Users/user/workspace/instant-ifs/img/" + name);
-            // file:/C:/Users/Labrats/Documents/GitHub/instant-ifs/img/
-
             String root;
-
             try{
                 root= "file:/C:/Users/user/workspace/instant-ifs/instant-ifs/img/";
                 URL theImgURL = new URL(root + name);
@@ -252,13 +248,6 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
 
             }
 
-            try{
-                root="file:/C:/Users/Labrats/Documents/GitHub/instant-ifs/img/";
-                URL theImgURL = new URL(root + name);
-                return ImageIO.read(theImgURL);
-            }catch (Exception e){
-
-            }
             return null;
     }
 

@@ -110,7 +110,7 @@ class ifsShape implements java.io.Serializable {
             if(staySymmetric){
                 pShape.pts[i].perturb(intensity, seed);
             }else{
-                pShape.pts[i].perturb(intensity);
+                pShape.pts[i].perturb(intensity, -1);
             }
         }
 

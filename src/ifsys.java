@@ -5,6 +5,8 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -142,7 +144,8 @@ public class ifsys extends Panel
                 iconifiable);
         desktop.add(theInternalFrame);
         theInternalFrame.setSize(width, height);
-        theInternalFrame.setLocation(x,y);
+        theInternalFrame.setLocation(x, y);
+        theInternalFrame.setFrameIcon(null);
         theInternalFrame.setVisible(true);
         theInternalFrame.getContentPane().add(panel);
         theInternalFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

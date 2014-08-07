@@ -67,21 +67,11 @@ class ifsPt implements java.io.Serializable{
         x = (float)_x; y = (float)_y; z = (float)_z;
     }
 
-    public void perturb(float intensity){
-        Random rnd = new Random();
-
-        //change all the properties slightly...
-        scale*=(1+rnd.nextGaussian()*intensity);
-        rotationPitch+=rnd.nextGaussian()*intensity;
-        rotationYaw+=rnd.nextGaussian()*intensity;
-        x+=rnd.nextGaussian()*intensity*10;
-        y+=rnd.nextGaussian()*intensity*10;
-        z+=rnd.nextGaussian()*intensity*10;
-    }
-
     public void perturb(float intensity, long seed){
         Random rnd = new Random();
-        rnd.setSeed(seed);
+        if(seed>=0){
+            rnd.setSeed(seed);
+        }
 
         //change all the properties slightly...
         scale*=(1+rnd.nextGaussian()*intensity);
