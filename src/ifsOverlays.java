@@ -11,11 +11,13 @@ public class ifsOverlays {
     ifsPt draggyPtCenter;
 
     int hideTime;
+    int currentLine;
 
     DecimalFormat df = new DecimalFormat("##.###");
 
     public ifsOverlays(ifsys _ifsys, Graphics rg){
         hideTime = 5000;
+        currentLine=0;
         myIfsSys = _ifsys;
         theGraphics = rg;
         selectedAxis = DragAxis.X;
@@ -390,33 +392,41 @@ public class ifsOverlays {
     }
 
     public void drawInfoBox(Graphics rg){
-        int lineSize = 15;
-        int xPad = 5;
+        currentLine=0;
+
         rg.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         rg.setColor(Color.white);
 
         if(myIfsSys.theVolume.renderMode == volume.RenderMode.VOLUMETRIC){
-            rg.drawString(log10String("Volume ", myIfsSys.theVolume.myVolume) + "U^3", xPad, lineSize * 1);
-            rg.drawString(log10String("Surface", myIfsSys.theVolume.mySurfaceArea) + "U^2", xPad, lineSize * 2);
-            rg.drawString(log10String("AvD/S  ", (float)myIfsSys.shape.averageDistance / (float)myIfsSys.theVolume.mySurfaceArea) + "U-1", xPad, lineSize * 4);
-            rg.drawString(log10String("AvD/V  ", (float)myIfsSys.shape.averageDistance / (float)myIfsSys.theVolume.myVolume) + "U-1", xPad, lineSize * 5);
-            rg.drawString(log10String("S/V    ", (float)myIfsSys.theVolume.mySurfaceArea / (float)myIfsSys.theVolume.myVolume) + "U-1", xPad, lineSize * 6);
-            rg.drawString            ("Regions " + myIfsSys.theVolume.volume.getInitCount() + "/" + myIfsSys.theVolume.volume.totalRegions + " (" + (100*myIfsSys.theVolume.volume.getInitCount()/myIfsSys.theVolume.volume.totalRegions) + "%)", xPad, lineSize*14);
+            drawStringOverlay(rg, log10String("Volume ", myIfsSys.theVolume.myVolume) + "U^3 Δ" + myIfsSys.theVolume.myVolumeChange);
+            drawStringOverlay(rg, log10String("Surface", myIfsSys.theVolume.mySurfaceArea) + "U^2");
+            drawStringOverlay(rg, log10String("AvDist ", (float) myIfsSys.theVolume.averageDistance) + "U^1");
+            drawStringOverlay(rg, log10String("AvD/S  ", (float) myIfsSys.theVolume.averageDistance / (float) myIfsSys.theVolume.mySurfaceArea) + "U-1");
+            drawStringOverlay(rg, log10String("AvD/V  ", (float) myIfsSys.theVolume.averageDistance / (float) myIfsSys.theVolume.myVolume) + "U-1");
+            drawStringOverlay(rg, log10String("S/V    ", (float) myIfsSys.theVolume.mySurfaceArea / (float) myIfsSys.theVolume.myVolume) + "U-1");
+            drawStringOverlay(rg, "Score   " + myIfsSys.theVolume.getScore(new ScoreParams(ScoreParams.Presets.MAX_SURFACE)));
+            drawStringOverlay(rg, "Regions " + myIfsSys.theVolume.volume.getInitCount() + "/" + myIfsSys.theVolume.volume.totalRegions + " (" + (100 * myIfsSys.theVolume.volume.getInitCount() / myIfsSys.theVolume.volume.totalRegions) + "%)");
         }
 
-        rg.drawString(log10String("AvDist ", (float)myIfsSys.shape.averageDistance) + "U^1", xPad, lineSize * 3);
-        rg.drawString(log10String("Dots   ", myIfsSys.theVolume.totalSamples), xPad, lineSize * 7);
+        drawStringOverlay(rg, log10String("Dots   ", myIfsSys.theVolume.totalSamples));
 
         double memoryUsedMB = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024*1024);
         double memoryMaxMB = Runtime.getRuntime().maxMemory()/(1024*1024);
 
-        rg.drawString("Memory " + (int)memoryUsedMB +" / " + (int)memoryMaxMB + "MB (" + (int)(100*memoryUsedMB/memoryMaxMB) + "%)", xPad, lineSize * 9);
+        drawStringOverlay(rg, "Memory " + (int)memoryUsedMB +" / " + (int)memoryMaxMB + "MB (" + (int)(100*memoryUsedMB/memoryMaxMB) + "%)");
 
         double time = (System.currentTimeMillis()-myIfsSys.theVolume.drawTime)/1000.0;
 
-        rg.drawString("FPS " + String.valueOf(myIfsSys.fps), xPad, lineSize*10);
-        rg.drawString("RenderTime " + df.format(time) + "s", xPad, lineSize*11);
-        rg.drawString(log10String("Dots/s", (float)(myIfsSys.theVolume.totalSamples/time)), xPad, lineSize*12);
+        drawStringOverlay(rg, "FPS " + String.valueOf(myIfsSys.fps));
+        drawStringOverlay(rg, "RenderTime " + df.format(time) + "s");
+        drawStringOverlay(rg, log10String("Dots/s", (float) (myIfsSys.theVolume.totalSamples / time)));
+    }
+
+    public void drawStringOverlay(Graphics rg, String s){
+        int lineSize = 15;
+        int xPad = 5;
+        currentLine++;
+        rg.drawString(s, xPad, lineSize * currentLine);
     }
 
     public String log10String(String title, float value){

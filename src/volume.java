@@ -67,13 +67,21 @@ public class volume {
 
     float zDarkenScaler;
 
+    double accumilatedDistance = 0;
+    long averageDistanceSamples = 0;
+    double averageDistance = 0;
+
     Date startDate;
 
     long myVolume, mySurfaceArea;
+    long myVolumeOneSecondAgo, myVolumeChange;
 
     LinkedList<ifsTriangle> theTriangles;
 
     public volume(int w, int h, int d){
+        myVolumeOneSecondAgo=0;
+        myVolumeChange = 0;
+
         theTriangles = new LinkedList<ifsTriangle>();
         myVolume=0;
         mySurfaceArea=0;
@@ -123,13 +131,16 @@ public class volume {
     }
 
     public void clear(){
+        accumilatedDistance = 0;
+        averageDistanceSamples = 0;
         reset();
         clearProj(0);
     }
 
-    public void clear(double a){
-        reset();
-        clearProj(a);
+    public void contributeToAverageDistance(double dist){
+        accumilatedDistance+=dist;
+        averageDistanceSamples++;
+        averageDistance = accumilatedDistance/averageDistanceSamples;
     }
 
     public void clearProj(double a){
@@ -143,6 +154,21 @@ public class volume {
                 BBuffer[x][y]=0;
             }
         }
+    }
+
+    public float getScore(ScoreParams sp){
+        float avD = (float)averageDistance;
+        float AvDS = (float)averageDistance/mySurfaceArea;
+        float AvDV = (float)averageDistance/myVolume;
+        float SV = (float)mySurfaceArea/myVolume;
+
+        float score = myVolume * sp.volumeScale +
+                      mySurfaceArea * sp.surfaceScale +
+                      avD*sp.avD_Scale +
+                      AvDS * sp.AvDS_Scale +
+                      AvDV * sp.AvDV_Scale +
+                      SV * sp.SV_Scale;
+        return score;
     }
 
     public boolean volumeContains(ifsPt pt){
@@ -245,7 +271,6 @@ public class volume {
     }
 */
     public boolean old_putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric){
-
         ifsPt pt = getCameraDistortedPt(_pt);
 
         dataPoints++;

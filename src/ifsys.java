@@ -286,6 +286,8 @@ public class ifsys extends Panel
             oneSecondAgo = System.currentTimeMillis();
             fps= framesThisSecond;
             framesThisSecond =0;
+            theVolume.myVolumeChange = theVolume.myVolume - theVolume.myVolumeOneSecondAgo;
+            theVolume.myVolumeOneSecondAgo = theVolume.myVolume;
         }
 
         generatePixels();
@@ -472,7 +474,7 @@ public class ifsys extends Panel
                 r=thisPointsDistance;
                 g=thisPointsDistance;
                 b=thisPointsDistance;
-                shape.contributeToAverageDistance(thisPointsDistance);
+                theVolume.contributeToAverageDistance(thisPointsDistance);
             }
 
             ifsPt theDot = new ifsPt(dpt.x+rpt.x+(float)uncertaintyX,
