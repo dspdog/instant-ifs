@@ -10,10 +10,6 @@ public class volume {
         VOLUMETRIC, PROJECT_ONLY
     }
 
-    public static enum VolumeProjection{
-        Z,R,G,B,C
-    }
-
     int width, height, depth;
 
     public RenderMode renderMode = RenderMode.PROJECT_ONLY;
@@ -78,6 +74,8 @@ public class volume {
 
     LinkedList<ifsTriangle> theTriangles;
 
+    float[][][] scaledProjections;
+
     public volume(int w, int h, int d){
         myVolumeOneSecondAgo=0;
         myVolumeChange = 0;
@@ -113,6 +111,7 @@ public class volume {
         volume = new smartVolume(width);
         centroid = new ifsPt(0,0,0);
         zDarkenScaler=512f;
+        scaledProjections = new float[4][width][height];
     }
 
     public void reset(){
@@ -201,8 +200,9 @@ public class volume {
        // pt.z = Math.sqrt(pt.z)*16;
 
         if(usePerspective){
-            pt.x = (pt.x-vx)/(float)Math.sqrt(1024f-pt.z)*perspectiveScale/10f+vx;
-            pt.y = (pt.y-vy)/(float)Math.sqrt(1024f-pt.z)*perspectiveScale/10f+vy;
+            float downScale=perspectiveScale*0.1f/(float)Math.sqrt(1024f-pt.z);
+            pt.x = (pt.x-vx)*downScale + vx;
+            pt.y = (pt.y-vy)*downScale + vy;
         }
 
         pt.z /= 8.0;
@@ -212,10 +212,6 @@ public class volume {
         return pt;
     }
 
-   // public boolean putPixel(ifsPt _pt, double alpha, float ptR, float ptG, float ptB){
-   //     return putPixel(_pt, (float)alpha, ptR, ptG, ptB);
-   // }
-
     public boolean putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop){
         return old_putPixel(_pt, (float)alpha, ptR, ptG, ptB, rp, useCrop, false, false);
     }
@@ -223,53 +219,18 @@ public class volume {
     public boolean putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric){
         return old_putPixel(_pt, (float)alpha, ptR, ptG, ptB, rp, useCrop, noDark, noVolumetric);
     }
-/*
-    public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, float alpha, int ptRadius){
-
-        if(ptRadius==0){return putPixel(_pt, alpha, ptR, ptG, ptB);}
-
-        ifsPt pt = getCameraDistortedPt(_pt);
-
-        centroid.x+=pt.x*alpha;
-        centroid.y+=pt.y*alpha;
-        centroid.z+=pt.z*alpha;
-
-        dataPoints++;
-
-        float dark = pt.z/512f;
-
-        if(volumeContains(pt, ptRadius)){
-
-            totalSamples++;
-            totalSamplesAlpha +=alpha;
-
-            if(useZBuffer){
-                boolean res=false;
-
-                if(pt.z > ZBuffer[(int) pt.x][(int) pt.y]){
-                    res=true;
-
-                    for(int x1=-ptRadius; x1<ptRadius; x1++){
-                        for(int y1=-ptRadius; y1<ptRadius; y1++){
-                            //if(x1*x1+y1*y1<ptRadius)
-                            if(ZBuffer[(int)pt.x+x1][(int)pt.y+y1]<pt.z){
-                                ZBuffer[(int)pt.x+x1][(int)pt.y+y1] = pt.z;
-                                RBuffer[(int)pt.x+x1][(int)pt.y+y1] = ptR*dark;
-                                GBuffer[(int)pt.x+x1][(int)pt.y+y1] = ptG*dark;
-                                BBuffer[(int)pt.x+x1][(int)pt.y+y1] = ptB*dark;
-                            }
-
-                        }
-                    }
-                }
-
-                return res;
-            }
+    public void putDataUpdateSurfaceVolume(ifsPt _pt){
+        if(volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z, 100)){//if its the first point there
+            myVolume++; //add it to volume
+            if(volume.getData((int)_pt.x+1, (int)_pt.y, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
+            if(volume.getData((int)_pt.x,   (int)_pt.y+1, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
+            if(volume.getData((int)_pt.x,   (int)_pt.y, (int)_pt.z+1)>0){mySurfaceArea--;}else{mySurfaceArea++;}
+            if(volume.getData((int)_pt.x-1, (int)_pt.y, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
+            if(volume.getData((int)_pt.x,   (int)_pt.y-1, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
+            if(volume.getData((int)_pt.x,   (int)_pt.y, (int)_pt.z-1)>0){mySurfaceArea--;}else{mySurfaceArea++;}
         }
-
-        return false;
     }
-*/
+
     public boolean old_putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric){
         ifsPt pt = getCameraDistortedPt(_pt);
 
@@ -281,20 +242,11 @@ public class volume {
         if(useCrop){doDraw=croppedVolumeContains(_pt, rp);}else{doDraw=volumeContains(pt);}
         if(doDraw){
             if(renderMode==renderMode.VOLUMETRIC && !noVolumetric){
-                if(volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z, 100)){//if its the first point there
-                    myVolume++; //add it to volume
-                    if(volume.getData((int)_pt.x+1, (int)_pt.y, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
-                    if(volume.getData((int)_pt.x,   (int)_pt.y+1, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
-                    if(volume.getData((int)_pt.x,   (int)_pt.y, (int)_pt.z+1)>0){mySurfaceArea--;}else{mySurfaceArea++;}
-                    if(volume.getData((int)_pt.x-1, (int)_pt.y, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
-                    if(volume.getData((int)_pt.x,   (int)_pt.y-1, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
-                    if(volume.getData((int)_pt.x,   (int)_pt.y, (int)_pt.z-1)>0){mySurfaceArea--;}else{mySurfaceArea++;}
-                }
+                putDataUpdateSurfaceVolume(_pt);
             }
 
             totalSamples++;
             totalSamplesAlpha +=alpha;
-
 
             if(useZBuffer){
                 boolean res=false;
@@ -327,8 +279,6 @@ public class volume {
     }
 
     public float[][][] getScaledProjections(double brightness){
-        float[][][] scaled = new float[4][width][height];
-
         int r=0;
         int g=1;
         int b=2;
@@ -336,14 +286,14 @@ public class volume {
 
         for(int x=0; x<width; x++){
             for(int y=0; y<height; y++){
-                scaled[r][x][y]= Math.min((int)(brightness*RBuffer[x][y]), 255);
-                scaled[g][x][y]= Math.min((int)(brightness*GBuffer[x][y]), 255);
-                scaled[b][x][y]= Math.min((int)(brightness*BBuffer[x][y]), 255);
-                scaled[z][x][y]= Math.min((int)(brightness*ZBuffer[x][y]), 255);
+                scaledProjections[r][x][y]= Math.min((int)(brightness*RBuffer[x][y]), 255);
+                scaledProjections[g][x][y]= Math.min((int)(brightness*GBuffer[x][y]), 255);
+                scaledProjections[b][x][y]= Math.min((int)(brightness*BBuffer[x][y]), 255);
+                scaledProjections[z][x][y]= Math.min((int)(brightness*ZBuffer[x][y]), 255);
             }
         }
 
-        return scaled;
+        return scaledProjections;
     }
 
     public void _saveToAscii(){ //save point cloud to ascii
@@ -583,6 +533,16 @@ public class volume {
         }
     }
 
+    public class ifsTriangle {
+        ifsPt[] pts = new ifsPt[3];
+        public ifsTriangle(ifsPt p1, ifsPt p2, ifsPt p3){
+            pts[0]=new ifsPt(p1);
+            pts[1]=new ifsPt(p2);
+            pts[2]=new ifsPt(p3);
+        }
+    }
+
+
     public void _saveToBinarySTL(){
         mySurfaceArea=0;
         myVolume=0;
@@ -646,67 +606,6 @@ public class volume {
             e.printStackTrace();
         }
 
-    }
-
-    public static float[][] getProjectionCopy(float[][] map){
-        int width = map.length;
-
-        float[][] res = new float[width][width];
-        int x,y;
-
-        for(x=0; x<width; x++){
-            for(y=0; y<width; y++){
-                res[x][y]=map[x][y]+0;
-            }
-        }
-
-        return res;
-    }
-
-    public float[][] findEdges2D(float[][] map){
-        int width = map.length;
-
-        float total =0;
-
-        float[][] res = new float[width][width];
-        int x,y;
-
-        for(x=3; x<width-3; x++){
-            for(y=3; y<width-3; y++){
-
-                double edges1 = Math.max(
-                                Math.max(
-                                        (map[x][y]-map[x-1][y]),
-                                        (map[x][y] - map[x + 1][y])),
-                                Math.max((map[x][y]-map[x][y-1]),
-                                        (map[x][y]-map[x][y+1]))
-                );
-
-                total+=edges1/255.0;
-
-                edges1 = Math.min(edges1, 255);
-                res[x][y]=(float)edges1;
-            }
-        }
-
-        surfaceArea = total;
-
-        return res;
-    }
-
-    public static float[][] getThreshold2D(float[][] map, int threshold){
-        int width = map.length;
-
-        float[][] res = new float[width][width];
-        int x,y;
-
-        for(x=0; x<width; x++){
-            for(y=0; y<width; y++){
-                res[x][y]=map[x][y]>threshold?255:0;
-            }
-        }
-
-        return res;
     }
 
     public void drawGrid(RenderParams rp){

@@ -186,8 +186,8 @@ public class ifsys extends Panel
         public void run(){
             while(!quit)
                 try{
-                    theMenu.updateSideMenu();
                     if(theVolume.totalSamples>50000){
+                        theMenu.updateSideMenu();
                         repaint();
                     }
                     sleep(1L);
