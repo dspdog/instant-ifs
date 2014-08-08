@@ -395,13 +395,16 @@ public class ifsys extends Panel
         }
     }
 
-    public void putPdfSample(ifsPt _dpt, double cumulativeRotationYaw, double cumulativeRotationPitch, double cumulativeScale, double cumulativeOpacity, ifsPt _thePt, ifsPt theOldPt, double scaleDown, int index, ifsPt odpt, int bucketVal, int bucketId){
+    public void putPdfSample(ifsPt _dpt, double cumulativeRotationYaw,
+                             double cumulativeRotationPitch,
+                             double cumulativeScale,
+                             double cumulativeOpacity, ifsPt _thePt, ifsPt theOldPt, double scaleDown, int index, ifsPt odpt, int bucketVal, int bucketId, float distance){
         ifsPt dpt = _dpt;
         ifsPt thePt = _thePt;
-
+        float factor = 1.0f;
         if(rp.smearPDF){
             float smearSubdivisions = 5;
-            float factor = (float)((1.0/smearSubdivisions*((bucketVal+bucketId)%smearSubdivisions))+Math.random()/smearSubdivisions);
+            factor = (float)((1.0/smearSubdivisions*((bucketVal+bucketId)%smearSubdivisions))+Math.random()/smearSubdivisions);
             dpt = _dpt.interpolateTo(odpt, factor);
             thePt = _thePt.interpolateTo(theOldPt, factor);
             if(odpt.x<1){dpt=_dpt;}//hack to prevent smearing from first pt
@@ -465,9 +468,11 @@ public class ifsys extends Panel
             float b=255;
 
             if(rp.usingColors){
-                r=dpt.x;
-                g=dpt.y;
-                b=dpt.z;
+                float thisPointsDistance = distance-rpt.magnitude()*factor;
+                r=thisPointsDistance;
+                g=thisPointsDistance;
+                b=thisPointsDistance;
+                shape.contributeToAverageDistance(thisPointsDistance);
             }
 
             ifsPt theDot = new ifsPt(dpt.x+rpt.x+(float)uncertaintyX,
@@ -515,6 +520,8 @@ public class ifsys extends Panel
                 int bucketIndex=0;
                 int nextBucketIndex=0;
 
+                float distance = 0.0f;
+
                 for(int d = 0; d < rp.iterations; d++){
                     int oldRandomIndex = randomIndex;
                     if(bucketIndex*(shape.pointsInUse-1)<shape.buckets.length){
@@ -543,6 +550,8 @@ public class ifsys extends Panel
 
                         olddpt = new ifsPt(dpt);
 
+                        distance += rpt.magnitude();
+
                         dpt.x += rpt.x;
                         dpt.y += rpt.y;
                         dpt.z -= rpt.z;
@@ -553,7 +562,7 @@ public class ifsys extends Panel
                     }else{
                         if(!(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
                             try{//TODO why the err?
-                                putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], shape.pts[oldRandomIndex], scaleDownMultiplier, randomIndex, olddpt, shape.buckets[bucketIndex], bucketIndex);
+                                putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], shape.pts[oldRandomIndex], scaleDownMultiplier, randomIndex, olddpt, shape.buckets[bucketIndex], bucketIndex, distance);
                             }catch (Exception e){
                                 //e.printStackTrace();
                             }

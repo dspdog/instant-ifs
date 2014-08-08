@@ -1,7 +1,5 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Random;
 
 class ifsShape implements java.io.Serializable {
     public ifsPt pts[];
@@ -17,6 +15,10 @@ class ifsShape implements java.io.Serializable {
 
     static int numBuckets = 10_000_000;
     int[] buckets = new int[numBuckets]; //used for "load balancing" across the branches
+
+    double accumilatedDistance = 0;
+    long averageDistanceSamples = 0;
+    double averageDistance = 0;
 
     public int smallestIndexAtThisNode(int node){
         int min=Integer.MAX_VALUE;
@@ -44,6 +46,14 @@ class ifsShape implements java.io.Serializable {
 
     public void clearBuckets(){
         buckets = new int[numBuckets];
+        accumilatedDistance = 0;
+        averageDistanceSamples = 0;
+    }
+
+    public void contributeToAverageDistance(double dist){
+        accumilatedDistance+=dist;
+        averageDistanceSamples++;
+        averageDistance = accumilatedDistance/averageDistanceSamples;
     }
 
     public ifsShape(){

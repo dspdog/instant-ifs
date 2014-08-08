@@ -82,6 +82,10 @@ class ifsPt implements java.io.Serializable{
         z+=rnd.nextGaussian()*intensity*10;
     }
 
+    public float magnitude(){
+        return (float)dist(this.x, this.y, this.z);
+    }
+
     public float cos(float i){
         return (float)Math.cos(i);
     }
