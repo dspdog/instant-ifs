@@ -5,8 +5,6 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -16,6 +14,7 @@ public class ifsys extends Panel
 {
     paintThread thePaintThread;
     mainthread[] threads;
+    evolutionThread theEvolutionThread;
     int numThreads = 2; //Runtime.getRuntime().availableProcessors()/2;
     boolean quit;
 
@@ -36,10 +35,10 @@ public class ifsys extends Panel
     volume theVolume;
     pdf3D thePdf;
 
-    //user params
+    static int numBuckets = 10_000_000;
+    int[] buckets = new int[numBuckets]; //used for "load balancing" across the branches
 
-        int pointNearest, pointSelected;
-        ifsPt selectedPt;
+    //user params
 
         static ifsOverlays.DragAxis selectedMovementAxis = ifsOverlays.DragAxis.NONE;
 
@@ -57,13 +56,10 @@ public class ifsys extends Panel
 
         RenderParams rp;
 
-    ifsShape shape;
-    ArrayList<ifsShape> shapeList;
-    int shapeIndex=0;
+    ifsShape theShape;
+    EvolvingShape eShape;
 
     ifsMenu theMenu;
-
-    int maxPoints;
 
     //drag vars
         int mousemode; //current mouse button
@@ -75,7 +71,6 @@ public class ifsys extends Panel
     boolean isDragging;
 
     ifsOverlays overlays;
-
 
     public ifsys(){
         System.out.println(numThreads + " threads");
@@ -89,18 +84,19 @@ public class ifsys extends Panel
         }
 
         thePaintThread = new paintThread();
+        theEvolutionThread = new evolutionThread();
 
         pixels = new int[rp.screenwidth * rp.screenheight];
 
-        shape = new ifsShape();
-        pointNearest =-1;
-        pointSelected =-1;
+        theShape = new ifsShape();
 
         theVolume = new volume(rp.screenwidth, rp.screenheight, 1024);
         theVolume.clear();
         thePdf = new pdf3D();
 
         thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
+
+        eShape = new EvolvingShape(theShape);
     }
 
     public static void main(String[] args) {
@@ -155,27 +151,9 @@ public class ifsys extends Panel
         frameNo=0;
 
         start();
-        shape.updateCenter();
+        theShape.updateCenter();
         clearframe();
         gamefunc();
-    }
-
-    public void findNearestPt(double minDist){
-        for(int i=0; i<shape.pointsInUse; i++){
-
-            ifsPt _pt = theVolume.getCameraDistortedPt(shape.pts[i]);
-            double dist = _pt.distanceXY(new ifsPt(mousex, mousey, 0));
-
-            if(dist<minDist){
-                pointNearest=i;
-                minDist=dist;
-            }
-        }
-    }
-
-    public void selectedNearestPt(){
-        selectedPt = shape.pts[pointNearest];
-        pointSelected = pointNearest;
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -198,6 +176,32 @@ public class ifsys extends Panel
         }
 
         public paintThread(){
+        }
+    }
+
+    public class evolutionThread extends  Thread{
+        public void run(){
+            while(!quit)
+                try{
+                    if(eShape.evolving){
+                        theShape.score = theVolume.getScore(new ScoreParams(ScoreParams.Presets.MAX_SURFACE));
+                        float oldScore = theShape.score+0;
+                        eShape.evolvedSibs++;
+                        System.out.println("score " + oldScore + " - highscore " + eShape.getHighestScoreShape().score);
+
+                        theShape = eShape.nextShape(theShape.score);
+                        if(eShape.shapeIndex==0){
+                            System.out.println("new generation...");
+                            eShape.offSpring(eShape.getHighestScoreShape());
+                        }
+
+                        clearframe();
+                    }
+                    sleep(eShape.evolvePeriod);
+                }
+                catch(InterruptedException e) {
+                    e.printStackTrace();
+                }
         }
     }
 
@@ -225,7 +229,6 @@ public class ifsys extends Panel
         addKeyListener(this);
         render = createImage(rp.screenwidth, rp.screenheight);
         rg = render.getGraphics();
-
         overlays = new ifsOverlays(this, rg);
 
         clearframe();
@@ -234,11 +237,12 @@ public class ifsys extends Panel
             threads[i].start();
         }
 
-        shape.setToPreset(0);
+        theShape.setToPreset(0);
 
         started = true;
 
         thePaintThread.start();
+        theEvolutionThread.start();
     }
 
     public void update(Graphics gr){
@@ -302,11 +306,11 @@ public class ifsys extends Panel
 
             if(!rp.guidesHidden){
                 overlays.drawDraggyArrows(rg);
-                overlays.drawBox(rg, pointSelected);
-                overlays.drawBox(rg, pointNearest);
+                overlays.drawBox(rg, theShape.pointNearest);
+                overlays.drawBox(rg, theShape.pointNearest);
             }
 
-            if(!rp.infoHidden && pointNearest >=0){
+            if(!rp.infoHidden && theShape.pointNearest >=0){
                 overlays.drawInfoBox(rg);
             }
 
@@ -391,7 +395,7 @@ public class ifsys extends Panel
 
     public void clearframe(){
         if(!rp.holdFrame && System.currentTimeMillis() - lastClearTime > 20){
-            shape.clearBuckets();
+            resetBuckets();
             theVolume.clear();
             lastClearTime=System.currentTimeMillis();
         }
@@ -405,7 +409,7 @@ public class ifsys extends Panel
         ifsPt thePt = _thePt;
         float factor = 1.0f;
         if(rp.smearPDF){
-            float smearSubdivisions = 5;
+            float smearSubdivisions = 4;
             factor = (float)((1.0/smearSubdivisions*((bucketVal+bucketId)%smearSubdivisions))+Math.random()/smearSubdivisions);
             dpt = _dpt.interpolateTo(odpt, factor);
             thePt = _thePt.interpolateTo(theOldPt, factor);
@@ -426,7 +430,7 @@ public class ifsys extends Panel
         ifsPt rpt;
 
         //rotate/scale the point
-        //double pointDist = shape.distance(sampleX, sampleY, 0)*cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
+        //double pointDist = theShape.distance(sampleX, sampleY, 0)*cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
 
         scale = cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
 
@@ -498,14 +502,45 @@ public class ifsys extends Panel
         }
     }
 
+
+    public void resetBuckets(){
+        buckets = new int[numBuckets];
+    }
+
+    public int smallestIndexAtThisNode(int node){
+        int min=Integer.MAX_VALUE;
+        int minIndex=0;
+        ArrayList<Integer> winners = new ArrayList<Integer>(); //chooses a random "winner" in the event of a "tie"
+
+        for(int i=node; i<node+ theShape.pointsInUse-1; i++){
+            if(buckets[i]<=min){
+                if(buckets[i]==min){
+                    winners.add(i-node);
+                }else{
+                    winners.clear();
+                }
+                min=buckets[i];
+                minIndex=i-node;
+            }
+        }
+
+        if(winners.size()>0){
+            return winners.get((int)(Math.random()*winners.size()));
+        }else{
+            return minIndex;
+        }
+    }
+
+
+
     public void gamefunc(){
         rp.guidesHidden = System.currentTimeMillis() - lastMoveTime > rp.linesHideTime;
 
-        if(shape.pointsInUse != 0){
+        if(theShape.pointsInUse != 0){
 
             for(int a = 0; a < rp.samplesPerFrame; a++){
                 int randomIndex = 0;
-                ifsPt dpt = new ifsPt(shape.pts[randomIndex]);
+                ifsPt dpt = new ifsPt(theShape.pts[randomIndex]);
                 ifsPt rpt;
 
                 double size, yaw, pitch;//, roll;
@@ -517,7 +552,7 @@ public class ifsys extends Panel
                 double cumulativeRotationPitch = 0;
                 //double cumulativeRotationRoll = 0;
 
-                double scaleDownMultiplier = 1; //Math.pow(shape.pointsInUse,rp.iterations); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
+                double scaleDownMultiplier = 1; //Math.pow(theShape.pointsInUse,rp.iterations); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
 
                 int bucketIndex=0;
                 int nextBucketIndex=0;
@@ -526,27 +561,27 @@ public class ifsys extends Panel
 
                 for(int d = 0; d < rp.iterations; d++){
                     int oldRandomIndex = randomIndex;
-                    if(bucketIndex*(shape.pointsInUse-1)<shape.buckets.length){
-                        randomIndex = shape.smallestIndexAtThisNode(bucketIndex*(shape.pointsInUse-1))+1; //send new data where its needed most...
+                    if(bucketIndex*(theShape.pointsInUse-1)<buckets.length){
+                        randomIndex = smallestIndexAtThisNode(bucketIndex*(theShape.pointsInUse-1))+1; //send new data where its needed most...
                     }else{
-                        randomIndex = 1 + (int)(Math.random() * (double) (shape.pointsInUse-1));
+                        randomIndex = 1 + (int)(Math.random() * (double) (theShape.pointsInUse-1));
                     }
 
-                    nextBucketIndex = bucketIndex*(shape.pointsInUse-1)+randomIndex-1;
-                    if(nextBucketIndex<shape.buckets.length){
+                    nextBucketIndex = bucketIndex*(theShape.pointsInUse-1)+randomIndex-1;
+                    if(nextBucketIndex<buckets.length){
                         bucketIndex=nextBucketIndex;
                     }
 
-                    shape.buckets[bucketIndex]++;
+                    buckets[bucketIndex]++;
 
                     if(d==0){randomIndex=0;}
 
                     ifsPt olddpt = new ifsPt();
 
                     if(d!=0){
-                        size = shape.pts[randomIndex].radius * cumulativeScale;
-                        yaw = Math.PI/2D - shape.pts[randomIndex].degreesYaw + cumulativeRotationYaw;
-                        pitch = Math.PI/2D - shape.pts[randomIndex].degreesPitch + cumulativeRotationPitch;
+                        size = theShape.pts[randomIndex].radius * cumulativeScale;
+                        yaw = Math.PI/2D - theShape.pts[randomIndex].degreesYaw + cumulativeRotationYaw;
+                        pitch = Math.PI/2D - theShape.pts[randomIndex].degreesPitch + cumulativeRotationPitch;
 
                         rpt = new ifsPt(size,0,0).getRotatedPt(-pitch, -yaw);
 
@@ -564,19 +599,19 @@ public class ifsys extends Panel
                     }else{
                         if(!(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
                             try{//TODO why the err?
-                                putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, shape.pts[randomIndex], shape.pts[oldRandomIndex], scaleDownMultiplier, randomIndex, olddpt, shape.buckets[bucketIndex], bucketIndex, distance);
+                                putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, theShape.pts[randomIndex], theShape.pts[oldRandomIndex], scaleDownMultiplier, randomIndex, olddpt, buckets[bucketIndex], bucketIndex, distance);
                             }catch (Exception e){
                                 //e.printStackTrace();
                             }
 
                         }
-                        scaleDownMultiplier/=shape.pointsInUse;
+                        scaleDownMultiplier/= theShape.pointsInUse;
 
-                        cumulativeScale *= shape.pts[randomIndex].scale/shape.pts[0].scale;
-                        cumulativeOpacity *= shape.pts[randomIndex].opacity;
+                        cumulativeScale *= theShape.pts[randomIndex].scale/ theShape.pts[0].scale;
+                        cumulativeOpacity *= theShape.pts[randomIndex].opacity;
 
-                        cumulativeRotationYaw += shape.pts[randomIndex].rotationYaw;
-                        cumulativeRotationPitch += shape.pts[randomIndex].rotationPitch;
+                        cumulativeRotationYaw += theShape.pts[randomIndex].rotationYaw;
+                        cumulativeRotationPitch += theShape.pts[randomIndex].rotationPitch;
                     }
                 }
             }
@@ -604,17 +639,17 @@ public class ifsys extends Panel
         theVolume.saveCam();
         getMouseXYZ(e);
 
-        selectedNearestPt();
+        theShape.selectedNearestPt();
 
         if(e.getClickCount()==2){
-            theVolume.camCenter = new ifsPt(selectedPt);
+            theVolume.camCenter = new ifsPt(theShape.selectedPt);
             clearframe();
         }
 
         mouseStartDrag = new ifsPt(mousex, mousey, 0);
-        shape.saveState();
+        theShape.saveState();
 
-        if(pointSelected>-1){
+        if(theShape.pointSelected>-1){
             overlays.updateDraggyArrows();
         }
     }
@@ -667,32 +702,32 @@ public class ifsys extends Panel
                 if(ctrlDown){
                     xtra.x+=xDelta/100.0f;
                     xtra.y+=yDelta/100.0f;
-                    selectedPt.rotationPitch = selectedPt.savedrotationpitch + xtra.y;
-                    selectedPt.rotationYaw = selectedPt.savedrotationyaw + xtra.x;
+                    theShape.selectedPt.rotationPitch = theShape.selectedPt.savedrotationpitch + xtra.y;
+                    theShape.selectedPt.rotationYaw = theShape.selectedPt.savedrotationyaw + xtra.x;
                 }else if(altDown){
                     xtra.x+=xDelta/100.0f;
                     xtra.y+=yDelta/100.0f;
 
-                    for(int i=1; i<shape.pointsInUse; i++){
-                        shape.pts[i].rotationPitch = shape.pts[i].savedrotationpitch + xtra.y;
-                        shape.pts[i].rotationYaw = shape.pts[i].savedrotationyaw + xtra.x;
+                    for(int i=1; i< theShape.pointsInUse; i++){
+                        theShape.pts[i].rotationPitch = theShape.pts[i].savedrotationpitch + xtra.y;
+                        theShape.pts[i].rotationYaw = theShape.pts[i].savedrotationyaw + xtra.x;
                     }
                 }else{
                     switch (selectedMovementAxis){
                         case X:
                             xtra.x+=xDelta/2.0f*(xPos?1:-1);
                             xtra.x+=yDelta/2.0f*(yPos?1:-1);
-                            selectedPt.x = selectedPt.savedx + xtra.x;
+                            theShape.selectedPt.x = theShape.selectedPt.savedx + xtra.x;
                             break;
                         case Y:
                             xtra.y+=xDelta/2.0f*(xPos?1:-1);
                             xtra.y+=yDelta/2.0f*(yPos?1:-1);
-                            selectedPt.y = selectedPt.savedy + xtra.y;
+                            theShape.selectedPt.y = theShape.selectedPt.savedy + xtra.y;
                             break;
                         case Z:
                             xtra.z+=xDelta/2.0f*(xPos?1:-1);
                             xtra.z+=yDelta/2.0f*(yPos?1:-1);
-                            selectedPt.z = selectedPt.savedz + xtra.z;
+                            theShape.selectedPt.z = theShape.selectedPt.savedz + xtra.z;
                             break;
                         default:
                             break;
@@ -700,7 +735,7 @@ public class ifsys extends Panel
                 }
             }
 
-            shape.updateRadiusDegrees();
+            theShape.updateRadiusDegrees();
             theMenu.camPitchSpinner.setValue(theMenu.camPitchSpinner.getValue());
             clearframe();
             lastMoveTime = System.currentTimeMillis();
@@ -717,18 +752,18 @@ public class ifsys extends Panel
 
         if(ctrlDown){
             if(e.getWheelRotation()>0){ //scroll down
-                selectedPt.scale*=scaleChangeFactor;
+                theShape.selectedPt.scale*=scaleChangeFactor;
             }else{ //scroll up
-                selectedPt.scale/=scaleChangeFactor;
+                theShape.selectedPt.scale/=scaleChangeFactor;
             }
         }else if(altDown){
             if(e.getWheelRotation()>0){ //scroll down
-                for(int i=1; i<shape.pointsInUse; i++){
-                    shape.pts[i].radius*=scaleChangeFactor;
+                for(int i=1; i< theShape.pointsInUse; i++){
+                    theShape.pts[i].radius*=scaleChangeFactor;
                 }
             }else{ //scroll up
-                for(int i=1; i<shape.pointsInUse; i++){
-                    shape.pts[i].radius/=scaleChangeFactor;
+                for(int i=1; i< theShape.pointsInUse; i++){
+                    theShape.pts[i].radius/=scaleChangeFactor;
                 }
             }
         }else{
@@ -747,8 +782,8 @@ public class ifsys extends Panel
     }
 
     public void mouseMoved(MouseEvent e){
-        findNearestPt(overlays.minInterestDist);
         getMouseXYZ(e);
+        theShape.findNearestPt(mousex, mousey, overlays.minInterestDist, theVolume);
         if(System.currentTimeMillis()-lastMoveTime>100){gamefunc();}
         lastMoveTime = System.currentTimeMillis();
     }
@@ -763,26 +798,26 @@ public class ifsys extends Panel
             ctrlDown=true;
         if(e.getKeyCode()==KeyEvent.VK_SHIFT)
             shiftDown=true;
-        shape.updateCenter();
+        theShape.updateCenter();
         //clearframe();
         gamefunc();
     }
 
     public void loadStuff(String filename){
         if(filename==""){
-            shape = shape.loadFromFile("shape.ser");
+            theShape = theShape.loadFromFile("theShape.ser");
         }else{
-            shape = shape.loadFromFile(filename);
+            theShape = theShape.loadFromFile(filename);
         }
-        rp = shape.rp;
+        rp = theShape.rp;
     }
 
     public void saveStuff(String filename){
-        shape.rp = rp;
+        theShape.rp = rp;
         if(filename==""){
-            shape.saveToFile("shape.ser");
+            theShape.saveToFile("theShape.ser");
         }else{
-            shape.saveToFile(filename);
+            theShape.saveToFile(filename);
         }
     }
 
@@ -817,7 +852,7 @@ public class ifsys extends Panel
      //   }
 
         if(e.getKeyChar() == '0'){
-            shape.setToPreset(0);
+            theShape.setToPreset(0);
             theVolume.clear();
             rp.iterations=8;
             rp.brightnessMultiplier=1;
@@ -827,14 +862,14 @@ public class ifsys extends Panel
 
         if(e.getKeyChar() == 'n'){
             System.out.println("adding pt!");
-            shape.addPoint(512, 512, 512);
+            theShape.addPoint(512, 512, 512);
             clearframe();
             gamefunc();
         }
 
         if(e.getKeyChar() == 'm'){
-            System.out.println("deleting pt " + pointSelected);
-            shape.deletePoint(pointSelected);
+            System.out.println("deleting pt " + theShape.pointSelected);
+            theShape.deletePoint(theShape.pointSelected);
             clearframe();
             gamefunc();
         }
@@ -874,57 +909,22 @@ public class ifsys extends Panel
                 break;
         }
 
-        //if(e.getKeyChar() == 's'){
-        //    saveStuff("");
-        //    saveImg();
-        //}
-
         if(e.getKeyChar() == 'w'){
-            theVolume.camCenter.y-=10;
-            clearframe();
-            gamefunc();
+            eShape.parents(theShape);
         }
-
-        if(e.getKeyChar() == 's'){
-            theVolume.camCenter.y+=10;
-            clearframe();
-            gamefunc();
-        }
-
-        if(e.getKeyChar() == 'a'){
-            theVolume.camCenter.x-=10;
-            clearframe();
-            gamefunc();
-        }
-
-        if(e.getKeyChar() == 'd'){
-            theVolume.camCenter.x+=10;
-            clearframe();
-            gamefunc();
-        }
-
-
-
-
 
         if(e.getKeyChar() == 'e'){
-            shapeList = shape.getPerturbedVersions(100,0.2f);
-            System.out.println(shapeList.size());
-            shapeIndex=0;
+            eShape.offSpring(theShape);
         }
 
         if(e.getKeyChar() == 'z'){
-            shapeIndex--;shapeIndex=(shapeIndex+100)%100;
-            shape=shapeList.get(shapeIndex);
-            System.out.println("SHAPE #"+ shapeIndex);
+            theShape=eShape.nextShape(0);
             clearframe();
             gamefunc();
         }
 
         if(e.getKeyChar() == 'x'){
-            shapeIndex++;shapeIndex=(shapeIndex+100)%100;
-            shape=shapeList.get(shapeIndex);
-            System.out.println("SHAPE #"+ shapeIndex);
+            theShape=eShape.prevShape(0);
             clearframe();
             gamefunc();
         }
@@ -945,6 +945,23 @@ public class ifsys extends Panel
 
             theVolume.renderMode = rp.savingDots ? volume.RenderMode.VOLUMETRIC : volume.RenderMode.PROJECT_ONLY;
             System.out.println("render mode: " + theVolume.renderMode);
+        }
+
+        if(e.getKeyChar() == 'q'){
+            rp.drawGrid=false;
+            theShape.setToPreset(0);
+            theVolume.clear();
+            rp.iterations=6;
+            rp.brightnessMultiplier=1;
+            rp.smearPDF=true;
+            rp.renderThrottling=true;
+            rp.postProcessPeriod=100;
+            rp.savingDots=true;
+            rp.savedDots=0;
+            theVolume.renderMode = volume.RenderMode.VOLUMETRIC;
+            eShape.offSpring(theShape);
+            eShape.evolving=!eShape.evolving;
+            System.out.println("evolving: " + eShape.evolving);
         }
     }
 

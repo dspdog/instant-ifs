@@ -24,8 +24,8 @@ public class ifsOverlays {
     }
 
     public void drawArcs(Graphics rg){
-        for(int i=0;i<myIfsSys.shape.pointsInUse;i++){
-            drawArc(rg, myIfsSys.shape.pts[i], i == myIfsSys.pointNearest, myIfsSys.isDragging, i == 0);
+        for(int i=0;i<myIfsSys.theShape.pointsInUse;i++){
+            drawArc(rg, myIfsSys.theShape.pts[i], i == myIfsSys.theShape.pointNearest, myIfsSys.isDragging, i == 0);
         }
     }
 
@@ -174,14 +174,14 @@ public class ifsOverlays {
     }
 
     public void drawDraggyArrows(Graphics rg){
-        for(int i=0;i<myIfsSys.shape.pointsInUse;i++){
-            drawArrows(rg, myIfsSys.shape.pts[i], i == myIfsSys.pointSelected, myIfsSys.isDragging, i == 0, i==myIfsSys.pointNearest, true);
+        for(int i=0;i<myIfsSys.theShape.pointsInUse;i++){
+            drawArrows(rg, myIfsSys.theShape.pts[i], i == myIfsSys.theShape.pointSelected, myIfsSys.isDragging, i == 0, i==myIfsSys.theShape.pointNearest, true);
         }
     }
 
     public void updateDraggyArrows(){
-        for(int i=0;i<myIfsSys.shape.pointsInUse;i++){
-            drawArrows(null, myIfsSys.shape.pts[i], i == myIfsSys.pointSelected, myIfsSys.isDragging, i == 0, i==myIfsSys.pointNearest, false);
+        for(int i=0;i<myIfsSys.theShape.pointsInUse;i++){
+            drawArrows(null, myIfsSys.theShape.pts[i], i == myIfsSys.theShape.pointSelected, myIfsSys.isDragging, i == 0, i==myIfsSys.theShape.pointNearest, false);
         }
     }
 
@@ -343,13 +343,13 @@ public class ifsOverlays {
 
     public void drawBox(Graphics rg, int ptIndex){
         if(ptIndex>-1){
-            ifsPt thePt =  myIfsSys.shape.pts[ptIndex];
-            ifsPt _thePt =  myIfsSys.theVolume.getCameraDistortedPt(myIfsSys.shape.pts[ptIndex]);
+            ifsPt thePt =  myIfsSys.theShape.pts[ptIndex];
+            ifsPt _thePt =  myIfsSys.theVolume.getCameraDistortedPt(myIfsSys.theShape.pts[ptIndex]);
             double wobbleFreq = 6;
             double wobbleSize = 5;
             double width = thePt.scale * thePt.radius;
             double size = Math.cos(System.currentTimeMillis()/1000.0*Math.PI*wobbleFreq)*wobbleSize + width;
-            if(ptIndex==myIfsSys.pointSelected){
+            if(ptIndex==myIfsSys.theShape.pointSelected){
                 rg.setColor(Color.CYAN);
             }else{
                 rg.setColor(Color.DARK_GRAY);

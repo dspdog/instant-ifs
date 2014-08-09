@@ -73,13 +73,13 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         public void stateChanged(ChangeEvent e) {
             if(!autoChange){
                 lastUiChange=System.currentTimeMillis();
-                myIfsSys.selectedPt.x = (float)Double.parseDouble(xSpinner.getValue().toString());
-                myIfsSys.selectedPt.y = (float)Double.parseDouble(ySpinner.getValue().toString());
-                myIfsSys.selectedPt.z = (float)Double.parseDouble(zSpinner.getValue().toString());
-                myIfsSys.selectedPt.scale = (float)(0.01 * Double.parseDouble(scaleSpinner.getValue().toString()));
+                myIfsSys.theShape.selectedPt.x = (float)Double.parseDouble(xSpinner.getValue().toString());
+                myIfsSys.theShape.selectedPt.y = (float)Double.parseDouble(ySpinner.getValue().toString());
+                myIfsSys.theShape.selectedPt.z = (float)Double.parseDouble(zSpinner.getValue().toString());
+                myIfsSys.theShape.selectedPt.scale = (float)(0.01 * Double.parseDouble(scaleSpinner.getValue().toString()));
 
-                myIfsSys.selectedPt.rotationPitch = (float)(Double.parseDouble(pitchSpinner.getValue().toString())/180.0*Math.PI);
-                myIfsSys.selectedPt.rotationYaw = (float)(Double.parseDouble(yawSpinner.getValue().toString())/180.0*Math.PI);
+                myIfsSys.theShape.selectedPt.rotationPitch = (float)(Double.parseDouble(pitchSpinner.getValue().toString())/180.0*Math.PI);
+                myIfsSys.theShape.selectedPt.rotationYaw = (float)(Double.parseDouble(yawSpinner.getValue().toString())/180.0*Math.PI);
 
                 myIfsSys.rp.iterations = Integer.parseInt(iterationsSpinner.getValue().toString());
                 myIfsSys.rp.dotSize = Integer.parseInt(dotSizeSpinner.getValue().toString());
@@ -89,13 +89,14 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 myIfsSys.theVolume.usePerspective = !perspectiveCheck.isSelected();
                 myIfsSys.rp.smearPDF = smearCheck.isSelected();
                 myIfsSys.rp.postProcessPeriod = Long.parseLong(delaySpinner.getValue().toString());
+                myIfsSys.rp.renderThrottling = delayCheck.isSelected();
 
                 myIfsSys.rp.holdFrame = frameHoldCheck.isSelected();
 
                 myIfsSys.rp.potentialRadius = Integer.parseInt(potentialSpinner.getValue().toString());
                 myIfsSys.rp.usingGaussian = potentialCheck.isSelected();
 
-                myIfsSys.shape.updateCenter();
+                myIfsSys.theShape.updateCenter();
 
                 myIfsSys.theVolume.camPitch = camPitchSpinner.getValue() - 180;
                 myIfsSys.theVolume.camYaw = camYawSpinner.getValue() - 180;
@@ -425,7 +426,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         //SHAPE MENU
             CheckboxMenuItem autoScaleButton = new CheckboxMenuItem("AutoScale Points"); //autoscale toggle
-            autoScaleButton.setState(is.shape.autoScale);
+            autoScaleButton.setState(is.theShape.autoScale);
             autoScaleButton.addItemListener(this);
             shapeMenu.add(autoScaleButton);
 
@@ -452,22 +453,22 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     public void updateSideMenu(){
         myIfsSys.rp.limitParams();
         autoChange = true;
-        ptLabel.setText(" Point " + myIfsSys.pointSelected + " Properties:");
+        ptLabel.setText(" Point " + myIfsSys.theShape.pointSelected + " Properties:");
         if(inited && System.currentTimeMillis()-lastUiChange>100){
-            if(myIfsSys.pointSelected !=-1){
-                xSpinner.setValue(myIfsSys.selectedPt.x);
-                ySpinner.setValue(myIfsSys.selectedPt.y);
-                zSpinner.setValue(myIfsSys.selectedPt.z);
+            if(myIfsSys.theShape.pointSelected !=-1){
+                xSpinner.setValue(myIfsSys.theShape.selectedPt.x);
+                ySpinner.setValue(myIfsSys.theShape.selectedPt.y);
+                zSpinner.setValue(myIfsSys.theShape.selectedPt.z);
 
                 camPitchSpinner.setValue((int)myIfsSys.theVolume.camPitch + 180);
                 camRollSpinner.setValue((int)myIfsSys.theVolume.camRoll + 180);
                 camYawSpinner.setValue((int)myIfsSys.theVolume.camYaw + 180);
                 camScaleSpinner.setValue((int)myIfsSys.theVolume.perspectiveScale);
 
-                scaleSpinner.setValue(myIfsSys.selectedPt.scale * 100);
+                scaleSpinner.setValue(myIfsSys.theShape.selectedPt.scale * 100);
 
-                pitchSpinner.setValue(myIfsSys.selectedPt.rotationPitch/Math.PI*180);
-                yawSpinner.setValue(myIfsSys.selectedPt.rotationYaw/Math.PI*180);
+                pitchSpinner.setValue(myIfsSys.theShape.selectedPt.rotationPitch/Math.PI*180);
+                yawSpinner.setValue(myIfsSys.theShape.selectedPt.rotationYaw/Math.PI*180);
 
                 brightnessSpinner.setValue(myIfsSys.rp.brightnessMultiplier);
                 samplesSpinner.setValue(myIfsSys.rp.samplesPerFrame);
@@ -478,6 +479,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 perspectiveCheck.setSelected(!myIfsSys.theVolume.usePerspective);
                 frameHoldCheck.setSelected(myIfsSys.rp.holdFrame);
                 potentialCheck.setSelected(myIfsSys.rp.usingGaussian);
+                delayCheck.setSelected(myIfsSys.rp.renderThrottling);
                 //System.out.println(renderModeCombo.setse);
                 renderModeCombo.setSelectedIndex(myIfsSys.theVolume.renderMode == volume.RenderMode.PROJECT_ONLY ? 1 : 0);
                 dotSizeSpinner.setValue(myIfsSys.rp.dotSize);
@@ -528,7 +530,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             }
         //SHAPE MENU
             if(e.getItem()=="AutoScale Points"){
-                myIfsSys.shape.autoScale = e.getStateChange()==1;
+                myIfsSys.theShape.autoScale = e.getStateChange()==1;
             }
             if(e.getItem()=="PDF Samples"){
                 myIfsSys.rp.usePDFSamples = e.getStateChange()==1;

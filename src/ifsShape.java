@@ -13,44 +13,56 @@ class ifsShape implements java.io.Serializable {
 
     public RenderParams rp;
 
-    static int numBuckets = 10_000_000;
-    int[] buckets = new int[numBuckets]; //used for "load balancing" across the branches
+    int pointNearest, pointSelected;
+    ifsPt selectedPt;
 
-    public int smallestIndexAtThisNode(int node){
-        int min=Integer.MAX_VALUE;
-        int minIndex=0;
-        ArrayList<Integer> winners = new ArrayList<Integer>(); //chooses a random "winner" in the event of a "tie"
-
-        for(int i=node; i<node+this.pointsInUse-1; i++){
-            if(buckets[i]<=min){
-                if(buckets[i]==min){
-                    winners.add(i-node);
-                }else{
-                    winners.clear();
-                }
-                min=buckets[i];
-                minIndex=i-node;
-            }
-        }
-
-        if(winners.size()>0){
-            return winners.get((int)(Math.random()*winners.size()));
-        }else{
-            return minIndex;
-        }
-    }
-
-    public void clearBuckets(){
-        buckets = new int[numBuckets];
-
-    }
+    float score;
 
     public ifsShape(){
+        score=Float.MIN_VALUE;
+        pointNearest =-1;
+        pointSelected =-1;
+
         autoUpdateCenterEnabled =false;
         stateSaved = false;
         pointsInUse = 1;
         unitScale = 115.47005383792515f; //distance from center to one of the points in preset #1
         autoScale = true;
+        freshPoints();
+    }
+
+    public void findNearestPt(int _mousex, int _mousey, double minDist, volume distortionVolume){
+        int nearest = 0;
+        for(int i=0; i<this.pointsInUse; i++){
+            ifsPt _pt = distortionVolume.getCameraDistortedPt(this.pts[i]);
+            double dist = _pt.distanceXY(new ifsPt(_mousex, _mousey, 0));
+            if(dist<minDist){
+                nearest=i;
+                minDist=dist;
+            }
+        }
+        pointNearest = nearest;
+    }
+
+    public void selectedNearestPt(){
+        selectedPt = this.pts[pointNearest];
+        pointSelected = pointNearest;
+    }
+
+    public ifsShape(ifsShape _oldShape){
+        autoUpdateCenterEnabled =_oldShape.autoUpdateCenterEnabled;
+        stateSaved = _oldShape.stateSaved;
+        pointsInUse = _oldShape.pointsInUse;
+        unitScale = _oldShape.unitScale; //distance from center to one of the points in preset #1
+        autoScale = _oldShape.autoScale;
+        score=Float.MIN_VALUE;
+        freshPoints();
+        for(int a=0; a< pointsInUse; a++){
+            pts[a] = new ifsPt(_oldShape.pts[a], true);
+        }
+    }
+
+    public void freshPoints(){
         pts = new ifsPt[1000];
         for(int a=0; a< 1000; a++){
             pts[a] = new ifsPt();

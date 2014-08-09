@@ -1,6 +1,9 @@
 import java.util.Random;
 
 class ifsPt implements java.io.Serializable{
+
+    static mathVirtualizer mv = new mathVirtualizer();
+
     public float x, y, z;
     public float scale;
     public float degreesYaw;
@@ -21,6 +24,8 @@ class ifsPt implements java.io.Serializable{
     static ifsPt X_UNIT = new ifsPt(1.0f,0,0);
     static ifsPt Y_UNIT = new ifsPt(0,1.0f,0);
     static ifsPt Z_UNIT = new ifsPt(0,0,1.0f);
+
+
 
     public ifsPt(){
         x = 0f; y = 0f; z = 0f;
@@ -142,40 +147,28 @@ class ifsPt implements java.io.Serializable{
 
     public ifsPt getRotatedPt(float y, float z, float x){
 
-        float sx, sy, sz, cx, cy, cz;
+        float sx = mv.virtualSin(x),
+              sy = mv.virtualSin(y),
+              sz = mv.virtualSin(z),
+              cx = mv.virtualCos(x),
+              cy = mv.virtualCos(y),
+              cz = mv.virtualCos(z);
 
-        float Lx, Ly, Lz;
-        float Ux, Uy, Uz;
-        float Fx, Fy, Fz;
-
-        sx = sin(x);//0-->x
-        cx = cos(x);
-
-        sy = sin(y);
-        cy = cos(y);
-
-        sz = sin(z);
-        cz = cos(z);
-
-        // determine left axis
-        Lx = cy*cz;
-        Ly = sx*sy*cz + cx*sz;
-        Lz = -cx*sy*cz + sx*sz;
-
-        // determine up axis
-        Ux = -cy*sz;
-        Uy = -sx*sy*sz + cx*cz;
-        Uz = cx*sy*sz + sx*cz;
-
-        // determine forward axis
-        Fx = sy;
-        Fy = -sx*cy;
-        Fz = cx*cy;
+        float sxsy = sx*sy;
+        float cxsy = cx*sy;
 
         return new ifsPt(
-                this.x*Lx + this.y*Ly + this.z*Lz,
-                this.x*Ux + this.y*Uy + this.z*Uz,
-                this.x*Fx + this.y*Fy + this.z*Fz);
+                this.x * cy*cz +
+                this.y * (sxsy*cz + cx*sz) +
+                this.z * (-cxsy*cz + sx*sz),
+
+                this.x*-cy*sz +
+                this.y*(-sxsy*sz + cx*cz) +
+                this.z*(cxsy*sz + sx*cz),
+
+                this.x*sy +
+                this.y*(-sx*cy) +
+                this.z*(cx*cy));
     }
 
     public void saveState(){
