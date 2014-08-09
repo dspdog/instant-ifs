@@ -26,6 +26,8 @@ public class ifsys extends Panel
     long fps;
     long framesThisSecond;
     long oneSecondAgo;
+    static long startTime = System.currentTimeMillis();
+    static String startTimeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(Calendar.getInstance().getTime());
     static long lastMoveTime;
     static long lastRenderTime;
     static long lastClearTime;
@@ -192,6 +194,7 @@ public class ifsys extends Panel
                         theShape = eShape.nextShape(theShape.score);
                         if(eShape.shapeIndex==0){
                             System.out.println("new generation...");
+                            saveImg();
                             eShape.offSpring(eShape.getHighestScoreShape());
                         }
 
@@ -255,9 +258,16 @@ public class ifsys extends Panel
         BufferedWriter writer = null;
         try {
             //create a temporary file
-            String timeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(Calendar.getInstance().getTime()) + ".png";
-            File outputfile = new File(timeLog);
+            String timeLog = new SimpleDateFormat("yyyy_MM_dd_HH-mm-ss").format(Calendar.getInstance().getTime()) + ".png";
+            File outputdir = new File(startTimeLog);
+            File outputfile = new File(startTimeLog+"/"+timeLog);
+
+            if (!outputfile.exists()) {
+                outputdir.mkdir();
+            }
+
             System.out.println("saved - " + outputfile.getAbsolutePath());
+
             ImageIO.write(toBufferedImage(createImage(new MemoryImageSource(rp.screenwidth, rp.screenheight, pixels, 0, rp.screenwidth))), "png", outputfile);
         } catch (Exception e) {
             e.printStackTrace();
@@ -473,22 +483,23 @@ public class ifsys extends Panel
             float g=255;
             float b=255;
 
-            if(rp.usingColors){
-                float thisPointsDistance = distance-rpt.magnitude()*factor;
-                r=thisPointsDistance;
-                g=thisPointsDistance;
-                b=thisPointsDistance;
-                theVolume.contributeToAverageDistance(thisPointsDistance);
-            }
-
             ifsPt theDot = new ifsPt(dpt.x+rpt.x+(float)uncertaintyX,
                     dpt.y+rpt.y+(float)uncertaintyY,
                     dpt.z+rpt.z+(float)uncertaintyZ);
+
+            if(rp.usingColors){
+                float thisPointsDistance = distance-rpt.magnitude()*factor;
+                r=(theDot.x - theVolume.minX)/(theVolume.maxX-theVolume.minX)*512;
+                g=(theDot.y - theVolume.minY)/(theVolume.maxY-theVolume.minY)*512;
+                b=(theDot.z - theVolume.minZ)/(theVolume.maxZ-theVolume.minZ)*512;
+                theVolume.contributeToAverageDistance(thisPointsDistance);
+            }
 
             if(theVolume.putPixel(theDot,(float)ptColor,
                                     r,
                                     g,
                                     b, rp, true)){ //Z
+                theVolume.pushBounds(theDot);
                 seqIndex++;
             }else{
                 duds++;
@@ -839,9 +850,10 @@ public class ifsys extends Panel
             clearframe();
         }
 
-        //if(e.getKeyChar() == 's'){
+        if(e.getKeyChar() == 's'){
         //    saveStuff("");
-        //}
+            saveImg();
+        }
 
         if(e.getKeyChar() == 'l'){
             loadStuff("");
@@ -948,6 +960,7 @@ public class ifsys extends Panel
         }
 
         if(e.getKeyChar() == 'q'){
+            //rp.zMin = 512;rp.zMax=1024;
             rp.drawGrid=false;
             theShape.setToPreset(0);
             theVolume.clear();

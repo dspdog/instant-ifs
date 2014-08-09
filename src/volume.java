@@ -18,13 +18,7 @@ public class volume {
     long totalSamples = 0;
 
     float totalSamplesAlpha =0;
-    float dataMax=0;
-    float dataMaxVolumetric=0;
-    float dataMaxReset = 0;
-
     float perspectiveScale;
-
-    float surfaceArea=0;
 
     public smartVolume volume;
 
@@ -76,6 +70,8 @@ public class volume {
 
     float[][][] scaledProjections;
 
+    float minX, minY, minZ, maxX, maxY, maxZ;
+
     public volume(int w, int h, int d){
         myVolumeOneSecondAgo=0;
         myVolumeChange = 0;
@@ -109,18 +105,26 @@ public class volume {
         camCenter = new ifsPt(512.0f,512.0f,512.0f);
 
         volume = new smartVolume(width);
-        centroid = new ifsPt(0,0,0);
+
         zDarkenScaler=512f;
         scaledProjections = new float[4][width][height];
+
+        reset();
     }
 
     public void reset(){
+
+        minX=width;
+        minY=height;
+        minZ=depth;
+
+        maxX=0;
+        maxY=0;
+        maxZ=0;
+
         drawTime=System.currentTimeMillis();
         totalSamples=1;
         totalSamplesAlpha =1;
-        centroid = new ifsPt(0,0,0);
-        dataMax=dataMaxReset;
-        dataMaxVolumetric=dataMaxReset;
 
         if(renderMode == renderMode.VOLUMETRIC){
             mySurfaceArea=0;
@@ -229,6 +233,15 @@ public class volume {
             if(volume.getData((int)_pt.x,   (int)_pt.y-1, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
             if(volume.getData((int)_pt.x,   (int)_pt.y, (int)_pt.z-1)>0){mySurfaceArea--;}else{mySurfaceArea++;}
         }
+    }
+
+    public void pushBounds(ifsPt pt){
+        if(pt.x<minX){minX=pt.x;}
+        if(pt.y<minY){minY=pt.y;}
+        if(pt.z<minZ){minZ=pt.z;}
+        if(pt.x>maxX){maxX=pt.x;}
+        if(pt.y>maxY){maxY=pt.y;}
+        if(pt.z>maxZ){maxZ=pt.z;}
     }
 
     public boolean old_putPixel(ifsPt _pt, float alpha, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric){

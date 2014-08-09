@@ -10,14 +10,14 @@ public class EvolvingShape {
     long evolvePeriod;
     int evolvedSibs=0;
 
-    final int sibsPerGen = 20;
+    final int sibsPerGen = 10;
 
     public EvolvingShape(ifsShape _baseShape){
         familyHistory = new ArrayList<ArrayList<ifsShape>>();
         baseShape=_baseShape;
         shapeIndex=0;
         evolving=false;
-        evolvePeriod=60000;
+        evolvePeriod=20000;
         evolvedSibs=0;
     }
 
