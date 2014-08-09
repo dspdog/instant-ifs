@@ -19,7 +19,7 @@ class ifsShape implements java.io.Serializable {
     float score;
 
     public ifsShape(){
-        score=Float.MIN_VALUE;
+        score=Float.MAX_VALUE*-1;
         pointNearest =-1;
         pointSelected =-1;
 
@@ -55,7 +55,7 @@ class ifsShape implements java.io.Serializable {
         pointsInUse = _oldShape.pointsInUse;
         unitScale = _oldShape.unitScale; //distance from center to one of the points in preset #1
         autoScale = _oldShape.autoScale;
-        score=Float.MIN_VALUE;
+        score=Float.MAX_VALUE*-1;
         freshPoints();
         for(int a=0; a< pointsInUse; a++){
             pts[a] = new ifsPt(_oldShape.pts[a], true);
@@ -101,17 +101,16 @@ class ifsShape implements java.io.Serializable {
         return loadedShape;
     }
 
-    public ArrayList<ifsShape> getPerturbedVersions(int total, float intensity){
+    public ArrayList<ifsShape> getPerturbedVersions(int total, float intensity, boolean staySymmetric){
         ArrayList<ifsShape> _perturbedVersions;
         _perturbedVersions = new ArrayList<ifsShape>();
         for(int i=0; i<total; i++){
-            _perturbedVersions.add(this.getPerturbedShape(intensity));
+            _perturbedVersions.add(this.getPerturbedShape(intensity, staySymmetric));
         }
         return  _perturbedVersions;
     }
 
-    public ifsShape getPerturbedShape(float intensity){
-        boolean staySymmetric = true;
+    public ifsShape getPerturbedShape(float intensity, boolean staySymmetric){
         ifsShape pShape = new ifsShape();
         pShape.pointsInUse=this.pointsInUse;
         long seed = (long)(Math.random()*Long.MAX_VALUE);

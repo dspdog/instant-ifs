@@ -184,7 +184,7 @@ public class ifsys extends Panel
             while(!quit)
                 try{
                     if(eShape.evolving){
-                        theShape.score = theVolume.getScore(new ScoreParams(ScoreParams.Presets.MAX_SURFACE));
+                        theShape.score = theVolume.getScore(new ScoreParams(ScoreParams.Presets.MIN_DistSurface));
                         float oldScore = theShape.score+0;
                         eShape.evolvedSibs++;
                         System.out.println("score " + oldScore + " - highscore " + eShape.getHighestScoreShape().score);
@@ -951,11 +951,11 @@ public class ifsys extends Panel
             rp.drawGrid=false;
             theShape.setToPreset(0);
             theVolume.clear();
-            rp.iterations=6;
+            rp.iterations=7;
             rp.brightnessMultiplier=1;
             rp.smearPDF=true;
             rp.renderThrottling=true;
-            rp.postProcessPeriod=100;
+            rp.postProcessPeriod=500;
             rp.savingDots=true;
             rp.savedDots=0;
             theVolume.renderMode = volume.RenderMode.VOLUMETRIC;
