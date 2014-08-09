@@ -1,10 +1,7 @@
 public class subVolume {
-    static final int size = 64;
-    static final int sizeMask = 63;
-    static final int sizeLog2 = 6;
-
-    static final int sizeSq = size*size;
-    static final int sizeCu = size*size*size;
+    static final int size = 16;
+    static final int sizeMask = 15;
+    static final int sizeLog2 = 4;
 
     float[][][] data;
     boolean inited;
