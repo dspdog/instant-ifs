@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
 import java.io.*;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -255,20 +256,25 @@ public class ifsys extends Panel
 
 
     public void saveImg(){
+
+        DecimalFormat df = new DecimalFormat("000000");
+
         BufferedWriter writer = null;
         try {
             //create a temporary file
-            String timeLog = new SimpleDateFormat("yyyy_MM_dd_HH-mm-ss").format(Calendar.getInstance().getTime()) + ".png";
-            File outputdir = new File(startTimeLog);
-            File outputfile = new File(startTimeLog+"/"+timeLog);
 
-            if (!outputfile.exists()) {
+            //String timeLog = new SimpleDateFormat("yyyy_MM_dd_HH-mm-ss").format(Calendar.getInstance().getTime()) + ".png";
+            File outputdir = new File(startTimeLog);
+
+            if (!outputdir.exists()) {
                 outputdir.mkdir();
             }
 
-            System.out.println("saved - " + outputfile.getAbsolutePath());
+            String frameNumberStr = df.format(outputdir.list().length) + ".png"; //counting files in dir to allow for sequential use in ffmpeg later, and to chain runs together possibly
+            File outputfile = new File(startTimeLog+"/"+frameNumberStr);
 
             ImageIO.write(toBufferedImage(createImage(new MemoryImageSource(rp.screenwidth, rp.screenheight, pixels, 0, rp.screenwidth))), "png", outputfile);
+            System.out.println("saved - " + outputfile.getAbsolutePath());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -414,7 +420,7 @@ public class ifsys extends Panel
     public void putPdfSample(ifsPt _dpt, double cumulativeRotationYaw,
                              double cumulativeRotationPitch,
                              double cumulativeScale,
-                             double cumulativeOpacity, ifsPt _thePt, ifsPt theOldPt, double scaleDown, int index, ifsPt odpt, int bucketVal, int bucketId, float distance){
+                             ifsPt _thePt, ifsPt theOldPt, ifsPt odpt, int bucketVal, int bucketId, float distance){
         ifsPt dpt = _dpt;
         ifsPt thePt = _thePt;
         float factor = 1.0f;
@@ -433,7 +439,7 @@ public class ifsys extends Panel
         double centerX = thePdf.sampleWidth/2;
         double centerY = thePdf.sampleHeight/2;
         double centerZ = thePdf.sampleDepth/2;
-        double exposureAdjust = cumulativeScale*thePt.scale*thePt.radius;
+        //double exposureAdjust = cumulativeScale*thePt.scale*thePt.radius;
 
         double sampleX, sampleY, sampleZ;
         double ptColor, scale, pointDegreesYaw, pointDegreesPitch;
@@ -456,9 +462,9 @@ public class ifsys extends Panel
         double uncertaintyX = uncertainty*Math.random()-uncertainty/2;
         double uncertaintyY = uncertainty*Math.random()-uncertainty/2;
         double uncertaintyZ = uncertainty*Math.random()-uncertainty/2;
-        double distScaleDown = rp.usingGaussian ? 1.0/(uncertaintyX*uncertaintyX+uncertaintyY*uncertaintyY+uncertaintyZ*uncertaintyZ) : 1.0;
+        //double distScaleDown = rp.usingGaussian ? 1.0/(uncertaintyX*uncertaintyX+uncertaintyY*uncertaintyY+uncertaintyZ*uncertaintyZ) : 1.0;
 
-        if(distScaleDown>1){distScaleDown=1;}
+        //if(distScaleDown>1){distScaleDown=1;}
 
         int seqIndex;
         double dx=Math.random()-0.5;
@@ -475,8 +481,8 @@ public class ifsys extends Panel
         }
 
         for(int iter=0; iter<iters; iter++){
-            ptColor = thePdf.getVolumePt(sampleX,sampleY,sampleZ);//[(int)sampleX+(int)sampleY+(int)sampleZ];
-            ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust*distScaleDown;
+            //ptColor = thePdf.getVolumePt(sampleX,sampleY,sampleZ);//[(int)sampleX+(int)sampleY+(int)sampleZ];
+            //ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust*distScaleDown;
             rpt = new ifsPt((sampleX-centerX)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw); //placed point
 
             float r=255;
@@ -495,7 +501,7 @@ public class ifsys extends Panel
                 theVolume.contributeToAverageDistance(thisPointsDistance);
             }
 
-            if(theVolume.putPixel(theDot,(float)ptColor,
+            if(theVolume.putPixel(theDot,
                                     r,
                                     g,
                                     b, rp, true)){ //Z
@@ -557,13 +563,10 @@ public class ifsys extends Panel
                 double size, yaw, pitch;//, roll;
 
                 double cumulativeScale = 1.0;
-                double cumulativeOpacity = 1;
 
                 double cumulativeRotationYaw = 0;
                 double cumulativeRotationPitch = 0;
                 //double cumulativeRotationRoll = 0;
-
-                double scaleDownMultiplier = 1; //Math.pow(theShape.pointsInUse,rp.iterations); //this variable is used to tone down repeated pixels so leaves and branches are equally exposed
 
                 int bucketIndex=0;
                 int nextBucketIndex=0;
@@ -610,16 +613,14 @@ public class ifsys extends Panel
                     }else{
                         if(!(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
                             try{//TODO why the err?
-                                putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, cumulativeOpacity, theShape.pts[randomIndex], theShape.pts[oldRandomIndex], scaleDownMultiplier, randomIndex, olddpt, buckets[bucketIndex], bucketIndex, distance);
+                                putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, theShape.pts[randomIndex], theShape.pts[oldRandomIndex], olddpt, buckets[bucketIndex], bucketIndex, distance);
                             }catch (Exception e){
                                 //e.printStackTrace();
                             }
-
                         }
-                        scaleDownMultiplier/= theShape.pointsInUse;
 
                         cumulativeScale *= theShape.pts[randomIndex].scale/ theShape.pts[0].scale;
-                        cumulativeOpacity *= theShape.pts[randomIndex].opacity;
+                        //cumulativeOpacity *= theShape.pts[randomIndex].opacity;
 
                         cumulativeRotationYaw += theShape.pts[randomIndex].rotationYaw;
                         cumulativeRotationPitch += theShape.pts[randomIndex].rotationPitch;
@@ -961,14 +962,15 @@ public class ifsys extends Panel
 
         if(e.getKeyChar() == 'q'){
             //rp.zMin = 512;rp.zMax=1024;
-            rp.drawGrid=false;
+            //rp.drawGrid=false;
             theShape.setToPreset(0);
             theVolume.clear();
             rp.iterations=7;
+            rp.useShadows=true;
             rp.brightnessMultiplier=1;
             rp.smearPDF=true;
             rp.renderThrottling=true;
-            rp.postProcessPeriod=500;
+            rp.postProcessPeriod=1000;
             rp.savingDots=true;
             rp.savedDots=0;
             theVolume.renderMode = volume.RenderMode.VOLUMETRIC;

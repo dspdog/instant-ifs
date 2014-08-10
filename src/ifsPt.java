@@ -11,6 +11,7 @@ class ifsPt implements java.io.Serializable{
     public float radius;
     public float rotationYaw;
     public float rotationPitch;
+    public float rotationRoll;
     public float opacity;
 
     public float savedopacity;
@@ -20,6 +21,7 @@ class ifsPt implements java.io.Serializable{
     public float savedradius;
     public float savedrotationyaw;
     public float savedrotationpitch;
+    public float savedrotationroll;
 
     static ifsPt X_UNIT = new ifsPt(1.0f,0,0);
     static ifsPt Y_UNIT = new ifsPt(0,1.0f,0);
@@ -82,6 +84,7 @@ class ifsPt implements java.io.Serializable{
         scale*=(1+rnd.nextGaussian()*intensity);
         rotationPitch+=rnd.nextGaussian()*intensity;
         rotationYaw+=rnd.nextGaussian()*intensity;
+        rotationRoll+=rnd.nextGaussian()*intensity;
         x+=rnd.nextGaussian()*intensity*10;
         y+=rnd.nextGaussian()*intensity*10;
         z+=rnd.nextGaussian()*intensity*10;
@@ -178,6 +181,7 @@ class ifsPt implements java.io.Serializable{
         savedradius = radius;
         savedrotationyaw = rotationYaw;
         savedrotationpitch = rotationPitch;
+        savedrotationroll = rotationRoll;
         savedopacity = opacity;
     }
 }
