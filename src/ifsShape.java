@@ -18,7 +18,10 @@ class ifsShape implements java.io.Serializable {
 
     float score;
 
+    boolean disqualified;
+
     public ifsShape(){
+        disqualified=false;
         score=Float.MAX_VALUE*-1;
         pointNearest =-1;
         pointSelected =-1;
@@ -279,13 +282,18 @@ class ifsShape implements java.io.Serializable {
                 centery=512;
                 centerz=512;
 
-                double div = 3;
-
-                for(int i=0; i<div; i++){
+                for(int i=0; i<1; i++){
                     this.addPoint(
-                            Math.cos(Math.PI/div+i*Math.PI/2)*200+centerx,
-                            Math.sin(Math.PI/div+i*Math.PI/2)*200+centery,
+                            Math.cos(Math.PI/3+i*Math.PI/2)*200+centerx,
+                            Math.sin(Math.PI/3+i*Math.PI/2)*200+centery,
                             centerz-256);
+                }
+
+                for(int i=0; i<3; i++){
+                    this.addPoint(
+                            Math.cos(Math.PI/3+i*Math.PI/2)*200+centerx,
+                            Math.sin(Math.PI/3+i*Math.PI/2)*200+centery,
+                            centerz+256);
                 }
 
                 this.pts[0].z=centerz;

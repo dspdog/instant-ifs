@@ -30,6 +30,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
     JSpinner pitchSpinner;
     JSpinner yawSpinner;
+    JSpinner rollSpinner;
 
     JSlider camPitchSpinner;
     JSlider camYawSpinner;
@@ -80,6 +81,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
                 myIfsSys.theShape.selectedPt.rotationPitch = (float)(Double.parseDouble(pitchSpinner.getValue().toString())/180.0*Math.PI);
                 myIfsSys.theShape.selectedPt.rotationYaw = (float)(Double.parseDouble(yawSpinner.getValue().toString())/180.0*Math.PI);
+                myIfsSys.theShape.selectedPt.rotationRoll = (float)(Double.parseDouble(rollSpinner.getValue().toString())/180.0*Math.PI);
 
                 myIfsSys.rp.iterations = Integer.parseInt(iterationsSpinner.getValue().toString());
                 myIfsSys.rp.dotSize = Integer.parseInt(dotSizeSpinner.getValue().toString());
@@ -174,6 +176,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         pitchSpinner = new JSpinner();
         yawSpinner = new JSpinner();
+        rollSpinner = new JSpinner();
 
         ptLabel = new JLabel("Point -1");
 
@@ -190,7 +193,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         ((JSpinner)addLabeled(scaleSpinner, layout, "Scale %", panel, 4)).addChangeListener(updateAndClear);
         ((JSpinner)addLabeled(pitchSpinner, layout, "Pitch°", panel, 6)).addChangeListener(updateAndClear);
         ((JSpinner)addLabeled(yawSpinner, layout, "Yaw°", panel, 7)).addChangeListener(updateAndClear);
-
+        ((JSpinner)addLabeled(rollSpinner, layout, "Roll°", panel, 8)).addChangeListener(updateAndClear);
         panel.add(ptLabel);
     }
 
@@ -469,6 +472,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
                 pitchSpinner.setValue(myIfsSys.theShape.selectedPt.rotationPitch/Math.PI*180);
                 yawSpinner.setValue(myIfsSys.theShape.selectedPt.rotationYaw/Math.PI*180);
+                rollSpinner.setValue(myIfsSys.theShape.selectedPt.rotationRoll/Math.PI*180);
 
                 brightnessSpinner.setValue(myIfsSys.rp.brightnessMultiplier);
                 samplesSpinner.setValue(myIfsSys.rp.samplesPerFrame);

@@ -8,6 +8,7 @@ class ifsPt implements java.io.Serializable{
     public float scale;
     public float degreesYaw;
     public float degreesPitch;
+    public float degreesRoll;
     public float radius;
     public float rotationYaw;
     public float rotationPitch;
@@ -27,15 +28,15 @@ class ifsPt implements java.io.Serializable{
     static ifsPt Y_UNIT = new ifsPt(0,1.0f,0);
     static ifsPt Z_UNIT = new ifsPt(0,0,1.0f);
 
-
-
     public ifsPt(){
         x = 0f; y = 0f; z = 0f;
         scale = 1f;
         rotationYaw = 0.0f;
         rotationPitch = 0.0f;
+        rotationRoll = 0.0f;
         degreesYaw = 0f;
         degreesPitch = 0f;
+        degreesRoll = 0f;
         radius = 1f;
         opacity = 1f;
     }
@@ -61,6 +62,7 @@ class ifsPt implements java.io.Serializable{
             rotationPitch = pt.rotationPitch;
             degreesYaw = pt.degreesYaw;
             degreesPitch = pt.degreesPitch;
+            degreesRoll = pt.degreesRoll;
             radius = pt.radius;
             opacity = pt.opacity;
         }
@@ -134,10 +136,6 @@ class ifsPt implements java.io.Serializable{
         res.scale = this.scale + (dest.scale-this.scale)*factor;
 
         return res;
-    }
-
-    public ifsPt XYOnly(){
-        return new ifsPt(this.x,this.y,0);
     }
 
     public ifsPt getRotatedPt(double y, double z){

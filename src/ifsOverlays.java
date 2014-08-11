@@ -404,8 +404,12 @@ public class ifsOverlays {
             drawStringOverlay(rg, log10String("AvD/S  ", (float) myIfsSys.theVolume.averageDistance / (float) myIfsSys.theVolume.mySurfaceArea) + "U-1");
             drawStringOverlay(rg, log10String("AvD/V  ", (float) myIfsSys.theVolume.averageDistance / (float) myIfsSys.theVolume.myVolume) + "U-1");
             drawStringOverlay(rg, log10String("S/V    ", (float) myIfsSys.theVolume.mySurfaceArea / (float) myIfsSys.theVolume.myVolume) + "U-1");
-            drawStringOverlay(rg, "Score   " + myIfsSys.theVolume.getScore(new ScoreParams(ScoreParams.Presets.MAX_SURFACE)));
+            drawStringOverlay(rg, "Score   " + myIfsSys.theVolume.getScore(myIfsSys.rp.scoreParams));
             drawStringOverlay(rg, "Regions " + myIfsSys.theVolume.volume.getInitCount() + "/" + myIfsSys.theVolume.volume.totalRegions + " (" + (100 * myIfsSys.theVolume.volume.getInitCount() / myIfsSys.theVolume.volume.totalRegions) + "%)");
+            drawStringOverlay(rg, " ");
+            if(myIfsSys.eShape.evolving){
+                drawStringOverlay(rg, "Generation " + myIfsSys.eShape.familyHistory.size() + " Sibling " + (myIfsSys.eShape.evolvedSibs+1) + "/" + myIfsSys.eShape.shapeList.size());
+            }
         }
 
         drawStringOverlay(rg, log10String("Dots   ", myIfsSys.theVolume.totalSamples));

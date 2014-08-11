@@ -1,8 +1,3 @@
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 public class RenderParams implements java.io.Serializable {
 
     int screenwidth;
@@ -46,7 +41,12 @@ public class RenderParams implements java.io.Serializable {
 
     int xMin, xMax, yMin, yMax, zMin, zMax;
 
+    ScoreParams scoreParams;
+
     public RenderParams(){
+
+        scoreParams = new ScoreParams(ScoreParams.Presets.MIN_DistSurface);
+
         useShadows=false;
         savedDots=0;
         savingDots=false;

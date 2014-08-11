@@ -187,7 +187,13 @@ public class ifsys extends Panel
             while(!quit)
                 try{
                     if(eShape.evolving){
-                        theShape.score = theVolume.getScore(new ScoreParams(ScoreParams.Presets.MIN_DistSurface));
+
+                        if(theShape.disqualified){
+                            theShape.score = Float.MAX_VALUE*-1;
+                        }else{
+                            theShape.score = theVolume.getScore(rp.scoreParams);
+                        }
+
                         float oldScore = theShape.score+0;
                         eShape.evolvedSibs++;
                         System.out.println("score " + oldScore + " - highscore " + eShape.getHighestScoreShape().score);
@@ -274,6 +280,7 @@ public class ifsys extends Panel
             File outputfile = new File(startTimeLog+"/"+frameNumberStr);
 
             ImageIO.write(toBufferedImage(createImage(new MemoryImageSource(rp.screenwidth, rp.screenheight, pixels, 0, rp.screenwidth))), "png", outputfile);
+
             System.out.println("saved - " + outputfile.getAbsolutePath());
         } catch (Exception e) {
             e.printStackTrace();
@@ -417,8 +424,10 @@ public class ifsys extends Panel
         }
     }
 
-    public void putPdfSample(ifsPt _dpt, double cumulativeRotationYaw,
+    public void putPdfSample(ifsPt _dpt,
+                             double cumulativeRotationYaw,
                              double cumulativeRotationPitch,
+                             double cumulativeRotationRoll,
                              double cumulativeScale,
                              ifsPt _thePt, ifsPt theOldPt, ifsPt odpt, int bucketVal, int bucketId, float distance){
         ifsPt dpt = _dpt;
@@ -442,7 +451,7 @@ public class ifsys extends Panel
         //double exposureAdjust = cumulativeScale*thePt.scale*thePt.radius;
 
         double sampleX, sampleY, sampleZ;
-        double ptColor, scale, pointDegreesYaw, pointDegreesPitch;
+        double ptColor, scale, pointDegreesYaw, pointDegreesPitch, pointDegreesRoll;
         ifsPt rpt;
 
         //rotate/scale the point
@@ -452,6 +461,7 @@ public class ifsys extends Panel
 
         pointDegreesYaw = thePt.rotationYaw +cumulativeRotationYaw;
         pointDegreesPitch = thePt.rotationPitch +cumulativeRotationPitch;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
+        pointDegreesRoll = thePt.rotationRoll +cumulativeRotationRoll;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
 
         int iters;// = (int)(scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
         //iters=iters&(4095); //limit to 4095
@@ -483,7 +493,7 @@ public class ifsys extends Panel
         for(int iter=0; iter<iters; iter++){
             //ptColor = thePdf.getVolumePt(sampleX,sampleY,sampleZ);//[(int)sampleX+(int)sampleY+(int)sampleZ];
             //ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust*distScaleDown;
-            rpt = new ifsPt((sampleX-centerX)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-pointDegreesPitch, -pointDegreesYaw); //placed point
+            rpt = new ifsPt((sampleX-centerX)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-(float)pointDegreesPitch, -(float)pointDegreesYaw, -(float)pointDegreesRoll); //placed point
 
             float r=255;
             float g=255;
@@ -515,7 +525,7 @@ public class ifsys extends Panel
                 sampleZ = thePdf.edgePts[seqIndex].z+dz;
             }
 
-            if(duds>4){iter=iters;} //skips occluded pdfs
+            if(duds>4 && theVolume.renderMode != volume.RenderMode.VOLUMETRIC){iter=iters;} //skips occluded pdfs unless in volume mode
         }
     }
 
@@ -560,13 +570,13 @@ public class ifsys extends Panel
                 ifsPt dpt = new ifsPt(theShape.pts[randomIndex]);
                 ifsPt rpt;
 
-                double size, yaw, pitch;//, roll;
+                float size, yaw, pitch, roll;
 
-                double cumulativeScale = 1.0;
+                float cumulativeScale = 1.0f;
 
-                double cumulativeRotationYaw = 0;
-                double cumulativeRotationPitch = 0;
-                //double cumulativeRotationRoll = 0;
+                float cumulativeRotationYaw = 0;
+                float cumulativeRotationPitch = 0;
+                float cumulativeRotationRoll = 0;
 
                 int bucketIndex=0;
                 int nextBucketIndex=0;
@@ -594,10 +604,11 @@ public class ifsys extends Panel
 
                     if(d!=0){
                         size = theShape.pts[randomIndex].radius * cumulativeScale;
-                        yaw = Math.PI/2D - theShape.pts[randomIndex].degreesYaw + cumulativeRotationYaw;
-                        pitch = Math.PI/2D - theShape.pts[randomIndex].degreesPitch + cumulativeRotationPitch;
+                        yaw = (float)(Math.PI/2f - theShape.pts[randomIndex].degreesYaw + cumulativeRotationYaw);
+                        pitch = (float)(Math.PI/2f - theShape.pts[randomIndex].degreesPitch + cumulativeRotationPitch);
+                        roll = (float)(Math.PI/2f - theShape.pts[randomIndex].rotationRoll + cumulativeRotationRoll);
 
-                        rpt = new ifsPt(size,0,0).getRotatedPt(-pitch, -yaw);
+                        rpt = new ifsPt(size,0,0).getRotatedPt(-pitch, -yaw, -roll);
 
                         olddpt = new ifsPt(dpt);
 
@@ -609,21 +620,22 @@ public class ifsys extends Panel
                     }
 
                     if(!theVolume.croppedVolumeContains(dpt, rp)){ //skip points if they leave the cropped area -- TODO make this optional
+                        theShape.disqualified = true;
                         break;
                     }else{
                         if(!(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
                             try{//TODO why the err?
-                                putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch, cumulativeScale, theShape.pts[randomIndex], theShape.pts[oldRandomIndex], olddpt, buckets[bucketIndex], bucketIndex, distance);
+                                putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch,cumulativeRotationRoll, cumulativeScale, theShape.pts[randomIndex], theShape.pts[oldRandomIndex], olddpt, buckets[bucketIndex], bucketIndex, distance);
                             }catch (Exception e){
                                 //e.printStackTrace();
                             }
                         }
 
                         cumulativeScale *= theShape.pts[randomIndex].scale/ theShape.pts[0].scale;
-                        //cumulativeOpacity *= theShape.pts[randomIndex].opacity;
 
                         cumulativeRotationYaw += theShape.pts[randomIndex].rotationYaw;
                         cumulativeRotationPitch += theShape.pts[randomIndex].rotationPitch;
+                        cumulativeRotationRoll += theShape.pts[randomIndex].rotationRoll;
                     }
                 }
             }
@@ -873,6 +885,15 @@ public class ifsys extends Panel
             gamefunc();
         }
 
+        if(e.getKeyChar() == '9'){
+            theShape.setToPreset(9);
+            theVolume.clear();
+            rp.iterations=8;
+            rp.brightnessMultiplier=1;
+            clearframe();
+            gamefunc();
+        }
+
         if(e.getKeyChar() == 'n'){
             System.out.println("adding pt!");
             theShape.addPoint(512, 512, 512);
@@ -963,9 +984,10 @@ public class ifsys extends Panel
         if(e.getKeyChar() == 'q'){
             //rp.zMin = 512;rp.zMax=1024;
             //rp.drawGrid=false;
-            theShape.setToPreset(0);
+            //theShape.setToPreset(0);
+            theShape.setToPreset(9);
             theVolume.clear();
-            rp.iterations=7;
+            rp.iterations=8;
             rp.useShadows=true;
             rp.brightnessMultiplier=1;
             rp.smearPDF=true;

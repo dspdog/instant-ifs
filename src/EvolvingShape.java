@@ -10,15 +10,18 @@ public class EvolvingShape {
     long evolvePeriod;
     int evolvedSibs=0;
 
-    final int sibsPerGen = 6;
+    final int sibsPerGen = 8;
+
+    ifsShape highestScoringShape;
 
     public EvolvingShape(ifsShape _baseShape){
         familyHistory = new ArrayList<ArrayList<ifsShape>>();
         baseShape=_baseShape;
         shapeIndex=0;
         evolving=false;
-        evolvePeriod=10000;
+        evolvePeriod=20000;
         evolvedSibs=0;
+        highestScoringShape = new ifsShape();
     }
 
     public void offSpring(ifsShape _baseShape){
@@ -41,8 +44,13 @@ public class EvolvingShape {
 
     public ifsShape getHighestScoreShape(){
         //int highestIndex=0;
-        float highestScore=Float.MAX_VALUE*-1;
-        ifsShape highestScoringShape = new ifsShape();
+        boolean alwaysNewShape = false;
+        float highestScore =  highestScoringShape.score;
+
+        if(alwaysNewShape){
+            highestScore=Float.MAX_VALUE*-1;
+            highestScoringShape = new ifsShape();
+        }
 
         for (int i = 0; i < evolvedSibs; i++) {
              if(shapeList.get(i).score>highestScore){
@@ -51,6 +59,7 @@ public class EvolvingShape {
                  //highestIndex = i;
              }
         }
+        System.out.println("high score " + highestScore);
         return highestScoringShape;
     }
 
