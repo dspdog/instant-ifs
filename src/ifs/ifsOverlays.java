@@ -25,11 +25,11 @@ public class ifsOverlays {
         selectedAxis = DragAxis.X;
     }
 
-    public void drawArcs(Graphics rg){
+    /*public void drawArcs(Graphics rg){
         for(int i=0;i<myIfsSys.theShape.pointsInUse;i++){
             drawArc(rg, myIfsSys.theShape.pts[i], i == myIfsSys.theShape.pointNearest, myIfsSys.isDragging, i == 0);
         }
-    }
+    }*/
 
     public void drawRegularPolygon(Graphics rg, int x, int y, int rad, int sides, double rotation){
         for(int i=0; i<sides; i++){
@@ -57,7 +57,7 @@ public class ifsOverlays {
         _rg.drawOval(x - width / 2, y - height / 2, width, height);
     }
 
-    public void drawSpecialPoints(Graphics _rg){//centroid and maximum
+    /*public void drawSpecialPoints(Graphics _rg){//centroid and maximum
         if(myIfsSys.theVolume.totalSamplesAlpha >5000){
             ifsPt projectedCentroid = myIfsSys.theVolume.getCameraDistortedPt(myIfsSys.theVolume.getCentroid());
             ifsPt projectedHighPt;
@@ -75,9 +75,9 @@ public class ifsOverlays {
             y=(int)projectedHighPt.y;
             drawHighPt(_rg, x, y);
         }
-    }
+    }*/
 
-    public void drawArc(Graphics _rg, ifsPt pt, boolean isSelected, boolean dragging, boolean isCenter){
+    /*public void drawArc(Graphics _rg, ifsPt pt, boolean isSelected, boolean dragging, boolean isCenter){
         int steps = 50;
 
         int[] xPts1 = new int[steps];
@@ -114,8 +114,8 @@ public class ifsOverlays {
             yPts2[i] = 10*i/steps;
             zPts2[i] = (int)((Math.sin(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
 
-            ifsPt rotatedPt1 = new ifsPt(xPts1[i],yPts1[i],zPts1[i]).getRotatedPt(0, -pt.rotationYaw).add(pt);
-            ifsPt rotatedPt2 = new ifsPt(xPts2[i],yPts2[i],zPts2[i]).getRotatedPt(-pt.rotationPitch, -pt.rotationYaw).add(pt);
+            ifsPt rotatedPt1 = new ifsPt(xPts1[i],yPts1[i],zPts1[i]).getRotatedPt(0, -pt.rotationYaw,0).add(pt);
+            ifsPt rotatedPt2 = new ifsPt(xPts2[i],yPts2[i],zPts2[i]).getRotatedPt(-pt.rotationPitch, -pt.rotationYaw,0).add(pt);
 
             rotatedPt1 = myIfsSys.theVolume.getCameraDistortedPt(rotatedPt1);
             rotatedPt2 = myIfsSys.theVolume.getCameraDistortedPt(rotatedPt2);
@@ -169,7 +169,7 @@ public class ifsOverlays {
             drawPolyLineRotated(xPts1, yPts1, zPts1, _rg, steps);
             drawPolyLineRotated(xPts2, yPts2, zPts2, _rg, steps);
         }
-    }
+    }*/
 
     public void drawPolyLineRotated(int[] xPts1, int[] yPts1, int[] zPts1, Graphics _rg, int steps){
         drawPolyline(xPts1, yPts1, zPts1, steps, _rg);

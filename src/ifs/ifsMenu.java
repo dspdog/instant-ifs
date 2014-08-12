@@ -1,5 +1,7 @@
 package ifs;
 
+import ifs.volumetric.pdf3D;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;

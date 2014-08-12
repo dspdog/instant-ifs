@@ -3,6 +3,9 @@ package ifs;
 import java.util.ArrayList;
 
 public class EvolvingShape {
+
+    static final float MINIMUM_SCORE = Float.MAX_VALUE*-1;
+
     ArrayList<ArrayList<ifsShape>> familyHistory;
     ArrayList<ifsShape> shapeList;
     ifsShape baseShape;
@@ -45,11 +48,11 @@ public class EvolvingShape {
 
     public ifsShape getHighestScoreShape(){
         //int highestIndex=0;
-        boolean alwaysNewShape = false;
+        boolean alwaysNewShape = true;
         float highestScore =  highestScoringShape.score;
 
         if(alwaysNewShape){
-            highestScore=Float.MAX_VALUE*-1;
+            highestScore=MINIMUM_SCORE;
             highestScoringShape = new ifsShape();
         }
 

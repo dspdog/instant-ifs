@@ -1,7 +1,6 @@
 package ifs;
 
-import ifs.volumetric.SmartVolume;
-import ifs.volumetric.SubVolume;
+import ifs.volumetric.*;
 
 import java.io.*;
 import java.nio.ByteBuffer;

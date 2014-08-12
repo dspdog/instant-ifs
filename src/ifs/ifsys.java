@@ -1,6 +1,7 @@
 package ifs;
 
 import ifs.flat.RenderBuffer;
+import ifs.volumetric.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -191,7 +192,7 @@ public class ifsys extends JPanel
                     if(eShape.evolving){
 
                         if(theShape.disqualified){
-                            theShape.score = Float.MAX_VALUE*-1;
+                            theShape.score = EvolvingShape.MINIMUM_SCORE;
                         }else{
                             theShape.score = theVolume.getScore(rp.scoreParams);
                         }
@@ -517,6 +518,9 @@ public class ifsys extends JPanel
 
                 float cumulativeScale = 1.0f;
 
+                ifsPt cumulativeRotationVec = new ifsPt(0,0,0);
+
+
                 float cumulativeRotationYaw = 0;
                 float cumulativeRotationPitch = 0;
                 float cumulativeRotationRoll = 0;
@@ -549,9 +553,9 @@ public class ifsys extends JPanel
                         size = theShape.pts[randomIndex].radius * cumulativeScale;
                         yaw = (float)(Math.PI/2f - theShape.pts[randomIndex].degreesYaw + cumulativeRotationYaw);
                         pitch = (float)(Math.PI/2f - theShape.pts[randomIndex].degreesPitch + cumulativeRotationPitch);
-                        roll = (float)(Math.PI/2f - theShape.pts[randomIndex].rotationRoll + cumulativeRotationRoll);
+                        roll = 0;//(float)(Math.PI/2f - theShape.pts[randomIndex].rotationRoll + cumulativeRotationRoll);
 
-                        rpt = new ifsPt(size,0,0).getRotatedPt(-pitch, -yaw, -roll);
+                        rpt = new ifsPt(size,0,0).getRotatedPt(pitch, yaw, roll);
 
                         olddpt = new ifsPt(dpt);
 
@@ -661,7 +665,7 @@ public class ifsys extends JPanel
 
             if(isRightPressed){ //rotate camera
                 theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0f;
-                theVolume.camRoll=theVolume.savedRoll + (mousePt.y-mouseStartDrag.y)/3.0f;
+                theVolume.camYaw=theVolume.savedYaw + (mousePt.y-mouseStartDrag.y)/3.0f;
             }else{
                 ifsPt xtra = new ifsPt(0,0,0);
 

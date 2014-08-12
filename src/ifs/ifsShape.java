@@ -24,7 +24,7 @@ class ifsShape implements java.io.Serializable {
 
     public ifsShape(){
         disqualified=false;
-        score=Float.MAX_VALUE*-1;
+        score=EvolvingShape.MINIMUM_SCORE;
         pointNearest =-1;
         pointSelected =-1;
 
@@ -60,7 +60,7 @@ class ifsShape implements java.io.Serializable {
         pointsInUse = _oldShape.pointsInUse;
         unitScale = _oldShape.unitScale; //distance from center to one of the points in preset #1
         autoScale = _oldShape.autoScale;
-        score=Float.MAX_VALUE*-1;
+        score=EvolvingShape.MINIMUM_SCORE;
         freshPoints();
         for(int a=0; a< pointsInUse; a++){
             pts[a] = new ifsPt(_oldShape.pts[a], true);

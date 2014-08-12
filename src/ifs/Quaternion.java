@@ -16,7 +16,7 @@ package ifs;
  *************************************************************************/
 
 public class Quaternion {
-    private final double x0, x1, x2, x3;
+    double x0, x1, x2, x3;
 
     // create a new object with the given components
     public Quaternion(double x0, double x1, double x2, double x3) {

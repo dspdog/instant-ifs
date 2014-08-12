@@ -1,4 +1,4 @@
-package ifs;
+package ifs.volumetric;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -10,9 +10,7 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
 
     int width, height, depth;
 
-    int sampleWidth;
-    int sampleHeight;
-    int sampleDepth;
+    public int sampleWidth, sampleHeight, sampleDepth;
 
     intPt sampleMin, sampleMax;
 
@@ -22,15 +20,13 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
 
     public intPt[] edgePts;
 
-    Image sampleImageX;
-    Image sampleImageY;
-    Image sampleImageZ;
+    public Image sampleImageX, sampleImageY, sampleImageZ;
     int samplePixels[];
     int samplePixelsX[];
     int samplePixelsY[];
     int samplePixelsZ[];
 
-    comboMode thePdfComboMode = comboMode.ADD;
+    public comboMode thePdfComboMode = comboMode.ADD;
 
     public pdf3D(){
         width = 512;
@@ -43,7 +39,7 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
         //loadImgs3D("g.png", "e.png", "b.png");
     }
 
-    enum Dimension{
+    public enum Dimension{
         X,Y,Z
     }
 

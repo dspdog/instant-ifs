@@ -98,14 +98,6 @@ class ifsPt implements java.io.Serializable{
         return (float)dist(this.x, this.y, this.z);
     }
 
-    public float cos(float i){
-        return (float)Math.cos(i);
-    }
-
-    public float sin(float i){
-        return (float)Math.sin(i);
-    }
-
     public ifsPt add(ifsPt pt){
         return new ifsPt(this.x+pt.x, this.y+pt.y, this.z+pt.z);
     }
@@ -140,16 +132,19 @@ class ifsPt implements java.io.Serializable{
         return res;
     }
 
-    public ifsPt getRotatedPt(double y, double z){
-        return getRotatedPt((float)y, (float)z);
+    public ifsPt getRotatedPt(float x, float y, float z){
+        return this.qRotate(ifsPt.X_UNIT, x).qRotate(ifsPt.Y_UNIT, y).qRotate(ifsPt.Z_UNIT,z);
     }
 
-    public ifsPt getRotatedPt(float y, float z){
-        return getRotatedPt(y, z, 0);
+    public ifsPt qRotate(ifsPt r, float a){
+        a/=2;
+        float sa2 = mv.virtualSin(a);
+        Quaternion q2 = new Quaternion(mv.virtualCos(a), r.x*sa2, r.y*sa2, r.z*sa2);
+        Quaternion q3 = q2.times(new Quaternion(0, this.x, this.y, this.z)).times(q2.conjugate());
+        return new ifsPt(q3.x1, q3.x2, q3.x3);
     }
 
-    public ifsPt getRotatedPt(float y, float z, float x){
-
+    public ifsPt getOldRotatedPt(float x, float y, float z){
         float sx = mv.virtualSin(x),
               sy = mv.virtualSin(y),
               sz = mv.virtualSin(z),
