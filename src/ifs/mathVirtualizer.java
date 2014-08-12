@@ -1,3 +1,5 @@
+package ifs;
+
 public class mathVirtualizer {
 
     static boolean virtualized = false;

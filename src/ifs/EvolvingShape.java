@@ -1,5 +1,6 @@
+package ifs;
+
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class EvolvingShape {
     ArrayList<ArrayList<ifsShape>> familyHistory;

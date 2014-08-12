@@ -1,3 +1,5 @@
+package ifs;
+
 import java.awt.*;
 
 public class RenderParams implements java.io.Serializable {

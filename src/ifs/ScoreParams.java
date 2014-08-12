@@ -1,3 +1,4 @@
+package ifs;
 
 public class ScoreParams{
     float surfaceScale;

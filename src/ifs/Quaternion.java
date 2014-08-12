@@ -1,16 +1,17 @@
+package ifs;
 
 /*************************************************************************
- *  Compilation:  javac Quaternion.java
- *  Execution:    java Quaternion
+ *  Compilation:  javac ifs.Quaternion.java
+ *  Execution:    java ifs.Quaternion
  *
  *  Data type for quaternions.
  *
- *  http://mathworld.wolfram.com/Quaternion.html
+ *  http://mathworld.wolfram.com/ifs.Quaternion.html
  *
  *  The data type is "immutable" so once you create and initialize
- *  a Quaternion, you cannot change it.
+ *  a ifs.Quaternion, you cannot change it.
  *
- *  % java Quaternion
+ *  % java ifs.Quaternion
  *
  *************************************************************************/
 
@@ -40,13 +41,13 @@ public class Quaternion {
         return new Quaternion(x0, -x1, -x2, -x3);
     }
 
-    // return a new Quaternion whose value is (this + b)
+    // return a new ifs.Quaternion whose value is (this + b)
     public Quaternion plus(Quaternion b) {
         Quaternion a = this;
         return new Quaternion(a.x0+b.x0, a.x1+b.x1, a.x2+b.x2, a.x3+b.x3);
     }
 
-    // return a new Quaternion whose value is (this * b)
+    // return a new ifs.Quaternion whose value is (this * b)
     public Quaternion times(Quaternion b) {
         Quaternion a = this;
         double y0 = a.x0*b.x0 - a.x1*b.x1 - a.x2*b.x2 - a.x3*b.x3;
@@ -56,7 +57,7 @@ public class Quaternion {
         return new Quaternion(y0, y1, y2, y3);
     }
 
-    // return a new Quaternion whose value is the inverse of this
+    // return a new ifs.Quaternion whose value is the inverse of this
     public Quaternion inverse() {
         double d = x0*x0 + x1*x1 + x2*x2 + x3*x3;
         return new Quaternion(x0/d, -x1/d, -x2/d, -x3/d);

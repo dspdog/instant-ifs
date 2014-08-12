@@ -1,3 +1,5 @@
+package ifs;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -121,7 +123,6 @@ public class ifsys extends Panel
         parentFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         is.theMenu = new ifsMenu(parentFrame, is);
-
 
         is.init();
 
@@ -468,7 +469,7 @@ public class ifsys extends Panel
                 sampleZ = thePdf.edgePts[seqIndex].z+dz;
             }
 
-            if(duds>4 && theVolume.renderMode != volume.RenderMode.VOLUMETRIC){iter=iters;} //skips occluded pdfs unless in volume mode
+            if(duds>4 && theVolume.renderMode != volume.RenderMode.VOLUMETRIC){iter=iters;} //skips occluded pdfs unless in ifs.volume mode
         }
     }
 
@@ -815,7 +816,7 @@ public class ifsys extends Panel
         }
 
       //  if(e.getKeyChar() == 's'){
-           // volume.saveToAscii(theVolume.volume);
+           // ifs.volume.saveToAscii(theVolume.ifs.volume);
      //   }
 
         if(e.getKeyChar() == '0'){

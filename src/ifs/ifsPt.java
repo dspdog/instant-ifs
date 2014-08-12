@@ -1,3 +1,5 @@
+package ifs;
+
 import java.util.Random;
 
 class ifsPt implements java.io.Serializable{

@@ -1,9 +1,13 @@
+package ifs.volumetric;
+
+import ifs.volumetric.subVolume;
+
 public class smartVolume { //partitions the space into subVolumes but ignores empty space
     int size;
     int subRes;
     int subResSq;
     int subResCu;
-    int totalRegions;
+    public int totalRegions;
 
     private subVolume[] data;
 

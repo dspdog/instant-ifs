@@ -1,3 +1,8 @@
+package ifs;
+
+import ifs.volumetric.smartVolume;
+import ifs.volumetric.subVolume;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -192,7 +197,7 @@ public class volume {
     }
     public void putDataUpdateSurfaceVolume(ifsPt _pt){
         if(volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z, 100)){//if its the first point there
-            myVolume++; //add it to volume
+            myVolume++; //add it to ifs.volume
             if(volume.getData((int)_pt.x+1, (int)_pt.y, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
             if(volume.getData((int)_pt.x,   (int)_pt.y+1, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
             if(volume.getData((int)_pt.x,   (int)_pt.y, (int)_pt.z+1)>0){mySurfaceArea--;}else{mySurfaceArea++;}

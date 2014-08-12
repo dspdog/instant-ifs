@@ -1,3 +1,5 @@
+package ifs;
+
 import java.awt.*;
 import java.text.DecimalFormat;
 
