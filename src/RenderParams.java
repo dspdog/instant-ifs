@@ -1,9 +1,13 @@
+import java.awt.*;
+
 public class RenderParams implements java.io.Serializable {
 
     int screenwidth;
     int screenheight;
 
     int dotSize;
+
+    Color bgColor;
 
     boolean framesHidden;
     boolean infoHidden;
@@ -44,7 +48,7 @@ public class RenderParams implements java.io.Serializable {
     ScoreParams scoreParams;
 
     public RenderParams(){
-
+        bgColor = new Color(0,112/2,184/2);
         scoreParams = new ScoreParams(ScoreParams.Presets.MIN_DistSurface);
 
         useShadows=false;

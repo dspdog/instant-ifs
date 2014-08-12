@@ -24,12 +24,6 @@ public class volume {
 
     public float XYProjection[][];
 
-    public float ZBuffer[][];
-    public float PBuffer[][]; //point selection buffer...
-    public float RBuffer[][];
-    public float GBuffer[][];
-    public float BBuffer[][];
-
     //public long ZBufferTime[][];
     public long dataPoints = 0;
 
@@ -68,7 +62,7 @@ public class volume {
 
     LinkedList<ifsTriangle> theTriangles;
 
-    float[][][] scaledProjections;
+
 
     float minX, minY, minZ, maxX, maxY, maxZ;
 
@@ -89,11 +83,7 @@ public class volume {
         renderMode = RenderMode.PROJECT_ONLY;
         antiAliasing = true;
         XYProjection = new float[width][height];
-        ZBuffer = new float[width][height];
-        PBuffer = new float[width][height];
-        RBuffer = new float[width][height];
-        GBuffer = new float[width][height];
-        BBuffer = new float[width][height];
+
         camPitch=0;
         camRoll=-90;
         camYaw=0;
@@ -107,7 +97,7 @@ public class volume {
         volume = new smartVolume(width);
 
         zDarkenScaler=512f;
-        scaledProjections = new float[4][width][height];
+
 
         reset();
     }
@@ -137,26 +127,12 @@ public class volume {
         accumilatedDistance = 0;
         averageDistanceSamples = 0;
         reset();
-        clearProj(0);
-    }
+     }
 
     public void contributeToAverageDistance(double dist){
         accumilatedDistance+=dist;
         averageDistanceSamples++;
         averageDistance = accumilatedDistance/averageDistanceSamples;
-    }
-
-    public void clearProj(double a){
-        dataPoints*=a;
-        for(int x=0; x<width; x++){
-            for(int y=0; y<height; y++){
-                ZBuffer[x][y]=0;
-                PBuffer[x][y]=-1;
-                RBuffer[x][y]=0;
-                GBuffer[x][y]=0;
-                BBuffer[x][y]=0;
-            }
-        }
     }
 
     public float getScore(ScoreParams sp){
@@ -216,12 +192,12 @@ public class volume {
         return pt;
     }
 
-    public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop){
-        return old_putPixel(_pt,ptR, ptG, ptB, rp, useCrop, false, false);
+    public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, ifsys is){
+        return old_putPixel(_pt,ptR, ptG, ptB, rp, useCrop, false, false, is);
     }
 
-    public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric){
-        return old_putPixel(_pt, ptR, ptG, ptB, rp, useCrop, noDark, noVolumetric);
+    public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric, ifsys is){
+        return old_putPixel(_pt, ptR, ptG, ptB, rp, useCrop, noDark, noVolumetric, is);
     }
     public void putDataUpdateSurfaceVolume(ifsPt _pt){
         if(volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z, 100)){//if its the first point there
@@ -244,7 +220,7 @@ public class volume {
         if(pt.z>maxZ){maxZ=pt.z;}
     }
 
-    public boolean old_putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric){
+    public boolean old_putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric, ifsys myIfSys){
         ifsPt pt = getCameraDistortedPt(_pt);
 
         dataPoints++;
@@ -263,12 +239,12 @@ public class volume {
             if(useZBuffer){
                 boolean res=false;
 
-                if(pt.z> ZBuffer[(int) pt.x][(int) pt.y]){
+                if(pt.z> myIfSys.ZBuffer[(int) pt.x][(int) pt.y]){
                     res=true;
-                    ZBuffer[(int)pt.x][(int)pt.y] = pt.z;
-                    RBuffer[(int)pt.x][(int)pt.y] = ptR*dark;
-                    GBuffer[(int)pt.x][(int)pt.y] = ptG*dark;
-                    BBuffer[(int)pt.x][(int)pt.y] = ptB*dark;
+                    myIfSys.ZBuffer[(int)pt.x][(int)pt.y] = pt.z;
+                    myIfSys.RBuffer[(int)pt.x][(int)pt.y] = ptR*dark;
+                    myIfSys.GBuffer[(int)pt.x][(int)pt.y] = ptG*dark;
+                    myIfSys.BBuffer[(int)pt.x][(int)pt.y] = ptB*dark;
                 }
 
                 return res;
@@ -288,24 +264,6 @@ public class volume {
 
     public ifsPt getCentroid(){
         return new ifsPt(centroid.x/ totalSamplesAlpha, centroid.y/ totalSamplesAlpha, centroid.z/ totalSamplesAlpha);
-    }
-
-    public float[][][] getScaledProjections(double brightness){
-        int r=0;
-        int g=1;
-        int b=2;
-        int z=3;
-
-        for(int x=0; x<width; x++){
-            for(int y=0; y<height; y++){
-                scaledProjections[r][x][y]= Math.min((int)(brightness*RBuffer[x][y]), 255);
-                scaledProjections[g][x][y]= Math.min((int)(brightness*GBuffer[x][y]), 255);
-                scaledProjections[b][x][y]= Math.min((int)(brightness*BBuffer[x][y]), 255);
-                scaledProjections[z][x][y]= Math.min((int)(brightness*ZBuffer[x][y]), 255);
-            }
-        }
-
-        return scaledProjections;
     }
 
     public void _saveToAscii(){ //save point cloud to ascii
@@ -620,7 +578,7 @@ public class volume {
 
     }
 
-    public void drawGrid(RenderParams rp){
+    public void drawGrid(RenderParams rp, ifsys is){
         if(rp.drawGrid && System.currentTimeMillis() -  rp.gridDrawTime > rp.gridRedrawTime){
             double xmax = 1024;
             double ymax = 1024;
@@ -633,30 +591,30 @@ public class volume {
                     this.putPixel(new ifsPt(
                             x * gridspace,
                             y,
-                            z), 64, 64, 64, rp, false, false, true);
+                            z), 64, 64, 64, rp, false, false, true, is);
                     this.putPixel(new ifsPt(
                             y,
                             x * gridspace,
-                            z), 64, 64, 64, rp, false, false, true);
+                            z), 64, 64, 64, rp, false, false, true, is);
 
 
                     this.putPixel(new ifsPt(
                             x * gridspace,
                             z,
-                            y),  64, 64, 64, rp, false, false, true);
+                            y),  64, 64, 64, rp, false, false, true, is);
                     this.putPixel(new ifsPt(
                             y,
                             z,
-                            x * gridspace),  64, 64, 64, rp, false, false, true);
+                            x * gridspace),  64, 64, 64, rp, false, false, true, is);
 
                     this.putPixel(new ifsPt(
                             z,
                             y,
-                            x * gridspace),  64, 64, 64, rp, false, false, true);
+                            x * gridspace),  64, 64, 64, rp, false, false, true, is);
                     this.putPixel(new ifsPt(
                             z,
                             x * gridspace,
-                            y), 64, 64, 64, rp, false, false, true);
+                            y), 64, 64, 64, rp, false, false, true, is);
                 }
             }
 
@@ -665,29 +623,29 @@ public class volume {
                 this.putPixel(new ifsPt(
                         rp.xMin,
                         i,
-                        0), 64, 0, 0, rp, false, true, true);
+                        0), 64, 0, 0, rp, false, true, true, is);
                 this.putPixel(new ifsPt(
                         rp.xMax,
                         i,
-                        0), 64, 0, 0, rp, false, true, true);
+                        0), 64, 0, 0, rp, false, true, true, is);
 
                 this.putPixel(new ifsPt(
                         0,
                         rp.yMin,
-                        i), 0, 64, 0, rp, false, true, true);
+                        i), 0, 64, 0, rp, false, true, true, is);
                 this.putPixel(new ifsPt(
                         0,
                         rp.yMax,
-                        i), 0, 64, 0, rp, false, true, true);
+                        i), 0, 64, 0, rp, false, true, true, is);
 
                 this.putPixel(new ifsPt(
                         i,
                         0,
-                        rp.zMin), 0, 0, 64, rp, false, true, true);
+                        rp.zMin), 0, 0, 64, rp, false, true, true, is);
                 this.putPixel(new ifsPt(
                         i,
                         0,
-                        rp.zMax), 0, 0, 64, rp, false, true, true);
+                        rp.zMax), 0, 0, 64, rp, false, true, true, is);
             }
 
         }

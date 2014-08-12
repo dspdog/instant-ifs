@@ -41,6 +41,14 @@ public class ifsys extends Panel
     static int numBuckets = 10_000_000;
     int[] buckets = new int[numBuckets]; //used for "load balancing" across the branches
 
+    float[][][] scaledProjections;
+
+    public float ZBuffer[][];
+    public float PBuffer[][]; //point selection buffer...
+    public float RBuffer[][];
+    public float GBuffer[][];
+    public float BBuffer[][];
+
     //user params
 
         static ifsOverlays.DragAxis selectedMovementAxis = ifsOverlays.DragAxis.NONE;
@@ -76,9 +84,16 @@ public class ifsys extends Panel
     ifsOverlays overlays;
 
     public ifsys(){
-        System.out.println(numThreads + " threads");
 
         rp = new RenderParams();
+        ZBuffer = new float[rp.screenwidth][rp.screenheight];
+        PBuffer = new float[rp.screenwidth][rp.screenheight];
+        RBuffer = new float[rp.screenwidth][rp.screenheight];
+        GBuffer = new float[rp.screenwidth][rp.screenheight];
+        BBuffer = new float[rp.screenwidth][rp.screenheight];
+        scaledProjections = new float[4][rp.screenwidth][rp.screenheight];
+        System.out.println(numThreads + " threads");
+
 
         threads = new mainthread[numThreads];
 
@@ -93,7 +108,7 @@ public class ifsys extends Panel
 
         theShape = new ifsShape();
 
-        theVolume = new volume(rp.screenwidth, rp.screenheight, 1024);
+        theVolume = new volume(1024, 1024, 1024);
         theVolume.clear();
         thePdf = new pdf3D();
 
@@ -134,10 +149,10 @@ public class ifsys extends Panel
 
         is.init();
 
-        setupMiniFrame(is.theMenu.cameraProperties, 200, 200,   is.rp.screenwidth,0, "Camera Properties", desktop);
-        setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth,200, "PDF Properties", desktop);
+        setupMiniFrame(is.theMenu.cameraProperties, 200, 250,   is.rp.screenwidth,0, "Camera Properties", desktop);
+        setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth,250, "PDF Properties", desktop);
         setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth-200,0, "Render Properties", desktop);
-        setupMiniFrame(is.theMenu.pointProperties, 200, 200,    is.rp.screenwidth-200,450, "Point Properties", desktop);
+        setupMiniFrame(is.theMenu.pointProperties, 200, 250,    is.rp.screenwidth,450, "Point Properties", desktop);
     }
 
     static void setupMiniFrame(JPanel panel, int width, int height, int x, int y, String title, JDesktopPane desktop){
@@ -263,7 +278,7 @@ public class ifsys extends Panel
     }
 
     public void update(Graphics gr){
-        theVolume.drawGrid(rp);
+        theVolume.drawGrid(rp, this);
         paint(gr);
     }
 
@@ -327,8 +342,8 @@ public class ifsys extends Panel
         generatePixels();
 
         try{ //TODO why does this err?
-            rg.setColor(new Color(0,112/2,184/2));
-            rg.fillRect(0,0,1024,1024);
+            rg.setColor(rp.bgColor);
+            rg.fillRect(0,0,rp.screenwidth,rp.screenheight);
 
             rg.drawImage(createImage(new MemoryImageSource(rp.screenwidth, rp.screenheight, pixels, 0, rp.screenwidth)), 0, 0, rp.screenwidth, rp.screenheight, this);
 
@@ -358,12 +373,29 @@ public class ifsys extends Panel
         lastRenderTime = System.currentTimeMillis();
     }
 
+    public float[][][] getScaledProjections(double brightness){
+        int r=0;
+        int g=1;
+        int b=2;
+        int z=3;
+        for(int x=0; x<rp.screenwidth; x++){
+            for(int y=0; y<rp.screenheight; y++){
+                scaledProjections[r][x][y]= Math.min((int)(brightness*RBuffer[x][y]), 255);
+                scaledProjections[g][x][y]= Math.min((int)(brightness*GBuffer[x][y]), 255);
+                scaledProjections[b][x][y]= Math.min((int)(brightness*BBuffer[x][y]), 255);
+                scaledProjections[z][x][y]= Math.min((int)(brightness*ZBuffer[x][y]), 255);
+            }
+        }
+
+        return scaledProjections;
+    }
+
     public void generatePixels(){
         double scaler = 1;//255/theVolume.dataMax * brightnessMultiplier;
         double area = 0;
         int scaledColor = 0;
 
-        float[][][] projections = theVolume.getScaledProjections(Math.pow(2, rp.brightnessMultiplier));
+        float[][][] projections = getScaledProjections(Math.pow(2, rp.brightnessMultiplier));
         float[][] zProjection = projections[3];
         float[][] rProjection = projections[0];
         float[][] gProjection = projections[1];
@@ -380,8 +412,8 @@ public class ifsys extends Panel
             float maxslope=0;
             float maxslope2=0;
 
-            for(int x = 1; x < zProjection.length-1; x++){
-                for(int y=1; y<zProjection[x].length-1; y++){
+            for(int x = 1; x < rp.screenwidth-1; x++){
+                for(int y=1; y<rp.screenheight-1; y++){
                     if(rp.useShadows){
                         maxslope2 = 1.0f / (float)Math.sqrt(2.0) * Math.max(Math.max((zProjection[x-1][y-1]-zProjection[x][y]),
                                             (zProjection[x+1][y+1]-zProjection[x][y])),
@@ -414,7 +446,7 @@ public class ifsys extends Panel
                         argb = (argb << 8) + (int)(bProjection[x][y]*gradient);
                     }
 
-                    pixels[x+y*zProjection.length] = argb;
+                    pixels[x+y*rp.screenwidth] = argb;
                     area+=scaler*zProjection[x][y];
                 }
             }
@@ -428,6 +460,20 @@ public class ifsys extends Panel
             resetBuckets();
             theVolume.clear();
             lastClearTime=System.currentTimeMillis();
+
+            clearProjections();
+        }
+    }
+
+    public void clearProjections(){
+        for(int x=0; x<rp.screenwidth; x++){
+            for(int y=0; y<rp.screenheight; y++){
+                ZBuffer[x][y]=0;
+                PBuffer[x][y]=-1;
+                RBuffer[x][y]=0;
+                GBuffer[x][y]=0;
+                BBuffer[x][y]=0;
+            }
         }
     }
 
@@ -521,7 +567,7 @@ public class ifsys extends Panel
             if(theVolume.putPixel(theDot,
                                     r,
                                     g,
-                                    b, rp, true)){ //Z
+                                    b, rp, true, this)){ //Z
                 theVolume.pushBounds(theDot);
                 seqIndex++;
             }else{
