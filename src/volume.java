@@ -22,12 +22,7 @@ public class volume {
 
     public smartVolume volume;
 
-   // public float XYProjection[][];
-
-    //public long ZBufferTime[][];
     public long dataPoints = 0;
-
-    public int depthLeanX, depthLeanY;
 
     float camRoll;
     float camYaw;
@@ -62,8 +57,6 @@ public class volume {
 
     LinkedList<ifsTriangle> theTriangles;
 
-
-
     float minX, minY, minZ, maxX, maxY, maxZ;
 
     public volume(int w, int h, int d){
@@ -78,8 +71,7 @@ public class volume {
         width = w;
         height = h;
         depth = d;
-        depthLeanX = 0;
-        depthLeanY = 0;
+
         renderMode = RenderMode.PROJECT_ONLY;
         antiAliasing = true;
 

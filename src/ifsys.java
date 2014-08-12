@@ -19,8 +19,8 @@ public class ifsys extends Panel
     int numThreads = 2; //Runtime.getRuntime().availableProcessors()/2;
     boolean quit;
 
-    Image render;
-    Graphics rg;
+    Image renderImage;
+    Graphics renderGraphics;
     long frameNo;
     long fps;
     long framesThisSecond;
@@ -34,45 +34,35 @@ public class ifsys extends Panel
 
     volume theVolume;
     pdf3D thePdf;
+    RenderBuffer renderBuffer;
+    RenderParams rp;
+    ifsShape theShape;
+    EvolvingShape eShape;
+    ifsMenu theMenu;
+    ifsOverlays overlays;
 
     static int numBuckets = 10_000_000;
     int[] buckets = new int[numBuckets]; //used for "load balancing" across the branches
 
-    RenderBuffer renderBuffer;
+    static ifsOverlays.DragAxis selectedMovementAxis = ifsOverlays.DragAxis.NONE;
 
-    //user params
+    static boolean shiftDown;
+    static boolean ctrlDown;
+    static boolean altDown;
 
-        static ifsOverlays.DragAxis selectedMovementAxis = ifsOverlays.DragAxis.NONE;
+    static boolean isLeftPressed=false;
+    static boolean isRightPressed=false;
 
-        static boolean shiftDown;
-        static boolean ctrlDown;
-        static boolean altDown;
-
-        static boolean isLeftPressed=false;
-        static boolean isRightPressed=false;
-
-        static boolean mousedown;
-        static int mousex, mousey;
-        int mouseScroll;
-        int rotateMode;
-
-        RenderParams rp;
-
-    ifsShape theShape;
-    EvolvingShape eShape;
-
-    ifsMenu theMenu;
-
-    //drag vars
-        int mousemode; //current mouse button
+    static boolean mousedown;
+    static int mousex, mousey;
+    int mouseScroll;
+    int rotateMode;
 
     ifsPt mousePt;
     ifsPt mouseStartDrag;
 
     boolean started;
     boolean isDragging;
-
-    ifsOverlays overlays;
 
     public ifsys(){
         rp = new RenderParams();
@@ -132,26 +122,27 @@ public class ifsys extends Panel
 
         is.theMenu = new ifsMenu(parentFrame, is);
 
+
         is.init();
 
-        setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth,0, "Render Properties", desktop);
-        setupMiniFrame(is.theMenu.cameraProperties, 200, 250,   is.rp.screenwidth+200,0, "Camera Properties", desktop);
-        setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth+200,250, "PDF Properties", desktop);
-        setupMiniFrame(is.theMenu.pointProperties, 200, 250,    is.rp.screenwidth+200,450, "Point Properties", desktop);
+        setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth,0, "Render", desktop);
+        setupMiniFrame(is.theMenu.cameraProperties, 200, 250,   is.rp.screenwidth+200,0, "Camera", desktop);
+        setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth+200,250, "PDF", desktop);
+        setupMiniFrame(is.theMenu.pointProperties, 200, 250,    is.rp.screenwidth+200,450, "IFS Point", desktop);
     }
 
     static void setupMiniFrame(JPanel panel, int width, int height, int x, int y, String title, JDesktopPane desktop){
-        boolean resizable = true;
-        boolean closeable = true;
+        boolean resizable = false;
+        boolean closeable = false;
         boolean maximizable = false;
-        boolean iconifiable = false;
+        boolean iconifiable = true;
 
         JInternalFrame theInternalFrame = new JInternalFrame(title, resizable, closeable, maximizable,
                 iconifiable);
         desktop.add(theInternalFrame);
         theInternalFrame.setSize(width, height);
         theInternalFrame.setLocation(x, y);
-        theInternalFrame.setFrameIcon(null);
+        //theInternalFrame.setFrameIcon(null);
         theInternalFrame.setVisible(true);
         theInternalFrame.getContentPane().add(panel);
         theInternalFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -239,14 +230,13 @@ public class ifsys extends Panel
     }
 
     public void start(){
-        //setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         addMouseListener(this);
         addMouseMotionListener(this);
         addMouseWheelListener(this);
         addKeyListener(this);
-        render = createImage(rp.screenwidth, rp.screenheight);
-        rg = render.getGraphics();
-        overlays = new ifsOverlays(this, rg);
+        renderImage = createImage(rp.screenwidth, rp.screenheight);
+        renderGraphics = renderImage.getGraphics();
+        overlays = new ifsOverlays(this, renderGraphics);
 
         clearframe();
 
@@ -327,25 +317,25 @@ public class ifsys extends Panel
         generatePixels();
 
         try{ //TODO why does this err?
-            rg.setColor(rp.bgColor);
-            rg.fillRect(0,0,rp.screenwidth,rp.screenheight);
+            renderGraphics.setColor(rp.bgColor);
+            renderGraphics.fillRect(0, 0, rp.screenwidth, rp.screenheight);
 
-            rg.drawImage(createImage(new MemoryImageSource(rp.screenwidth, rp.screenheight, renderBuffer.pixels, 0, rp.screenwidth)), 0, 0, rp.screenwidth, rp.screenheight, this);
+            renderGraphics.drawImage(createImage(new MemoryImageSource(rp.screenwidth, rp.screenheight, renderBuffer.pixels, 0, rp.screenwidth)), 0, 0, rp.screenwidth, rp.screenheight, this);
 
-            rg.setColor(Color.blue);
+            renderGraphics.setColor(Color.blue);
 
             if(!rp.guidesHidden){
-                overlays.drawDraggyArrows(rg);
-                overlays.drawBox(rg, theShape.pointNearest);
-                overlays.drawBox(rg, theShape.pointNearest);
+                overlays.drawDraggyArrows(renderGraphics);
+                overlays.drawBox(renderGraphics, theShape.pointNearest);
+                overlays.drawBox(renderGraphics, theShape.pointNearest);
             }
 
             if(!rp.infoHidden && theShape.pointNearest >=0){
-                overlays.drawInfoBox(rg);
+                overlays.drawInfoBox(renderGraphics);
             }
 
             if(lastMoveTime < theMenu.lastPdfPropertiesMouseMoved){
-                overlays.drawPDF(rg);
+                overlays.drawPDF(renderGraphics);
             }
 
         }catch (Exception e){
@@ -354,7 +344,7 @@ public class ifsys extends Panel
 
 
 
-        gr.drawImage(render, 0, 0, rp.screenwidth, rp.screenheight, this);
+        gr.drawImage(renderImage, 0, 0, rp.screenwidth, rp.screenheight, this);
         lastRenderTime = System.currentTimeMillis();
     }
 
@@ -612,7 +602,6 @@ public class ifsys extends Panel
             isRightPressed = true;
         }
 
-        mousemode = e.getButton();
         theVolume.saveCam();
         getMouseXYZ(e);
 

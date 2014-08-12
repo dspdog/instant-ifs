@@ -395,14 +395,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         splitPaneBottom.setOrientation(JSplitPane.VERTICAL_SPLIT);
         splitPaneBottom.setDividerLocation(170);
 
-        int padding=0;
-        //sideMenuLayout.putConstraint(SpringLayout.EAST, splitPaneBig, padding, SpringLayout.EAST, sideMenu);
-        //sideMenuLayout.putConstraint(SpringLayout.WEST, splitPaneBig, padding, SpringLayout.WEST, sideMenu);
-        //sideMenuLayout.putConstraint(SpringLayout.SOUTH, splitPaneBig, padding, SpringLayout.SOUTH, sideMenu);
-        //sideMenuLayout.putConstraint(SpringLayout.NORTH, splitPaneBig, padding, SpringLayout.NORTH, sideMenu);
-
         splitPaneBig.setDividerLocation(640);
-        //sideMenu.add(splitPaneBig);
 
         MenuBar menuBar;
         Menu fileMenu, renderMenu, shapeMenu, guidesMenu, viewMenu;
