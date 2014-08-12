@@ -103,6 +103,13 @@ public class ifsys extends Panel
     }
 
     public static void main(String[] args) {
+
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         ifsys is = new ifsys();
         is.setSize(is.rp.screenwidth, is.rp.screenheight); // same size as defined in the HTML APPLET
 
@@ -129,8 +136,8 @@ public class ifsys extends Panel
 
         setupMiniFrame(is.theMenu.cameraProperties, 200, 200,   is.rp.screenwidth,0, "Camera Properties", desktop);
         setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth,200, "PDF Properties", desktop);
-        setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth,400, "Render Properties", desktop);
-        setupMiniFrame(is.theMenu.pointProperties, 200, 200,    is.rp.screenwidth,850, "Point Properties", desktop);
+        setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth-200,0, "Render Properties", desktop);
+        setupMiniFrame(is.theMenu.pointProperties, 200, 200,    is.rp.screenwidth-200,450, "Point Properties", desktop);
     }
 
     static void setupMiniFrame(JPanel panel, int width, int height, int x, int y, String title, JDesktopPane desktop){
@@ -688,17 +695,17 @@ public class ifsys extends Panel
             isRightPressed = false;
         }
 
-        setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        //setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         //mousemode = 0;
         isDragging=false;
     }
 
     public void mouseEntered(MouseEvent e){
-        setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        //setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
     }
 
     public void mouseExited(MouseEvent e){
-        setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        //setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
     }
 
     public void getMouseXYZ(MouseEvent e){
