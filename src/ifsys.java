@@ -20,14 +20,12 @@ public class ifsys extends Panel
     boolean quit;
 
     int pixels[];
-    int bgpixels[];
     Image render;
     Graphics rg;
     long frameNo;
     long fps;
     long framesThisSecond;
     long oneSecondAgo;
-    static long startTime = System.currentTimeMillis();
     static String startTimeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(Calendar.getInstance().getTime());
     static long lastMoveTime;
     static long lastRenderTime;
@@ -44,7 +42,6 @@ public class ifsys extends Panel
     float[][][] scaledProjections;
 
     public float ZBuffer[][];
-    public float PBuffer[][]; //point selection buffer...
     public float RBuffer[][];
     public float GBuffer[][];
     public float BBuffer[][];
@@ -87,7 +84,6 @@ public class ifsys extends Panel
 
         rp = new RenderParams();
         ZBuffer = new float[rp.screenwidth][rp.screenheight];
-        PBuffer = new float[rp.screenwidth][rp.screenheight];
         RBuffer = new float[rp.screenwidth][rp.screenheight];
         GBuffer = new float[rp.screenwidth][rp.screenheight];
         BBuffer = new float[rp.screenwidth][rp.screenheight];
@@ -115,6 +111,8 @@ public class ifsys extends Panel
         thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
 
         eShape = new EvolvingShape(theShape);
+
+        this.setSize(this.rp.screenwidth, this.rp.screenheight); // same size as defined in the HTML APPLET
     }
 
     public static void main(String[] args) {
@@ -126,7 +124,6 @@ public class ifsys extends Panel
         }
 
         ifsys is = new ifsys();
-        is.setSize(is.rp.screenwidth, is.rp.screenheight); // same size as defined in the HTML APPLET
 
         JDesktopPane desktop = new javax.swing.JDesktopPane() {
             @Override
@@ -373,7 +370,7 @@ public class ifsys extends Panel
         lastRenderTime = System.currentTimeMillis();
     }
 
-    public float[][][] getScaledProjections(double brightness){
+   /* public float[][][] getScaledProjections(double brightness){
         int r=0;
         int g=1;
         int b=2;
@@ -388,18 +385,18 @@ public class ifsys extends Panel
         }
 
         return scaledProjections;
-    }
+    }*/
 
     public void generatePixels(){
         double scaler = 1;//255/theVolume.dataMax * brightnessMultiplier;
         double area = 0;
         int scaledColor = 0;
 
-        float[][][] projections = getScaledProjections(Math.pow(2, rp.brightnessMultiplier));
-        float[][] zProjection = projections[3];
-        float[][] rProjection = projections[0];
-        float[][] gProjection = projections[1];
-        float[][] bProjection = projections[2];
+        //float[][][] projections = getScaledProjections(Math.pow(2, rp.brightnessMultiplier));
+        //float[][] zProjection = projections[3];
+        //float[][] rProjection = projections[0];
+        //float[][] gProjection = projections[1];
+        //float[][] bProjection = projections[2];
 
         boolean didProcess=false;
 
@@ -415,15 +412,15 @@ public class ifsys extends Panel
             for(int x = 1; x < rp.screenwidth-1; x++){
                 for(int y=1; y<rp.screenheight-1; y++){
                     if(rp.useShadows){
-                        maxslope2 = 1.0f / (float)Math.sqrt(2.0) * Math.max(Math.max((zProjection[x-1][y-1]-zProjection[x][y]),
-                                            (zProjection[x+1][y+1]-zProjection[x][y])),
-                                   Math.max((zProjection[x+1][y-1]-zProjection[x][y]),
-                                            (zProjection[x-1][y+1]-zProjection[x][y])));
+                        maxslope2 = 1.0f / (float)Math.sqrt(2.0) * Math.max(Math.max((ZBuffer[x-1][y-1]-ZBuffer[x][y]),
+                                            (ZBuffer[x+1][y+1]-ZBuffer[x][y])),
+                                   Math.max((ZBuffer[x+1][y-1]-ZBuffer[x][y]),
+                                            (ZBuffer[x-1][y+1]-ZBuffer[x][y])));
 
-                        maxslope = Math.max(Math.max((zProjection[x-1][y]-zProjection[x][y]),
-                                (zProjection[x+1][y]-zProjection[x][y])),
-                                Math.max((zProjection[x][y-1]-zProjection[x][y]),
-                                        (zProjection[x][y+1]-zProjection[x][y])));
+                        maxslope = Math.max(Math.max((ZBuffer[x-1][y]-ZBuffer[x][y]),
+                                (ZBuffer[x+1][y]-ZBuffer[x][y])),
+                                Math.max((ZBuffer[x][y-1]-ZBuffer[x][y]),
+                                        (ZBuffer[x][y+1]-ZBuffer[x][y])));
 
                         maxslope = Math.max(maxslope,maxslope2);
 
@@ -433,7 +430,7 @@ public class ifsys extends Panel
 
                     }
 
-                    if(zProjection[x][y]==0){ //"half darkened spanish blue" for background
+                    if(ZBuffer[x][y]==0){ //"half darkened spanish blue" for background
                         //argb = 255;
                         //argb = (argb << 8) + 0;
                         //argb = (argb << 8) + 112/2;
@@ -441,13 +438,13 @@ public class ifsys extends Panel
                         argb=0;
                     }else{
                         argb = 255;
-                        argb = (argb << 8) + (int)(rProjection[x][y]*gradient);
-                        argb = (argb << 8) + (int)(gProjection[x][y]*gradient);
-                        argb = (argb << 8) + (int)(bProjection[x][y]*gradient);
+                        argb = (argb << 8) + (int)(RBuffer[x][y]*rp.brightnessMultiplier*gradient);
+                        argb = (argb << 8) + (int)(GBuffer[x][y]*rp.brightnessMultiplier*gradient);
+                        argb = (argb << 8) + (int)(BBuffer[x][y]*rp.brightnessMultiplier*gradient);
                     }
 
                     pixels[x+y*rp.screenwidth] = argb;
-                    area+=scaler*zProjection[x][y];
+                    area+=scaler*ZBuffer[x][y];
                 }
             }
         }
@@ -469,7 +466,6 @@ public class ifsys extends Panel
         for(int x=0; x<rp.screenwidth; x++){
             for(int y=0; y<rp.screenheight; y++){
                 ZBuffer[x][y]=0;
-                PBuffer[x][y]=-1;
                 RBuffer[x][y]=0;
                 GBuffer[x][y]=0;
                 BBuffer[x][y]=0;
@@ -933,7 +929,6 @@ public class ifsys extends Panel
             theShape.setToPreset(0);
             theVolume.clear();
             rp.iterations=8;
-            rp.brightnessMultiplier=1;
             clearframe();
             gamefunc();
         }
@@ -942,7 +937,6 @@ public class ifsys extends Panel
             theShape.setToPreset(9);
             theVolume.clear();
             rp.iterations=8;
-            rp.brightnessMultiplier=1;
             clearframe();
             gamefunc();
         }

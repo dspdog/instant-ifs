@@ -77,7 +77,7 @@ public class RenderParams implements java.io.Serializable {
         usePDFSamples = true;
         guidesHidden = false;
         iterations = 1;
-        brightnessMultiplier = 1;
+        brightnessMultiplier = 2;
         holdFrame=false;
         samplesPerFrame = 1024;
 
@@ -89,10 +89,10 @@ public class RenderParams implements java.io.Serializable {
     }
 
     public void limitParams(){
-        if(brightnessMultiplier <-16){
-            brightnessMultiplier =-16;}
-        if(brightnessMultiplier >16){
-            brightnessMultiplier =16;}
+        //if(brightnessMultiplier <-16){
+        //    brightnessMultiplier =-16;}
+        //if(brightnessMultiplier >16){
+        //    brightnessMultiplier =16;}
 
         if(samplesPerFrame <2){
             samplesPerFrame =2;}
