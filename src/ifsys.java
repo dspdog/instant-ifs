@@ -118,18 +118,18 @@ public class ifsys extends Panel
     public static void main(String[] args) {
 
         try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());//"com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel"
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        final RenderParams rp = new RenderParams();
         ifsys is = new ifsys();
 
         JDesktopPane desktop = new javax.swing.JDesktopPane() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.setColor(new Color(0,112/2,184/2));
+                g.setColor(rp.bgColor);
                 g.fillRect(0, 0, getWidth(), getHeight());
             }
         };
@@ -138,18 +138,18 @@ public class ifsys extends Panel
         desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
         JFrame parentFrame = new JFrame();
         parentFrame.getContentPane().add(desktop, BorderLayout.CENTER);
-        parentFrame.setSize(is.rp.screenwidth+200+16, is.rp.screenheight);
+        parentFrame.setSize(is.rp.screenwidth+400+16, is.rp.screenheight);
         parentFrame.setVisible(true);
         parentFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         is.theMenu = new ifsMenu(parentFrame, is);
 
         is.init();
-
-        setupMiniFrame(is.theMenu.cameraProperties, 200, 250,   is.rp.screenwidth,0, "Camera Properties", desktop);
-        setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth,250, "PDF Properties", desktop);
-        setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth-200,0, "Render Properties", desktop);
-        setupMiniFrame(is.theMenu.pointProperties, 200, 250,    is.rp.screenwidth,450, "Point Properties", desktop);
+        
+        setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth,0, "Render Properties", desktop);
+        setupMiniFrame(is.theMenu.cameraProperties, 200, 250,   is.rp.screenwidth+200,0, "Camera Properties", desktop);
+        setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth+200,250, "PDF Properties", desktop);
+        setupMiniFrame(is.theMenu.pointProperties, 200, 250,    is.rp.screenwidth+200,450, "Point Properties", desktop);
     }
 
     static void setupMiniFrame(JPanel panel, int width, int height, int x, int y, String title, JDesktopPane desktop){

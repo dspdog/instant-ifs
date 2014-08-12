@@ -41,7 +41,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
     JCheckBox frameHoldCheck;
 
-    JCheckBox potentialCheck;
+    JCheckBox gridCheck;
 
     JCheckBox perspectiveCheck;
     JCheckBox delayCheck;
@@ -96,7 +96,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 myIfsSys.rp.holdFrame = frameHoldCheck.isSelected();
 
                 myIfsSys.rp.potentialRadius = Integer.parseInt(potentialSpinner.getValue().toString());
-                myIfsSys.rp.usingGaussian = potentialCheck.isSelected();
+                myIfsSys.rp.drawGrid = gridCheck.isSelected();
 
                 myIfsSys.theShape.updateCenter();
 
@@ -303,7 +303,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         frameHoldCheck = new JCheckBox();
 
-        potentialCheck = new JCheckBox();
+        gridCheck = new JCheckBox();
 
         delayCheck = new JCheckBox();
 
@@ -339,8 +339,8 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         ((JCheckBox)addLabeled(frameHoldCheck, layout, "Hold Frame", panel, 5.5)).addChangeListener(updateNoClear);
 
-        ((JSpinner)addLabeled(potentialSpinner, layout, "Blur", panel, 6.6)).addChangeListener(updateNoClear);
-        ((JCheckBox)addLabeled(potentialCheck, layout, "Gaussian", panel, 7.6)).addChangeListener(updateNoClear);
+        ((JSpinner)addLabeled(potentialSpinner, layout, "Blur", panel, 6.6)).addChangeListener(updateAndClear);
+        ((JCheckBox)addLabeled(gridCheck, layout, "Grid", panel, 7.6)).addChangeListener(updateAndClear);
 
         ((JCheckBox)addLabeled(delayCheck, layout, "Framelimit", panel, 12.5-3)).addChangeListener(updateNoClear);
         ((JSpinner)addLabeled(delaySpinner, layout, "Wait X ms", panel, 13.6-3)).addChangeListener(updateNoClear);
@@ -482,7 +482,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
                 perspectiveCheck.setSelected(!myIfsSys.theVolume.usePerspective);
                 frameHoldCheck.setSelected(myIfsSys.rp.holdFrame);
-                potentialCheck.setSelected(myIfsSys.rp.usingGaussian);
+                gridCheck.setSelected(myIfsSys.rp.drawGrid);
                 delayCheck.setSelected(myIfsSys.rp.renderThrottling);
                 //System.out.println(renderModeCombo.setse);
                 renderModeCombo.setSelectedIndex(myIfsSys.theVolume.renderMode == volume.RenderMode.PROJECT_ONLY ? 1 : 0);
