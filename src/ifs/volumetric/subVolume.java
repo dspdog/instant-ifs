@@ -5,7 +5,7 @@ public class SubVolume {
     public static final int sizeMask = 15;
     public static final int sizeLog2 = 4;
 
-    float[][][] data;
+    byte[][][] data;
     boolean inited;
 
     public SubVolume(){
@@ -13,11 +13,11 @@ public class SubVolume {
     }
 
     public void init(){
-        data = new float[size][size][size];
+        data = new byte[size][size][size];
         inited=true;
     }
 
-    public boolean putData(int x, int y, int z, float val){
+    public boolean putData(int x, int y, int z, int val){
         if(!inited){
             init();
         }
@@ -42,7 +42,7 @@ public class SubVolume {
 
     public void clipData(int x, int y, int z){
         if(inited){
-            data[x][y][z]=Math.min(data[x][y][z], 255);
+            data[x][y][z]=(byte)Math.min(data[x][y][z], 255);
         }
     }
 }

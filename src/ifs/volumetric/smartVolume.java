@@ -47,7 +47,7 @@ public class SmartVolume { //partitions the space into subVolumes but ignores em
         return getData(x,y,z) > 0;
     }
 
-    public boolean putData(int x, int y, int z, float increment){
+    public boolean putData(int x, int y, int z, int increment){
         return data[(x>> SubVolume.sizeLog2)
                 +(y>> SubVolume.sizeLog2)*subRes
                 +(z>> SubVolume.sizeLog2)*subResSq].putData(x& SubVolume.sizeMask, y& SubVolume.sizeMask, z& SubVolume.sizeMask, increment);

@@ -117,7 +117,7 @@ public class ifsys extends JPanel
         };
 
         desktop.add(is);
-        desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+        //desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
         JFrame parentFrame = new JFrame();
         parentFrame.getContentPane().add(desktop, BorderLayout.CENTER);
         parentFrame.setSize(is.rp.screenwidth+400+16, is.rp.screenheight);
@@ -254,11 +254,9 @@ public class ifsys extends JPanel
 
         thePaintThread.start();
         theEvolutionThread.start();
-
     }
 
     public void saveImg(){
-
         DecimalFormat df = new DecimalFormat("000000");
 
         BufferedWriter writer = null;
