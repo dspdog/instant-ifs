@@ -19,7 +19,6 @@ public class ifsys extends Panel
     int numThreads = 2; //Runtime.getRuntime().availableProcessors()/2;
     boolean quit;
 
-    int pixels[];
     Image render;
     Graphics rg;
     long frameNo;
@@ -39,12 +38,7 @@ public class ifsys extends Panel
     static int numBuckets = 10_000_000;
     int[] buckets = new int[numBuckets]; //used for "load balancing" across the branches
 
-    float[][][] scaledProjections;
-
-    public float ZBuffer[][];
-    public float RBuffer[][];
-    public float GBuffer[][];
-    public float BBuffer[][];
+    RenderBuffer renderBuffer;
 
     //user params
 
@@ -81,13 +75,9 @@ public class ifsys extends Panel
     ifsOverlays overlays;
 
     public ifsys(){
-
         rp = new RenderParams();
-        ZBuffer = new float[rp.screenwidth][rp.screenheight];
-        RBuffer = new float[rp.screenwidth][rp.screenheight];
-        GBuffer = new float[rp.screenwidth][rp.screenheight];
-        BBuffer = new float[rp.screenwidth][rp.screenheight];
-        scaledProjections = new float[4][rp.screenwidth][rp.screenheight];
+        renderBuffer = new RenderBuffer(rp.screenwidth, rp.screenheight);
+
         System.out.println(numThreads + " threads");
 
 
@@ -99,8 +89,6 @@ public class ifsys extends Panel
 
         thePaintThread = new paintThread();
         theEvolutionThread = new evolutionThread();
-
-        pixels = new int[rp.screenwidth * rp.screenheight];
 
         theShape = new ifsShape();
 
@@ -145,7 +133,7 @@ public class ifsys extends Panel
         is.theMenu = new ifsMenu(parentFrame, is);
 
         is.init();
-        
+
         setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth,0, "Render Properties", desktop);
         setupMiniFrame(is.theMenu.cameraProperties, 200, 250,   is.rp.screenwidth+200,0, "Camera Properties", desktop);
         setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth+200,250, "PDF Properties", desktop);
@@ -298,7 +286,7 @@ public class ifsys extends Panel
             String frameNumberStr = df.format(outputdir.list().length) + ".png"; //counting files in dir to allow for sequential use in ffmpeg later, and to chain runs together possibly
             File outputfile = new File(startTimeLog+"/"+frameNumberStr);
 
-            ImageIO.write(toBufferedImage(createImage(new MemoryImageSource(rp.screenwidth, rp.screenheight, pixels, 0, rp.screenwidth))), "png", outputfile);
+            ImageIO.write(toBufferedImage(createImage(new MemoryImageSource(rp.screenwidth, rp.screenheight, renderBuffer.pixels, 0, rp.screenwidth))), "png", outputfile);
 
             System.out.println("saved - " + outputfile.getAbsolutePath());
         } catch (Exception e) {
@@ -342,7 +330,7 @@ public class ifsys extends Panel
             rg.setColor(rp.bgColor);
             rg.fillRect(0,0,rp.screenwidth,rp.screenheight);
 
-            rg.drawImage(createImage(new MemoryImageSource(rp.screenwidth, rp.screenheight, pixels, 0, rp.screenwidth)), 0, 0, rp.screenwidth, rp.screenheight, this);
+            rg.drawImage(createImage(new MemoryImageSource(rp.screenwidth, rp.screenheight, renderBuffer.pixels, 0, rp.screenwidth)), 0, 0, rp.screenwidth, rp.screenheight, this);
 
             rg.setColor(Color.blue);
 
@@ -370,83 +358,11 @@ public class ifsys extends Panel
         lastRenderTime = System.currentTimeMillis();
     }
 
-   /* public float[][][] getScaledProjections(double brightness){
-        int r=0;
-        int g=1;
-        int b=2;
-        int z=3;
-        for(int x=0; x<rp.screenwidth; x++){
-            for(int y=0; y<rp.screenheight; y++){
-                scaledProjections[r][x][y]= Math.min((int)(brightness*RBuffer[x][y]), 255);
-                scaledProjections[g][x][y]= Math.min((int)(brightness*GBuffer[x][y]), 255);
-                scaledProjections[b][x][y]= Math.min((int)(brightness*BBuffer[x][y]), 255);
-                scaledProjections[z][x][y]= Math.min((int)(brightness*ZBuffer[x][y]), 255);
-            }
-        }
-
-        return scaledProjections;
-    }*/
-
     public void generatePixels(){
-        double scaler = 1;//255/theVolume.dataMax * brightnessMultiplier;
-        double area = 0;
-        int scaledColor = 0;
-
-        //float[][][] projections = getScaledProjections(Math.pow(2, rp.brightnessMultiplier));
-        //float[][] zProjection = projections[3];
-        //float[][] rProjection = projections[0];
-        //float[][] gProjection = projections[1];
-        //float[][] bProjection = projections[2];
-
         boolean didProcess=false;
-
         if(!rp.renderThrottling || System.currentTimeMillis()-lastPostProcessTime>rp.postProcessPeriod){
             didProcess=true;
-
-            int argb;
-
-            float gradient=1f;
-            float maxslope=0;
-            float maxslope2=0;
-
-            for(int x = 1; x < rp.screenwidth-1; x++){
-                for(int y=1; y<rp.screenheight-1; y++){
-                    if(rp.useShadows){
-                        maxslope2 = 1.0f / (float)Math.sqrt(2.0) * Math.max(Math.max((ZBuffer[x-1][y-1]-ZBuffer[x][y]),
-                                            (ZBuffer[x+1][y+1]-ZBuffer[x][y])),
-                                   Math.max((ZBuffer[x+1][y-1]-ZBuffer[x][y]),
-                                            (ZBuffer[x-1][y+1]-ZBuffer[x][y])));
-
-                        maxslope = Math.max(Math.max((ZBuffer[x-1][y]-ZBuffer[x][y]),
-                                (ZBuffer[x+1][y]-ZBuffer[x][y])),
-                                Math.max((ZBuffer[x][y-1]-ZBuffer[x][y]),
-                                        (ZBuffer[x][y+1]-ZBuffer[x][y])));
-
-                        maxslope = Math.max(maxslope,maxslope2);
-
-                        if(maxslope>5){maxslope=255;}
-
-                        gradient = 1.0f-maxslope/255.0f;
-
-                    }
-
-                    if(ZBuffer[x][y]==0){ //"half darkened spanish blue" for background
-                        //argb = 255;
-                        //argb = (argb << 8) + 0;
-                        //argb = (argb << 8) + 112/2;
-                        //argb = (argb << 8) + 184/2;
-                        argb=0;
-                    }else{
-                        argb = 255;
-                        argb = (argb << 8) + (int)(RBuffer[x][y]*rp.brightnessMultiplier*gradient);
-                        argb = (argb << 8) + (int)(GBuffer[x][y]*rp.brightnessMultiplier*gradient);
-                        argb = (argb << 8) + (int)(BBuffer[x][y]*rp.brightnessMultiplier*gradient);
-                    }
-
-                    pixels[x+y*rp.screenwidth] = argb;
-                    area+=scaler*ZBuffer[x][y];
-                }
-            }
+            renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.useShadows);
         }
 
         if(didProcess)lastPostProcessTime=System.currentTimeMillis();
@@ -457,19 +373,7 @@ public class ifsys extends Panel
             resetBuckets();
             theVolume.clear();
             lastClearTime=System.currentTimeMillis();
-
-            clearProjections();
-        }
-    }
-
-    public void clearProjections(){
-        for(int x=0; x<rp.screenwidth; x++){
-            for(int y=0; y<rp.screenheight; y++){
-                ZBuffer[x][y]=0;
-                RBuffer[x][y]=0;
-                GBuffer[x][y]=0;
-                BBuffer[x][y]=0;
-            }
+            renderBuffer.clearProjections();
         }
     }
 

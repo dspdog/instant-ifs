@@ -22,7 +22,7 @@ public class volume {
 
     public smartVolume volume;
 
-    public float XYProjection[][];
+   // public float XYProjection[][];
 
     //public long ZBufferTime[][];
     public long dataPoints = 0;
@@ -82,7 +82,6 @@ public class volume {
         depthLeanY = 0;
         renderMode = RenderMode.PROJECT_ONLY;
         antiAliasing = true;
-        XYProjection = new float[width][height];
 
         camPitch=0;
         camRoll=-90;
@@ -239,12 +238,12 @@ public class volume {
             if(useZBuffer){
                 boolean res=false;
 
-                if(pt.z> myIfSys.ZBuffer[(int) pt.x][(int) pt.y]){
+                if(pt.z> myIfSys.renderBuffer.ZBuffer[(int) pt.x][(int) pt.y]){
                     res=true;
-                    myIfSys.ZBuffer[(int)pt.x][(int)pt.y] = pt.z;
-                    myIfSys.RBuffer[(int)pt.x][(int)pt.y] = ptR*dark;
-                    myIfSys.GBuffer[(int)pt.x][(int)pt.y] = ptG*dark;
-                    myIfSys.BBuffer[(int)pt.x][(int)pt.y] = ptB*dark;
+                    myIfSys.renderBuffer.ZBuffer[(int)pt.x][(int)pt.y] = pt.z;
+                    myIfSys.renderBuffer.RBuffer[(int)pt.x][(int)pt.y] = ptR*dark;
+                    myIfSys.renderBuffer.GBuffer[(int)pt.x][(int)pt.y] = ptG*dark;
+                    myIfSys.renderBuffer.BBuffer[(int)pt.x][(int)pt.y] = ptB*dark;
                 }
 
                 return res;
@@ -264,42 +263,6 @@ public class volume {
 
     public ifsPt getCentroid(){
         return new ifsPt(centroid.x/ totalSamplesAlpha, centroid.y/ totalSamplesAlpha, centroid.z/ totalSamplesAlpha);
-    }
-
-    public void _saveToAscii(){ //save point cloud to ascii
-
-        BufferedWriter writer = null;
-        try {
-            String timeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate) + ".xyz";
-            File logFile = new File(timeLog);
-
-            writer = new BufferedWriter(new FileWriter(logFile, true));
-
-            for(int x=1; x<width-1;x++){
-                for(int y=1; y<height-1;y++){
-                    for(int z=1; z<depth-1;z++){
-                        if(volume.isNotEmpty(x,y,z) && volume.edges(x, y, z, 1)>6){
-                            writer.append(x + " " + y + " " + z + "\n");
-                        }
-                    }
-                }
-
-                if(x%16==0){
-                    System.out.println(x + "/" + width + " saved - " + (int)(100.0*x/width)+"%");
-                }
-            }
-
-            System.out.println(logFile.getCanonicalPath());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                // Close the writer regardless of what happens...
-                writer.close();
-            } catch (Exception e) {
-            }
-        }
     }
 
     protected void addCubeAscii(BufferedWriter writer, int x, int y, int z) throws IOException {

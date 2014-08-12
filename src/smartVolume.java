@@ -41,21 +41,6 @@ public class smartVolume { //partitions the space into subVolumes but ignores em
         return count;
     }
 
-    public int edges(int x, int y, int z, int edgeUnit){
-        int edges=0;
-        for(int _x=-edgeUnit; _x<edgeUnit+1; _x++){
-            for(int _y=-edgeUnit; _y<edgeUnit+1; _y++){
-                for(int _z=-edgeUnit; _z<edgeUnit+1; _z++){
-                    if(getData(x+_x,y+_y,z+_z)<0.01){
-                        edges++;
-                    }
-                }
-            }
-        }
-
-        return edges;
-    }
-
     public boolean isNotEmpty(int x, int y, int z){
         return getData(x,y,z) > 0;
     }

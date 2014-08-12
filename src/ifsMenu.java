@@ -146,6 +146,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         return theButton;
     }
 
+
     public <T extends JComponent> JComponent addLabeled(T comp, SpringLayout layout, String labelText, JPanel panel, double row){
         int compLeft = 70;
         int compRight = -5;
@@ -166,7 +167,6 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         return comp;
     }
-
 
     public void setupPointPropertiesPanel(JPanel panel){
         xSpinner = new JSpinner();
@@ -254,6 +254,8 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         SpringLayout layout = new SpringLayout();
         panel.setLayout(layout);
+
+
 
         ((JSlider)addLabeled(camPitchSpinner, layout, "Pitch", panel, 1+1)).addChangeListener(updateAndClear);
         ((JSlider)addLabeled(camYawSpinner, layout, "Yaw", panel, 2.35+1)).addChangeListener(updateAndClear);
@@ -345,7 +347,6 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         ((JCheckBox)addLabeled(delayCheck, layout, "Framelimit", panel, 12.5-3)).addChangeListener(updateNoClear);
         ((JSpinner)addLabeled(delaySpinner, layout, "Wait X ms", panel, 13.6-3)).addChangeListener(updateNoClear);
         ((JSpinner)addLabeled(dotSizeSpinner, layout, "Dot Size", panel, 14.7-3)).addChangeListener(updateNoClear);
-
 
         xMaxSpinner=new JSpinner();
         xMinSpinner=new JSpinner();

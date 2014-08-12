@@ -48,7 +48,7 @@ public class RenderParams implements java.io.Serializable {
     ScoreParams scoreParams;
 
     public RenderParams(){
-        bgColor = new Color(0,112/2,184/2);
+        bgColor = new Color(0,112/2,184/2); //half darkened spanish blue
         scoreParams = new ScoreParams(ScoreParams.Presets.MIN_DistSurface);
 
         useShadows=false;
