@@ -5,7 +5,7 @@ public class SubVolume {
     public static final int sizeMask = 15;
     public static final int sizeLog2 = 4;
 
-    byte[][][] data;
+    int[][][] data;
     boolean inited;
 
     public SubVolume(){
@@ -13,17 +13,17 @@ public class SubVolume {
     }
 
     public void init(){
-        data = new byte[size][size][size];
+        data = new int[size][size][size];
         inited=true;
     }
 
-    public boolean putData(int x, int y, int z, int val){
+    public int putData(int x, int y, int z, int val){
         if(!inited){
             init();
         }
-        boolean isFirst = data[x][y][z]<0.01;
+
         data[x][y][z]+=val;
-        return isFirst;
+        return data[x][y][z];
     }
 
     public float getData(int x, int y, int z){
