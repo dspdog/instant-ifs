@@ -1,22 +1,20 @@
 package ifs.volumetric;
 
-import ifs.volumetric.subVolume;
-
-public class smartVolume { //partitions the space into subVolumes but ignores empty space
+public class SmartVolume { //partitions the space into subVolumes but ignores empty space
     int size;
     int subRes;
     int subResSq;
     int subResCu;
     public int totalRegions;
 
-    private subVolume[] data;
+    private SubVolume[] data;
 
     boolean inited = false;
 
-    public smartVolume(int _size){
-        if(_size%subVolume.size ==0){
+    public SmartVolume(int _size){
+        if(_size% SubVolume.size ==0){
             size=_size;
-            subRes = size/subVolume.size;
+            subRes = size/ SubVolume.size;
             subResSq = subRes*subRes;
             subResCu = subRes*subRes*subRes;
             reset();
@@ -28,11 +26,11 @@ public class smartVolume { //partitions the space into subVolumes but ignores em
     public void reset(){
         totalRegions=0;
         if(!inited){
-            data = new subVolume[subResCu];
+            data = new SubVolume[subResCu];
             inited=true;
         }
         for(int x=0; x<subResCu; x++){
-            data[x] = new subVolume();
+            data[x] = new SubVolume();
             totalRegions++;
         }
     }
@@ -50,26 +48,26 @@ public class smartVolume { //partitions the space into subVolumes but ignores em
     }
 
     public boolean putData(int x, int y, int z, float increment){
-        return data[(x>>subVolume.sizeLog2)
-                +(y>>subVolume.sizeLog2)*subRes
-                +(z>>subVolume.sizeLog2)*subResSq].putData(x&subVolume.sizeMask, y&subVolume.sizeMask, z&subVolume.sizeMask, increment);
+        return data[(x>> SubVolume.sizeLog2)
+                +(y>> SubVolume.sizeLog2)*subRes
+                +(z>> SubVolume.sizeLog2)*subResSq].putData(x& SubVolume.sizeMask, y& SubVolume.sizeMask, z& SubVolume.sizeMask, increment);
     }
 
     public void clearData(int x, int y, int z){
-        data[(x>>subVolume.sizeLog2)
-                +(y>>subVolume.sizeLog2)*subRes
-                +(z>>subVolume.sizeLog2)*subResSq].clearData(x & subVolume.sizeMask, y & subVolume.sizeMask, z & subVolume.sizeMask);
+        data[(x>> SubVolume.sizeLog2)
+                +(y>> SubVolume.sizeLog2)*subRes
+                +(z>> SubVolume.sizeLog2)*subResSq].clearData(x & SubVolume.sizeMask, y & SubVolume.sizeMask, z & SubVolume.sizeMask);
     }
 
     public void clipData(int x, int y, int z){
-        data[(x>>subVolume.sizeLog2)
-                +(y>>subVolume.sizeLog2)*subRes
-                +(z>>subVolume.sizeLog2)*subResSq].clipData(x & subVolume.sizeMask, y & subVolume.sizeMask, z & subVolume.sizeMask);
+        data[(x>> SubVolume.sizeLog2)
+                +(y>> SubVolume.sizeLog2)*subRes
+                +(z>> SubVolume.sizeLog2)*subResSq].clipData(x & SubVolume.sizeMask, y & SubVolume.sizeMask, z & SubVolume.sizeMask);
     }
     
     public float getData(int x, int y, int z){
-        return data[(x>>subVolume.sizeLog2)
-                +(y>>subVolume.sizeLog2)*subRes
-                +(z>>subVolume.sizeLog2)*subResSq].getData(x&subVolume.sizeMask, y&subVolume.sizeMask, z&subVolume.sizeMask);
+        return data[(x>> SubVolume.sizeLog2)
+                +(y>> SubVolume.sizeLog2)*subRes
+                +(z>> SubVolume.sizeLog2)*subResSq].getData(x& SubVolume.sizeMask, y& SubVolume.sizeMask, z& SubVolume.sizeMask);
     }
 }

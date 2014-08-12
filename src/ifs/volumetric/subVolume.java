@@ -1,6 +1,6 @@
 package ifs.volumetric;
 
-public class subVolume {
+public class SubVolume {
     public static final int size = 16;
     public static final int sizeMask = 15;
     public static final int sizeLog2 = 4;
@@ -8,7 +8,7 @@ public class subVolume {
     float[][][] data;
     boolean inited;
 
-    public subVolume(){
+    public SubVolume(){
         inited=false;
     }
 

@@ -1,5 +1,7 @@
 package ifs;
 
+import ifs.flat.RenderBuffer;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;

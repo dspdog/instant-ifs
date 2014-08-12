@@ -132,19 +132,6 @@ class ifsShape implements java.io.Serializable {
         return pShape;
     }
 
-    /*public void centerByPt(int desiredX, int desiredY, int desiredZ, int centerX, int centerY, int centerZ){
-        int offsetX = desiredX-centerX;
-        int offsetY = desiredY-centerY;
-        int offsetZ = desiredZ-centerZ;
-
-        for(int i=0; i<pointsInUse; i++){
-            pts[i].x-=offsetX;
-            pts[i].y-=offsetY;
-            pts[i].z-=offsetZ;
-        }
-        updateCenter();
-    }*/
-
     public void saveState(){
         for(int a = 0; a < pointsInUse; a++){
             pts[a].saveState();
@@ -207,7 +194,6 @@ class ifsShape implements java.io.Serializable {
     }
 
     public void clearPts(){
-
         for(int a = 0; a < pointsInUse; a++){
             deletePoint(pointsInUse-a);
         }
@@ -215,7 +201,6 @@ class ifsShape implements java.io.Serializable {
     }
 
     void updateRadiusDegrees(){
-        //pts[0].degreesYaw = 0;
         pts[0].degreesPitch = (float)Math.PI/2;
         pts[0].radius = unitScale*pts[0].scale;
 

@@ -1,7 +1,7 @@
 package ifs;
 
-import ifs.volumetric.smartVolume;
-import ifs.volumetric.subVolume;
+import ifs.volumetric.SmartVolume;
+import ifs.volumetric.SubVolume;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -25,7 +25,7 @@ public class volume {
     float totalSamplesAlpha =0;
     float perspectiveScale;
 
-    public smartVolume volume;
+    public SmartVolume volume;
 
     public long dataPoints = 0;
 
@@ -90,7 +90,7 @@ public class volume {
 
         camCenter = new ifsPt(512.0f,512.0f,512.0f);
 
-        volume = new smartVolume(width);
+        volume = new SmartVolume(width);
 
         zDarkenScaler=512f;
 
@@ -542,7 +542,7 @@ public class volume {
         if(rp.drawGrid && System.currentTimeMillis() -  rp.gridDrawTime > rp.gridRedrawTime){
             double xmax = 1024;
             double ymax = 1024;
-            double gridspace = subVolume.size;
+            double gridspace = SubVolume.size;
             rp.gridDrawTime = System.currentTimeMillis();
             int z = 0;
 
