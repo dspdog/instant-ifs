@@ -26,11 +26,14 @@ class ifsPt implements java.io.Serializable{
     public float savedrotationpitch;
     public float savedrotationroll;
 
+    public Quaternion rotationQ;
+
     static ifsPt X_UNIT = new ifsPt(1.0f,0,0);
     static ifsPt Y_UNIT = new ifsPt(0,1.0f,0);
     static ifsPt Z_UNIT = new ifsPt(0,0,1.0f);
 
     public ifsPt(){
+        rotationQ = new Quaternion(0,0,0,0);
         x = 0f; y = 0f; z = 0f;
         scale = 1f;
         rotationYaw = 0.0f;
@@ -100,6 +103,10 @@ class ifsPt implements java.io.Serializable{
 
     public ifsPt add(ifsPt pt){
         return new ifsPt(this.x+pt.x, this.y+pt.y, this.z+pt.z);
+    }
+
+    public ifsPt getRotationVec(){
+        return new ifsPt(this.rotationYaw, this.rotationPitch, this.rotationRoll);
     }
 
     public ifsPt subtract(ifsPt pt){

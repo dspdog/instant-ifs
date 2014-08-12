@@ -208,6 +208,12 @@ class ifsShape implements java.io.Serializable {
             pts[a].radius = autoScale ? distance(pts[a].x - pts[0].x, pts[a].y - pts[0].y,  pts[a].z - pts[0].z) : pts[0].radius;
             pts[a].degreesYaw = (float)Math.atan2(pts[a].x - pts[0].x, pts[a].y - pts[0].y);
             pts[a].degreesPitch = (float)Math.atan2(pts[a].radius, pts[a].z - pts[0].z);
+
+
+            pts[a].rotationQ.x1 = pts[a].x-pts[0].x;
+            pts[a].rotationQ.x2 = pts[a].y-pts[0].y;
+            pts[a].rotationQ.x3 = pts[a].z-pts[0].z;
+
         }
     }
 

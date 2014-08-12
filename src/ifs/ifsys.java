@@ -369,9 +369,7 @@ public class ifsys extends JPanel
     }
 
     public void putPdfSample(ifsPt _dpt,
-                             double cumulativeRotationYaw,
-                             double cumulativeRotationPitch,
-                             double cumulativeRotationRoll,
+                             ifsPt cumulativeRotationVector,
                              double cumulativeScale,
                              ifsPt _thePt, ifsPt theOldPt, ifsPt odpt, int bucketVal, int bucketId, float distance){
         ifsPt dpt = _dpt;
@@ -403,9 +401,9 @@ public class ifsys extends JPanel
 
         scale = cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
 
-        pointDegreesYaw = thePt.rotationYaw +cumulativeRotationYaw;
-        pointDegreesPitch = thePt.rotationPitch +cumulativeRotationPitch;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
-        pointDegreesRoll = thePt.rotationRoll +cumulativeRotationRoll;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
+        pointDegreesYaw = thePt.rotationYaw +cumulativeRotationVector.x;
+        pointDegreesPitch = thePt.rotationPitch +cumulativeRotationVector.y;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
+        pointDegreesRoll = thePt.rotationRoll +cumulativeRotationVector.z;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
 
         int iters;// = (int)(scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
         //iters=iters&(4095); //limit to 4095
@@ -514,16 +512,11 @@ public class ifsys extends JPanel
                 ifsPt dpt = new ifsPt(theShape.pts[randomIndex]);
                 ifsPt rpt;
 
-                float size, yaw, pitch, roll;
-
                 float cumulativeScale = 1.0f;
 
                 ifsPt cumulativeRotationVec = new ifsPt(0,0,0);
 
-
-                float cumulativeRotationYaw = 0;
-                float cumulativeRotationPitch = 0;
-                float cumulativeRotationRoll = 0;
+                Quaternion cumulativeRotationQ = new Quaternion(1,0,0,0);
 
                 int bucketIndex=0;
                 int nextBucketIndex=0;
@@ -548,19 +541,11 @@ public class ifsys extends JPanel
                     if(d==0){randomIndex=0;}
 
                     ifsPt olddpt = new ifsPt();
-
+                    ifsPt thePt = theShape.pts[randomIndex];
                     if(d!=0){
-                        size = theShape.pts[randomIndex].radius * cumulativeScale;
-                        yaw = (float)(Math.PI/2f - theShape.pts[randomIndex].degreesYaw + cumulativeRotationYaw);
-                        pitch = (float)(Math.PI/2f - theShape.pts[randomIndex].degreesPitch + cumulativeRotationPitch);
-                        roll = 0;//(float)(Math.PI/2f - theShape.pts[randomIndex].rotationRoll + cumulativeRotationRoll);
-
-                        rpt = new ifsPt(size,0,0).getRotatedPt(pitch, yaw, roll);
-
+                        rpt = thePt.subtract(theShape.pts[0]).scale(cumulativeScale);
                         olddpt = new ifsPt(dpt);
-
                         distance += rpt.magnitude();
-
                         dpt.x += rpt.x;
                         dpt.y += rpt.y;
                         dpt.z -= rpt.z;
@@ -572,17 +557,15 @@ public class ifsys extends JPanel
                     }else{
                         if(!(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
                             try{//TODO why the err?
-                                putPdfSample(dpt, cumulativeRotationYaw,cumulativeRotationPitch,cumulativeRotationRoll, cumulativeScale, theShape.pts[randomIndex], theShape.pts[oldRandomIndex], olddpt, buckets[bucketIndex], bucketIndex, distance);
+                                putPdfSample(dpt, cumulativeRotationVec, cumulativeScale, thePt, theShape.pts[oldRandomIndex], olddpt, buckets[bucketIndex], bucketIndex, distance);
                             }catch (Exception e){
                                 //e.printStackTrace();
                             }
                         }
 
-                        cumulativeScale *= theShape.pts[randomIndex].scale/ theShape.pts[0].scale;
-
-                        cumulativeRotationYaw += theShape.pts[randomIndex].rotationYaw;
-                        cumulativeRotationPitch += theShape.pts[randomIndex].rotationPitch;
-                        cumulativeRotationRoll += theShape.pts[randomIndex].rotationRoll;
+                        cumulativeScale *= thePt.scale/ theShape.pts[0].scale;
+                        cumulativeRotationQ = cumulativeRotationQ.times(thePt.rotationQ);
+                        //cumulativeRotationVec.add(thePt.getRotationVec());
                     }
                 }
             }
