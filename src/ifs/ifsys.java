@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class ifsys extends Panel
+public class ifsys extends JPanel
     implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener, ActionListener, Serializable
 {
     paintThread thePaintThread;
@@ -152,6 +152,7 @@ public class ifsys extends Panel
     }
 
     public void init() {
+
         frameNo=0;
 
         start();
@@ -253,13 +254,8 @@ public class ifsys extends Panel
 
         thePaintThread.start();
         theEvolutionThread.start();
-    }
 
-    public void update(Graphics gr){
-        theVolume.drawGrid(rp, this);
-        paint(gr);
     }
-
 
     public void saveImg(){
 
@@ -267,9 +263,7 @@ public class ifsys extends Panel
 
         BufferedWriter writer = null;
         try {
-            //create a temporary file
 
-            //String timeLog = new SimpleDateFormat("yyyy_MM_dd_HH-mm-ss").format(Calendar.getInstance().getTime()) + ".png";
             File outputdir = new File(startTimeLog);
 
             if (!outputdir.exists()) {
@@ -306,7 +300,12 @@ public class ifsys extends Panel
         return bimage;
     }
 
-    public void paint(Graphics gr){
+    public void paintComponent(Graphics g) {
+        theVolume.drawGrid(rp, this);
+        draw(g);
+    }
+
+    public void draw(Graphics gr){
         frameNo++;
         framesThisSecond++;
         if(System.currentTimeMillis()- oneSecondAgo >=1000){
@@ -751,6 +750,9 @@ public class ifsys extends Panel
     }
 
     public void mouseMoved(MouseEvent e){
+        this.setFocusable(true);
+        this.requestFocusInWindow();
+
         getMouseXYZ(e);
         theShape.findNearestPt(mousex, mousey, overlays.minInterestDist, theVolume);
         if(System.currentTimeMillis()-lastMoveTime>100){gamefunc();}
