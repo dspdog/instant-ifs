@@ -52,18 +52,18 @@ public class EvolvingShape {
     }
 
     public ifsShape getHighestScoreShape(){
-        float highestScore =  highestScoringShape.score;
+        float highestScore;
 
         if(alwaysNewShape){
-            highestScore=MINIMUM_SCORE;
-            highestScoringShape = new ifsShape();
+            highestScore = MINIMUM_SCORE;
+        }else{
+            highestScore =  highestScoringShape.score;
         }
 
         for (int i = 0; i < evolvedSibs; i++) {
              if(shapeList.get(i).score>highestScore){
                  highestScoringShape = shapeList.get(i);
                  highestScore = highestScoringShape.score;
-                 //highestIndex = i;
              }
         }
         System.out.println("high score " + highestScore);

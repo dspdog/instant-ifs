@@ -13,6 +13,7 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
     public int sampleWidth, sampleHeight, sampleDepth;
 
     intPt sampleMin, sampleMax;
+    public intPt center;
 
     public float volume[];
 
@@ -32,6 +33,7 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
         width = 512;
         height = 512;
         depth = 512;
+        center = new intPt(width/2, height/2, depth/2);
         volume = new float[width*height*depth];
         samplePixels = new int[width*height];
 

@@ -33,16 +33,4 @@ public class SubVolume {
             return 0;
         }
     }
-
-    public void clearData(int x, int y, int z){
-        if(inited){
-            data[x][y][z]=0;
-        }
-    }
-
-    public void clipData(int x, int y, int z){
-        if(inited){
-            data[x][y][z]=(byte)Math.min(data[x][y][z], 255);
-        }
-    }
 }

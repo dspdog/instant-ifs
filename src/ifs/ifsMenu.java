@@ -368,7 +368,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     }
 
     public ifsMenu(Frame f, ifsys is){
-
+        is.addMouseListener(new PopClickListener());
         inited=false;
         parentFrame=f;
         myIfsSys = is;
@@ -601,5 +601,25 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     public void mouseMoved(MouseEvent e) {
         //triggered by pdf properties panel
         lastPdfPropertiesMouseMoved=System.currentTimeMillis();
+    }
+
+    class PopClickListener extends MouseAdapter {
+        public void mousePressed(MouseEvent e){
+            if (SwingUtilities.isRightMouseButton (e))
+                doPop(e);
+        }
+
+        private void doPop(MouseEvent e){
+            myPopUpMenu menu = new myPopUpMenu();
+            menu.show(e.getComponent(), e.getX(), e.getY());
+        }
+    }
+
+    class myPopUpMenu extends JPopupMenu {
+        JMenuItem anItem;
+        public myPopUpMenu(){
+            anItem = new JMenuItem("Menu1");
+            add(anItem);
+        }
     }
 }

@@ -1,16 +1,14 @@
 package ifs;
 
 import ifs.flat.RenderBuffer;
+import ifs.utils.ImageUtils;
 import ifs.volumetric.*;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
 import java.io.*;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,6 +21,8 @@ public class ifsys extends JPanel
     evolutionThread theEvolutionThread;
     int numThreads = 2; //Runtime.getRuntime().availableProcessors()/2;
     boolean quit;
+
+    static ImageUtils imageUtils = new ImageUtils();
 
     Image renderImage;
     Graphics renderGraphics;
@@ -204,7 +204,7 @@ public class ifsys extends JPanel
                         theShape = eShape.nextShape(theShape.score);
                         if(eShape.shapeIndex==0){
                             System.out.println("new generation...");
-                            saveImg();
+                            imageUtils.saveImg(startTimeLog, rp.screenwidth, rp.screenheight, renderBuffer.pixels);
                             eShape.offSpring(eShape.getHighestScoreShape());
                         }
 
@@ -239,6 +239,7 @@ public class ifsys extends JPanel
         addMouseMotionListener(this);
         addMouseWheelListener(this);
         addKeyListener(this);
+
         renderImage = createImage(rp.screenwidth, rp.screenheight);
         renderGraphics = renderImage.getGraphics();
         overlays = new ifsOverlays(this, renderGraphics);
@@ -257,50 +258,8 @@ public class ifsys extends JPanel
         theEvolutionThread.start();
     }
 
-    public void saveImg(){
-        DecimalFormat df = new DecimalFormat("000000");
-
-        BufferedWriter writer = null;
-        try {
-
-            File outputdir = new File(startTimeLog);
-
-            if (!outputdir.exists()) {
-                outputdir.mkdir();
-            }
-
-            String frameNumberStr = df.format(outputdir.list().length) + ".png"; //counting files in dir to allow for sequential use in ffmpeg later, and to chain runs together possibly
-            File outputfile = new File(startTimeLog+"/"+frameNumberStr);
-
-            ImageIO.write(toBufferedImage(createImage(new MemoryImageSource(rp.screenwidth, rp.screenheight, renderBuffer.pixels, 0, rp.screenwidth))), "png", outputfile);
-
-            System.out.println("saved - " + outputfile.getAbsolutePath());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static BufferedImage toBufferedImage(Image img)
-    {
-        if (img instanceof BufferedImage)
-        {
-            return (BufferedImage) img;
-        }
-
-        // Create a buffered image with transparency
-        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
-
-        // Draw the image on to the buffered image
-        Graphics2D bGr = bimage.createGraphics();
-        bGr.drawImage(img, 0, 0, null);
-        bGr.dispose();
-
-        // Return the buffered image
-        return bimage;
-    }
-
     public void paintComponent(Graphics g) {
-        theVolume.drawGrid(rp, this);
+        theVolume.drawGrid(rp, renderBuffer);
         draw(g);
     }
 
@@ -349,6 +308,8 @@ public class ifsys extends JPanel
         lastRenderTime = System.currentTimeMillis();
     }
 
+
+
     public void generatePixels(){
         boolean didProcess=false;
         if(!rp.renderThrottling || System.currentTimeMillis()-lastPostProcessTime>rp.postProcessPeriod){
@@ -362,114 +323,13 @@ public class ifsys extends JPanel
     public void clearframe(){
         if(!rp.holdFrame && System.currentTimeMillis() - lastClearTime > 20){
             resetBuckets();
-            theVolume.clear();
+            if(theVolume.changed)theVolume.clear();
             lastClearTime=System.currentTimeMillis();
             renderBuffer.clearProjections();
         }
     }
 
-    public void putPdfSample(ifsPt _dpt,
-                             ifsPt cumulativeRotationVector,
-                             double cumulativeScale,
-                             ifsPt _thePt, ifsPt theOldPt, ifsPt odpt, int bucketVal, int bucketId, float distance){
-        ifsPt dpt = _dpt;
-        ifsPt thePt = _thePt;
-        float factor = 1.0f;
-        if(rp.smearPDF){
-            float smearSubdivisions = 4;
-            factor = (float)((1.0/smearSubdivisions*((bucketVal+bucketId)%smearSubdivisions))+Math.random()/smearSubdivisions);
-            dpt = _dpt.interpolateTo(odpt, factor);
-            thePt = _thePt.interpolateTo(theOldPt, factor);
-            if(odpt.x<1){dpt=_dpt;}//hack to prevent smearing from first pt
-        }
 
-        int duds = 0;
-
-        double uncertainty = rp.potentialRadius;
-
-        double centerX = thePdf.sampleWidth/2;
-        double centerY = thePdf.sampleHeight/2;
-        double centerZ = thePdf.sampleDepth/2;
-        //double exposureAdjust = cumulativeScale*thePt.scale*thePt.radius;
-
-        double sampleX, sampleY, sampleZ;
-        double ptColor, scale, pointDegreesYaw, pointDegreesPitch, pointDegreesRoll;
-        ifsPt rpt;
-
-        //rotate/scale the point
-        //double pointDist = theShape.distance(sampleX, sampleY, 0)*cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
-
-        scale = cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
-
-        pointDegreesYaw = thePt.rotationYaw +cumulativeRotationVector.x;
-        pointDegreesPitch = thePt.rotationPitch +cumulativeRotationVector.y;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
-        pointDegreesRoll = thePt.rotationRoll +cumulativeRotationVector.z;//Math.PI/2+thePt.rotationPitch -thePt.degreesPitch+cumulativeRotationPitch;
-
-        int iters;// = (int)(scale*scale/scaleDown)+1;//(int)(Math.min(samplesPerPdfScaler, Math.PI*scale*scale/4/scaleDown)+1);
-        //iters=iters&(4095); //limit to 4095
-        //if(rp.smearPDF){
-            iters=Math.min(1000000, thePdf.edgeValues);
-        //}
-
-        double uncertaintyX = uncertainty*Math.random()-uncertainty/2;
-        double uncertaintyY = uncertainty*Math.random()-uncertainty/2;
-        double uncertaintyZ = uncertainty*Math.random()-uncertainty/2;
-        //double distScaleDown = rp.usingGaussian ? 1.0/(uncertaintyX*uncertaintyX+uncertaintyY*uncertaintyY+uncertaintyZ*uncertaintyZ) : 1.0;
-
-        //if(distScaleDown>1){distScaleDown=1;}
-
-        int seqIndex;
-        double dx=Math.random()-0.5;
-        double dy=Math.random()-0.5;
-        double dz=Math.random()-0.5;
-
-        seqIndex = (int)(Math.random()*(thePdf.edgeValues));
-        sampleX = thePdf.edgePts[seqIndex].x+dx;
-        sampleY = thePdf.edgePts[seqIndex].y+dy;
-        sampleZ = thePdf.edgePts[seqIndex].z+dz;
-
-        if(theVolume.renderMode == volume.RenderMode.VOLUMETRIC){
-            dx=0;dy=0;dz=0;
-        }
-
-        for(int iter=0; iter<iters; iter++){
-            //ptColor = thePdf.getVolumePt(sampleX,sampleY,sampleZ);//[(int)sampleX+(int)sampleY+(int)sampleZ];
-            //ptColor = ptColor/255.0*cumulativeOpacity/scaleDown*exposureAdjust*exposureAdjust*distScaleDown;
-            rpt = new ifsPt((sampleX-centerX)*scale,(sampleY-centerY)*scale,(sampleZ-centerZ)*scale).getRotatedPt(-(float)pointDegreesPitch, -(float)pointDegreesYaw, -(float)pointDegreesRoll); //placed point
-
-            float r=255;
-            float g=255;
-            float b=255;
-
-            ifsPt theDot = new ifsPt(dpt.x+rpt.x+(float)uncertaintyX,
-                    dpt.y+rpt.y+(float)uncertaintyY,
-                    dpt.z+rpt.z+(float)uncertaintyZ);
-
-            if(rp.usingColors){
-                float thisPointsDistance = distance-rpt.magnitude()*factor;
-                r=(theDot.x - theVolume.minX)/(theVolume.maxX-theVolume.minX)*512;
-                g=(theDot.y - theVolume.minY)/(theVolume.maxY-theVolume.minY)*512;
-                b=(theDot.z - theVolume.minZ)/(theVolume.maxZ-theVolume.minZ)*512;
-                theVolume.contributeToAverageDistance(thisPointsDistance);
-            }
-
-            if(theVolume.putPixel(theDot,
-                                    r,
-                                    g,
-                                    b, rp, true, this)){ //Z
-                theVolume.pushBounds(theDot);
-                seqIndex++;
-            }else{
-                duds++;
-                seqIndex = (int)(Math.random()*thePdf.edgeValues);
-                sampleX = thePdf.edgePts[seqIndex].x+dx;
-                sampleY = thePdf.edgePts[seqIndex].y+dy;
-                sampleZ = thePdf.edgePts[seqIndex].z+dz;
-            }
-
-            if(duds>4 && theVolume.renderMode != volume.RenderMode.VOLUMETRIC){iter=iters;} //skips occluded pdfs unless in ifs.volume mode
-        }
-    }
 
 
     public void resetBuckets(){
@@ -546,24 +406,22 @@ public class ifsys extends JPanel
                         rpt = thePt.subtract(centerPt).scale(cumulativeScale).getRotatedPt(cumulativeRotation);
                         olddpt = new ifsPt(dpt);
                         distance += rpt.magnitude();
-                        dpt.x += rpt.x;
-                        dpt.y += rpt.y;
-                        dpt.z -= rpt.z;
+                        dpt._add(rpt);
                     }
 
-                    if(!theVolume.croppedVolumeContains(dpt, rp)){ //skip points if they leave the cropped area -- TODO make this optional
+                    if(!theVolume.croppedVolumeContains(dpt, rp)){ //skip points if they leave the cropped area
                         theShape.disqualified = true;
                         break;
                     }else{
                         if(!(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
                             try{//TODO why the err?
-                                putPdfSample(dpt, cumulativeRotation, cumulativeScale, thePt, theShape.pts[oldRandomIndex], olddpt, buckets[bucketIndex], bucketIndex, distance);
+                                theVolume.putPdfSample(dpt, cumulativeRotation, cumulativeScale, thePt, theShape.pts[oldRandomIndex], olddpt,
+                                        buckets[bucketIndex], bucketIndex, distance, rp, thePdf, renderBuffer);
                             }catch (Exception e){
                                 //e.printStackTrace();
                             }
                         }
                         cumulativeScale *= thePt.scale/centerPt.scale;
-
                     }
                 }
             }
@@ -644,13 +502,13 @@ public class ifsys extends JPanel
             boolean xPos = overlays.draggyPtCenter.x<overlays.draggyPtArrow.x;
             boolean yPos = overlays.draggyPtCenter.y<overlays.draggyPtArrow.y;
 
-            if(isRightPressed){ //rotate camera
-                theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0f;
-                theVolume.camYaw=theVolume.savedYaw - (mousePt.y-mouseStartDrag.y)/3.0f;
+            if(isRightPressed){ 
+
             }else{
                 ifsPt xtra = new ifsPt(0,0,0);
 
                 if(ctrlDown){
+                    theVolume.changed=true;
                     xtra.x+=xDelta/100.0f;
                     xtra.y+=yDelta/100.0f;
                     theShape.selectedPt.rotationPitch = theShape.selectedPt.savedrotationpitch + xtra.y;
@@ -660,27 +518,35 @@ public class ifsys extends JPanel
                     xtra.y+=yDelta/100.0f;
 
                     for(int i=1; i< theShape.pointsInUse; i++){
+                        theVolume.changed=true;
                         theShape.pts[i].rotationPitch = theShape.pts[i].savedrotationpitch + xtra.y;
                         theShape.pts[i].rotationYaw = theShape.pts[i].savedrotationyaw + xtra.x;
                     }
                 }else{
                     switch (selectedMovementAxis){
                         case X:
+                            theVolume.changed=true;
                             xtra.x+=xDelta/2.0f*(xPos?1:-1);
                             xtra.x+=yDelta/2.0f*(yPos?1:-1);
                             theShape.selectedPt.x = theShape.selectedPt.savedx + xtra.x;
                             break;
                         case Y:
+                            theVolume.changed=true;
                             xtra.y+=xDelta/2.0f*(xPos?1:-1);
                             xtra.y+=yDelta/2.0f*(yPos?1:-1);
                             theShape.selectedPt.y = theShape.selectedPt.savedy + xtra.y;
                             break;
                         case Z:
+                            theVolume.changed=true;
                             xtra.z+=xDelta/2.0f*(xPos?1:-1);
                             xtra.z+=yDelta/2.0f*(yPos?1:-1);
                             theShape.selectedPt.z = theShape.selectedPt.savedz + xtra.z;
                             break;
                         default:
+
+                            theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0f;
+                            theVolume.camYaw=theVolume.savedYaw - (mousePt.y-mouseStartDrag.y)/3.0f;
+
                             break;
                     }
                 }
@@ -702,12 +568,14 @@ public class ifsys extends JPanel
         double camChangeFactor = 0.9;
 
         if(ctrlDown){
+            theVolume.changed=true;
             if(e.getWheelRotation()>0){ //scroll down
                 theShape.selectedPt.scale*=scaleChangeFactor;
             }else{ //scroll up
                 theShape.selectedPt.scale/=scaleChangeFactor;
             }
         }else if(altDown){
+            theVolume.changed=true;
             if(e.getWheelRotation()>0){ //scroll down
                 for(int i=1; i< theShape.pointsInUse; i++){
                     theShape.pts[i].radius*=scaleChangeFactor;
@@ -795,7 +663,7 @@ public class ifsys extends JPanel
 
         if(e.getKeyChar() == 's'){
         //    saveStuff("");
-            saveImg();
+            imageUtils.saveImg(startTimeLog, rp.screenwidth, rp.screenheight, renderBuffer.pixels);
         }
 
         if(e.getKeyChar() == 'l'){
@@ -912,8 +780,8 @@ public class ifsys extends JPanel
         if(e.getKeyChar() == 'q'){
             //rp.zMin = 512;rp.zMax=1024;
             //rp.drawGrid=false;
-            //theShape.setToPreset(0);
-            theShape.setToPreset(9);
+            theShape.setToPreset(0);
+            //theShape.setToPreset(9);
             theVolume.clear();
             rp.iterations=8;
             rp.useShadows=true;
@@ -932,4 +800,5 @@ public class ifsys extends JPanel
 
     public void focusGained(FocusEvent focusevent){}
     public void focusLost(FocusEvent focusevent){}
+
 }

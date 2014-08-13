@@ -24,14 +24,18 @@ public class RenderBuffer {
     }
 
     public void clearProjections(){
-        for(int x=0; x<width; x++){
+        /*for(int x=0; x<width; x++){
             for(int y=0; y<height; y++){
                 ZBuffer[x][y]=0;
                 RBuffer[x][y]=0;
                 GBuffer[x][y]=0;
                 BBuffer[x][y]=0;
             }
-        }
+        }*/
+        ZBuffer = new float[width][height];
+        RBuffer = new float[width][height];
+        GBuffer = new float[width][height];
+        BBuffer = new float[width][height];
     }
 
     public void generatePixels(float brightness, boolean useShadows){

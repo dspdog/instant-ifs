@@ -1,5 +1,6 @@
 package ifs;
 
+import ifs.flat.RenderBuffer;
 import ifs.volumetric.*;
 
 import java.io.*;
@@ -62,11 +63,12 @@ public class volume {
     LinkedList<ifsTriangle> theTriangles;
 
     float minX, minY, minZ, maxX, maxY, maxZ;
+    boolean changed;
 
     public volume(int w, int h, int d){
         myVolumeOneSecondAgo=0;
         myVolumeChange = 0;
-
+        changed=false;
         theTriangles = new LinkedList<ifsTriangle>();
         myVolume=0;
         mySurfaceArea=0;
@@ -119,9 +121,11 @@ public class volume {
     }
 
     public void clear(){
+        System.out.println("clear volume " + System.currentTimeMillis());
         accumilatedDistance = 0;
         averageDistanceSamples = 0;
         reset();
+        changed=false;
      }
 
     public void contributeToAverageDistance(double dist){
@@ -155,6 +159,82 @@ public class volume {
 
     final static float PFf = (float)Math.PI;
 
+    public void putPdfSample(ifsPt _dpt,
+                             ifsPt cumulativeRotationVector,
+                             double cumulativeScale,
+                             ifsPt _thePt, ifsPt theOldPt, ifsPt odpt, int bucketVal, int bucketId, float distance, RenderParams rp, pdf3D thePdf, RenderBuffer rb){
+        ifsPt dpt = _dpt;
+        ifsPt thePt = _thePt;
+        float factor = 1.0f;
+        if(rp.smearPDF){
+            float smearSubdivisions = 4;
+            factor = (float)((1.0/smearSubdivisions*((bucketVal+bucketId)%smearSubdivisions))+Math.random()/smearSubdivisions);
+            dpt = _dpt.interpolateTo(odpt, factor);
+            thePt = _thePt.interpolateTo(theOldPt, factor);
+            if(odpt.x<1){dpt=_dpt;}//hack to prevent smearing from first pt
+        }
+
+        int duds = 0;
+
+        double sampleX, sampleY, sampleZ;
+        double scale, pointDegreesYaw, pointDegreesPitch, pointDegreesRoll;
+        ifsPt rpt;
+
+        int seqIndex;
+        double dx=Math.random()-0.5;
+        double dy=Math.random()-0.5;
+        double dz=Math.random()-0.5;
+
+        seqIndex = (int)(Math.random()*(thePdf.edgeValues));
+        sampleX = thePdf.edgePts[seqIndex].x+dx;
+        sampleY = thePdf.edgePts[seqIndex].y+dy;
+        sampleZ = thePdf.edgePts[seqIndex].z+dz;
+
+        if(this.renderMode == RenderMode.VOLUMETRIC){
+            dx=0;dy=0;dz=0;
+        }
+
+        scale = cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
+
+        pointDegreesYaw = thePt.rotationYaw +cumulativeRotationVector.x;
+        pointDegreesPitch = thePt.rotationPitch +cumulativeRotationVector.y;
+        pointDegreesRoll = thePt.rotationRoll +cumulativeRotationVector.z;
+
+        int iters=Math.min(1000000, thePdf.edgeValues);
+        for(int iter=0; iter<iters; iter++){
+            rpt = new ifsPt((sampleX-thePdf.center.x)*scale,
+                    (sampleY-thePdf.center.y)*scale,
+                    (sampleZ-thePdf.center.z)*scale).getRotatedPt(-(float)pointDegreesPitch, -(float)pointDegreesYaw, -(float)pointDegreesRoll); //placed point
+
+            float r,g,b;
+
+            ifsPt theDot = new ifsPt(dpt.x+rpt.x,
+                    dpt.y+rpt.y,
+                    dpt.z+rpt.z);
+            ;
+            r=(theDot.x - this.minX)/(this.maxX-this.minX)*512;
+            g=(theDot.y - this.minY)/(this.maxY-this.minY)*512;
+            b=(theDot.z - this.minZ)/(this.maxZ-this.minZ)*512;
+            this.contributeToAverageDistance(distance - rpt.magnitude() * factor);
+
+            if(this.putPixel(theDot,
+                    r,
+                    g,
+                    b, rp, true, rb)){ //Z
+                this.pushBounds(theDot);
+                seqIndex++;
+            }else{
+                duds++;
+                seqIndex = (int)(Math.random()*thePdf.edgeValues);
+                sampleX = thePdf.edgePts[seqIndex].x+dx;
+                sampleY = thePdf.edgePts[seqIndex].y+dy;
+                sampleZ = thePdf.edgePts[seqIndex].z+dz;
+            }
+
+            if(duds>4 && this.renderMode != RenderMode.VOLUMETRIC){iter=iters;} //skips occluded pdfs unless in ifs.volume mode
+        }
+    }
+
     public ifsPt getCameraDistortedPt(ifsPt _pt){
 
         ifsPt pt = _pt
@@ -179,12 +259,12 @@ public class volume {
         return pt;
     }
 
-    public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, ifsys is){
-        return old_putPixel(_pt,ptR, ptG, ptB, rp, useCrop, false, false, is);
+    public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, RenderBuffer rb){
+        return old_putPixel(_pt,ptR, ptG, ptB, rp, useCrop, false, false, rb);
     }
 
-    public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric, ifsys is){
-        return old_putPixel(_pt, ptR, ptG, ptB, rp, useCrop, noDark, noVolumetric, is);
+    public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric, RenderBuffer rb){
+        return old_putPixel(_pt, ptR, ptG, ptB, rp, useCrop, noDark, noVolumetric, rb);
     }
     public void putDataUpdateSurfaceVolume(ifsPt _pt){
         if(volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z, 1)==1){//if its the first point there
@@ -207,7 +287,7 @@ public class volume {
         if(pt.z>maxZ){maxZ=pt.z;}
     }
 
-    public boolean old_putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric, ifsys myIfSys){
+    public boolean old_putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric, RenderBuffer rb){
         ifsPt pt = getCameraDistortedPt(_pt);
 
         dataPoints++;
@@ -226,12 +306,12 @@ public class volume {
             if(useZBuffer){
                 boolean res=false;
 
-                if(pt.z> myIfSys.renderBuffer.ZBuffer[(int) pt.x][(int) pt.y]){
+                if(pt.z> rb.ZBuffer[(int) pt.x][(int) pt.y]){
                     res=true;
-                    myIfSys.renderBuffer.ZBuffer[(int)pt.x][(int)pt.y] = pt.z;
-                    myIfSys.renderBuffer.RBuffer[(int)pt.x][(int)pt.y] = ptR*dark;
-                    myIfSys.renderBuffer.GBuffer[(int)pt.x][(int)pt.y] = ptG*dark;
-                    myIfSys.renderBuffer.BBuffer[(int)pt.x][(int)pt.y] = ptB*dark;
+                    rb.ZBuffer[(int)pt.x][(int)pt.y] = pt.z;
+                    rb.RBuffer[(int)pt.x][(int)pt.y] = ptR*dark;
+                    rb.GBuffer[(int)pt.x][(int)pt.y] = ptG*dark;
+                    rb.BBuffer[(int)pt.x][(int)pt.y] = ptB*dark;
                 }
 
                 return res;
@@ -529,7 +609,7 @@ public class volume {
 
     }
 
-    public void drawGrid(RenderParams rp, ifsys is){
+    public void drawGrid(RenderParams rp, RenderBuffer rb){
         if(rp.drawGrid && System.currentTimeMillis() -  rp.gridDrawTime > rp.gridRedrawTime){
             double xmax = 1024;
             double ymax = 1024;
@@ -542,30 +622,30 @@ public class volume {
                     this.putPixel(new ifsPt(
                             x * gridspace,
                             y,
-                            z), 64, 64, 64, rp, false, false, true, is);
+                            z), 64, 64, 64, rp, false, false, true, rb);
                     this.putPixel(new ifsPt(
                             y,
                             x * gridspace,
-                            z), 64, 64, 64, rp, false, false, true, is);
+                            z), 64, 64, 64, rp, false, false, true, rb);
 
 
                     this.putPixel(new ifsPt(
                             x * gridspace,
                             z,
-                            y),  64, 64, 64, rp, false, false, true, is);
+                            y),  64, 64, 64, rp, false, false, true, rb);
                     this.putPixel(new ifsPt(
                             y,
                             z,
-                            x * gridspace),  64, 64, 64, rp, false, false, true, is);
+                            x * gridspace),  64, 64, 64, rp, false, false, true, rb);
 
                     this.putPixel(new ifsPt(
                             z,
                             y,
-                            x * gridspace),  64, 64, 64, rp, false, false, true, is);
+                            x * gridspace),  64, 64, 64, rp, false, false, true, rb);
                     this.putPixel(new ifsPt(
                             z,
                             x * gridspace,
-                            y), 64, 64, 64, rp, false, false, true, is);
+                            y), 64, 64, 64, rp, false, false, true, rb);
                 }
             }
 
@@ -574,29 +654,29 @@ public class volume {
                 this.putPixel(new ifsPt(
                         rp.xMin,
                         i,
-                        0), 64, 0, 0, rp, false, true, true, is);
+                        0), 64, 0, 0, rp, false, true, true, rb);
                 this.putPixel(new ifsPt(
                         rp.xMax,
                         i,
-                        0), 64, 0, 0, rp, false, true, true, is);
+                        0), 64, 0, 0, rp, false, true, true, rb);
 
                 this.putPixel(new ifsPt(
                         0,
                         rp.yMin,
-                        i), 0, 64, 0, rp, false, true, true, is);
+                        i), 0, 64, 0, rp, false, true, true, rb);
                 this.putPixel(new ifsPt(
                         0,
                         rp.yMax,
-                        i), 0, 64, 0, rp, false, true, true, is);
+                        i), 0, 64, 0, rp, false, true, true, rb);
 
                 this.putPixel(new ifsPt(
                         i,
                         0,
-                        rp.zMin), 0, 0, 64, rp, false, true, true, is);
+                        rp.zMin), 0, 0, 64, rp, false, true, true, rb);
                 this.putPixel(new ifsPt(
                         i,
                         0,
-                        rp.zMax), 0, 0, 64, rp, false, true, true, is);
+                        rp.zMax), 0, 0, 64, rp, false, true, true, rb);
             }
 
         }
