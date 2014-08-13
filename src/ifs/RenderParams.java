@@ -49,6 +49,8 @@ public class RenderParams implements java.io.Serializable {
 
     ScoreParams scoreParams;
 
+    float evolveIntensity;
+
     public RenderParams(){
         bgColor = new Color(0,112/2,184/2); //half darkened spanish blue
         scoreParams = new ScoreParams(ScoreParams.Presets.MIN_DistSurface);
@@ -60,6 +62,8 @@ public class RenderParams implements java.io.Serializable {
         usingColors=true;
 
         linesHideTime=1000;
+
+        evolveIntensity = 0.4f;
 
         dotSize=0;
         smearPDF = false;

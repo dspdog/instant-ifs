@@ -308,7 +308,7 @@ public class volume {
 
                 if(pt.z> rb.ZBuffer[(int) pt.x][(int) pt.y]){
                     res=true;
-                    rb.ZBuffer[(int)pt.x][(int)pt.y] = pt.z;
+                    rb.ZBuffer[(int)pt.x][(int)pt.y] = noVolumetric ? 1 : pt.z;
                     rb.RBuffer[(int)pt.x][(int)pt.y] = ptR*dark;
                     rb.GBuffer[(int)pt.x][(int)pt.y] = ptG*dark;
                     rb.BBuffer[(int)pt.x][(int)pt.y] = ptB*dark;
@@ -614,6 +614,7 @@ public class volume {
             double xmax = 1024;
             double ymax = 1024;
             double gridspace = SubVolume.size;
+
             rp.gridDrawTime = System.currentTimeMillis();
             int z = 0;
 

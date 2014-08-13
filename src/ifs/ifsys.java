@@ -205,7 +205,7 @@ public class ifsys extends JPanel
                         if(eShape.shapeIndex==0){
                             System.out.println("new generation...");
                             imageUtils.saveImg(startTimeLog, rp.screenwidth, rp.screenheight, renderBuffer.pixels);
-                            eShape.offSpring(eShape.getHighestScoreShape());
+                            eShape.offSpring(eShape.getHighestScoreShape(), rp.evolveIntensity);
                         }
 
                         clearframe();
@@ -508,11 +508,13 @@ public class ifsys extends JPanel
                 ifsPt xtra = new ifsPt(0,0,0);
 
                 if(ctrlDown){
-                    theVolume.changed=true;
+                    /*theVolume.changed=true;
                     xtra.x+=xDelta/100.0f;
                     xtra.y+=yDelta/100.0f;
                     theShape.selectedPt.rotationPitch = theShape.selectedPt.savedrotationpitch + xtra.y;
-                    theShape.selectedPt.rotationYaw = theShape.selectedPt.savedrotationyaw + xtra.x;
+                    theShape.selectedPt.rotationYaw = theShape.selectedPt.savedrotationyaw + xtra.x;*/
+                    theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0f;
+                    theVolume.camYaw=theVolume.savedYaw - (mousePt.y-mouseStartDrag.y)/3.0f;
                 }else if(altDown){
                     xtra.x+=xDelta/100.0f;
                     xtra.y+=yDelta/100.0f;
@@ -544,8 +546,8 @@ public class ifsys extends JPanel
                             break;
                         default: //rotate camera
 
-                            theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0f;
-                            theVolume.camYaw=theVolume.savedYaw - (mousePt.y-mouseStartDrag.y)/3.0f;
+                            //theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0f;
+                            //theVolume.camYaw=theVolume.savedYaw - (mousePt.y-mouseStartDrag.y)/3.0f;
 
                             break;
                     }
@@ -675,6 +677,7 @@ public class ifsys extends JPanel
      //   }
 
         if(e.getKeyChar() == '0'){
+            rp.smearPDF=true;
             theShape.setToPreset(0);
             theVolume.clear();
             rp.iterations=8;
@@ -683,6 +686,7 @@ public class ifsys extends JPanel
         }
 
         if(e.getKeyChar() == '9'){
+            rp.smearPDF=true;
             theShape.setToPreset(9);
             theVolume.clear();
             rp.iterations=8;
@@ -744,7 +748,7 @@ public class ifsys extends JPanel
         }
 
         if(e.getKeyChar() == 'e'){
-            eShape.offSpring(theShape);
+            eShape.offSpring(theShape, rp.evolveIntensity);
         }
 
         if(e.getKeyChar() == 'z'){
@@ -792,7 +796,7 @@ public class ifsys extends JPanel
             rp.savingDots=true;
             rp.savedDots=0;
             theVolume.renderMode = volume.RenderMode.VOLUMETRIC;
-            eShape.offSpring(theShape);
+            eShape.offSpring(theShape, rp.evolveIntensity);
             eShape.evolving=!eShape.evolving;
             System.out.println("evolving: " + eShape.evolving);
         }

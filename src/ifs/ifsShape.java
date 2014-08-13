@@ -146,7 +146,7 @@ class ifsShape implements java.io.Serializable {
         pts[pointsInUse].scale = 0.5f;
         pts[pointsInUse].rotationYaw = 0.0f;
         pts[pointsInUse].rotationPitch = 0.0f;
-        //pts[pointsInUse].rotationRoll = 0.0f;
+        pts[pointsInUse].rotationRoll = 0.0f;
         pts[pointsInUse].opacity = 1.0f;
         pointsInUse++;
         updateCenter();
@@ -206,14 +206,6 @@ class ifsShape implements java.io.Serializable {
 
         for(int a = 1; a < pointsInUse; a++){
             pts[a].radius = autoScale ? distance(pts[a].x - pts[0].x, pts[a].y - pts[0].y,  pts[a].z - pts[0].z) : pts[0].radius;
-            pts[a].degreesYaw = (float)Math.atan2(pts[a].x - pts[0].x, pts[a].y - pts[0].y);
-            pts[a].degreesPitch = (float)Math.atan2(pts[a].radius, pts[a].z - pts[0].z);
-
-
-            pts[a].rotationQ.x = pts[a].x-pts[0].x;
-            pts[a].rotationQ.y = pts[a].y-pts[0].y;
-            pts[a].rotationQ.z = pts[a].z-pts[0].z;
-
         }
     }
 

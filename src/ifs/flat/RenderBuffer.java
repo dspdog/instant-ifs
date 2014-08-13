@@ -47,19 +47,27 @@ public class RenderBuffer {
         for(int x = 1; x < width-1; x++){
             for(int y=1; y<height-1; y++){
                 if(useShadows){
-                    maxslope2 = 1.0f / (float)Math.sqrt(2.0) * Math.max(Math.max((ZBuffer[x-1][y-1]-ZBuffer[x][y]),
-                            (ZBuffer[x+1][y+1]-ZBuffer[x][y])),
-                            Math.max((ZBuffer[x+1][y-1]-ZBuffer[x][y]),
-                                    (ZBuffer[x-1][y+1]-ZBuffer[x][y])));
+                    maxslope2 = 1.0f / (float)Math.sqrt(2.0) *
+                            Math.max(
+                                    Math.max((ZBuffer[x-1][y-1]-ZBuffer[x][y]),
+                                             (ZBuffer[x+1][y+1]-ZBuffer[x][y])),
 
-                    maxslope = Math.max(Math.max((ZBuffer[x-1][y]-ZBuffer[x][y]),
-                            (ZBuffer[x+1][y]-ZBuffer[x][y])),
-                            Math.max((ZBuffer[x][y-1]-ZBuffer[x][y]),
-                                    (ZBuffer[x][y+1]-ZBuffer[x][y])));
+                                    Math.max((ZBuffer[x+1][y-1]-ZBuffer[x][y]),
+                                             (ZBuffer[x-1][y+1]-ZBuffer[x][y])));
+
+                    maxslope = Math.max(
+                                        Math.max((ZBuffer[x-1][y]-ZBuffer[x][y]),
+                                                 (ZBuffer[x+1][y]-ZBuffer[x][y])),
+
+                                        Math.max((ZBuffer[x][y-1]-ZBuffer[x][y]),
+                                                 (ZBuffer[x][y+1]-ZBuffer[x][y])));
 
                     maxslope = Math.max(maxslope,maxslope2);
 
-                    if(maxslope>5){maxslope=255;}
+                    if(maxslope>1){
+                        maxslope=255;
+                        if(ZBuffer[x][y]==0){ZBuffer[x][y]=1;}//outside edges
+                    }
 
                     gradient = 1.0f-maxslope/255.0f;
 
