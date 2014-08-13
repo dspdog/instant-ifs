@@ -1,5 +1,6 @@
 package ifs;
 
+import ifs.thirdparty.ImagePreviewPanel;
 import ifs.volumetric.pdf3D;
 
 import javax.swing.*;
@@ -65,7 +66,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     int pdfYImgFile = 0;
     int pdfZImgFile = 0;
 
-    final JFileChooser fc = new JFileChooser();
+    JFileChooser fc;
 
     boolean inited=false;
     boolean autoChange = false;
@@ -449,6 +450,11 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
             f.setMenuBar(menuBar);
             inited=true;
+
+        fc = new JFileChooser("./instant-ifs/img");
+        ImagePreviewPanel preview = new ImagePreviewPanel();
+        fc.setAccessory(preview);
+        fc.addPropertyChangeListener(preview);
     }
 
     public void updateSideMenu(){
@@ -576,6 +582,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             if(pdfZImgFile == JFileChooser.APPROVE_OPTION){
                 myIfsSys.thePdf.setSampleImage(fc.getSelectedFile(), pdf3D.Dimension.Z);
             }
+
         }else if(mc.getActionCommand()=="Save Shape..."){
             pdfZImgFile = fc.showSaveDialog(this);
             if(pdfZImgFile == JFileChooser.APPROVE_OPTION){
@@ -605,7 +612,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
     class PopClickListener extends MouseAdapter {
         public void mousePressed(MouseEvent e){
-            if (SwingUtilities.isRightMouseButton (e))
+            if (SwingUtilities.isRightMouseButton(e))
                 doPop(e);
         }
 

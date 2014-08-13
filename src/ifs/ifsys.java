@@ -502,7 +502,7 @@ public class ifsys extends JPanel
             boolean xPos = overlays.draggyPtCenter.x<overlays.draggyPtArrow.x;
             boolean yPos = overlays.draggyPtCenter.y<overlays.draggyPtArrow.y;
 
-            if(isRightPressed){ 
+            if(isRightPressed){
 
             }else{
                 ifsPt xtra = new ifsPt(0,0,0);
@@ -542,7 +542,7 @@ public class ifsys extends JPanel
                             xtra.z+=yDelta/2.0f*(yPos?1:-1);
                             theShape.selectedPt.z = theShape.selectedPt.savedz + xtra.z;
                             break;
-                        default:
+                        default: //rotate camera
 
                             theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0f;
                             theVolume.camYaw=theVolume.savedYaw - (mousePt.y-mouseStartDrag.y)/3.0f;
