@@ -101,7 +101,9 @@ public class ifsys extends JPanel
     public static void main(String[] args) {
 
         try {
-            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());//"com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel"
+            UIManager.setLookAndFeel("com.alee.laf.WebLookAndFeel");
+            //"com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel"
+            //"com.alee.laf.WebLookAndFeel"
         } catch (Exception e) {
             e.printStackTrace();
         }
