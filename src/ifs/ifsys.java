@@ -139,7 +139,7 @@ public class ifsys extends JPanel
         boolean resizable = false;
         boolean closeable = false;
         boolean maximizable = false;
-        boolean iconifiable = true;
+        boolean iconifiable = false;
 
         JInternalFrame theInternalFrame = new JInternalFrame(title, resizable, closeable, maximizable,
                 iconifiable);

@@ -14,11 +14,16 @@ public class EvolvingShape {
     long evolvePeriod;
     int evolvedSibs=0;
 
-    final int sibsPerGen = 8;
+    boolean alwaysNewShape;
+
+    final int sibsPerGen = 4;
 
     ifsShape highestScoringShape;
 
     public EvolvingShape(ifsShape _baseShape){
+
+        alwaysNewShape = true; //set to false to always spawn from the "record-holding" shape rather than just the best member of this generation
+
         familyHistory = new ArrayList<ArrayList<ifsShape>>();
         baseShape=_baseShape;
         shapeIndex=0;
@@ -47,8 +52,6 @@ public class EvolvingShape {
     }
 
     public ifsShape getHighestScoreShape(){
-        //int highestIndex=0;
-        boolean alwaysNewShape = true;
         float highestScore =  highestScoringShape.score;
 
         if(alwaysNewShape){
