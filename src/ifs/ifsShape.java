@@ -210,9 +210,9 @@ class ifsShape implements java.io.Serializable {
             pts[a].degreesPitch = (float)Math.atan2(pts[a].radius, pts[a].z - pts[0].z);
 
 
-            pts[a].rotationQ.x1 = pts[a].x-pts[0].x;
-            pts[a].rotationQ.x2 = pts[a].y-pts[0].y;
-            pts[a].rotationQ.x3 = pts[a].z-pts[0].z;
+            pts[a].rotationQ.x = pts[a].x-pts[0].x;
+            pts[a].rotationQ.y = pts[a].y-pts[0].y;
+            pts[a].rotationQ.z = pts[a].z-pts[0].z;
 
         }
     }

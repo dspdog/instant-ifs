@@ -105,8 +105,10 @@ class ifsPt implements java.io.Serializable{
         return new ifsPt(this.x+pt.x, this.y+pt.y, this.z+pt.z);
     }
 
-    public ifsPt getRotationVec(){
-        return new ifsPt(this.rotationYaw, this.rotationPitch, this.rotationRoll);
+    public void _add(ifsPt rpt){
+        this.x+=rpt.x;
+        this.y+=rpt.y;
+        this.z+=rpt.z;
     }
 
     public ifsPt subtract(ifsPt pt){
@@ -139,8 +141,16 @@ class ifsPt implements java.io.Serializable{
         return res;
     }
 
-    public ifsPt getRotatedPt(float x, float y, float z){
-        return this.qRotate(ifsPt.X_UNIT, x).qRotate(ifsPt.Y_UNIT, y).qRotate(ifsPt.Z_UNIT,z);
+    public ifsPt getRotatedPt(float pitch, float yaw, float roll){
+        return this.qRotate(ifsPt.X_UNIT, pitch).qRotate(ifsPt.Y_UNIT, yaw).qRotate(ifsPt.Z_UNIT,roll);
+    }
+
+    public ifsPt getRotatedPt(ifsPt rpt){
+        return this.qRotate(ifsPt.X_UNIT, rpt.x).qRotate(ifsPt.Y_UNIT, rpt.y).qRotate(ifsPt.Z_UNIT,rpt.z);
+    }
+
+    public ifsPt getRotation(){
+        return new ifsPt(this.rotationPitch, this.rotationYaw, this.rotationRoll);
     }
 
     public ifsPt qRotate(ifsPt r, float a){
@@ -148,32 +158,7 @@ class ifsPt implements java.io.Serializable{
         float sa2 = mv.virtualSin(a);
         Quaternion q2 = new Quaternion(mv.virtualCos(a), r.x*sa2, r.y*sa2, r.z*sa2);
         Quaternion q3 = q2.times(new Quaternion(0, this.x, this.y, this.z)).times(q2.conjugate());
-        return new ifsPt(q3.x1, q3.x2, q3.x3);
-    }
-
-    public ifsPt getOldRotatedPt(float x, float y, float z){
-        float sx = mv.virtualSin(x),
-              sy = mv.virtualSin(y),
-              sz = mv.virtualSin(z),
-              cx = mv.virtualCos(x),
-              cy = mv.virtualCos(y),
-              cz = mv.virtualCos(z);
-
-        float sxsy = sx*sy;
-        float cxsy = cx*sy;
-
-        return new ifsPt(
-                this.x * cy*cz +
-                this.y * (sxsy*cz + cx*sz) +
-                this.z * (-cxsy*cz + sx*sz),
-
-                this.x*-cy*sz +
-                this.y*(-sxsy*sz + cx*cz) +
-                this.z*(cxsy*sz + sx*cz),
-
-                this.x*sy +
-                this.y*(-sx*cy) +
-                this.z*(cx*cy));
+        return new ifsPt(q3.x, q3.y, q3.z);
     }
 
     public void saveState(){

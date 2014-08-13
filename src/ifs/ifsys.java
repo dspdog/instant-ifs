@@ -514,12 +514,10 @@ public class ifsys extends JPanel
 
                 float cumulativeScale = 1.0f;
 
-                ifsPt cumulativeRotationVec = new ifsPt(0,0,0);
-
-                Quaternion cumulativeRotationQ = new Quaternion(1,0,0,0);
+                ifsPt cumulativeRotation = new ifsPt(0,0,0);
 
                 int bucketIndex=0;
-                int nextBucketIndex=0;
+                int nextBucketIndex;
 
                 float distance = 0.0f;
 
@@ -542,8 +540,10 @@ public class ifsys extends JPanel
 
                     ifsPt olddpt = new ifsPt();
                     ifsPt thePt = theShape.pts[randomIndex];
+                    ifsPt centerPt = theShape.pts[0];
                     if(d!=0){
-                        rpt = thePt.subtract(theShape.pts[0]).scale(cumulativeScale);
+                        cumulativeRotation._add(thePt.getRotation());
+                        rpt = thePt.subtract(centerPt).scale(cumulativeScale).getRotatedPt(cumulativeRotation);
                         olddpt = new ifsPt(dpt);
                         distance += rpt.magnitude();
                         dpt.x += rpt.x;
@@ -557,15 +557,13 @@ public class ifsys extends JPanel
                     }else{
                         if(!(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
                             try{//TODO why the err?
-                                putPdfSample(dpt, cumulativeRotationVec, cumulativeScale, thePt, theShape.pts[oldRandomIndex], olddpt, buckets[bucketIndex], bucketIndex, distance);
+                                putPdfSample(dpt, cumulativeRotation, cumulativeScale, thePt, theShape.pts[oldRandomIndex], olddpt, buckets[bucketIndex], bucketIndex, distance);
                             }catch (Exception e){
                                 //e.printStackTrace();
                             }
                         }
-
-                        cumulativeScale *= thePt.scale/ theShape.pts[0].scale;
-                        cumulativeRotationQ = cumulativeRotationQ.times(thePt.rotationQ);
-                        //cumulativeRotationVec.add(thePt.getRotationVec());
+                        cumulativeScale *= thePt.scale/centerPt.scale;
+                        //cumulativeRotationQ = cumulativeRotationQ.times(thePt.rotationQ);
                     }
                 }
             }
@@ -648,7 +646,7 @@ public class ifsys extends JPanel
 
             if(isRightPressed){ //rotate camera
                 theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0f;
-                theVolume.camYaw=theVolume.savedYaw + (mousePt.y-mouseStartDrag.y)/3.0f;
+                theVolume.camYaw=theVolume.savedYaw - (mousePt.y-mouseStartDrag.y)/3.0f;
             }else{
                 ifsPt xtra = new ifsPt(0,0,0);
 
