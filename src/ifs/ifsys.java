@@ -129,13 +129,13 @@ public class ifsys extends JPanel
 
         is.init();
 
-        setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth,0, "Render", desktop);
-        setupMiniFrame(is.theMenu.cameraProperties, 200, 250,   is.rp.screenwidth+200,0, "Camera", desktop);
-        setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth+200,250, "PDF", desktop);
-        setupMiniFrame(is.theMenu.pointProperties, 200, 250,    is.rp.screenwidth+200,450, "IFS Point", desktop);
+        setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth,0, "Render", "gears.png", desktop);
+        setupMiniFrame(is.theMenu.cameraProperties, 200, 250,   is.rp.screenwidth+200,0, "Camera", "camera.png", desktop);
+        setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth+200,250, "PDF", "cloud.png", desktop);
+        setupMiniFrame(is.theMenu.pointProperties, 200, 250,    is.rp.screenwidth+200,450, "IFS Point", "anchors.png", desktop);
     }
 
-    static void setupMiniFrame(JPanel panel, int width, int height, int x, int y, String title, JDesktopPane desktop){
+    static void setupMiniFrame(JPanel panel, int width, int height, int x, int y, String title, String iconName, JDesktopPane desktop){
         boolean resizable = false;
         boolean closeable = false;
         boolean maximizable = false;
@@ -146,7 +146,7 @@ public class ifsys extends JPanel
         desktop.add(theInternalFrame);
         theInternalFrame.setSize(width, height);
         theInternalFrame.setLocation(x, y);
-        //theInternalFrame.setFrameIcon(null);
+        theInternalFrame.setFrameIcon(new ImageIcon("./instant-ifs/icons/" + iconName));
         theInternalFrame.setVisible(true);
         theInternalFrame.getContentPane().add(panel);
         theInternalFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
