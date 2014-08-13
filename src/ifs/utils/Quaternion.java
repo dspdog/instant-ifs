@@ -1,4 +1,4 @@
-package ifs;
+package ifs.utils;
 
 /*************************************************************************
  *  Compilation:  javac ifs.Quaternion.java
@@ -11,7 +11,7 @@ package ifs;
  *************************************************************************/
 
 public class Quaternion {
-    double w, x, y, z;
+    public double w, x, y, z;
 
     // create a new object with the given components
     public Quaternion(double w, double x, double y, double z) {

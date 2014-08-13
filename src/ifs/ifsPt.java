@@ -1,10 +1,13 @@
 package ifs;
 
+import ifs.utils.MathVirtualizer;
+import ifs.utils.Quaternion;
+
 import java.util.Random;
 
 class ifsPt implements java.io.Serializable{
 
-    static mathVirtualizer mv = new mathVirtualizer();
+    static MathVirtualizer mv = new MathVirtualizer();
 
     public float x, y, z;
     public float scale;

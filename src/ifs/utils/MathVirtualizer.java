@@ -1,6 +1,6 @@
-package ifs;
+package ifs.utils;
 
-public class mathVirtualizer {
+public class MathVirtualizer {
 
     static boolean virtualized = false;
     static final int num_buckets = 512;
@@ -10,7 +10,7 @@ public class mathVirtualizer {
     static float[] _cos = new float[num_buckets];
     static float[] _sin = new float[num_buckets];
 
-    public mathVirtualizer(){
+    public MathVirtualizer(){
         if(!virtualized)
         virtualizeMath();
         virtualized=true;

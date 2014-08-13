@@ -563,7 +563,7 @@ public class ifsys extends JPanel
                             }
                         }
                         cumulativeScale *= thePt.scale/centerPt.scale;
-                        //cumulativeRotationQ = cumulativeRotationQ.times(thePt.rotationQ);
+
                     }
                 }
             }

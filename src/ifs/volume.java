@@ -150,15 +150,11 @@ public class volume {
     }
 
     public boolean croppedVolumeContains(ifsPt pt, RenderParams rp){
-        //return (pt.x>1 && pt.y>1 && pt.z>1 && pt.x<width-1 && pt.y<height-1);
         return (pt.x>=rp.xMin && pt.y>=rp.yMin && pt.z>=rp.zMin && pt.x<=rp.xMax && pt.y<=rp.yMax && pt.z<=rp.zMax);
     }
 
-    public boolean volumeContains(ifsPt pt, int prune){
-        return (pt.x>prune && pt.y>prune && pt.z>prune && pt.x<width-prune && pt.y<height-prune);
-    }
-
     final static float PFf = (float)Math.PI;
+
     public ifsPt getCameraDistortedPt(ifsPt _pt){
 
         ifsPt pt = _pt
@@ -167,12 +163,8 @@ public class volume {
                 .scale(camScale)
                 .add(camCenter);
 
-        //pt.x += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
-        //pt.y += Math.random()*Math.random()*(pt.z-depth/2)/(depth/2)*250;
-
         float vx = 512.0f; //vanishing pt onscreen
         float vy = 512.0f;
-       // pt.z = Math.sqrt(pt.z)*16;
 
         if(usePerspective){
             float downScale=perspectiveScale*0.1f/(float)Math.sqrt(1024f-pt.z);
