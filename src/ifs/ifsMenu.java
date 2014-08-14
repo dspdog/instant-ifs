@@ -47,6 +47,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     JCheckBox frameHoldCheck;
 
     JCheckBox gridCheck;
+    JCheckBox cartoonCheck;
 
     JCheckBox perspectiveCheck;
     JCheckBox delayCheck;
@@ -102,6 +103,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
                 myIfsSys.rp.potentialRadius = Integer.parseInt(potentialSpinner.getValue().toString());
                 myIfsSys.rp.drawGrid = gridCheck.isSelected();
+                myIfsSys.rp.useShadows = cartoonCheck.isSelected();
 
                 myIfsSys.theShape.updateCenter();
 
@@ -312,6 +314,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         frameHoldCheck = new JCheckBox();
 
         gridCheck = new JCheckBox();
+        cartoonCheck = new JCheckBox();
 
         delayCheck = new JCheckBox();
 
@@ -345,10 +348,11 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         ((JSpinner)addLabeled(samplesSpinner, layout, "Dots/Frame", panel)).addChangeListener(updateNoClear);
         ((JSpinner)addLabeled(iterationsSpinner, layout, "Iterations", panel)).addChangeListener(updateAndClear);
 
-        ((JCheckBox)addLabeled(frameHoldCheck, layout, "Hold Frame", panel)).addChangeListener(updateNoClear);
+        //((JSpinner)addLabeled(potentialSpinner, layout, "Blur", panel)).addChangeListener(updateAndClear);
+        ((JCheckBox)addLabeled(cartoonCheck, layout, "Cartoon", panel)).addChangeListener(updateAndClear);
 
-        ((JSpinner)addLabeled(potentialSpinner, layout, "Blur", panel)).addChangeListener(updateAndClear);
         ((JCheckBox)addLabeled(gridCheck, layout, "Grid", panel)).addChangeListener(updateAndClear);
+        ((JCheckBox)addLabeled(frameHoldCheck, layout, "Hold Frame", panel)).addChangeListener(updateNoClear);
 
         ((JCheckBox)addLabeled(delayCheck, layout, "Framelimit", panel)).addChangeListener(updateNoClear);
         ((JSpinner)addLabeled(delaySpinner, layout, "Wait X ms", panel)).addChangeListener(updateNoClear);
