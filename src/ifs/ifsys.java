@@ -372,7 +372,7 @@ public class ifsys extends JPanel
             for(int a = 0; a < rp.samplesPerFrame; a++){
                 int randomIndex = 0;
                 ifsPt dpt = new ifsPt(theShape.pts[randomIndex]);
-                ifsPt rpt;
+                ifsPt rpt = new ifsPt();
 
                 float cumulativeScale = 1.0f;
 
@@ -418,7 +418,7 @@ public class ifsys extends JPanel
                         if(!(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
                             try{//TODO why the err?
                                 theVolume.putPdfSample(dpt, cumulativeRotation, cumulativeScale, thePt, theShape.pts[oldRandomIndex], olddpt,
-                                        buckets[bucketIndex], bucketIndex, distance, rp, thePdf, renderBuffer);
+                                        buckets[bucketIndex], bucketIndex, distance, rp, thePdf, renderBuffer, rpt.magnitude());
                             }catch (Exception e){
                                 //e.printStackTrace();
                             }

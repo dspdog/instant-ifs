@@ -162,13 +162,13 @@ public class volume {
     public void putPdfSample(ifsPt _dpt,
                              ifsPt cumulativeRotationVector,
                              double cumulativeScale,
-                             ifsPt _thePt, ifsPt theOldPt, ifsPt odpt, int bucketVal, int bucketId, float distance, RenderParams rp, pdf3D thePdf, RenderBuffer rb){
+                             ifsPt _thePt, ifsPt theOldPt, ifsPt odpt, int bucketVal, int bucketId, float distance, RenderParams rp, pdf3D thePdf, RenderBuffer rb, float smearMag){
         ifsPt dpt = _dpt;
         ifsPt thePt = _thePt;
         float factor = 1.0f;
         if(rp.smearPDF){
-            float smearSubdivisions = 4;
-            factor = (float)((1.0/smearSubdivisions*((bucketVal+bucketId)%smearSubdivisions))+Math.random()/smearSubdivisions);
+            float smearSubdivisions = (int)smearMag;
+            factor = 1.0f-(float)((1.0/smearSubdivisions*((bucketVal+bucketId)%smearSubdivisions))+Math.random()/smearSubdivisions);
             dpt = _dpt.interpolateTo(odpt, factor);
             thePt = _thePt.interpolateTo(theOldPt, factor);
             if(odpt.x<1){dpt=_dpt;}//hack to prevent smearing from first pt
