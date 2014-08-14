@@ -1,5 +1,7 @@
 package ifs;
 
+import com.alee.extended.panel.WebButtonGroup;
+import com.alee.laf.button.WebButton;
 import ifs.thirdparty.ImagePreviewPanel;
 import ifs.volumetric.pdf3D;
 
@@ -24,7 +26,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
     JSpinner potentialSpinner;
     JSpinner delaySpinner;
-    JSpinner dotSizeSpinner;
+    //JSpinner dotSizeSpinner;
 
     JSpinner xMinSpinner;
     JSpinner xMaxSpinner;
@@ -90,7 +92,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 myIfsSys.theShape.selectedPt.rotationRoll = (float)(Double.parseDouble(rollSpinner.getValue().toString())/180.0*Math.PI);
 
                 myIfsSys.rp.iterations = Integer.parseInt(iterationsSpinner.getValue().toString());
-                myIfsSys.rp.dotSize = Integer.parseInt(dotSizeSpinner.getValue().toString());
+                //myIfsSys.rp.dotSize = Integer.parseInt(dotSizeSpinner.getValue().toString());
                 myIfsSys.rp.brightnessMultiplier = Double.parseDouble(brightnessSpinner.getValue().toString());
                 myIfsSys.rp.samplesPerFrame = Double.parseDouble(samplesSpinner.getValue().toString());
 
@@ -133,7 +135,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         }
     };
 
-    public JButton addLabeledButton(JButton theButton, SpringLayout layout, JPanel panel, int col){
+    public JButton addLabeledButton(WebButton theButton, SpringLayout layout, JPanel panel, int col){
         int width = 51;
 
         int spinnerLeft = 5 + col*width;
@@ -151,12 +153,19 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         return theButton;
     }
-
     public <T extends JComponent> JComponent addLabeled(T comp, SpringLayout layout, String labelText, JPanel panel){
+        return addLabeled(comp, layout, labelText, panel, false);
+    }
+
+    public <T extends JComponent> JComponent addLabeled(T comp, SpringLayout layout, String labelText, JPanel panel, boolean noLabel){
         int compLeft = 70;
         int compRight = -5;
         int compToSpinner = -5;
         int topPad=25;
+
+        if(noLabel){ //things without labels get centered...
+            compLeft=30;
+        }
 
         JLabel label = new JLabel(labelText);
 
@@ -166,7 +175,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         layout.putConstraint(SpringLayout.NORTH, comp, (int)(panel.getHeight()+0), SpringLayout.NORTH, panel);
         layout.putConstraint(SpringLayout.NORTH, label, (int)(panel.getHeight()+0), SpringLayout.NORTH, panel);
 
-        panel.add(label);
+        if(!noLabel)panel.add(label);
         panel.add(comp);panel.setSize(200,topPad+panel.getHeight());
 
         return comp;
@@ -242,14 +251,20 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         ((JCheckBox)addLabeled(smearCheck, layout, "Smear PDF", panel)).addChangeListener(updateAndClear);
 
 
-        addLabeledButton(new JButton("X"), layout, panel, 0).addActionListener(this);
-        addLabeledButton(new JButton("Y"), layout, panel, 1).addActionListener(this);
-        addLabeledButton(new JButton("Z"), layout, panel, 2).addActionListener(this);
+        addLabeledButton(new WebButton("X"), layout, panel, 0).addActionListener(this);
+        addLabeledButton(new WebButton("Y"), layout, panel, 1).addActionListener(this);
+        addLabeledButton(new WebButton("Z"), layout, panel, 2).addActionListener(this);
 
         panel.addMouseMotionListener(this);
     }
 
     public void setupCameraPropertiesPanel(JPanel panel){
+
+
+        SpringLayout layout = new SpringLayout();
+        panel.setLayout(layout);
+
+
         camPitchSpinner = new JSlider();
         camYawSpinner = new JSlider();
         camRollSpinner = new JSlider();
@@ -260,8 +275,6 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         camRollSpinner.setMaximum(360);
         camScaleSpinner.setMaximum(500);
 
-        SpringLayout layout = new SpringLayout();
-        panel.setLayout(layout);
 
 
 
@@ -273,18 +286,18 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         ActionListener moveCamera = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JButton cb = (JButton)e.getSource();
-
-                if(cb.getText()=="YZ"){
+                WebButton cb = (WebButton)(e.getSource());
+                System.out.println("NAME  " + cb.getName());
+                if(cb.getName()=="YZ"){
                     myIfsSys.theVolume.camPitch=-90;
                     myIfsSys.theVolume.camRoll=-90;
                     myIfsSys.theVolume.camYaw=0;
-                }else if(cb.getText()=="XY"){
+                }else if(cb.getName()=="XY"){
                     //TOP VIEW
                     myIfsSys.theVolume.camPitch=0;
                     myIfsSys.theVolume.camRoll=0;
                     myIfsSys.theVolume.camYaw=0;
-                }else if(cb.getText()=="XZ"){
+                }else if(cb.getName()=="XZ"){
                     //SIDE VIEW
                     myIfsSys.theVolume.camPitch=0;
                     myIfsSys.theVolume.camRoll=-90;
@@ -294,12 +307,23 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             }
         };
 
-        addLabeledButton(new JButton("XY"), layout, panel, 0).addActionListener(moveCamera);
-        addLabeledButton(new JButton("YZ"), layout, panel, 1).addActionListener(moveCamera);
-        addLabeledButton(new JButton("XZ"), layout, panel, 2).addActionListener(moveCamera);
+
 
         perspectiveCheck = new JCheckBox();
         ((JCheckBox)addLabeled(perspectiveCheck, layout, "Ortho", panel)).addChangeListener(updateAndClear);
+
+        WebButton YZButton = new WebButton("", new ImageIcon("./instant-ifs/icons/front.png"));
+        WebButton XYButton = new WebButton("", new ImageIcon("./instant-ifs/icons/side.png"));
+        WebButton XZButton = new WebButton("", new ImageIcon("./instant-ifs/icons/top.png"));
+
+        YZButton.setName("YZ");YZButton.addActionListener(moveCamera);
+        XYButton.setName("XZ");XYButton.addActionListener(moveCamera);
+        XZButton.setName("XY");XZButton.addActionListener(moveCamera);
+
+        WebButtonGroup iconsGroup = new WebButtonGroup ( true, YZButton, XZButton, XYButton );
+        ((WebButtonGroup)addLabeled(iconsGroup, layout, "dir", panel, true)).addComponentListener(null);
+
+
     }
 
     public void setupRenderPropertiesPanel(JPanel panel){
@@ -309,7 +333,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         potentialSpinner = new JSpinner();
         delaySpinner = new JSpinner();
-        dotSizeSpinner = new JSpinner();
+        //dotSizeSpinner = new JSpinner();
 
         frameHoldCheck = new JCheckBox();
 
@@ -356,7 +380,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         ((JCheckBox)addLabeled(delayCheck, layout, "Framelimit", panel)).addChangeListener(updateNoClear);
         ((JSpinner)addLabeled(delaySpinner, layout, "Wait X ms", panel)).addChangeListener(updateNoClear);
-        ((JSpinner)addLabeled(dotSizeSpinner, layout, "Dot Size", panel)).addChangeListener(updateNoClear);
+        //((JSpinner)addLabeled(dotSizeSpinner, layout, "Dot Size", panel)).addChangeListener(updateNoClear);
 
         xMaxSpinner=new JSpinner();
         xMinSpinner=new JSpinner();
@@ -495,7 +519,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 delayCheck.setSelected(myIfsSys.rp.renderThrottling);
                 //System.out.println(renderModeCombo.setse);
                 renderModeCombo.setSelectedIndex(myIfsSys.theVolume.renderMode == volume.RenderMode.PROJECT_ONLY ? 1 : 0);
-                dotSizeSpinner.setValue(myIfsSys.rp.dotSize);
+                //dotSizeSpinner.setValue(myIfsSys.rp.dotSize);
 
                 xMinSpinner.setValue(myIfsSys.rp.xMin);
                 xMaxSpinner.setValue(myIfsSys.rp.xMax);
