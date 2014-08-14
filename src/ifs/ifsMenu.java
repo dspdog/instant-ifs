@@ -131,18 +131,17 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         }
     };
 
-    public JButton addLabeledButton(JButton theButton, SpringLayout layout, JPanel panel, double row, int col){
+    public JButton addLabeledButton(JButton theButton, SpringLayout layout, JPanel panel, int col){
         int width = 51;
-        int totalCols = 3;
+
         int spinnerLeft = 5 + col*width;
         int spinnerRight = 5 + col*width+ width;
-        int labelToSpinner = -5;
-        int vspace = 20;
-        int topPad=5;
+
+        int topPad=25;
 
         layout.putConstraint(SpringLayout.WEST, theButton, spinnerLeft, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.EAST, theButton, spinnerRight, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, theButton, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.NORTH, theButton, (int)(topPad+panel.getHeight()), SpringLayout.NORTH, panel);
 
         //button.addActionListener(this);
 
@@ -151,26 +150,35 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         return theButton;
     }
 
-
-    public <T extends JComponent> JComponent addLabeled(T comp, SpringLayout layout, String labelText, JPanel panel, double row){
+    public <T extends JComponent> JComponent addLabeled(T comp, SpringLayout layout, String labelText, JPanel panel){
         int compLeft = 70;
         int compRight = -5;
         int compToSpinner = -5;
-        int vspace = 20;
-        int topPad=5;
+        int topPad=25;
 
         JLabel label = new JLabel(labelText);
 
         layout.putConstraint(SpringLayout.EAST, label, compToSpinner, SpringLayout.WEST, comp);
         layout.putConstraint(SpringLayout.WEST, comp, compLeft, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.EAST, comp, compRight, SpringLayout.EAST, panel);
-        layout.putConstraint(SpringLayout.NORTH, comp, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.NORTH, label, (int)(topPad+vspace*row), SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.NORTH, comp, (int)(panel.getHeight()+0), SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.NORTH, label, (int)(panel.getHeight()+0), SpringLayout.NORTH, panel);
 
         panel.add(label);
-        panel.add(comp);
+        panel.add(comp);panel.setSize(200,topPad+panel.getHeight());
 
         return comp;
+    }
+
+    public void addLabel(JLabel comp, SpringLayout layout, JPanel panel){
+        int compLeft = 5;
+        int compRight = -5;
+
+        layout.putConstraint(SpringLayout.WEST, comp, compLeft, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.EAST, comp, compRight, SpringLayout.EAST, panel);
+        layout.putConstraint(SpringLayout.NORTH, comp, (int)(panel.getHeight()), SpringLayout.NORTH, panel);
+
+        panel.add(comp);
     }
 
     public void setupPointPropertiesPanel(JPanel panel){
@@ -191,15 +199,17 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         panel.setLayout(layout);
 
         layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
+        //panel.add(ptLabel);
+        //addLabel(ptLabel, layout, panel);
+        ((JLabel)addLabeled(ptLabel, layout, "Point", panel)).addComponentListener(null);
+        ((JSpinner)addLabeled(xSpinner, layout, "X", panel)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(ySpinner, layout, "Y", panel)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(zSpinner, layout, "Z", panel)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(scaleSpinner, layout, "Scale %", panel)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(pitchSpinner, layout, "Pitch°", panel)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(yawSpinner, layout, "Yaw°", panel)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(rollSpinner, layout, "Roll°", panel)).addChangeListener(updateAndClear);
 
-        ((JSpinner)addLabeled(xSpinner, layout, "X", panel, 1)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(ySpinner, layout, "Y", panel, 2)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(zSpinner, layout, "Z", panel, 3)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(scaleSpinner, layout, "Scale %", panel, 4)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(pitchSpinner, layout, "Pitch°", panel, 6)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(yawSpinner, layout, "Yaw°", panel, 7)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(rollSpinner, layout, "Roll°", panel, 8)).addChangeListener(updateAndClear);
-        panel.add(ptLabel);
     }
 
     public void setupPdfPropertiesPanel(JPanel panel){
@@ -215,10 +225,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         final Component parent = this;
 
-        addLabeledButton(new JButton("X"), layout, panel, 0, 0).addActionListener(this);
-        addLabeledButton(new JButton("Y"), layout, panel, 0, 1).addActionListener(this);
-        addLabeledButton(new JButton("Z"), layout, panel, 0, 2).addActionListener(this);
-        ((JComboBox)addLabeled(pdfModeCombo, layout, "Mix", panel, 2)).addActionListener(new ActionListener() {
+        ((JComboBox)addLabeled(pdfModeCombo, layout, "Mix", panel)).addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JComboBox cb = (JComboBox)e.getSource();
@@ -241,7 +248,12 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             }
         });
 
-        ((JCheckBox)addLabeled(smearCheck, layout, "Smear PDF", panel, 3.5)).addChangeListener(updateAndClear);
+        ((JCheckBox)addLabeled(smearCheck, layout, "Smear PDF", panel)).addChangeListener(updateAndClear);
+
+
+        addLabeledButton(new JButton("X"), layout, panel, 0).addActionListener(this);
+        addLabeledButton(new JButton("Y"), layout, panel, 1).addActionListener(this);
+        addLabeledButton(new JButton("Z"), layout, panel, 2).addActionListener(this);
 
         panel.addMouseMotionListener(this);
     }
@@ -262,10 +274,10 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
 
 
-        ((JSlider)addLabeled(camPitchSpinner, layout, "Pitch", panel, 1+1)).addChangeListener(updateAndClear);
-        ((JSlider)addLabeled(camYawSpinner, layout, "Yaw", panel, 2.35+1)).addChangeListener(updateAndClear);
-        ((JSlider)addLabeled(camRollSpinner, layout, "Roll", panel, 3.7+1)).addChangeListener(updateAndClear);
-        ((JSlider)addLabeled(camScaleSpinner, layout, "FOV", panel, 5+1)).addChangeListener(updateAndClear);
+        ((JSlider)addLabeled(camPitchSpinner, layout, "Pitch", panel)).addChangeListener(updateAndClear);
+        ((JSlider)addLabeled(camYawSpinner, layout, "Yaw", panel)).addChangeListener(updateAndClear);
+        ((JSlider)addLabeled(camRollSpinner, layout, "Roll", panel)).addChangeListener(updateAndClear);
+        ((JSlider)addLabeled(camScaleSpinner, layout, "FOV", panel)).addChangeListener(updateAndClear);
 
         ActionListener moveCamera = new ActionListener() {
             @Override
@@ -291,12 +303,12 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             }
         };
 
-        addLabeledButton(new JButton("XY"), layout, panel, 0, 0).addActionListener(moveCamera);
-        addLabeledButton(new JButton("YZ"), layout, panel, 0, 1).addActionListener(moveCamera);
-        addLabeledButton(new JButton("XZ"), layout, panel, 0, 2).addActionListener(moveCamera);
+        addLabeledButton(new JButton("XY"), layout, panel, 0).addActionListener(moveCamera);
+        addLabeledButton(new JButton("YZ"), layout, panel, 1).addActionListener(moveCamera);
+        addLabeledButton(new JButton("XZ"), layout, panel, 2).addActionListener(moveCamera);
 
         perspectiveCheck = new JCheckBox();
-        ((JCheckBox)addLabeled(perspectiveCheck, layout, "Ortho", panel, 8)).addChangeListener(updateAndClear);
+        ((JCheckBox)addLabeled(perspectiveCheck, layout, "Ortho", panel)).addChangeListener(updateAndClear);
     }
 
     public void setupRenderPropertiesPanel(JPanel panel){
@@ -329,29 +341,29 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         SpringLayout layout = new SpringLayout();
         panel.setLayout(layout);
 
-        ((JComboBox)addLabeled(renderModeCombo, layout, "Mode", panel, 0.7)).addActionListener(new ActionListener() {
+        ((JComboBox)addLabeled(renderModeCombo, layout, "Mode", panel)).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JComboBox cb = (JComboBox)e.getSource();
-                if(cb.getSelectedItem() == volume.RenderMode.VOLUMETRIC.toString()){
+                JComboBox cb = (JComboBox) e.getSource();
+                if (cb.getSelectedItem() == volume.RenderMode.VOLUMETRIC.toString()) {
                     myIfsSys.theVolume.renderMode = volume.RenderMode.VOLUMETRIC;
-                }else if(cb.getSelectedItem() == volume.RenderMode.PROJECT_ONLY.toString()){
+                } else if (cb.getSelectedItem() == volume.RenderMode.PROJECT_ONLY.toString()) {
                     myIfsSys.theVolume.renderMode = volume.RenderMode.PROJECT_ONLY;
                 }
             }
         });
 
-        ((JSpinner)addLabeled(brightnessSpinner, layout, "Brightness", panel, 2)).addChangeListener(updateNoClear);
-        ((JSpinner)addLabeled(samplesSpinner, layout, "Dots/Frame", panel, 3)).addChangeListener(updateNoClear);
-        ((JSpinner)addLabeled(iterationsSpinner, layout, "Iterations", panel, 4)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(brightnessSpinner, layout, "Brightness", panel)).addChangeListener(updateNoClear);
+        ((JSpinner)addLabeled(samplesSpinner, layout, "Dots/Frame", panel)).addChangeListener(updateNoClear);
+        ((JSpinner)addLabeled(iterationsSpinner, layout, "Iterations", panel)).addChangeListener(updateAndClear);
 
-        ((JCheckBox)addLabeled(frameHoldCheck, layout, "Hold Frame", panel, 5.5)).addChangeListener(updateNoClear);
+        ((JCheckBox)addLabeled(frameHoldCheck, layout, "Hold Frame", panel)).addChangeListener(updateNoClear);
 
-        ((JSpinner)addLabeled(potentialSpinner, layout, "Blur", panel, 6.6)).addChangeListener(updateAndClear);
-        ((JCheckBox)addLabeled(gridCheck, layout, "Grid", panel, 7.6)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(potentialSpinner, layout, "Blur", panel)).addChangeListener(updateAndClear);
+        ((JCheckBox)addLabeled(gridCheck, layout, "Grid", panel)).addChangeListener(updateAndClear);
 
-        ((JCheckBox)addLabeled(delayCheck, layout, "Framelimit", panel, 12.5-3)).addChangeListener(updateNoClear);
-        ((JSpinner)addLabeled(delaySpinner, layout, "Wait X ms", panel, 13.6-3)).addChangeListener(updateNoClear);
-        ((JSpinner)addLabeled(dotSizeSpinner, layout, "Dot Size", panel, 14.7-3)).addChangeListener(updateNoClear);
+        ((JCheckBox)addLabeled(delayCheck, layout, "Framelimit", panel)).addChangeListener(updateNoClear);
+        ((JSpinner)addLabeled(delaySpinner, layout, "Wait X ms", panel)).addChangeListener(updateNoClear);
+        ((JSpinner)addLabeled(dotSizeSpinner, layout, "Dot Size", panel)).addChangeListener(updateNoClear);
 
         xMaxSpinner=new JSpinner();
         xMinSpinner=new JSpinner();
@@ -360,12 +372,12 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         zMaxSpinner=new JSpinner();
         zMinSpinner=new JSpinner();
 
-        ((JSpinner)addLabeled(xMinSpinner, layout, "Xmin", panel, 13.6)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(xMaxSpinner, layout, "Xmax", panel, 14.6)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(yMinSpinner, layout, "Ymin", panel, 15.6)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(yMaxSpinner, layout, "Ymax", panel, 16.6)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(zMinSpinner, layout, "Zmin", panel, 17.6)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(zMaxSpinner, layout, "Zmax", panel, 18.6)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(xMinSpinner, layout, "Xmin", panel)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(xMaxSpinner, layout, "Xmax", panel)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(yMinSpinner, layout, "Ymin", panel)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(yMaxSpinner, layout, "Ymax", panel)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(zMinSpinner, layout, "Zmin", panel)).addChangeListener(updateAndClear);
+        ((JSpinner)addLabeled(zMaxSpinner, layout, "Zmax", panel)).addChangeListener(updateAndClear);
     }
 
     public ifsMenu(Frame f, ifsys is){
@@ -460,7 +472,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     public void updateSideMenu(){
         myIfsSys.rp.limitParams();
         autoChange = true;
-        ptLabel.setText(" Point " + myIfsSys.theShape.pointSelected + " Properties:");
+        ptLabel.setText(myIfsSys.theShape.pointSelected+"");
         if(inited && System.currentTimeMillis()-lastUiChange>100){
             if(myIfsSys.theShape.pointSelected !=-1){
                 xSpinner.setValue(myIfsSys.theShape.selectedPt.x);

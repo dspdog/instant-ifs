@@ -130,6 +130,7 @@ public class ifsys extends JPanel
         is.theMenu = new ifsMenu(parentFrame, is);
 
         is.init();
+        setupMiniFrame(new JPanel(), 200, 250,   is.rp.screenwidth, 450, "Evolution", "invader.png", desktop);
 
         setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth,0, "Render", "gears.png", desktop);
         setupMiniFrame(is.theMenu.cameraProperties, 200, 250,   is.rp.screenwidth+200,0, "Camera", "camera.png", desktop);
