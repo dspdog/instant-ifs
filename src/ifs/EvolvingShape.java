@@ -25,6 +25,7 @@ public class EvolvingShape {
         alwaysNewShape = true; //set to false to always spawn from the "record-holding" shape rather than just the best member of this generation
 
         familyHistory = new ArrayList<ArrayList<ifsShape>>();
+        shapeList = new ArrayList<ifsShape>();
         baseShape=_baseShape;
         shapeIndex=0;
         evolving=false;

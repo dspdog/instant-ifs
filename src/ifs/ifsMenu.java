@@ -16,6 +16,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     ifsys myIfsSys;
 
     JLabel ptLabel;
+    JLabel generationLabel;
     JSpinner xSpinner;
     JSpinner ySpinner;
     JSpinner zSpinner;
@@ -62,6 +63,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     JPanel renderProperties = new JPanel();
     JPanel pdfProperties = new JPanel();
     JPanel cameraProperties = new JPanel();
+    JPanel evolveProperties = new JPanel();
 
     Frame parentFrame = new Frame();
 
@@ -250,10 +252,40 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         ((JCheckBox)addLabeled(smearCheck, layout, "Smear PDF", panel)).addChangeListener(updateAndClear);
 
+        WebButton XButton = new WebButton("", new ImageIcon("./instant-ifs/icons/front.png"));
+        WebButton ZButton = new WebButton("", new ImageIcon("./instant-ifs/icons/side.png"));
+        WebButton YButton = new WebButton("", new ImageIcon("./instant-ifs/icons/top.png"));
 
-        addLabeledButton(new WebButton("X"), layout, panel, 0).addActionListener(this);
-        addLabeledButton(new WebButton("Y"), layout, panel, 1).addActionListener(this);
-        addLabeledButton(new WebButton("Z"), layout, panel, 2).addActionListener(this);
+        XButton.setName("X");XButton.addActionListener(this);
+        YButton.setName("Y");YButton.addActionListener(this);
+        ZButton.setName("Z");ZButton.addActionListener(this);
+
+        WebButtonGroup iconsGroup = new WebButtonGroup ( true, XButton, YButton, ZButton );
+        ((WebButtonGroup)addLabeled(iconsGroup, layout, "", panel, true)).addComponentListener(null);
+
+        panel.addMouseMotionListener(this);
+    }
+
+
+    public void setupEvolvePropertiesPanel(JPanel panel){
+
+        int topPad=5;
+        SpringLayout layout = new SpringLayout();
+        panel.setLayout(layout);
+        layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
+
+        generationLabel = new JLabel("0 Sibling 0/"+myIfsSys.eShape.sibsPerGen);
+
+        ((JLabel)addLabeled(generationLabel, layout, "Generation", panel)).addComponentListener(null);
+
+        WebButton ParentsButton = new WebButton("", new ImageIcon("./instant-ifs/icons/parents.png"));
+        WebButton OffspingButton = new WebButton("", new ImageIcon("./instant-ifs/icons/offspring.png"));
+
+        ParentsButton.setName("parents");ParentsButton.addActionListener(this);
+        OffspingButton.setName("offspring");OffspingButton.addActionListener(this);
+
+        WebButtonGroup iconsGroup = new WebButtonGroup ( true, ParentsButton, OffspingButton );
+        ((WebButtonGroup)addLabeled(iconsGroup, layout, "", panel, true)).addComponentListener(null);
 
         panel.addMouseMotionListener(this);
     }
@@ -406,6 +438,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         renderProperties = new JPanel();
         pdfProperties = new JPanel();
         cameraProperties = new JPanel();
+        evolveProperties = new JPanel();
 
         //SIDE MENU
 
@@ -413,6 +446,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         setupRenderPropertiesPanel(renderProperties);
         setupPdfPropertiesPanel(pdfProperties);
         setupCameraPropertiesPanel(cameraProperties);
+        setupEvolvePropertiesPanel(evolveProperties);
 
         SpringLayout sideMenuLayout = new SpringLayout();
         //sideMenu.setLayout(sideMenuLayout);
@@ -489,6 +523,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     public void updateSideMenu(){
         myIfsSys.rp.limitParams();
         autoChange = true;
+        generationLabel.setText(myIfsSys.eShape.familyHistory.size() + " Sibling " + myIfsSys.eShape.shapeIndex+"/"+myIfsSys.eShape.sibsPerGen);
         ptLabel.setText(myIfsSys.theShape.pointSelected+"");
         if(inited && System.currentTimeMillis()-lastUiChange>100){
             if(myIfsSys.theShape.pointSelected !=-1){
@@ -580,6 +615,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     }
 
     public void actionPerformed(ActionEvent e) {
+        JButton wb = new WebButton();
         JButton cb = new JButton();// = (JButton)e.getSource();
         MenuItem mc = new MenuItem();// = (MenuItem)e.getSource();
 
@@ -588,7 +624,11 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         }catch (Exception _e){
 
         }
+        try{
+            wb=(WebButton)e.getSource();
+        }catch (Exception _e){
 
+        }
         try{
             mc = (MenuItem)e.getSource();
             System.out.println(mc.getActionCommand());
@@ -596,17 +636,17 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         }
 
-        if(cb.getText()=="X"){
+        if(wb.getName()=="X"){
             pdfXImgFile = fc.showOpenDialog(this);
             if(pdfXImgFile == JFileChooser.APPROVE_OPTION){
                 myIfsSys.thePdf.setSampleImage(fc.getSelectedFile(), pdf3D.Dimension.X);
             }
-        }else if(cb.getText()=="Y"){
+        }else if(wb.getName()=="Y"){
             pdfYImgFile = fc.showOpenDialog(this);
             if(pdfYImgFile == JFileChooser.APPROVE_OPTION){
                 myIfsSys.thePdf.setSampleImage(fc.getSelectedFile(), pdf3D.Dimension.Y);
             }
-        }else if(cb.getText()=="Z"){
+        }else if(wb.getName()=="Z"){
             pdfZImgFile = fc.showOpenDialog(this);
             if(pdfZImgFile == JFileChooser.APPROVE_OPTION){
                 myIfsSys.thePdf.setSampleImage(fc.getSelectedFile(), pdf3D.Dimension.Z);
