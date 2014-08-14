@@ -170,17 +170,6 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         return comp;
     }
 
-    public void addLabel(JLabel comp, SpringLayout layout, JPanel panel){
-        int compLeft = 5;
-        int compRight = -5;
-
-        layout.putConstraint(SpringLayout.WEST, comp, compLeft, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.EAST, comp, compRight, SpringLayout.EAST, panel);
-        layout.putConstraint(SpringLayout.NORTH, comp, (int)(panel.getHeight()), SpringLayout.NORTH, panel);
-
-        panel.add(comp);
-    }
-
     public void setupPointPropertiesPanel(JPanel panel){
         xSpinner = new JSpinner();
         ySpinner = new JSpinner();

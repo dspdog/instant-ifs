@@ -405,7 +405,7 @@ public class ifsys extends JPanel
                     ifsPt thePt = theShape.pts[randomIndex];
                     ifsPt centerPt = theShape.pts[0];
                     if(d!=0){
-                        cumulativeRotation._add(thePt.getRotation());
+                        cumulativeRotation = cumulativeRotation.add(new ifsPt(thePt.rotationPitch,thePt.rotationYaw,thePt.rotationRoll));
                         rpt = thePt.subtract(centerPt).scale(cumulativeScale).getRotatedPt(cumulativeRotation);
                         olddpt = new ifsPt(dpt);
                         distance += rpt.magnitude();
@@ -524,8 +524,9 @@ public class ifsys extends JPanel
 
                     for(int i=1; i< theShape.pointsInUse; i++){
                         theVolume.changed=true;
-                        theShape.pts[i].rotationPitch = theShape.pts[i].savedrotationpitch + xtra.y;
-                        theShape.pts[i].rotationYaw = theShape.pts[i].savedrotationyaw + xtra.x;
+                        theShape.pts[i].rotationPitch = theShape.pts[i].savedrotationpitch + xtra.x;
+                        theShape.pts[i].rotationYaw = theShape.pts[i].savedrotationyaw + xtra.y;
+                        //theShape.pts[i].rotationRoll = theShape.pts[i].savedrotationroll + xtra.y;
                     }
                 }else{
                     switch (selectedMovementAxis){

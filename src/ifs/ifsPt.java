@@ -141,6 +141,10 @@ class ifsPt implements java.io.Serializable{
         res.radius = this.radius + (dest.radius-this.radius)*factor;
         res.scale = this.scale + (dest.scale-this.scale)*factor;
 
+        res.rotationPitch = this.rotationPitch + (dest.rotationPitch-this.rotationPitch)*factor;
+        res.rotationYaw = this.rotationPitch + (dest.rotationPitch-this.rotationPitch)*factor;
+        res.rotationRoll = this.rotationPitch + (dest.rotationPitch-this.rotationPitch)*factor;
+
         return res;
     }
 

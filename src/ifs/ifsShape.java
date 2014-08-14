@@ -144,9 +144,9 @@ class ifsShape implements java.io.Serializable {
         pts[pointsInUse].y = y;
         pts[pointsInUse].z = z;
         pts[pointsInUse].scale = 0.5f;
-        pts[pointsInUse].rotationYaw = 0.0f;
-        pts[pointsInUse].rotationPitch = 0.0f;
-        pts[pointsInUse].rotationRoll = 0.0f;
+        pts[pointsInUse].rotationPitch = 0;
+        pts[pointsInUse].rotationYaw = 0;
+        pts[pointsInUse].rotationRoll = 0;
         pts[pointsInUse].opacity = 1.0f;
         pointsInUse++;
         updateCenter();
@@ -165,9 +165,9 @@ class ifsShape implements java.io.Serializable {
         pts[pointsInUse].y = y;
         pts[pointsInUse].z = z;
         pts[pointsInUse].scale = scale;
-        pts[pointsInUse].rotationYaw = 0.0f;
-        pts[pointsInUse].rotationPitch = 0.0f;
-        //pts[pointsInUse].rotationRoll = 0.0f;
+        pts[pointsInUse].rotationPitch = 0;
+        pts[pointsInUse].rotationYaw = 0;
+        pts[pointsInUse].rotationRoll = 0;
         pts[pointsInUse].opacity = 1.0f;
         pointsInUse++;
         updateCenter();
@@ -179,15 +179,18 @@ class ifsShape implements java.io.Serializable {
             pts[a].y = pts[a + 1].y;
 
             pts[a].scale = pts[a + 1].scale;
+            pts[a].rotationPitch = pts[a + 1].rotationPitch;
             pts[a].rotationYaw = pts[a + 1].rotationYaw;
+            pts[a].rotationRoll = pts[a + 1].rotationRoll;
         }
 
         pts[pointsInUse].x = 0.0f;
         pts[pointsInUse].y = 0.0f;
 
         pts[pointsInUse].scale = 0.5f;
-        pts[pointsInUse].rotationYaw = 0.0f;
-        pts[pointsInUse].rotationPitch = 0.0f;
+        pts[pointsInUse].rotationPitch = 0;
+        pts[pointsInUse].rotationYaw = 0;
+        pts[pointsInUse].rotationRoll = 0;
         pointsInUse--;
 
         updateCenter();
