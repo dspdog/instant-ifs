@@ -2,6 +2,8 @@ package ifs;
 
 import com.alee.extended.panel.WebButtonGroup;
 import com.alee.laf.button.WebButton;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
 import ifs.thirdparty.ImagePreviewPanel;
 import ifs.volumetric.pdf3D;
 
@@ -58,6 +60,8 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
     JComboBox renderModeCombo;
     JComboBox pdfModeCombo;
+
+    WebTable evolutionTable;
 
     JPanel pointProperties = new JPanel();
     JPanel renderProperties = new JPanel();
@@ -281,11 +285,32 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         WebButton ParentsButton = new WebButton("", new ImageIcon("./instant-ifs/icons/parents.png"));
         WebButton OffspingButton = new WebButton("", new ImageIcon("./instant-ifs/icons/offspring.png"));
 
+        WebButton NextSibButton = new WebButton("", new ImageIcon("./instant-ifs/icons/next.png"));
+        WebButton PrevSibButton = new WebButton("", new ImageIcon("./instant-ifs/icons/back.png"));
+
         ParentsButton.setName("parents");ParentsButton.addActionListener(this);
         OffspingButton.setName("offspring");OffspingButton.addActionListener(this);
+        NextSibButton.setName("nextsib");NextSibButton.addActionListener(this);
+        PrevSibButton.setName("prevsib");PrevSibButton.addActionListener(this);
 
-        WebButtonGroup iconsGroup = new WebButtonGroup ( true, ParentsButton, OffspingButton );
+        WebButtonGroup iconsGroup = new WebButtonGroup ( true, OffspingButton, ParentsButton, PrevSibButton, NextSibButton );
         ((WebButtonGroup)addLabeled(iconsGroup, layout, "", panel, true)).addComponentListener(null);
+
+        ((JLabel)addLabeled(new JLabel(), layout, "", panel)).addComponentListener(null);
+
+        String[] headers = { "Name", "Score"};
+        String[][] data =
+                { { "0-0", "0"}, { "0-0", "0"}  };
+
+        evolutionTable = new WebTable ( data, headers );
+
+        evolutionTable.setEditable(false);
+        evolutionTable.setAutoResizeMode(WebTable.AUTO_RESIZE_OFF);
+        evolutionTable.setRowSelectionAllowed(false);
+        evolutionTable.setColumnSelectionAllowed(true);
+        evolutionTable.setPreferredScrollableViewportSize ( new Dimension ( 200, 100 ) );
+
+        ((WebScrollPane)addLabeled(new WebScrollPane ( evolutionTable ), layout, "", panel, true)).addComponentListener(null);
 
         panel.addMouseMotionListener(this);
     }
@@ -652,6 +677,18 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 myIfsSys.thePdf.setSampleImage(fc.getSelectedFile(), pdf3D.Dimension.Z);
             }
 
+        }else if(wb.getName()=="parents"){
+            myIfsSys.eShape.parents(myIfsSys.theShape);
+        }else if(wb.getName()=="offspring"){
+            myIfsSys.eShape.offSpring(myIfsSys.theShape, myIfsSys.rp.evolveIntensity);
+        }else if(wb.getName()=="prevsib"){
+            myIfsSys.theShape=myIfsSys.eShape.prevShape(0);
+            myIfsSys.clearframe();
+            myIfsSys.gamefunc();
+        }else if(wb.getName()=="nextsib"){
+            myIfsSys.theShape=myIfsSys.eShape.nextShape(0);
+            myIfsSys.clearframe();
+            myIfsSys.gamefunc();
         }else if(mc.getActionCommand()=="Save Shape..."){
             pdfZImgFile = fc.showSaveDialog(this);
             if(pdfZImgFile == JFileChooser.APPROVE_OPTION){

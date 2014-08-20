@@ -45,11 +45,13 @@ public class EvolvingShape {
     }
 
     public void parents(ifsShape _baseShape){
-        evolvedSibs=0;
-        baseShape=_baseShape;
-        shapeList = familyHistory.get(familyHistory.size()-2);
-        familyHistory.remove(familyHistory.size()-1);
-        System.out.println("Generation " + familyHistory.size() + " - " + shapeList.size() + " siblings");
+        if(familyHistory.size()>0){
+            evolvedSibs=0;
+            baseShape=_baseShape;
+            shapeList = familyHistory.get(familyHistory.size()-2);
+            familyHistory.remove(familyHistory.size()-1);
+            System.out.println("Generation " + familyHistory.size() + " - " + shapeList.size() + " siblings");
+        }
     }
 
     public ifsShape getHighestScoreShape(){
