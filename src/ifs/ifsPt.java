@@ -91,13 +91,15 @@ class ifsPt implements java.io.Serializable{
         }
 
         //change all the properties slightly...
-        scale*=(1+rnd.nextGaussian()*intensity);
-        rotationPitch+=rnd.nextGaussian()*intensity;
-        rotationYaw+=rnd.nextGaussian()*intensity;
-        rotationRoll+=rnd.nextGaussian()*intensity;
-        x+=rnd.nextGaussian()*intensity*10;
-        y+=rnd.nextGaussian()*intensity*10;
-        z+=rnd.nextGaussian()*intensity*10;
+        scale*=(1+rnd.nextGaussian());
+
+        rotationPitch+=rnd.nextGaussian()*2*Math.PI;
+        rotationYaw+=rnd.nextGaussian()*2*Math.PI;
+        rotationRoll+=rnd.nextGaussian()*2*Math.PI;
+
+        x+=rnd.nextGaussian()*intensity*3;
+        y+=rnd.nextGaussian()*intensity*3;
+        z+=rnd.nextGaussian()*intensity*3;
     }
 
     public float magnitude(){
