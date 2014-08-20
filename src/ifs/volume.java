@@ -1,8 +1,10 @@
 package ifs;
 
+import com.alee.extended.colorchooser.WebGradientColorChooser;
 import ifs.flat.RenderBuffer;
 import ifs.volumetric.*;
 
+import java.awt.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -95,6 +97,7 @@ public class volume {
 
         zDarkenScaler=512f;
 
+        colorPeriod = 512;
 
         reset();
     }
@@ -124,6 +127,7 @@ public class volume {
         System.out.println("clear volume " + System.currentTimeMillis());
         accumilatedDistance = 0;
         averageDistanceSamples = 0;
+
         reset();
         changed=false;
      }
@@ -159,10 +163,12 @@ public class volume {
 
     final static float PFf = (float)Math.PI;
 
+    float colorPeriod = 0;
+
     public void putPdfSample(ifsPt _dpt,
                              ifsPt cumulativeRotationVector,
                              double cumulativeScale,
-                             ifsPt _thePt, ifsPt theOldPt, ifsPt odpt, int bucketVal, int bucketId, float distance, RenderParams rp, pdf3D thePdf, RenderBuffer rb, float smearMag){
+                             ifsPt _thePt, ifsPt theOldPt, ifsPt odpt, int bucketVal, int bucketId, float distance, RenderParams rp, pdf3D thePdf, RenderBuffer rb, float smearMag, WebGradientColorChooser color){
         ifsPt dpt = _dpt;
         ifsPt thePt = _thePt;
         float factor = 1.0f;
@@ -207,20 +213,30 @@ public class volume {
                     (sampleZ-thePdf.center.z)*scale).getRotatedPt(-(float)pointDegreesPitch, -(float)pointDegreesYaw, -(float)pointDegreesRoll); //placed point
 
             float r,g,b;
+            float myDist = distance - rpt.magnitude() * factor;
 
             ifsPt theDot = new ifsPt(dpt.x+rpt.x,
                     dpt.y+rpt.y,
                     dpt.z+rpt.z);
             ;
-            r=(theDot.x - this.minX)/(this.maxX-this.minX)*512;
-            g=(theDot.y - this.minY)/(this.maxY-this.minY)*512;
-            b=(theDot.z - this.minZ)/(this.maxZ-this.minZ)*512;
-            this.contributeToAverageDistance(distance - rpt.magnitude() * factor);
+
+            if(rp.gradientColors){
+                Color myColor = color.getColorForLocation((myDist%colorPeriod) / colorPeriod);
+                r = myColor.getRed();
+                g = myColor.getGreen();
+                b = myColor.getBlue();
+            }else{
+                r=(theDot.x - this.minX)/(this.maxX-this.minX)*512;
+                g=(theDot.y - this.minY)/(this.maxY-this.minY)*512;
+                b=(theDot.z - this.minZ)/(this.maxZ-this.minZ)*512;
+            }
+
+            this.contributeToAverageDistance(myDist);
 
             if(this.putPixel(theDot,
                     r,
                     g,
-                    b, rp, true, rb)){ //Z
+                    b, rp, true, rp.noDark, rb)){ //Z
                 this.pushBounds(theDot);
                 seqIndex++;
             }else{
@@ -259,8 +275,8 @@ public class volume {
         return pt;
     }
 
-    public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, RenderBuffer rb){
-        return old_putPixel(_pt,ptR, ptG, ptB, rp, useCrop, false, false, rb);
+    public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, RenderBuffer rb){
+        return old_putPixel(_pt,ptR, ptG, ptB, rp, useCrop, noDark, false, rb);
     }
 
     public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric, RenderBuffer rb){

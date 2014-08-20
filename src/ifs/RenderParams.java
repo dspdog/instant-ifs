@@ -47,6 +47,9 @@ public class RenderParams implements java.io.Serializable {
 
     int xMin, xMax, yMin, yMax, zMin, zMax;
 
+    boolean noDark;
+    boolean gradientColors;
+
     ScoreParams scoreParams;
 
     float evolveIntensity;
@@ -60,6 +63,8 @@ public class RenderParams implements java.io.Serializable {
         savingDots=false;
         saveInterval=2000;
         usingColors=true;
+
+        noDark = false;
 
         linesHideTime=1000;
 
@@ -77,6 +82,8 @@ public class RenderParams implements java.io.Serializable {
 
         xMin=0; yMin=0; zMin=0;
         xMax=1024; yMax=1024; zMax=1024;
+
+        gradientColors=false;
 
         framesHidden = true;
         infoHidden = false;

@@ -418,7 +418,7 @@ public class ifsys extends JPanel
                         if(!(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
                             try{//TODO why the err?
                                 theVolume.putPdfSample(dpt, cumulativeRotation, cumulativeScale, thePt, theShape.pts[oldRandomIndex], olddpt,
-                                        buckets[bucketIndex], bucketIndex, distance, rp, thePdf, renderBuffer, rpt.magnitude());
+                                        buckets[bucketIndex], bucketIndex, distance, rp, thePdf, renderBuffer, rpt.magnitude(), theMenu.colorChooser);
                             }catch (Exception e){
                                 //e.printStackTrace();
                             }
@@ -661,11 +661,6 @@ public class ifsys extends JPanel
             clearframe();
         }
 
-        if(e.getKeyChar() == 'g'){
-            rp.drawGrid = !rp.drawGrid;
-            clearframe();
-        }
-
         if(e.getKeyChar() == 's'){
         //    saveStuff("");
             imageUtils.saveImg(startTimeLog, rp.screenwidth, rp.screenheight, renderBuffer.pixels);
@@ -726,6 +721,18 @@ public class ifsys extends JPanel
         if(e.getKeyChar() == '='){
             theVolume.zDarkenScaler*=0.9;
             System.out.println(theVolume.zDarkenScaler);
+            clearframe();
+            gamefunc();
+        }
+
+        /*if(e.getKeyChar() == 'd'){
+            rp.noDark=!rp.noDark;
+            clearframe();
+            gamefunc();
+        }*/
+
+        if(e.getKeyChar() == 'g'){
+            rp.gradientColors=!rp.gradientColors;
             clearframe();
             gamefunc();
         }

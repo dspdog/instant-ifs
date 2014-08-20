@@ -63,6 +63,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     JComboBox pdfModeCombo;
 
     WebTable evolutionTable;
+    WebGradientColorChooser colorChooser;
 
     JPanel pointProperties = new JPanel();
     JPanel renderProperties = new JPanel();
@@ -454,11 +455,9 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         ((JSpinner)addLabeled(zMinSpinner, layout, "Zmin", panel)).addChangeListener(updateAndClear);
         ((JSpinner)addLabeled(zMaxSpinner, layout, "Zmax", panel)).addChangeListener(updateAndClear);
 
-        WebGradientColorChooser colorChooser = new WebGradientColorChooser();
-        colorChooser.setPreferredWidth ( 350 );
-
-        ((WebGradientColorChooser)addLabeled(colorChooser, layout, "Color", panel)).addChangeListener(updateAndClear);
-
+        colorChooser = new WebGradientColorChooser();
+        colorChooser.setPreferredWidth(350);
+         ((WebGradientColorChooser)addLabeled(colorChooser, layout, "Color", panel)).addChangeListener(updateAndClear);
     }
 
     public ifsMenu(Frame f, ifsys is){
