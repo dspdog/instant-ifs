@@ -1,5 +1,6 @@
 package ifs;
 
+import com.alee.extended.colorchooser.WebGradientColorChooser;
 import com.alee.extended.panel.WebButtonGroup;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.scroll.WebScrollPane;
@@ -179,7 +180,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         layout.putConstraint(SpringLayout.WEST, comp, compLeft, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.EAST, comp, compRight, SpringLayout.EAST, panel);
         layout.putConstraint(SpringLayout.NORTH, comp, (int)(panel.getHeight()+0), SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.NORTH, label, (int)(panel.getHeight()+0), SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.NORTH, label, (int) (panel.getHeight() + 0), SpringLayout.NORTH, panel);
 
         if(!noLabel)panel.add(label);
         panel.add(comp);panel.setSize(200,topPad+panel.getHeight());
@@ -452,6 +453,12 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         ((JSpinner)addLabeled(yMaxSpinner, layout, "Ymax", panel)).addChangeListener(updateAndClear);
         ((JSpinner)addLabeled(zMinSpinner, layout, "Zmin", panel)).addChangeListener(updateAndClear);
         ((JSpinner)addLabeled(zMaxSpinner, layout, "Zmax", panel)).addChangeListener(updateAndClear);
+
+        WebGradientColorChooser colorChooser = new WebGradientColorChooser();
+        colorChooser.setPreferredWidth ( 350 );
+
+        ((WebGradientColorChooser)addLabeled(colorChooser, layout, "Color", panel)).addChangeListener(updateAndClear);
+
     }
 
     public ifsMenu(Frame f, ifsys is){
