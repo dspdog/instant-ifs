@@ -251,13 +251,24 @@ public class volume {
         }
     }
 
-    public ifsPt getCameraDistortedPt(ifsPt _pt){
+    public ifsPt getCameraDistortedPt(ifsPt _pt, boolean rightEye){
+        ifsPt pt;
 
-        ifsPt pt = _pt
-                .subtract(camCenter)
-                .getRotatedPt(camPitch / 180.0f * PFf, camYaw / 180.0f * PFf, camRoll / 180.0f * PFf)
-                .scale(camScale)
-                .add(camCenter);
+        if(rightEye){
+            pt = _pt
+                    .subtract(camCenter)
+                    .getRotatedPt(camPitch / 180.0f * PFf, camYaw / 180.0f * PFf, camRoll / 180.0f * PFf)
+                    .scale(camScale)
+                    .add(camCenter);
+
+        }else{
+            pt = _pt
+                    .subtract(camCenter)
+                    .getRotatedPt2(camPitch / 180.0f * PFf, camYaw / 180.0f * PFf, camRoll / 180.0f * PFf)
+                    .scale(camScale)
+                    .add(camCenter);
+
+        }
 
         float vx = 512.0f; //vanishing pt onscreen
         float vy = 512.0f;
@@ -304,7 +315,7 @@ public class volume {
     }
 
     public boolean old_putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric, RenderBuffer rb){
-        ifsPt pt = getCameraDistortedPt(_pt);
+        ifsPt pt = getCameraDistortedPt(_pt, rp.rightEye);
 
         dataPoints++;
         float dark = pt.z/zDarkenScaler;

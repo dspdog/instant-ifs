@@ -737,6 +737,12 @@ public class ifsys extends JPanel
             gamefunc();
         }
 
+        if(e.getKeyChar() == ' '){
+            rp.rightEye=!rp.rightEye;
+            clearframe();
+            gamefunc();
+        }
+
         switch(e.getKeyChar()){
             case 'i':
                 rp.infoHidden = !rp.infoHidden;

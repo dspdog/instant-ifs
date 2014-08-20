@@ -39,7 +39,7 @@ class ifsShape implements java.io.Serializable {
     public void findNearestPt(int _mousex, int _mousey, double minDist, volume distortionVolume){
         int nearest = 0;
         for(int i=0; i<this.pointsInUse; i++){
-            ifsPt _pt = distortionVolume.getCameraDistortedPt(this.pts[i]);
+            ifsPt _pt = distortionVolume.getCameraDistortedPt(this.pts[i], false);
             double dist = _pt.distanceXY(new ifsPt(_mousex, _mousey, 0));
             if(dist<minDist){
                 nearest=i;

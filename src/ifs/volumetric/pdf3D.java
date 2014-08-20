@@ -37,7 +37,7 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
         volume = new float[width*height*depth];
         samplePixels = new int[width*height];
 
-        loadImgs3D("circle2.png", "circle2c.png", "flat2.png");
+        loadImgs3D("circle2.png", "circle2.png", "circle2.png");
         //loadImgs3D("g.png", "e.png", "b.png");
     }
 
@@ -152,6 +152,23 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
                             break;
 
                     }
+
+                    /*
+                    if(Math.min(Math.min(
+                            samplePixelsX[y + z * width],
+                            samplePixelsY[x + z * width]),
+                            samplePixelsZ[x + y * width]) > 0){
+                        if(x<samplePixelsX[y + z * width]/255*(sampleMax.x-sampleMin.x)+sampleMin.x &&
+                           y<samplePixelsY[x + z * width]/255*(sampleMax.y-sampleMin.y)+sampleMin.y &&
+                           z<samplePixelsZ[x + y * width]/255*(sampleMax.z-sampleMin.z)+sampleMin.z){
+                            volume[x+y*width+z*width*height] = 255;
+                        }else{
+                            volume[x+y*width+z*width*height] = 0;
+                        }
+                    }else{
+                        volume[x+y*width+z*width*height] = 0;
+                    }
+                    */
 
                     if(pointValid(x,y,z)){
                         if(isNearEdge(x,y,z, edgeUnit)){

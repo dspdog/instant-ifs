@@ -152,6 +152,10 @@ class ifsPt implements java.io.Serializable{
         return this.qRotate(ifsPt.X_UNIT, pitch).qRotate(ifsPt.Y_UNIT, yaw).qRotate(ifsPt.Z_UNIT,roll);
     }
 
+    public ifsPt getRotatedPt2(float pitch, float yaw, float roll){
+        return this.qRotate(ifsPt.X_UNIT, pitch).qRotate(ifsPt.Y_UNIT, yaw).qRotate(ifsPt.Z_UNIT,roll).qRotate(ifsPt.Y_UNIT, 0.3f);
+    }
+
     public ifsPt getRotatedPt(ifsPt rpt){
         return this.qRotate(ifsPt.X_UNIT, rpt.x).qRotate(ifsPt.Y_UNIT, rpt.y).qRotate(ifsPt.Z_UNIT,rpt.z);
     }

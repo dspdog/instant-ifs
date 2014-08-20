@@ -49,12 +49,14 @@ public class RenderParams implements java.io.Serializable {
 
     boolean noDark;
     boolean gradientColors;
+    boolean rightEye;
 
     ScoreParams scoreParams;
 
     float evolveIntensity;
 
     public RenderParams(){
+        rightEye=false;
         bgColor = new Color(0,112/2,184/2); //half darkened spanish blue
         scoreParams = new ScoreParams(ScoreParams.Presets.MIN_DistSurface);
 
