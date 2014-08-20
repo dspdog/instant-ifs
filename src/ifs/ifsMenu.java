@@ -32,20 +32,20 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     JSpinner delaySpinner;
     //JSpinner dotSizeSpinner;
 
-    JSpinner xMinSpinner;
-    JSpinner xMaxSpinner;
-    JSpinner yMinSpinner;
-    JSpinner yMaxSpinner;
-    JSpinner zMinSpinner;
-    JSpinner zMaxSpinner;
+    //JSpinner xMinSpinner;
+    //JSpinner xMaxSpinner;
+    //JSpinner yMinSpinner;
+    //JSpinner yMaxSpinner;
+    //JSpinner zMinSpinner;
+    //JSpinner zMaxSpinner;
 
     JSpinner pitchSpinner;
     JSpinner yawSpinner;
     JSpinner rollSpinner;
 
-    JSlider camPitchSpinner;
-    JSlider camYawSpinner;
-    JSlider camRollSpinner;
+    //JSlider camPitchSpinner;
+    //JSlider camYawSpinner;
+    //JSlider camRollSpinner;
     JSlider camScaleSpinner;
 
     JSpinner scaleSpinner;
@@ -68,7 +68,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     JPanel pointProperties = new JPanel();
     JPanel renderProperties = new JPanel();
     JPanel pdfProperties = new JPanel();
-    JPanel cameraProperties = new JPanel();
+    //JPanel cameraProperties = new JPanel();
     JPanel evolveProperties = new JPanel();
 
     Frame parentFrame = new Frame();
@@ -117,20 +117,20 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
                 myIfsSys.theShape.updateCenter();
 
-                myIfsSys.theVolume.camPitch = camPitchSpinner.getValue() - 180;
-                myIfsSys.theVolume.camYaw = camYawSpinner.getValue() - 180;
-                myIfsSys.theVolume.camRoll = camRollSpinner.getValue() - 180;
+                //myIfsSys.theVolume.camPitch = camPitchSpinner.getValue() - 180;
+                //myIfsSys.theVolume.camYaw = camYawSpinner.getValue() - 180;
+                //myIfsSys.theVolume.camRoll = camRollSpinner.getValue() - 180;
                 myIfsSys.theVolume.perspectiveScale = camScaleSpinner.getValue();
                 myIfsSys.theVolume.perspectiveScale = Math.max(0.1f, myIfsSys.theVolume.perspectiveScale);
 
                 myIfsSys.lastMoveTime = System.currentTimeMillis();
 
-                myIfsSys.rp.xMin = Integer.parseInt(xMinSpinner.getValue().toString());
-                myIfsSys.rp.xMax = Integer.parseInt(xMaxSpinner.getValue().toString());
-                myIfsSys.rp.yMin = Integer.parseInt(yMinSpinner.getValue().toString());
-                myIfsSys.rp.yMax = Integer.parseInt(yMaxSpinner.getValue().toString());
-                myIfsSys.rp.zMin = Integer.parseInt(zMinSpinner.getValue().toString());
-                myIfsSys.rp.zMax = Integer.parseInt(zMaxSpinner.getValue().toString());
+                //myIfsSys.rp.xMin = Integer.parseInt(xMinSpinner.getValue().toString());
+                //myIfsSys.rp.xMax = Integer.parseInt(xMaxSpinner.getValue().toString());
+                //myIfsSys.rp.yMin = Integer.parseInt(yMinSpinner.getValue().toString());
+                //myIfsSys.rp.yMax = Integer.parseInt(yMaxSpinner.getValue().toString());
+                //myIfsSys.rp.zMin = Integer.parseInt(zMinSpinner.getValue().toString());
+                //myIfsSys.rp.zMax = Integer.parseInt(zMaxSpinner.getValue().toString());
             }
         }
     };
@@ -317,74 +317,6 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         panel.addMouseMotionListener(this);
     }
 
-    public void setupCameraPropertiesPanel(JPanel panel){
-
-
-        SpringLayout layout = new SpringLayout();
-        panel.setLayout(layout);
-
-
-        camPitchSpinner = new JSlider();
-        camYawSpinner = new JSlider();
-        camRollSpinner = new JSlider();
-        camScaleSpinner = new JSlider();
-
-        camPitchSpinner.setMaximum(360);
-        camYawSpinner.setMaximum(360);
-        camRollSpinner.setMaximum(360);
-        camScaleSpinner.setMaximum(500);
-
-
-
-
-        ((JSlider)addLabeled(camPitchSpinner, layout, "Pitch", panel)).addChangeListener(updateAndClear);
-        ((JSlider)addLabeled(camYawSpinner, layout, "Yaw", panel)).addChangeListener(updateAndClear);
-        ((JSlider)addLabeled(camRollSpinner, layout, "Roll", panel)).addChangeListener(updateAndClear);
-        ((JSlider)addLabeled(camScaleSpinner, layout, "FOV", panel)).addChangeListener(updateAndClear);
-
-        ActionListener moveCamera = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                WebButton cb = (WebButton)(e.getSource());
-                System.out.println("NAME  " + cb.getName());
-                if(cb.getName()=="YZ"){
-                    myIfsSys.theVolume.camPitch=-90;
-                    myIfsSys.theVolume.camRoll=-90;
-                    myIfsSys.theVolume.camYaw=0;
-                }else if(cb.getName()=="XY"){
-                    //TOP VIEW
-                    myIfsSys.theVolume.camPitch=0;
-                    myIfsSys.theVolume.camRoll=0;
-                    myIfsSys.theVolume.camYaw=0;
-                }else if(cb.getName()=="XZ"){
-                    //SIDE VIEW
-                    myIfsSys.theVolume.camPitch=0;
-                    myIfsSys.theVolume.camRoll=-90;
-                    myIfsSys.theVolume.camYaw=0;
-                }
-                myIfsSys.clearframe();
-            }
-        };
-
-
-
-        perspectiveCheck = new JCheckBox();
-        ((JCheckBox)addLabeled(perspectiveCheck, layout, "Ortho", panel)).addChangeListener(updateAndClear);
-
-        WebButton YZButton = new WebButton("", new ImageIcon("./instant-ifs/icons/front.png"));
-        WebButton XYButton = new WebButton("", new ImageIcon("./instant-ifs/icons/side.png"));
-        WebButton XZButton = new WebButton("", new ImageIcon("./instant-ifs/icons/top.png"));
-
-        YZButton.setName("YZ");YZButton.addActionListener(moveCamera);
-        XYButton.setName("XZ");XYButton.addActionListener(moveCamera);
-        XZButton.setName("XY");XZButton.addActionListener(moveCamera);
-
-        WebButtonGroup iconsGroup = new WebButtonGroup ( true, YZButton, XZButton, XYButton );
-        ((WebButtonGroup)addLabeled(iconsGroup, layout, "dir", panel, true)).addComponentListener(null);
-
-
-    }
-
     public void setupRenderPropertiesPanel(JPanel panel){
         brightnessSpinner = new JSpinner();
         samplesSpinner = new JSpinner();
@@ -441,23 +373,88 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         ((JSpinner)addLabeled(delaySpinner, layout, "Wait X ms", panel)).addChangeListener(updateNoClear);
         //((JSpinner)addLabeled(dotSizeSpinner, layout, "Dot Size", panel)).addChangeListener(updateNoClear);
 
-        xMaxSpinner=new JSpinner();
-        xMinSpinner=new JSpinner();
-        yMaxSpinner=new JSpinner();
-        yMinSpinner=new JSpinner();
-        zMaxSpinner=new JSpinner();
-        zMinSpinner=new JSpinner();
+        //xMaxSpinner=new JSpinner();
+        //xMinSpinner=new JSpinner();
+        //yMaxSpinner=new JSpinner();
+        //yMinSpinner=new JSpinner();
+        //zMaxSpinner=new JSpinner();
+        //zMinSpinner=new JSpinner();
 
-        ((JSpinner)addLabeled(xMinSpinner, layout, "Xmin", panel)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(xMaxSpinner, layout, "Xmax", panel)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(yMinSpinner, layout, "Ymin", panel)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(yMaxSpinner, layout, "Ymax", panel)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(zMinSpinner, layout, "Zmin", panel)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(zMaxSpinner, layout, "Zmax", panel)).addChangeListener(updateAndClear);
+        //((JSpinner)addLabeled(xMinSpinner, layout, "Xmin", panel)).addChangeListener(updateAndClear);
+        //((JSpinner)addLabeled(xMaxSpinner, layout, "Xmax", panel)).addChangeListener(updateAndClear);
+        //((JSpinner)addLabeled(yMinSpinner, layout, "Ymin", panel)).addChangeListener(updateAndClear);
+        //((JSpinner)addLabeled(yMaxSpinner, layout, "Ymax", panel)).addChangeListener(updateAndClear);
+        //((JSpinner)addLabeled(zMinSpinner, layout, "Zmin", panel)).addChangeListener(updateAndClear);
+        //((JSpinner)addLabeled(zMaxSpinner, layout, "Zmax", panel)).addChangeListener(updateAndClear);
 
         colorChooser = new WebGradientColorChooser();
-        colorChooser.setPreferredWidth(350);
-         ((WebGradientColorChooser)addLabeled(colorChooser, layout, "Color", panel)).addChangeListener(updateAndClear);
+        //colorChooser.setPreferredWidth(350);
+        // ((WebGradientColorChooser)addLabeled(colorChooser, layout, "Color", panel)).addChangeListener(updateAndClear);
+
+
+
+
+
+        //camPitchSpinner = new JSlider();
+        //camYawSpinner = new JSlider();
+        //camRollSpinner = new JSlider();
+        camScaleSpinner = new JSlider();
+
+        //camPitchSpinner.setMaximum(360);
+        //camYawSpinner.setMaximum(360);
+        //camRollSpinner.setMaximum(360);
+        camScaleSpinner.setMaximum(500);
+
+
+
+
+        //((JSlider)addLabeled(camPitchSpinner, layout, "Pitch", panel)).addChangeListener(updateAndClear);
+        //((JSlider)addLabeled(camYawSpinner, layout, "Yaw", panel)).addChangeListener(updateAndClear);
+        //((JSlider)addLabeled(camRollSpinner, layout, "Roll", panel)).addChangeListener(updateAndClear);
+        ((JSlider)addLabeled(camScaleSpinner, layout, "FOV", panel)).addChangeListener(updateAndClear);
+
+        ActionListener moveCamera = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                WebButton cb = (WebButton)(e.getSource());
+                System.out.println("NAME  " + cb.getName());
+                if(cb.getName()=="YZ"){
+                    myIfsSys.theVolume.camPitch=-90;
+                    myIfsSys.theVolume.camRoll=-90;
+                    myIfsSys.theVolume.camYaw=0;
+                }else if(cb.getName()=="XY"){
+                    //TOP VIEW
+                    myIfsSys.theVolume.camPitch=0;
+                    myIfsSys.theVolume.camRoll=0;
+                    myIfsSys.theVolume.camYaw=0;
+                }else if(cb.getName()=="XZ"){
+                    //SIDE VIEW
+                    myIfsSys.theVolume.camPitch=0;
+                    myIfsSys.theVolume.camRoll=-90;
+                    myIfsSys.theVolume.camYaw=0;
+                }
+                myIfsSys.clearframe();
+            }
+        };
+
+
+
+        perspectiveCheck = new JCheckBox();
+        ((JCheckBox)addLabeled(perspectiveCheck, layout, "Ortho", panel)).addChangeListener(updateAndClear);
+
+        WebButton YZButton = new WebButton("", new ImageIcon("./instant-ifs/icons/front.png"));
+        WebButton XYButton = new WebButton("", new ImageIcon("./instant-ifs/icons/side.png"));
+        WebButton XZButton = new WebButton("", new ImageIcon("./instant-ifs/icons/top.png"));
+
+        YZButton.setName("YZ");YZButton.addActionListener(moveCamera);
+        XYButton.setName("XZ");XYButton.addActionListener(moveCamera);
+        XZButton.setName("XY");XZButton.addActionListener(moveCamera);
+
+        WebButtonGroup iconsGroup = new WebButtonGroup ( true, YZButton, XZButton, XYButton );
+        ((WebButtonGroup)addLabeled(iconsGroup, layout, "dir", panel, true)).addComponentListener(null);
+
+
+
     }
 
     public ifsMenu(Frame f, ifsys is){
@@ -468,7 +465,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         pointProperties = new JPanel();
         renderProperties = new JPanel();
         pdfProperties = new JPanel();
-        cameraProperties = new JPanel();
+        //cameraProperties = new JPanel();
         evolveProperties = new JPanel();
 
         //SIDE MENU
@@ -476,25 +473,10 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         setupPointPropertiesPanel(pointProperties);
         setupRenderPropertiesPanel(renderProperties);
         setupPdfPropertiesPanel(pdfProperties);
-        setupCameraPropertiesPanel(cameraProperties);
+        //setupCameraPropertiesPanel(cameraProperties);
         setupEvolvePropertiesPanel(evolveProperties);
 
         SpringLayout sideMenuLayout = new SpringLayout();
-        //sideMenu.setLayout(sideMenuLayout);
-
-        JSplitPane splitPaneBottom = new JSplitPane(JSplitPane.VERTICAL_SPLIT, cameraProperties, pdfProperties);
-        JSplitPane splitPaneTop = new JSplitPane(JSplitPane.VERTICAL_SPLIT, pointProperties, renderProperties);
-
-        JSplitPane splitPaneBig = new JSplitPane(JSplitPane.VERTICAL_SPLIT, splitPaneTop, splitPaneBottom);
-
-
-        splitPaneTop.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        splitPaneTop.setDividerLocation(200);
-
-        splitPaneBottom.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        splitPaneBottom.setDividerLocation(170);
-
-        splitPaneBig.setDividerLocation(640);
 
         MenuBar menuBar;
         Menu fileMenu, renderMenu, shapeMenu, guidesMenu, viewMenu;
@@ -562,9 +544,9 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 ySpinner.setValue(myIfsSys.theShape.selectedPt.y);
                 zSpinner.setValue(myIfsSys.theShape.selectedPt.z);
 
-                camPitchSpinner.setValue((int)myIfsSys.theVolume.camPitch + 180);
-                camRollSpinner.setValue((int)myIfsSys.theVolume.camRoll + 180);
-                camYawSpinner.setValue((int)myIfsSys.theVolume.camYaw + 180);
+                //camPitchSpinner.setValue((int)myIfsSys.theVolume.camPitch + 180);
+                //camRollSpinner.setValue((int)myIfsSys.theVolume.camRoll + 180);
+                //camYawSpinner.setValue((int)myIfsSys.theVolume.camYaw + 180);
                 camScaleSpinner.setValue((int)myIfsSys.theVolume.perspectiveScale);
 
                 scaleSpinner.setValue(myIfsSys.theShape.selectedPt.scale * 100);
@@ -587,12 +569,12 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 renderModeCombo.setSelectedIndex(myIfsSys.theVolume.renderMode == volume.RenderMode.PROJECT_ONLY ? 1 : 0);
                 //dotSizeSpinner.setValue(myIfsSys.rp.dotSize);
 
-                xMinSpinner.setValue(myIfsSys.rp.xMin);
-                xMaxSpinner.setValue(myIfsSys.rp.xMax);
-                yMinSpinner.setValue(myIfsSys.rp.yMin);
-                yMaxSpinner.setValue(myIfsSys.rp.yMax);
-                zMinSpinner.setValue(myIfsSys.rp.zMin);
-                zMaxSpinner.setValue(myIfsSys.rp.zMax);
+                //xMinSpinner.setValue(myIfsSys.rp.xMin);
+                //xMaxSpinner.setValue(myIfsSys.rp.xMax);
+                //yMinSpinner.setValue(myIfsSys.rp.yMin);
+                //yMaxSpinner.setValue(myIfsSys.rp.yMax);
+                //zMinSpinner.setValue(myIfsSys.rp.zMin);
+                //zMaxSpinner.setValue(myIfsSys.rp.zMax);
             }
         }
 

@@ -331,17 +331,7 @@ public class volume {
             totalSamples++;
 
             if(useZBuffer){
-                boolean res=false;
-
-                if(pt.z> rb.ZBuffer[(int) pt.x][(int) pt.y]){
-                    res=true;
-                    rb.ZBuffer[(int)pt.x][(int)pt.y] = noVolumetric ? 1 : pt.z;
-                    rb.RBuffer[(int)pt.x][(int)pt.y] = ptR*dark;
-                    rb.GBuffer[(int)pt.x][(int)pt.y] = ptG*dark;
-                    rb.BBuffer[(int)pt.x][(int)pt.y] = ptB*dark;
-                }
-
-                return res;
+                return rb.putPixel(pt.x, pt.y, noVolumetric ? 1 : pt.z, ptR, ptG, ptB, dark);
             }
         }
 

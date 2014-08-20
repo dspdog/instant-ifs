@@ -14,28 +14,41 @@ public class RenderBuffer {
 
     int width, height;
 
+    float maxColor = 0;
+
     public RenderBuffer(int w, int h){
         width=w; height=h;
-        ZBuffer = new float[width][height];
         RBuffer = new float[width][height];
         GBuffer = new float[width][height];
         BBuffer = new float[width][height];
+        clearZProjection();
         pixels = new int[width*height];
     }
 
-    public void clearProjections(){
-        /*for(int x=0; x<width; x++){
-            for(int y=0; y<height; y++){
-                ZBuffer[x][y]=0;
-                RBuffer[x][y]=0;
-                GBuffer[x][y]=0;
-                BBuffer[x][y]=0;
-            }
-        }*/
+    public void clearZProjection(){
         ZBuffer = new float[width][height];
-        RBuffer = new float[width][height];
-        GBuffer = new float[width][height];
-        BBuffer = new float[width][height];
+        maxColor=0;
+    }
+
+
+    public boolean putPixel(float x, float y, float z, float R, float G, float B, float dark){
+        /*
+                pixelsData[(int)(x) + (int)(y) * screenwidth]+=(1.0-decX)*(1.0-decY);
+                pixelsData[(int)(x+1) + (int)(y) * screenwidth]+=decX*(1.0-decY);
+                pixelsData[(int)(x) + (int)(y+1) * screenwidth]+=decY*(1.0-decX);
+                pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]+=decY*decX;
+
+         */
+
+        if(ZBuffer[(int)x][(int)y] < z){
+            RBuffer[(int)x][(int)y] = R*dark;
+            GBuffer[(int)x][(int)y] = G*dark;
+            BBuffer[(int)x][(int)y] = B*dark;
+            ZBuffer[(int)x][(int)y] = z;
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public void generatePixels(float brightness, boolean useShadows){

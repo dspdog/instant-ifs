@@ -130,10 +130,9 @@ public class ifsys extends JPanel
         is.theMenu = new ifsMenu(parentFrame, is);
 
         is.init();
-        setupMiniFrame(is.theMenu.evolveProperties, 200, 250,   is.rp.screenwidth-200, 450, "Evolution", "invader.png", desktop);
-        setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth-200,0, "Render", "gears.png", desktop);
-        setupMiniFrame(is.theMenu.cameraProperties, 200, 250,   is.rp.screenwidth,0, "Camera", "camera.png", desktop);
-        setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth,250, "PDF", "cloud.png", desktop);
+        setupMiniFrame(is.theMenu.evolveProperties, 200, 250,   is.rp.screenwidth-250, 650, "Evolution", "invader.png", desktop);
+        setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth,0, "Render", "camera.png", desktop);
+        setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth,700, "PDF", "cloud.png", desktop);
         setupMiniFrame(is.theMenu.pointProperties, 200, 250,    is.rp.screenwidth,450, "IFS Point", "anchors.png", desktop);
     }
 
@@ -327,7 +326,7 @@ public class ifsys extends JPanel
             resetBuckets();
             if(theVolume.changed)theVolume.clear();
             lastClearTime=System.currentTimeMillis();
-            renderBuffer.clearProjections();
+            renderBuffer.clearZProjection();
         }
     }
 
@@ -515,8 +514,16 @@ public class ifsys extends JPanel
                     xtra.y+=yDelta/100.0f;
                     theShape.selectedPt.rotationPitch = theShape.selectedPt.savedrotationpitch + xtra.y;
                     theShape.selectedPt.rotationYaw = theShape.selectedPt.savedrotationyaw + xtra.x;*/
-                    theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0f;
-                    theVolume.camYaw=theVolume.savedYaw - (mousePt.y-mouseStartDrag.y)/3.0f;
+
+                    if(shiftDown){
+                        theVolume.camRoll=theVolume.savedRoll - (mousePt.x-mouseStartDrag.x)/3.0f;
+
+                    }else{
+                        theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0f;
+                        theVolume.camYaw=theVolume.savedYaw - (mousePt.y-mouseStartDrag.y)/3.0f;
+
+                    }
+
                 }else if(altDown){
                     xtra.x+=xDelta/100.0f;
                     xtra.y+=yDelta/100.0f;
@@ -558,7 +565,7 @@ public class ifsys extends JPanel
             }
 
             theShape.updateRadiusDegrees();
-            theMenu.camPitchSpinner.setValue(theMenu.camPitchSpinner.getValue());
+            //theMenu.camPitchSpinner.setValue(theMenu.camPitchSpinner.getValue());
             clearframe();
             lastMoveTime = System.currentTimeMillis();
         }
