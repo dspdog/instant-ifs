@@ -114,8 +114,8 @@ public class ifsOverlays {
             yPts2[i] = 10*i/steps;
             zPts2[i] = (int)((Math.sin(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
 
-            ifsPt rotatedPt1 = new ifsPt(xPts1[i],yPts1[i],zPts1[i]).getRotatedPt(0, -pt.rotationYaw,0).add(pt);
-            ifsPt rotatedPt2 = new ifsPt(xPts2[i],yPts2[i],zPts2[i]).getRotatedPt(-pt.rotationPitch, -pt.rotationYaw,0).add(pt);
+            ifsPt rotatedPt1 = new ifsPt(xPts1[i],yPts1[i],zPts1[i]).getRotatedPt_Right(0, -pt.rotationYaw,0).add(pt);
+            ifsPt rotatedPt2 = new ifsPt(xPts2[i],yPts2[i],zPts2[i]).getRotatedPt_Right(-pt.rotationPitch, -pt.rotationYaw,0).add(pt);
 
             rotatedPt1 = myIfsSys.theVolume.getCameraDistortedPt(rotatedPt1);
             rotatedPt2 = myIfsSys.theVolume.getCameraDistortedPt(rotatedPt2);

@@ -5,15 +5,15 @@ package ifs.flat;
  */
 public class RenderBuffer {
 
-    public float ZBuffer[][];
-    public float RBuffer[][];
-    public float GBuffer[][];
-    public float BBuffer[][];
+    public float ZBuffer_Left[][];
+    public float RBuffer_Left[][];
+    public float GBuffer_Left[][];
+    public float BBuffer_Left[][];
 
-    public float ZBuffer2[][];
-    public float RBuffer2[][];
-    public float GBuffer2[][];
-    public float BBuffer2[][];
+    public float ZBuffer_Right[][];
+    public float RBuffer_Right[][];
+    public float GBuffer_Right[][];
+    public float BBuffer_Right[][];
 
     public int pixels[];
 
@@ -23,64 +23,51 @@ public class RenderBuffer {
 
     public RenderBuffer(int w, int h){
         width=w; height=h;
-        RBuffer = new float[width][height];
-        GBuffer = new float[width][height];
-        BBuffer = new float[width][height];
-        RBuffer2 = new float[width][height];
-        GBuffer2 = new float[width][height];
-        BBuffer2 = new float[width][height];
+        RBuffer_Left = new float[width][height];
+        GBuffer_Left = new float[width][height];
+        BBuffer_Left = new float[width][height];
+        RBuffer_Right = new float[width][height];
+        GBuffer_Right = new float[width][height];
+        BBuffer_Right = new float[width][height];
         clearZProjection();
         pixels = new int[width*height];
     }
 
     public void clearZProjection(){
-        ZBuffer = new float[width][height];
-        ZBuffer2 = new float[width][height];
+        ZBuffer_Left = new float[width][height];
+        ZBuffer_Right = new float[width][height];
         maxColor=0;
     }
 
 
-    public boolean putPixel(float x, float y, float z, float R, float G, float B, float dark, boolean altBuffer){
-        /*
-                pixelsData[(int)(x) + (int)(y) * screenwidth]+=(1.0-decX)*(1.0-decY);
-                pixelsData[(int)(x+1) + (int)(y) * screenwidth]+=decX*(1.0-decY);
-                pixelsData[(int)(x) + (int)(y+1) * screenwidth]+=decY*(1.0-decX);
-                pixelsData[(int)(x+1) + (int)(y+1) * screenwidth]+=decY*decX;
+    public boolean putPixel(float x, float y, float z, float R, float G, float B, float dark, boolean rightEye){
 
-         */
-        if(altBuffer){
-            if(ZBuffer2[(int)x][(int)y] < z){
-                RBuffer2[(int)x][(int)y] = R*dark;
-                GBuffer2[(int)x][(int)y] = G*dark;
-                BBuffer2[(int)x][(int)y] = B*dark;
-                ZBuffer2[(int)x][(int)y] = z;
-                return true;
-            }else{
-                return false;
-            }
+        float[][] theZBuffer = rightEye ? ZBuffer_Right : ZBuffer_Left;
+        float[][] theRBuffer = rightEye ? RBuffer_Right : RBuffer_Left;
+        float[][] theGBuffer = rightEye ? GBuffer_Right : GBuffer_Left;
+        float[][] theBBuffer = rightEye ? BBuffer_Right : BBuffer_Left;
+
+        if(theZBuffer[(int)x][(int)y] < z){
+            theRBuffer[(int)x][(int)y] = R*dark;
+            theGBuffer[(int)x][(int)y] = G*dark;
+            theBBuffer[(int)x][(int)y] = B*dark;
+            theZBuffer[(int)x][(int)y] = z;
+            return true;
         }else{
-            if(ZBuffer[(int)x][(int)y] < z){
-                RBuffer[(int)x][(int)y] = R*dark;
-                GBuffer[(int)x][(int)y] = G*dark;
-                BBuffer[(int)x][(int)y] = B*dark;
-                ZBuffer[(int)x][(int)y] = z;
-                return true;
-            }else{
-                return false;
-            }
+            return false;
         }
     }
 
-    public void generatePixels(float brightness, boolean useShadows, boolean altBuffer){
+    public void generatePixels(float brightness, boolean useShadows, boolean rightEye){
         int argb;
         float gradient=1f;
         float maxslope=0;
         float maxslope2=0;
 
-        float[][] theZBuffer = altBuffer ? ZBuffer2 : ZBuffer;
-        float[][] theRBuffer = altBuffer ? RBuffer2 : RBuffer;
-        float[][] theGBuffer = altBuffer ? GBuffer2 : GBuffer;
-        float[][] theBBuffer = altBuffer ? BBuffer2 : BBuffer;
+        float[][] theZBuffer = rightEye ? ZBuffer_Right : ZBuffer_Left;
+        float[][] theRBuffer = rightEye ? RBuffer_Right : RBuffer_Left;
+        float[][] theGBuffer = rightEye ? GBuffer_Right : GBuffer_Left;
+        float[][] theBBuffer = rightEye ? BBuffer_Right : BBuffer_Left;
 
         for(int x = 1; x < width-1; x++){
             for(int y=1; y<height-1; y++){

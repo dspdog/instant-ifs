@@ -210,7 +210,7 @@ public class volume {
         for(int iter=0; iter<iters; iter++){
             rpt = new ifsPt((sampleX-thePdf.center.x)*scale,
                     (sampleY-thePdf.center.y)*scale,
-                    (sampleZ-thePdf.center.z)*scale).getRotatedPt(-(float)pointDegreesPitch, -(float)pointDegreesYaw, -(float)pointDegreesRoll); //placed point
+                    (sampleZ-thePdf.center.z)*scale).getRotatedPt_Right(-(float) pointDegreesPitch, -(float) pointDegreesYaw, -(float) pointDegreesRoll); //placed point
 
             float r,g,b;
             float myDist = distance - rpt.magnitude() * factor;
@@ -257,14 +257,14 @@ public class volume {
         if(rightEye){
             pt = _pt
                     .subtract(camCenter)
-                    .getRotatedPt(camPitch / 180.0f * PFf, camYaw / 180.0f * PFf, camRoll / 180.0f * PFf)
+                    .getRotatedPt_Right(camPitch / 180.0f * PFf, camYaw / 180.0f * PFf, camRoll / 180.0f * PFf)
                     .scale(camScale)
                     .add(camCenter);
 
         }else{
             pt = _pt
                     .subtract(camCenter)
-                    .getRotatedPt2(camPitch / 180.0f * PFf, camYaw / 180.0f * PFf, camRoll / 180.0f * PFf)
+                    .getRotatedPt_Left(camPitch / 180.0f * PFf, camYaw / 180.0f * PFf, camRoll / 180.0f * PFf)
                     .scale(camScale)
                     .add(camCenter);
 
