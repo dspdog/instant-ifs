@@ -136,12 +136,12 @@ class ifsPt implements java.io.Serializable{
         return Math.sqrt((p.x-this.x) * (p.x-this.x) + (p.y-this.y) * (p.y-this.y) + (p.z-this.z) * (p.z-this.z));
     }
 
-    public ifsPt interpolateTo(ifsPt dest, float factor){
+    public ifsPt interpolateTo(ifsPt dest, float factor, float outerScale){
         //go from this to dest as factor goes from 0 to 1
         ifsPt res = this.add(dest.subtract(this).scale(factor));
 
         res.radius = this.radius + (dest.radius-this.radius)*factor;
-        res.scale = this.scale + (dest.scale-this.scale)*factor;
+        res.scale = this.scale + (dest.scale-this.scale)*factor + outerScale;// + (float)Math.cos(factor*10)/5;
 
         res.rotationPitch = this.rotationPitch + (dest.rotationPitch-this.rotationPitch)*factor;
         res.rotationYaw = this.rotationPitch + (dest.rotationPitch-this.rotationPitch)*factor;
@@ -155,7 +155,7 @@ class ifsPt implements java.io.Serializable{
     }
 
     public ifsPt getRotatedPt2(float pitch, float yaw, float roll){
-        return this.qRotate(ifsPt.X_UNIT, pitch).qRotate(ifsPt.Y_UNIT, yaw).qRotate(ifsPt.Z_UNIT,roll).qRotate(ifsPt.Y_UNIT, 0.3f);
+        return this.qRotate(ifsPt.X_UNIT, pitch).qRotate(ifsPt.Y_UNIT, yaw).qRotate(ifsPt.Z_UNIT,roll).qRotate(ifsPt.Y_UNIT, 0.1f);
     }
 
     public ifsPt getRotatedPt(ifsPt rpt){

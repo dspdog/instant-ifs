@@ -1,5 +1,6 @@
 package ifs;
 
+import ifs.flat.OneDBuffer;
 import ifs.flat.RenderBuffer;
 import ifs.utils.ImageUtils;
 import ifs.volumetric.*;
@@ -662,9 +663,13 @@ public class ifsys extends JPanel
             ctrlDown=false;
         if(e.getKeyCode()==KeyEvent.VK_SHIFT)
             shiftDown=false;
-
         if(e.getKeyChar() == 'p'){
             rp.usePDFSamples = !rp.usePDFSamples;
+            clearframe();
+        }
+
+        if(e.getKeyChar() == 'b'){
+            rp.odb = new OneDBuffer();
             clearframe();
         }
 

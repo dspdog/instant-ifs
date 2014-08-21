@@ -1,5 +1,7 @@
 package ifs;
 
+import ifs.flat.OneDBuffer;
+
 import java.awt.*;
 
 public class RenderParams implements java.io.Serializable {
@@ -55,7 +57,10 @@ public class RenderParams implements java.io.Serializable {
 
     float evolveIntensity;
 
+    OneDBuffer odb = new OneDBuffer();
+
     public RenderParams(){
+        odb = new OneDBuffer();
         rightEye=false;
         bgColor = new Color(0,112/2,184/2); //half darkened spanish blue
         scoreParams = new ScoreParams(ScoreParams.Presets.MIN_DistSurface);
