@@ -136,7 +136,7 @@ class ifsPt implements java.io.Serializable{
         return Math.sqrt((p.x-this.x) * (p.x-this.x) + (p.y-this.y) * (p.y-this.y) + (p.z-this.z) * (p.z-this.z));
     }
 
-    public ifsPt interpolateTo(ifsPt dest, float factor, float outerScale){
+    public ifsPt interpolateTo(ifsPt dest, float factor, float outerScale, float outerRotation){
         //go from this to dest as factor goes from 0 to 1
         ifsPt res = this.add(dest.subtract(this).scale(factor));
 
@@ -145,7 +145,7 @@ class ifsPt implements java.io.Serializable{
 
         res.rotationPitch = this.rotationPitch + (dest.rotationPitch-this.rotationPitch)*factor;
         res.rotationYaw = this.rotationPitch + (dest.rotationPitch-this.rotationPitch)*factor;
-        res.rotationRoll = this.rotationPitch + (dest.rotationPitch-this.rotationPitch)*factor;
+        res.rotationRoll = this.rotationPitch + (dest.rotationPitch-this.rotationPitch)*factor + outerRotation;
 
         return res;
     }

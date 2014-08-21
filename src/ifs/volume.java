@@ -175,8 +175,8 @@ public class volume {
         if(rp.smearPDF){
             float smearSubdivisions = (int)smearMag;
             factor = 1.0f-(float)((1.0/smearSubdivisions*((bucketVal+bucketId)%smearSubdivisions))+Math.random()/smearSubdivisions);
-            dpt = _dpt.interpolateTo(odpt, factor, rp.odb.valueAt(factor)/32);
-            thePt = _thePt.interpolateTo(theOldPt, factor, rp.odb.valueAt(factor)/32);
+            dpt = _dpt.interpolateTo(odpt, factor, rp.odb.valueAt(factor)/64, rp.odb2.valueAt(factor)/64);
+            thePt = _thePt.interpolateTo(theOldPt, factor, rp.odb.valueAt(factor)/64, rp.odb2.valueAt(factor)/64);
             if(odpt.x<1){dpt=_dpt;}//hack to prevent smearing from first pt
         }
 
@@ -331,7 +331,7 @@ public class volume {
             totalSamples++;
 
             if(useZBuffer){
-                return rb.putPixel(pt.x, pt.y, noVolumetric ? 1 : pt.z, ptR, ptG, ptB, dark);
+                return rb.putPixel(pt.x, pt.y, noVolumetric ? 1 : pt.z, ptR, ptG, ptB, dark, rp.rightEye);
             }
         }
 

@@ -316,7 +316,7 @@ public class ifsys extends JPanel
         boolean didProcess=false;
         if(!rp.renderThrottling || System.currentTimeMillis()-lastPostProcessTime>rp.postProcessPeriod){
             didProcess=true;
-            renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.useShadows);
+            renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.useShadows, rp.rightEye);
         }
 
         if(didProcess)lastPostProcessTime=System.currentTimeMillis();
@@ -531,9 +531,14 @@ public class ifsys extends JPanel
 
                     for(int i=1; i< theShape.pointsInUse; i++){
                         theVolume.changed=true;
-                        theShape.pts[i].rotationPitch = theShape.pts[i].savedrotationpitch + xtra.x;
-                        theShape.pts[i].rotationYaw = theShape.pts[i].savedrotationyaw + xtra.y;
-                        //theShape.pts[i].rotationRoll = theShape.pts[i].savedrotationroll + xtra.y;
+
+                        if(shiftDown){
+                            theShape.pts[i].rotationRoll = theShape.pts[i].savedrotationroll + xtra.x;
+                        }else{
+                            theShape.pts[i].rotationPitch = theShape.pts[i].savedrotationpitch + xtra.x;
+                            theShape.pts[i].rotationYaw = theShape.pts[i].savedrotationyaw + xtra.y;
+                        }
+
                     }
                 }else{
                     switch (selectedMovementAxis){
@@ -670,6 +675,7 @@ public class ifsys extends JPanel
 
         if(e.getKeyChar() == 'b'){
             rp.odb = new OneDBuffer();
+            rp.odb2 = new OneDBuffer();
             clearframe();
         }
 
@@ -751,7 +757,7 @@ public class ifsys extends JPanel
 
         if(e.getKeyChar() == ' '){
             rp.rightEye=!rp.rightEye;
-            clearframe();
+            //clearframe();
             gamefunc();
         }
 
