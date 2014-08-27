@@ -80,26 +80,31 @@ class ifsPt implements java.io.Serializable{
         x = _x; y = _y; z = _z;
     }
 
+    public ifsPt(float _x, float _y, float _z, float _pitch, float _yaw, float _roll){
+        x = _x; y = _y; z = _z;
+        rotationPitch = _pitch; rotationRoll = _roll; rotationYaw = _yaw;
+    }
+
     public ifsPt(double _x, double _y, double _z){
         x = (float)_x; y = (float)_y; z = (float)_z;
     }
 
-    public void perturb(float intensity, long seed){
+    public void perturb(ifsPt mutation, long seed){
         Random rnd = new Random();
         if(seed>=0){
             rnd.setSeed(seed);
         }
 
         //change all the properties slightly...
-        scale*=(1+rnd.nextGaussian());
+        scale*=(1+rnd.nextGaussian()*mutation.scale);
 
-        rotationPitch+=rnd.nextGaussian()*2*Math.PI;
-        rotationYaw+=rnd.nextGaussian()*2*Math.PI;
-        rotationRoll+=rnd.nextGaussian()*2*Math.PI;
+        rotationPitch+=rnd.nextGaussian()*mutation.rotationPitch/180*Math.PI;
+        rotationYaw+=rnd.nextGaussian()*mutation.rotationYaw/180*Math.PI;
+        rotationRoll+=rnd.nextGaussian()*mutation.rotationRoll/180*Math.PI;
 
-        x+=rnd.nextGaussian()*intensity*3;
-        y+=rnd.nextGaussian()*intensity*3;
-        z+=rnd.nextGaussian()*intensity*3;
+        x+=rnd.nextGaussian()*mutation.x;
+        y+=rnd.nextGaussian()*mutation.y;
+        z+=rnd.nextGaussian()*mutation.z;
     }
 
     public float magnitude(){

@@ -64,6 +64,8 @@ public class ifsys extends JPanel
     int mouseScroll;
     int rotateMode;
 
+    boolean evolutionDescSelected;
+
     ifsPt mousePt;
     ifsPt mouseStartDrag;
 
@@ -71,6 +73,7 @@ public class ifsys extends JPanel
     boolean isDragging;
 
     public ifsys(){
+        evolutionDescSelected=false;
         rp = new RenderParams();
         renderBuffer = new RenderBuffer(rp.screenwidth, rp.screenheight);
 
@@ -222,7 +225,7 @@ public class ifsys extends JPanel
 
     public class mainthread extends Thread{
         public void run(){
-            while(!quit) 
+            while(!quit)
                 try{
                     gamefunc();
                     sleep(1L);
@@ -362,7 +365,13 @@ public class ifsys extends JPanel
         }
     }
 
+    public void selectEvolutionDescriptorPt(){
+        evolutionDescSelected=true;
+    }
 
+    public void unselectEvolutionDescriptorPt(){
+        evolutionDescSelected=false;
+    }
 
     public void gamefunc(){
         rp.guidesHidden = System.currentTimeMillis() - lastMoveTime > rp.linesHideTime;
@@ -450,6 +459,7 @@ public class ifsys extends JPanel
         theVolume.saveCam();
         getMouseXYZ(e);
 
+        unselectEvolutionDescriptorPt();
         theShape.selectedNearestPt();
 
         if(e.getClickCount()==2){
@@ -638,6 +648,8 @@ public class ifsys extends JPanel
             ctrlDown=true;
         if(e.getKeyCode()==KeyEvent.VK_SHIFT)
             shiftDown=true;
+        if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
+            selectEvolutionDescriptorPt();
         theShape.updateCenter();
         //clearframe();
         gamefunc();

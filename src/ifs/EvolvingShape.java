@@ -14,6 +14,8 @@ public class EvolvingShape {
     long evolvePeriod;
     int evolvedSibs=0;
 
+    public ifsPt mutationDescriptorPt;
+
     boolean alwaysNewShape;
 
     final int sibsPerGen = 100;
@@ -32,13 +34,16 @@ public class EvolvingShape {
         evolvePeriod=20000;
         evolvedSibs=0;
         highestScoringShape = new ifsShape();
+
+        mutationDescriptorPt = new ifsPt(1,1,1, 1,1,1);
     }
 
     public void offSpring(ifsShape _baseShape, float intensity){
         boolean staySymmetric = false;
         evolvedSibs=0;
         baseShape=_baseShape;
-        shapeList = baseShape.getPerturbedVersions(sibsPerGen,intensity,  staySymmetric);
+
+        shapeList = baseShape.getPerturbedVersions(sibsPerGen, mutationDescriptorPt,  staySymmetric);
 
         familyHistory.add(shapeListCopy());
         System.out.println("Generation " + familyHistory.size() + " - " + shapeList.size() + " siblings");

@@ -106,16 +106,17 @@ class ifsShape implements java.io.Serializable {
         return loadedShape;
     }
 
-    public ArrayList<ifsShape> getPerturbedVersions(int total, float intensity, boolean staySymmetric){
+    public ArrayList<ifsShape> getPerturbedVersions(int total, ifsPt intensityDescriptor, boolean staySymmetric){
         ArrayList<ifsShape> _perturbedVersions;
+
         _perturbedVersions = new ArrayList<ifsShape>();
         for(int i=0; i<total; i++){
-            _perturbedVersions.add(this.getPerturbedShape(intensity, staySymmetric));
+            _perturbedVersions.add(this.getPerturbedShape(intensityDescriptor, staySymmetric));
         }
         return  _perturbedVersions;
     }
 
-    public ifsShape getPerturbedShape(float intensity, boolean staySymmetric){
+    public ifsShape getPerturbedShape(ifsPt intensityDescriptor, boolean staySymmetric){
         ifsShape pShape = new ifsShape();
         pShape.pointsInUse=this.pointsInUse;
         long seed = (long)(Math.random()*Long.MAX_VALUE);
@@ -123,9 +124,9 @@ class ifsShape implements java.io.Serializable {
         for(int i=0; i<pShape.pointsInUse; i++){
             pShape.pts[i] = new ifsPt(this.pts[i], true);
             if(staySymmetric){
-                pShape.pts[i].perturb(intensity, seed);
+                pShape.pts[i].perturb(intensityDescriptor, seed);
             }else{
-                pShape.pts[i].perturb(intensity, -1);
+                pShape.pts[i].perturb(intensityDescriptor, -1);
             }
         }
 
