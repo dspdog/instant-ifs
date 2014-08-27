@@ -72,6 +72,9 @@ public class ifsys extends JPanel
     boolean started;
     boolean isDragging;
 
+    MemoryImageSource renderImageSource;
+    Image misImage;
+
     public ifsys(){
         evolutionDescSelected=false;
         rp = new RenderParams();
@@ -79,6 +82,11 @@ public class ifsys extends JPanel
 
         System.out.println(numThreads + " threads");
 
+        renderImageSource = new MemoryImageSource(rp.screenwidth, rp.screenheight, renderBuffer.pixels, 0, rp.screenwidth);
+        renderImageSource.setAnimated(true);
+        renderImageSource.setFullBufferUpdates(true);
+
+        misImage = this.createImage(renderImageSource);
 
         threads = new mainthread[numThreads];
 
@@ -288,7 +296,8 @@ public class ifsys extends JPanel
             renderGraphics.setColor(rp.bgColor);
             renderGraphics.fillRect(0, 0, rp.screenwidth, rp.screenheight);
 
-            renderGraphics.drawImage(createImage(new MemoryImageSource(rp.screenwidth, rp.screenheight, renderBuffer.pixels, 0, rp.screenwidth)), 0, 0, rp.screenwidth, rp.screenheight, this);
+            renderImageSource.newPixels();
+            renderGraphics.drawImage(misImage, 0, 0, rp.screenwidth, rp.screenheight, this);
 
             renderGraphics.setColor(Color.blue);
 
