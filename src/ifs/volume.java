@@ -74,7 +74,7 @@ public class volume {
         theTriangles = new LinkedList<ifsTriangle>();
         myVolume=0;
         mySurfaceArea=0;
-        perspectiveScale=160f;
+        perspectiveScale=200f;
         startDate = Calendar.getInstance().getTime();
 
         width = w;

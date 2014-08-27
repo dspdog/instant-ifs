@@ -7,7 +7,11 @@ public class ScoreParams{
     float AvDS_Scale;
     float AvDV_Scale;
     float SV_Scale;
+    String presetName = "";
+    Presets myPreset;
+
     public ScoreParams(){
+        presetName = "custom"+System.currentTimeMillis();
         surfaceScale = 0;
         volumeScale = 0;
         avD_Scale = 0;
@@ -17,6 +21,7 @@ public class ScoreParams{
     }
 
     public ScoreParams(Presets preset){
+        myPreset = preset;
         surfaceScale = 0;
         volumeScale = 0;
         avD_Scale = 0;
@@ -43,6 +48,8 @@ public class ScoreParams{
                 SV_Scale = 1;
                 break;
         }
+
+        presetName = preset.toString();
     }
 
     enum Presets{

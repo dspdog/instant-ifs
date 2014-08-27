@@ -60,6 +60,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     JCheckBox smearCheck;
 
     JComboBox renderModeCombo;
+    JComboBox evolveModeCombo;
     JComboBox pdfModeCombo;
 
     WebTable evolutionTable;
@@ -307,6 +308,39 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         WebButtonGroup iconsGroup = new WebButtonGroup ( true, OffspingButton, ParentsButton, PrevSibButton, NextSibButton );
         ((WebButtonGroup)addLabeled(iconsGroup, layout, "", panel, true)).addComponentListener(null);
 
+        String[] modeStrings = {
+                ScoreParams.Presets.MAX_SURFACE.toString(),
+                ScoreParams.Presets.MAX_SurfaceVolume.toString(),
+                ScoreParams.Presets.MAX_TRAVEL.toString(),
+                ScoreParams.Presets.MAX_VOLUME.toString(),
+                ScoreParams.Presets.MIN_DistSurface.toString(),
+                ScoreParams.Presets.MIN_DistVolume.toString(),
+                "_CUSTOM"
+        };
+
+        evolveModeCombo = new JComboBox(modeStrings);
+        ((JLabel)addLabeled(new JLabel(), layout, "", panel, true)).addComponentListener(null);
+        ((JComboBox)addLabeled(evolveModeCombo, layout, "Score By", panel)).addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JComboBox cb = (JComboBox) e.getSource();
+                if (cb.getSelectedItem() == ScoreParams.Presets.MAX_SURFACE.toString()) {
+                    myIfsSys.rp.scoreParams = new ScoreParams(ScoreParams.Presets.MAX_SURFACE);
+                } else if (cb.getSelectedItem() == ScoreParams.Presets.MAX_SurfaceVolume.toString()) {
+                    myIfsSys.rp.scoreParams = new ScoreParams(ScoreParams.Presets.MAX_SurfaceVolume);
+                }else if (cb.getSelectedItem() == ScoreParams.Presets.MAX_TRAVEL.toString()) {
+                    myIfsSys.rp.scoreParams = new ScoreParams(ScoreParams.Presets.MAX_TRAVEL);
+                }else if (cb.getSelectedItem() == ScoreParams.Presets.MAX_VOLUME.toString()) {
+                    myIfsSys.rp.scoreParams = new ScoreParams(ScoreParams.Presets.MAX_VOLUME);
+                }else if (cb.getSelectedItem() == ScoreParams.Presets.MIN_DistSurface.toString()) {
+                    myIfsSys.rp.scoreParams = new ScoreParams(ScoreParams.Presets.MIN_DistSurface);
+                }else if (cb.getSelectedItem() == ScoreParams.Presets.MIN_DistVolume.toString()) {
+                    myIfsSys.rp.scoreParams = new ScoreParams(ScoreParams.Presets.MIN_DistVolume);
+                }
+
+                myIfsSys.eShape.myScoreParams = myIfsSys.rp.scoreParams;
+            }
+        });
+
         ((JLabel)addLabeled(new JLabel(), layout, "", panel)).addComponentListener(null);
         updateEvolutionTable();
 
@@ -314,7 +348,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         //evolutionTable.setAutoResizeMode(WebTable.AUTO_RESIZE_OFF);
         //evolutionTable.setRowSelectionAllowed(true);
         //evolutionTable.setColumnSelectionAllowed(true);
-        evolutionTable.setPreferredScrollableViewportSize(new Dimension(200, 100));
+        evolutionTable.setPreferredScrollableViewportSize(new Dimension(200, 150));
         evolutionTable.setAutoCreateRowSorter(true);
         evolutionTable.setAutoscrolls(true);
          ((WebScrollPane)addLabeled(new WebScrollPane ( evolutionTable ), layout, "", panel, true)).addComponentListener(new ComponentListener() {
@@ -343,8 +377,8 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     }
 
     public void updateEvolutionTable(){
-        String[] headers = { "Time", "Name", "Score"};
-        System.out.println("HISTORY"+myIfsSys.eShape.historyIndex);
+        String[] headers = { "Date", "Name", "Score", "Q", "Method"};
+        //System.out.println("HISTORY"+myIfsSys.eShape.historyIndex);
         evolutionTable = new WebTable (myIfsSys.eShape.evolutionHistory, headers );
         //evolutionTable.update(myIfsSys.renderGraphics);
         evolutionTable.scrollToRow(myIfsSys.eShape.historyIndex);
@@ -640,6 +674,37 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
             case MIN:
                 if(pdfModeCombo.getSelectedIndex()!=4)
                     pdfModeCombo.setSelectedIndex(4);
+                break;
+        }
+
+        switch (myIfsSys.eShape.myScoreParams.myPreset){
+            case MAX_SURFACE:
+                //if(evolveModeCombo.getSelectedIndex()!=0)
+                    evolveModeCombo.setSelectedIndex(0);
+                break;
+            case MAX_SurfaceVolume:
+                //if(evolveModeCombo.getSelectedIndex()!=1)
+                    evolveModeCombo.setSelectedIndex(1);
+                break;
+            case MAX_TRAVEL:
+                //if(evolveModeCombo.getSelectedIndex()!=2)
+                    evolveModeCombo.setSelectedIndex(2);
+                break;
+            case MAX_VOLUME:
+                //if(evolveModeCombo.getSelectedIndex()!=3)
+                    evolveModeCombo.setSelectedIndex(3);
+                break;
+            case MIN_DistSurface:
+                //if(evolveModeCombo.getSelectedIndex()!=4)
+                    evolveModeCombo.setSelectedIndex(4);
+                break;
+            case MIN_DistVolume:
+                //if(evolveModeCombo.getSelectedIndex()!=5)
+                    evolveModeCombo.setSelectedIndex(5);
+                break;
+            default:
+                //if(evolveModeCombo.getSelectedIndex()!=6)
+                    evolveModeCombo.setSelectedIndex(6);
                 break;
         }
 

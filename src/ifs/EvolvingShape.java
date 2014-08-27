@@ -28,11 +28,15 @@ public class EvolvingShape {
     public String evolutionHistory[][];
     public int historyIndex;
 
+    public ScoreParams myScoreParams;
 
     DecimalFormat gen_f = new DecimalFormat("00000");
     DecimalFormat sib_f = new DecimalFormat("00");
 
     public EvolvingShape(ifsShape _baseShape){
+
+        myScoreParams = new ScoreParams(ScoreParams.Presets.MAX_SURFACE);
+
         historyIndex=0;
         alwaysNewShape = true; //set to false to always spawn from the "record-holding" shape rather than just the best member of this generation
 
@@ -47,7 +51,7 @@ public class EvolvingShape {
 
         mutationDescriptorPt = new ifsPt(1,1,1, 1,1,1);
 
-        evolutionHistory = new String[1000][3];
+        evolutionHistory = new String[1000][5];
     }
 
     public void offSpring(ifsShape _baseShape, float intensity){
@@ -58,7 +62,7 @@ public class EvolvingShape {
         shapeList = baseShape.getPerturbedVersions(sibsPerGen, mutationDescriptorPt,  staySymmetric);
 
         familyHistory.add(shapeListCopy());
-        updateEvolutionHistory();
+        updateEvolutionHistory(myScoreParams);
         System.out.println("Generation " + familyHistory.size() + " - " + shapeList.size() + " siblings");
     }
 
@@ -68,7 +72,7 @@ public class EvolvingShape {
             baseShape=_baseShape;
             shapeList = familyHistory.get(familyHistory.size()-2);
             familyHistory.remove(familyHistory.size()-1);
-            updateEvolutionHistory();
+            updateEvolutionHistory(myScoreParams);
             System.out.println("Generation " + familyHistory.size() + " - " + shapeList.size() + " siblings");
         }
     }
@@ -95,7 +99,7 @@ public class EvolvingShape {
     public ifsShape prevShape(float score){
         shapeList.get(shapeIndex).score = score;
         shapeIndex--;shapeIndex=(shapeIndex+sibsPerGen)%sibsPerGen;
-        updateEvolutionHistory();
+        updateEvolutionHistory(myScoreParams);
         System.out.println("Generation " + familyHistory.size() + " - Sibling " +shapeIndex + "/" + shapeList.size());
         return shapeList.get(shapeIndex);
     }
@@ -103,14 +107,17 @@ public class EvolvingShape {
     public ifsShape nextShape(float score){
         shapeList.get(shapeIndex).score = score;
         shapeIndex++;shapeIndex=(shapeIndex+sibsPerGen)%sibsPerGen;
-        updateEvolutionHistory();
+        updateEvolutionHistory(myScoreParams);
         System.out.println("Generation " + familyHistory.size() + " - Sibling " +shapeIndex + "/" + shapeList.size());
         return shapeList.get(shapeIndex);
     }
 
-    public void updateEvolutionHistory(){
+    public void updateEvolutionHistory(ScoreParams sp){
         evolutionHistory[historyIndex][0]= new SimpleDateFormat("yyyy_MM_dd_HH:mm:ss").format(Calendar.getInstance().getTime());
         evolutionHistory[historyIndex][1]="G"+gen_f.format(familyHistory.size()) + "_S" + sib_f.format(shapeIndex);
+        evolutionHistory[historyIndex][2]="0";
+        evolutionHistory[historyIndex][3]="999";
+        evolutionHistory[historyIndex][4]=sp.presetName;
         historyIndex++;
         historyIndex = historyIndex % evolutionHistory.length;
     }
