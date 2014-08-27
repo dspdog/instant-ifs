@@ -127,17 +127,17 @@ public class ifsys extends JPanel
         //desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
         JFrame parentFrame = new JFrame();
         parentFrame.getContentPane().add(desktop, BorderLayout.CENTER);
-        parentFrame.setSize(is.rp.screenwidth+200+16, is.rp.screenheight);
+        parentFrame.setSize(is.rp.screenwidth+400+16, is.rp.screenheight);
         parentFrame.setVisible(true);
         parentFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         is.theMenu = new ifsMenu(parentFrame, is);
 
         is.init();
-        setupMiniFrame(is.theMenu.evolveProperties, 200, 250,   is.rp.screenwidth-250, 650, "Evolution", "invader.png", desktop);
-        setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth,0, "Render", "camera.png", desktop);
-        setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth,700, "PDF", "cloud.png", desktop);
-        setupMiniFrame(is.theMenu.pointProperties, 200, 250,    is.rp.screenwidth,450, "IFS Point", "anchors.png", desktop);
+        setupMiniFrame(is.theMenu.evolveProperties, 400, 250,   is.rp.screenwidth, 450, "Evolution", "invader.png", desktop);
+        setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth+200,0, "Render", "camera.png", desktop);
+        setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth,250, "PDF", "cloud.png", desktop);
+        setupMiniFrame(is.theMenu.pointProperties, 200, 250,    is.rp.screenwidth,0, "IFS Point", "anchors.png", desktop);
     }
 
     static void setupMiniFrame(JPanel panel, int width, int height, int x, int y, String title, String iconName, JDesktopPane desktop){
@@ -149,6 +149,7 @@ public class ifsys extends JPanel
         JInternalFrame theInternalFrame = new JInternalFrame(title, resizable, closeable, maximizable,
                 iconifiable);
         desktop.add(theInternalFrame);
+
         theInternalFrame.setSize(width, height);
         theInternalFrame.setLocation(x, y);
         theInternalFrame.setFrameIcon(new ImageIcon("./instant-ifs/icons/" + iconName));
@@ -791,20 +792,26 @@ public class ifsys extends JPanel
 
         if(e.getKeyChar() == 'w'){
             eShape.parents(theShape);
+            theMenu.updateEvolutionTable();
         }
 
         if(e.getKeyChar() == 'e'){
             eShape.offSpring(theShape, rp.evolveIntensity);
+            theMenu.updateEvolutionTable();
+            clearframe();
+            gamefunc();
         }
 
         if(e.getKeyChar() == 'z'){
             theShape=eShape.nextShape(0);
+            theMenu.updateEvolutionTable();
             clearframe();
             gamefunc();
         }
 
         if(e.getKeyChar() == 'x'){
             theShape=eShape.prevShape(0);
+            theMenu.updateEvolutionTable();
             clearframe();
             gamefunc();
         }

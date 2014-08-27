@@ -63,6 +63,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
     JComboBox pdfModeCombo;
 
     WebTable evolutionTable;
+
     WebGradientColorChooser colorChooser;
 
     JPanel pointProperties = new JPanel();
@@ -307,22 +308,50 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         ((WebButtonGroup)addLabeled(iconsGroup, layout, "", panel, true)).addComponentListener(null);
 
         ((JLabel)addLabeled(new JLabel(), layout, "", panel)).addComponentListener(null);
+        updateEvolutionTable();
 
-        String[] headers = { "Name", "Score"};
-        String[][] data =
-                { { "0-0", "0"}, { "0-0", "0"}  };
+        //evolutionTable.setEditable(false);
+        //evolutionTable.setAutoResizeMode(WebTable.AUTO_RESIZE_OFF);
+        //evolutionTable.setRowSelectionAllowed(true);
+        //evolutionTable.setColumnSelectionAllowed(true);
+        evolutionTable.setPreferredScrollableViewportSize(new Dimension(200, 100));
+        evolutionTable.setAutoCreateRowSorter(true);
+        evolutionTable.setAutoscrolls(true);
+         ((WebScrollPane)addLabeled(new WebScrollPane ( evolutionTable ), layout, "", panel, true)).addComponentListener(new ComponentListener() {
+             @Override
+             public void componentResized(ComponentEvent e) {
 
-        evolutionTable = new WebTable ( data, headers );
+             }
 
-        evolutionTable.setEditable(false);
-        evolutionTable.setAutoResizeMode(WebTable.AUTO_RESIZE_OFF);
-        evolutionTable.setRowSelectionAllowed(false);
-        evolutionTable.setColumnSelectionAllowed(true);
-        evolutionTable.setPreferredScrollableViewportSize ( new Dimension ( 200, 100 ) );
+             @Override
+             public void componentMoved(ComponentEvent e) {
 
-        ((WebScrollPane)addLabeled(new WebScrollPane ( evolutionTable ), layout, "", panel, true)).addComponentListener(null);
+             }
+
+             @Override
+             public void componentShown(ComponentEvent e) {
+
+             }
+
+             @Override
+             public void componentHidden(ComponentEvent e) {
+
+             }
+         });
 
         panel.addMouseMotionListener(this);
+    }
+
+    public void updateEvolutionTable(){
+        String[] headers = { "Time", "Name", "Score"};
+        System.out.println("HISTORY"+myIfsSys.eShape.historyIndex);
+        evolutionTable = new WebTable (myIfsSys.eShape.evolutionHistory, headers );
+        //evolutionTable.update(myIfsSys.renderGraphics);
+        evolutionTable.scrollToRow(myIfsSys.eShape.historyIndex);
+        evolveProperties.requestFocusInWindow();
+        myIfsSys.requestFocusInWindow();
+        myIfsSys.clearframe();
+        myIfsSys.gamefunc();
     }
 
     public void setupRenderPropertiesPanel(JPanel panel){
@@ -548,7 +577,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         ptLabel.setText(myIfsSys.theShape.pointSelected+"");
         if(inited && System.currentTimeMillis()-lastUiChange>100){
             if(myIfsSys.theShape.pointSelected !=-1){
-                ifsPt editPt = new ifsPt();
+                ifsPt editPt;
                 if(myIfsSys.evolutionDescSelected){
                     editPt = myIfsSys.eShape.mutationDescriptorPt;
                     ptLabel.setText("Mutation");
@@ -680,16 +709,16 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
 
         }else if(wb.getName()=="parents"){
             myIfsSys.eShape.parents(myIfsSys.theShape);
+            updateEvolutionTable();
         }else if(wb.getName()=="offspring"){
             myIfsSys.eShape.offSpring(myIfsSys.theShape, myIfsSys.rp.evolveIntensity);
+            updateEvolutionTable();
         }else if(wb.getName()=="prevsib"){
             myIfsSys.theShape=myIfsSys.eShape.prevShape(0);
-            myIfsSys.clearframe();
-            myIfsSys.gamefunc();
+            updateEvolutionTable();
         }else if(wb.getName()=="nextsib"){
             myIfsSys.theShape=myIfsSys.eShape.nextShape(0);
-            myIfsSys.clearframe();
-            myIfsSys.gamefunc();
+            updateEvolutionTable();
         }else if(mc.getActionCommand()=="Save Shape..."){
             pdfZImgFile = fc.showSaveDialog(this);
             if(pdfZImgFile == JFileChooser.APPROVE_OPTION){

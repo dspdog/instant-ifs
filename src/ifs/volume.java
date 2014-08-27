@@ -76,6 +76,7 @@ public class volume {
         mySurfaceArea=0;
         perspectiveScale=160f;
         startDate = Calendar.getInstance().getTime();
+
         width = w;
         height = h;
         depth = d;
