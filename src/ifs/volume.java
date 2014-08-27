@@ -66,8 +66,10 @@ public class volume {
 
     float minX, minY, minZ, maxX, maxY, maxZ;
     boolean changed;
+    boolean doneClearing = true;
 
     public volume(int w, int h, int d){
+        doneClearing=true;
         myVolumeOneSecondAgo=0;
         myVolumeChange = 0;
         changed=false;
@@ -125,12 +127,14 @@ public class volume {
     }
 
     public void clear(){
+        doneClearing=false;
         System.out.println("clear volume " + System.currentTimeMillis());
         accumilatedDistance = 0;
         averageDistanceSamples = 0;
 
         reset();
         changed=false;
+        doneClearing=true;
      }
 
     public void contributeToAverageDistance(double dist){
@@ -207,7 +211,7 @@ public class volume {
         pointDegreesPitch = thePt.rotationPitch +cumulativeRotationVector.y;
         pointDegreesRoll = thePt.rotationRoll +cumulativeRotationVector.z;
 
-        int iters=Math.min(1000000, thePdf.edgeValues);
+        int iters=Math.min(rp.dotsPerPDF, thePdf.edgeValues);
         for(int iter=0; iter<iters; iter++){
             rpt = new ifsPt((sampleX-thePdf.center.x)*scale,
                     (sampleY-thePdf.center.y)*scale,

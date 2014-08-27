@@ -112,7 +112,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 myIfsSys.rp.iterations = Integer.parseInt(iterationsSpinner.getValue().toString());
                 //myIfsSys.rp.dotSize = Integer.parseInt(dotSizeSpinner.getValue().toString());
                 myIfsSys.rp.brightnessMultiplier = Double.parseDouble(brightnessSpinner.getValue().toString());
-                myIfsSys.rp.samplesPerFrame = Double.parseDouble(samplesSpinner.getValue().toString());
+                myIfsSys.rp.samplesPerFrame = (int)Double.parseDouble(samplesSpinner.getValue().toString());
 
                 myIfsSys.theVolume.usePerspective = !perspectiveCheck.isSelected();
                 myIfsSys.rp.smearPDF = smearCheck.isSelected();

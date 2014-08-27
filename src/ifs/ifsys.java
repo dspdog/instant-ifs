@@ -214,7 +214,9 @@ public class ifsys extends JPanel
                             eShape.offSpring(eShape.getHighestScoreShape(), rp.evolveIntensity);
                         }
 
+                        theMenu.updateEvolutionTable();
                         clearframe();
+                        gamefunc();
                     }
                     sleep(eShape.evolvePeriod);
                 }
@@ -327,16 +329,13 @@ public class ifsys extends JPanel
     }
 
     public void clearframe(){
-        if(!rp.holdFrame && System.currentTimeMillis() - lastClearTime > 20){
+        if(!rp.holdFrame && System.currentTimeMillis() - lastClearTime > 10){
             resetBuckets();
-            if(theVolume.changed)theVolume.clear();
+            if(theVolume.changed && theVolume.doneClearing)theVolume.clear();
             lastClearTime=System.currentTimeMillis();
             renderBuffer.clearZProjection();
         }
     }
-
-
-
 
     public void resetBuckets(){
         buckets = new int[numBuckets];
@@ -837,10 +836,10 @@ public class ifsys extends JPanel
         if(e.getKeyChar() == 'q'){
             //rp.zMin = 512;rp.zMax=1024;
             //rp.drawGrid=false;
-            theShape.setToPreset(0);
-            //theShape.setToPreset(9);
+            //theShape.setToPreset(0);
+            theShape.setToPreset(9);
             theVolume.clear();
-            rp.iterations=8;
+            rp.iterations=3;
             rp.useShadows=true;
             rp.brightnessMultiplier=1;
             rp.smearPDF=true;

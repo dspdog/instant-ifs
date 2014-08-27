@@ -14,7 +14,7 @@ public class EvolvingShape {
     ifsShape baseShape;
     int shapeIndex;
     boolean evolving;
-    long evolvePeriod;
+    long evolvePeriod=20000;
     int evolvedSibs=0;
 
     public ifsPt mutationDescriptorPt;

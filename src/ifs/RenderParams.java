@@ -17,7 +17,7 @@ public class RenderParams implements java.io.Serializable {
     boolean infoHidden;
     boolean usePDFSamples;
     boolean guidesHidden;
-    double samplesPerFrame;
+    int samplesPerFrame;
     int iterations;
 
     double brightnessMultiplier;
@@ -55,12 +55,17 @@ public class RenderParams implements java.io.Serializable {
 
     ScoreParams scoreParams;
 
+    int dotsPerPDF;
+
     float evolveIntensity;
 
     OneDBuffer odb = new OneDBuffer();
     OneDBuffer odb2 = new OneDBuffer();
 
     public RenderParams(){
+
+        dotsPerPDF = 128;
+
         odb = new OneDBuffer();
         odb2 = new OneDBuffer();
         rightEye=false;
@@ -101,7 +106,7 @@ public class RenderParams implements java.io.Serializable {
         iterations = 1;
         brightnessMultiplier = 2;
         holdFrame=false;
-        samplesPerFrame = 1024;
+        samplesPerFrame = 104;
 
         usingGaussian =false;
         potentialRadius=0;

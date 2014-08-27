@@ -410,7 +410,7 @@ public class ifsOverlays {
             drawStringOverlay(rg, "Regions " + myIfsSys.theVolume.volume.getInitCount() + "/" + myIfsSys.theVolume.volume.totalRegions + " (" + (100 * myIfsSys.theVolume.volume.getInitCount() / myIfsSys.theVolume.volume.totalRegions) + "%)");
             drawStringOverlay(rg, " ");
             if(myIfsSys.eShape.evolving){
-                drawStringOverlay(rg, "Generation " + myIfsSys.eShape.familyHistory.size() + " Sibling " + (myIfsSys.eShape.evolvedSibs+1) + "/" + myIfsSys.eShape.shapeList.size());
+                drawStringOverlay(rg, "Generation " + myIfsSys.eShape.familyHistory.size() + " Sibling " + (myIfsSys.eShape.evolvedSibs) + "/" + myIfsSys.eShape.shapeList.size());
             }
         }
 
