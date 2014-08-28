@@ -26,7 +26,7 @@ public class ifsys extends JPanel
     static ImageUtils imageUtils = new ImageUtils();
 
     Image renderImage;
-    Graphics renderGraphics;
+    Graphics2D renderGraphics;
     long frameNo;
     long fps;
     long framesThisSecond;
@@ -257,7 +257,7 @@ public class ifsys extends JPanel
         addKeyListener(this);
 
         renderImage = createImage(rp.screenwidth, rp.screenheight);
-        renderGraphics = renderImage.getGraphics();
+        renderGraphics = (Graphics2D)renderImage.getGraphics();
         overlays = new ifsOverlays(this, renderGraphics);
 
         clearframe();
