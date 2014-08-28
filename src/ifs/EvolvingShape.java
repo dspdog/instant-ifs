@@ -32,9 +32,10 @@ public class EvolvingShape {
 
     DecimalFormat gen_f = new DecimalFormat("00000");
     DecimalFormat sib_f = new DecimalFormat("00");
+    ifsys myifsys;
 
-    public EvolvingShape(ifsShape _baseShape){
-
+    public EvolvingShape(ifsShape _baseShape, ifsys _myifsys){
+        myifsys = _myifsys;
         myScoreParams = new ScoreParams(ScoreParams.Presets.MAX_SURFACE);
 
         historyIndex=0;
@@ -115,8 +116,8 @@ public class EvolvingShape {
     public void updateEvolutionHistory(ScoreParams sp){
         evolutionHistory[historyIndex][0]= new SimpleDateFormat("yyyy_MM_dd_HH:mm:ss").format(Calendar.getInstance().getTime());
         evolutionHistory[historyIndex][1]="G"+gen_f.format(familyHistory.size()) + "_S" + sib_f.format(shapeIndex);
-        evolutionHistory[historyIndex][2]="0";
-        evolutionHistory[historyIndex][3]="999";
+        evolutionHistory[historyIndex][2]=Float.toString(myifsys.theVolume.getScore(sp));
+        evolutionHistory[historyIndex][3]=Long.toString(myifsys.theVolume.myVolumeChange);
         evolutionHistory[historyIndex][4]=sp.presetName;
         historyIndex++;
         historyIndex = historyIndex % evolutionHistory.length;

@@ -105,7 +105,7 @@ public class ifsys extends JPanel
 
         thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
 
-        eShape = new EvolvingShape(theShape);
+        eShape = new EvolvingShape(theShape, this);
 
         this.setSize(this.rp.screenwidth, this.rp.screenheight); // same size as defined in the HTML APPLET
     }
