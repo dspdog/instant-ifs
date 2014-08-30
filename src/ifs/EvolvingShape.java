@@ -14,14 +14,14 @@ public class EvolvingShape {
     ifsShape baseShape;
     int shapeIndex;
     boolean evolving;
-    long evolvePeriod=20000;
+    long evolvePeriod;
     int evolvedSibs=0;
 
     public ifsPt mutationDescriptorPt;
 
     boolean alwaysNewShape;
 
-    final int sibsPerGen = 100;
+    int sibsPerGen = 3;
 
     ifsShape highestScoringShape;
 
@@ -30,11 +30,14 @@ public class EvolvingShape {
 
     public ScoreParams myScoreParams;
 
-    DecimalFormat gen_f = new DecimalFormat("00000");
+    DecimalFormat gen_f = new DecimalFormat("000");
     DecimalFormat sib_f = new DecimalFormat("00");
     ifsys myifsys;
 
+    public boolean genRollOver;
+
     public EvolvingShape(ifsShape _baseShape, ifsys _myifsys){
+        genRollOver=false;
         myifsys = _myifsys;
         myScoreParams = new ScoreParams(ScoreParams.Presets.MAX_SURFACE);
 
@@ -46,7 +49,7 @@ public class EvolvingShape {
         baseShape=_baseShape;
         shapeIndex=0;
         evolving=false;
-        evolvePeriod=20000;
+        evolvePeriod=3000;
         evolvedSibs=0;
         highestScoringShape = new ifsShape();
 
@@ -87,6 +90,7 @@ public class EvolvingShape {
             highestScore =  highestScoringShape.score;
         }
 
+        if(shapeList.size()>0)
         for (int i = 0; i < evolvedSibs; i++) {
              if(shapeList.get(i).score>highestScore){
                  highestScoringShape = shapeList.get(i);
@@ -98,6 +102,7 @@ public class EvolvingShape {
     }
 
     public ifsShape prevShape(float score){
+        genRollOver=false;
         shapeList.get(shapeIndex).score = score;
         shapeIndex--;shapeIndex=(shapeIndex+sibsPerGen)%sibsPerGen;
         updateEvolutionHistory(myScoreParams);
@@ -107,6 +112,7 @@ public class EvolvingShape {
 
     public ifsShape nextShape(float score){
         shapeList.get(shapeIndex).score = score;
+        genRollOver = shapeIndex == sibsPerGen - 1;
         shapeIndex++;shapeIndex=(shapeIndex+sibsPerGen)%sibsPerGen;
         updateEvolutionHistory(myScoreParams);
         System.out.println("Generation " + familyHistory.size() + " - Sibling " +shapeIndex + "/" + shapeList.size());

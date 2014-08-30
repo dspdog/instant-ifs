@@ -95,7 +95,6 @@ public class RenderBuffer {
                     }
 
                     gradient = 1.0f-maxslope/255.0f;
-
                 }
 
                 if(theZBuffer[x][y]==0){

@@ -204,27 +204,33 @@ public class ifsys extends JPanel
             while(!quit)
                 try{
                     if(eShape.evolving){
+                        if(theVolume.myVolumeChange < 10000){
+                            if(theVolume.doneClearing){
+                                if(theShape.disqualified){
+                                    theShape.evolutionDisqualified = true;
+                                }else{
+                                    theShape.score = theVolume.getScore(rp.scoreParams);
+                                }
 
-                        if(theShape.disqualified){
-                            theShape.score = EvolvingShape.MINIMUM_SCORE;
-                        }else{
-                            theShape.score = theVolume.getScore(rp.scoreParams);
+                                float oldScore = theShape.score+0;
+                                eShape.evolvedSibs++;
+                                System.out.println("new sib! score " + oldScore + " - highscore " + eShape.getHighestScoreShape().score);
+
+                                theShape = eShape.nextShape(theShape.score);
+                                if(eShape.genRollOver){
+                                    System.out.println("new generation...");
+                                    imageUtils.saveImg(startTimeLog, rp.screenwidth, rp.screenheight, renderBuffer.pixels);
+                                    eShape.offSpring(eShape.getHighestScoreShape(), rp.evolveIntensity);
+                                }else{
+                                    theMenu.updateEvolutionTable();
+                                }
+
+                                clearframe();
+                                gamefunc();
+                                theVolume.clear();
+                                theVolume.myVolumeChange=9999999;
+                            }
                         }
-
-                        float oldScore = theShape.score+0;
-                        eShape.evolvedSibs++;
-                        System.out.println("score " + oldScore + " - highscore " + eShape.getHighestScoreShape().score);
-
-                        theShape = eShape.nextShape(theShape.score);
-                        if(eShape.shapeIndex==0){
-                            System.out.println("new generation...");
-                            imageUtils.saveImg(startTimeLog, rp.screenwidth, rp.screenheight, renderBuffer.pixels);
-                            eShape.offSpring(eShape.getHighestScoreShape(), rp.evolveIntensity);
-                        }
-
-                        theMenu.updateEvolutionTable();
-                        clearframe();
-                        gamefunc();
                     }
                     sleep(eShape.evolvePeriod);
                 }
@@ -848,12 +854,12 @@ public class ifsys extends JPanel
             //theShape.setToPreset(0);
             theShape.setToPreset(9);
             theVolume.clear();
-            rp.iterations=3;
+            rp.iterations=8;
             rp.useShadows=true;
             rp.brightnessMultiplier=1;
             rp.smearPDF=true;
             rp.renderThrottling=true;
-            rp.postProcessPeriod=1000;
+            rp.postProcessPeriod=500;
             rp.savingDots=true;
             rp.savedDots=0;
             theVolume.renderMode = volume.RenderMode.VOLUMETRIC;

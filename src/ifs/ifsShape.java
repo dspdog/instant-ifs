@@ -12,6 +12,7 @@ class ifsShape implements java.io.Serializable {
     public boolean autoUpdateCenterEnabled;
     public boolean stateSaved;
     public boolean autoScale;
+    public boolean evolutionDisqualified;
 
     public RenderParams rp;
 
@@ -23,6 +24,7 @@ class ifsShape implements java.io.Serializable {
     boolean disqualified;
 
     public ifsShape(){
+        evolutionDisqualified=false;
         disqualified=false;
         score=EvolvingShape.MINIMUM_SCORE;
         pointNearest =-1;

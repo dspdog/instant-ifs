@@ -11,7 +11,7 @@ public class OneDBuffer {
         init();
     }
 
-    public void init(){
+    public void init(){ //random brownian line
         int seed = -1;
         Random rnd = new Random();
         if(seed>=0){
