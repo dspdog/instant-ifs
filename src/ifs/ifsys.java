@@ -49,6 +49,7 @@ public class ifsys extends JPanel
     ifsOverlays overlays;
 
     static int numBuckets = 10_000_000;
+    static int numBucketsAnimated = 1_000_000;
     int[] buckets = new int[numBuckets]; //used for "load balancing" across the branches
 
     static ifsOverlays.DragAxis selectedMovementAxis = ifsOverlays.DragAxis.NONE;
@@ -109,6 +110,7 @@ public class ifsys extends JPanel
 
         eShape = new EvolvingShape(theShape, this);
         System.out.println("dubbuff?" + this.isDoubleBuffered());
+
         this.setDoubleBuffered(true);
         this.setSize(this.rp.screenwidth, this.rp.screenheight); // same size as defined in the HTML APPLET
     }
@@ -129,8 +131,8 @@ public class ifsys extends JPanel
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.setColor(rp.bgColor);
-                g.fillRect(0, 0, getWidth(), getHeight());
+                //g.setColor(rp.bgColor);
+                //g.fillRect(0, 0, getWidth(), getHeight());
             }
         };
 
@@ -219,8 +221,6 @@ public class ifsys extends JPanel
                             clearframe();
                             gamefunc();
                         }
-                        //repaint();
-                        //gamefunc();
                     }
 
                     sleep(1);
@@ -317,7 +317,7 @@ public class ifsys extends JPanel
     }
 
     public void paintComponent(Graphics g) {
-
+        super.paintComponent(g);
         theVolume.drawGrid(rp, renderBuffer);
         draw(g);
     }
@@ -388,7 +388,7 @@ public class ifsys extends JPanel
     }
 
     public void resetBuckets(){
-        buckets = new int[numBuckets];
+        buckets = new int[rp.shapeVibrating ? numBucketsAnimated : numBuckets];
     }
 
     public int smallestIndexAtThisNode(int node){
