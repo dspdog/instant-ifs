@@ -217,13 +217,23 @@ public class ifsys extends JPanel
                 try{
                     if(rp.shapeVibrating){
                         theShape = theShape.getPerturbedShape(eShape.mutationDescriptorPt, false);
+                        rp.odbScale.smooth();
+                        rp.odbRotationRoll.smooth();
+                        rp.odbX.smooth();
+                        rp.odbY.smooth();
+                        rp.odbZ.smooth();
+                        rp.odbScale.add(new OneDBuffer(), 30); //scale
+                        rp.odbRotationRoll.add(new OneDBuffer(), 20); //rotation
+                        rp.odbX.add(new OneDBuffer(), 20); //offsetX
+                        rp.odbY.add(new OneDBuffer(), 20); //offsetY
+                        rp.odbZ.add(new OneDBuffer(), 20); //offsetZ
                         if(theVolume.totalSamples>500000){
                             clearframe();
                             gamefunc();
                         }
                     }
 
-                    sleep(1);
+                    sleep(20);
                 }
                 catch(InterruptedException e) {
                     e.printStackTrace();
@@ -738,8 +748,11 @@ public class ifsys extends JPanel
         }
 
         if(e.getKeyChar() == 'b'){
-            rp.odb = new OneDBuffer();
-            rp.odb2 = new OneDBuffer();
+            rp.odbScale = new OneDBuffer();
+            rp.odbRotationRoll = new OneDBuffer();
+            rp.odbX = new OneDBuffer();
+            rp.odbY = new OneDBuffer();
+            rp.odbZ = new OneDBuffer();
             clearframe();
         }
 

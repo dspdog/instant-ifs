@@ -641,6 +641,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 frameHoldCheck.setSelected(myIfsSys.rp.holdFrame);
                 gridCheck.setSelected(myIfsSys.rp.drawGrid);
                 delayCheck.setSelected(myIfsSys.rp.renderThrottling);
+                cartoonCheck.setSelected(myIfsSys.rp.useShadows);
                 //System.out.println(renderModeCombo.setse);
                 renderModeCombo.setSelectedIndex(myIfsSys.theVolume.renderMode == volume.RenderMode.PROJECT_ONLY ? 1 : 0);
                 //dotSizeSpinner.setValue(myIfsSys.rp.dotSize);

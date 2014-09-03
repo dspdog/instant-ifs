@@ -37,7 +37,7 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
         volume = new float[width*height*depth];
         samplePixels = new int[width*height];
 
-        loadImgs3D("circle2.png", "flat2.png", "circle.png");
+        loadImgs3D("circle2.png", "circle2.png", "circle2.png");
         //loadImgs3D("g.png", "e.png", "b.png");
     }
 

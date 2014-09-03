@@ -177,12 +177,15 @@ public class volume {
         ifsPt dpt = _dpt;
         ifsPt thePt = _thePt;
         float factor = 1.0f;
+        ifsPt offset = new ifsPt(0,0,0);
         if(rp.smearPDF){
-            float smearSubdivisions = (int)smearMag;
+            float smearSubdivisions = smearMag;
             factor = 1.0f-(float)((1.0/smearSubdivisions*((bucketVal+bucketId)%smearSubdivisions))+Math.random()/smearSubdivisions);
-            dpt = _dpt.interpolateTo(odpt, factor, rp.odb.valueAt(factor)/256, rp.odb2.valueAt(factor)/(16));
-            thePt = _thePt.interpolateTo(theOldPt, factor, rp.odb.valueAt(factor)/256, rp.odb2.valueAt(factor)/(16));
+            dpt = _dpt.interpolateTo(odpt, factor, rp.odbScale.valueAt(factor)/256, rp.odbRotationRoll.valueAt(factor)/(16));
+            thePt = _thePt.interpolateTo(theOldPt, factor, rp.odbScale.valueAt(factor)/256, rp.odbRotationRoll.valueAt(factor)/(16));
             if(odpt.x<1){dpt=_dpt;}//hack to prevent smearing from first pt
+
+            offset = new ifsPt(rp.odbX.valueAt(factor),rp.odbY.valueAt(factor),rp.odbZ.valueAt(factor)).scale(10);
         }
 
         int duds = 0;
@@ -195,8 +198,6 @@ public class volume {
         double dx=Math.random()-0.5;
         double dy=Math.random()-0.5;
         double dz=Math.random()-0.5;
-
-        ifsPt offset = new ifsPt(300, 0, 0);
 
         seqIndex = (int)(Math.random()*(thePdf.edgeValues));
         sampleX = thePdf.edgePts[seqIndex].x+dx + offset.x;

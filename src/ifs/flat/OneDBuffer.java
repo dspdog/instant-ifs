@@ -23,12 +23,35 @@ public class OneDBuffer {
         }
 
         for(int i=1; i<vals.length; i++){ //skewing it so it ends up at zero
-            vals[i]=vals[i]-vals[vals.length-1]*i/vals.length;
+            //vals[i]=vals[i]-vals[vals.length-1]*i/vals.length;
 
             max = Math.max(Math.abs(vals[i]), max);
         }
 
-        System.out.println("1d inited w max " + max);
+        //System.out.println("1d inited w max " + max);
+    }
+
+    public void smooth(){
+
+        float[] vals2 = new float[1024];
+
+        for(int i=1; i<vals.length; i++){
+            vals2[i] = (vals[i]+vals[i-1])/2;
+        }
+
+        for(int i=0; i<vals.length; i++){
+            vals[i] = vals2[i];
+        }
+    }
+
+    public void add(OneDBuffer od, float scaleDown){
+        for(int i=0; i<vals.length; i++){
+            vals[i]+=od.vals[i]/scaleDown;
+        }
+
+        for(int i=1; i<vals.length; i++){ //skewing it so it ends up at zero
+           // vals[i]=vals[i]-vals[vals.length-1]*i/vals.length;
+        }
     }
 
     public float valueAt(float x){ //x = 0 to 1
