@@ -17,6 +17,7 @@ import java.util.Calendar;
 public class ifsys extends JPanel
     implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener, ActionListener, Serializable
 {
+    animationThread theAnimationThread;
     paintThread thePaintThread;
     mainthread[] threads;
     evolutionThread theEvolutionThread;
@@ -95,6 +96,7 @@ public class ifsys extends JPanel
         }
 
         thePaintThread = new paintThread();
+        theAnimationThread = new animationThread();
         theEvolutionThread = new evolutionThread();
 
         theShape = new ifsShape();
@@ -106,7 +108,8 @@ public class ifsys extends JPanel
         thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
 
         eShape = new EvolvingShape(theShape, this);
-
+        System.out.println("dubbuff?" + this.isDoubleBuffered());
+        this.setDoubleBuffered(true);
         this.setSize(this.rp.screenwidth, this.rp.screenheight); // same size as defined in the HTML APPLET
     }
 
@@ -184,10 +187,17 @@ public class ifsys extends JPanel
         public void run(){
             while(!quit)
                 try{
-                    if(theVolume.totalSamples>50000){
-                        theMenu.updateSideMenu();
-                        repaint();
-                    }
+
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(theVolume.totalSamples>50000){
+                                theMenu.updateSideMenu();
+                                repaint();
+                            }
+                        }
+                    });
+
                     sleep(1L);
                 }
                 catch(InterruptedException e) {
@@ -199,12 +209,37 @@ public class ifsys extends JPanel
         }
     }
 
+    public class animationThread extends Thread{
+        public void run(){
+            while(!quit)
+                try{
+                    if(rp.shapeVibrating){
+                        theShape = theShape.getPerturbedShape(eShape.mutationDescriptorPt, false);
+                        if(theVolume.totalSamples>500000){
+                            clearframe();
+                            gamefunc();
+                        }
+                        //repaint();
+                        //gamefunc();
+                    }
+
+                    sleep(1);
+                }
+                catch(InterruptedException e) {
+                    e.printStackTrace();
+                }
+        }
+
+        public animationThread(){
+        }
+    }
+
     public class evolutionThread extends  Thread{
         public void run(){
             while(!quit)
                 try{
                     if(eShape.evolving){
-                        if(theVolume.myVolumeChange < 10000){
+                        if(theVolume.myVolumeChange < 5000){
                             if(theVolume.doneClearing){
                                 if(theShape.disqualified){
                                     theShape.evolutionDisqualified = true;
@@ -278,9 +313,11 @@ public class ifsys extends JPanel
 
         thePaintThread.start();
         theEvolutionThread.start();
+        theAnimationThread.start();
     }
 
     public void paintComponent(Graphics g) {
+
         theVolume.drawGrid(rp, renderBuffer);
         draw(g);
     }
@@ -296,9 +333,12 @@ public class ifsys extends JPanel
             theVolume.myVolumeOneSecondAgo = theVolume.myVolume;
         }
 
-        generatePixels();
-
         try{ //TODO why does this err?
+
+
+            generatePixels();
+
+
             renderGraphics.setColor(rp.bgColor);
             renderGraphics.fillRect(0, 0, rp.screenwidth, rp.screenheight);
 
@@ -313,30 +353,24 @@ public class ifsys extends JPanel
                 overlays.drawBox(renderGraphics, theShape.pointNearest);
             }
 
-            if(!rp.infoHidden && theShape.pointNearest >=0){
+            //if(!rp.infoHidden && theShape.pointNearest >=0){
                 overlays.drawInfoBox(renderGraphics);
-            }
-
-            //if(lastMoveTime < theMenu.lastPdfPropertiesMouseMoved){
-            //    overlays.drawPDF(renderGraphics);
             //}
+
+
+            gr.drawImage(renderImage, 0, 0, rp.screenwidth, rp.screenheight, this);
+            lastRenderTime = System.currentTimeMillis();
 
         }catch (Exception e){
             e.printStackTrace();
         }
-
-
-
-        gr.drawImage(renderImage, 0, 0, rp.screenwidth, rp.screenheight, this);
-        lastRenderTime = System.currentTimeMillis();
     }
-
-
 
     public void generatePixels(){
         boolean didProcess=false;
         if(!rp.renderThrottling || System.currentTimeMillis()-lastPostProcessTime>rp.postProcessPeriod){
             didProcess=true;
+
             renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.useShadows, rp.rightEye);
         }
 
@@ -344,7 +378,8 @@ public class ifsys extends JPanel
     }
 
     public void clearframe(){
-        if(!rp.holdFrame && System.currentTimeMillis() - lastClearTime > 10){
+        long wait = rp.shapeVibrating ? 40 : 10;
+        if(!rp.holdFrame && System.currentTimeMillis() - lastClearTime > wait){
             resetBuckets();
             if(theVolume.changed && theVolume.doneClearing)theVolume.clear();
             lastClearTime=System.currentTimeMillis();
@@ -487,6 +522,8 @@ public class ifsys extends JPanel
 
         if(theShape.pointSelected>-1){
             overlays.updateDraggyArrows();
+        }else{
+            theShape.pointSelected=0;
         }
     }
 
@@ -713,6 +750,10 @@ public class ifsys extends JPanel
 
         if(e.getKeyChar() == 'l'){
             loadStuff("");
+        }
+
+        if(e.getKeyChar() == 'v'){
+            rp.shapeVibrating = !rp.shapeVibrating;
         }
 
       //  if(e.getKeyChar() == 's'){

@@ -27,8 +27,8 @@ class ifsShape implements java.io.Serializable {
         evolutionDisqualified=false;
         disqualified=false;
         score=EvolvingShape.MINIMUM_SCORE;
-        pointNearest =-1;
-        pointSelected =-1;
+        pointNearest =0;
+        pointSelected =0;
 
         autoUpdateCenterEnabled =false;
         stateSaved = false;
@@ -74,6 +74,8 @@ class ifsShape implements java.io.Serializable {
         for(int a=0; a< 1000; a++){
             pts[a] = new ifsPt();
         }
+        pointNearest=0;
+        selectedNearestPt();
     }
 
     public void saveToFile(String filename){

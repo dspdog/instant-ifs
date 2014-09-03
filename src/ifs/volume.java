@@ -180,8 +180,8 @@ public class volume {
         if(rp.smearPDF){
             float smearSubdivisions = (int)smearMag;
             factor = 1.0f-(float)((1.0/smearSubdivisions*((bucketVal+bucketId)%smearSubdivisions))+Math.random()/smearSubdivisions);
-            dpt = _dpt.interpolateTo(odpt, factor, rp.odb.valueAt(factor)/256, rp.odb2.valueAt(factor)/256);
-            thePt = _thePt.interpolateTo(theOldPt, factor, rp.odb.valueAt(factor)/256, rp.odb2.valueAt(factor)/245);
+            dpt = _dpt.interpolateTo(odpt, factor, rp.odb.valueAt(factor)/256, rp.odb2.valueAt(factor)/(16));
+            thePt = _thePt.interpolateTo(theOldPt, factor, rp.odb.valueAt(factor)/256, rp.odb2.valueAt(factor)/(16));
             if(odpt.x<1){dpt=_dpt;}//hack to prevent smearing from first pt
         }
 
@@ -196,10 +196,12 @@ public class volume {
         double dy=Math.random()-0.5;
         double dz=Math.random()-0.5;
 
+        ifsPt offset = new ifsPt(300, 0, 0);
+
         seqIndex = (int)(Math.random()*(thePdf.edgeValues));
-        sampleX = thePdf.edgePts[seqIndex].x+dx;
-        sampleY = thePdf.edgePts[seqIndex].y+dy;
-        sampleZ = thePdf.edgePts[seqIndex].z+dz;
+        sampleX = thePdf.edgePts[seqIndex].x+dx + offset.x;
+        sampleY = thePdf.edgePts[seqIndex].y+dy + offset.y;
+        sampleZ = thePdf.edgePts[seqIndex].z+dz + offset.z;
 
         if(this.renderMode == RenderMode.VOLUMETRIC){
             dx=0;dy=0;dz=0;
@@ -247,9 +249,9 @@ public class volume {
             }else{
                 duds++;
                 seqIndex = (int)(Math.random()*thePdf.edgeValues);
-                sampleX = thePdf.edgePts[seqIndex].x+dx;
-                sampleY = thePdf.edgePts[seqIndex].y+dy;
-                sampleZ = thePdf.edgePts[seqIndex].z+dz;
+                sampleX = thePdf.edgePts[seqIndex].x+dx + offset.x;
+                sampleY = thePdf.edgePts[seqIndex].y+dy + offset.y;
+                sampleZ = thePdf.edgePts[seqIndex].z+dz + offset.z;
             }
 
             if(duds>4 && this.renderMode != RenderMode.VOLUMETRIC){iter=iters;} //skips occluded pdfs unless in ifs.volume mode
@@ -636,12 +638,13 @@ public class volume {
             double xmax = 1024;
             double ymax = 1024;
             double gridspace = SubVolume.size;
-
+            int step = 4;
             rp.gridDrawTime = System.currentTimeMillis();
             int z = 0;
+            if(rp.shapeVibrating){gridspace*=4;step*=4;}
 
             for(int x=0; x<xmax/gridspace; x++){
-                for(int y=0; y<ymax; y+=4){
+                for(int y=0; y<ymax; y+=step){
                     this.putPixel(new ifsPt(
                             x * gridspace,
                             y,
