@@ -1,21 +1,26 @@
 package ifs.flat;
 
+import com.amd.aparapi.Kernel;
+import com.amd.aparapi.OpenCL;
+import com.amd.aparapi.Range;
+
 /**
  * Created by user on 8/11/14.
  */
 public class RenderBuffer {
 
     public float ZBuffer_Left[][];
-    public float RBuffer_Left[][];
-    public float GBuffer_Left[][];
-    public float BBuffer_Left[][];
-
     public float ZBuffer_Right[][];
-    public float RBuffer_Right[][];
-    public float GBuffer_Right[][];
-    public float BBuffer_Right[][];
 
-    public int pixels[];
+    public final float RBuffer_Left[][];
+    public final float GBuffer_Left[][];
+    public final float BBuffer_Left[][];
+
+    public final float RBuffer_Right[][];
+    public final float GBuffer_Right[][];
+    public final float BBuffer_Right[][];
+
+    public final int pixels[];
 
     int width, height;
 
@@ -30,6 +35,7 @@ public class RenderBuffer {
         GBuffer_Right = new float[width][height];
         BBuffer_Right = new float[width][height];
         clearZProjection();
+
         pixels = new int[width*height];
     }
 
@@ -109,5 +115,28 @@ public class RenderBuffer {
                 pixels[x+y*width] = argb;
             }
         }
+/*
+        final int WIDTH=128;
+        final int HEIGHT=64;
+        final int in[] = new int[WIDTH*HEIGHT];
+        final int out[] = new int[WIDTH*HEIGHT];
+        Kernel kernel = new Kernel(){
+            public void run(){
+                int x = getGlobalId(0);
+                int y = getGlobalId(1);
+                if (x>0 && x<(getGlobalSize(0)-1) && y>0 && y<(getGlobalSize(0)-1)){
+                    int sum = 0;
+                    for (int dx =-1; dx<2; dx++){
+                        for (int dy =-1; dy<2; dy++){
+                            sum+=in[(y+dy)*getGlobalSize(0)+(x+dx)];
+                        }
+                    }
+                    out[y*getGlobalSize(0)+x] = sum/9;
+                }
+            }
+
+        };
+        Range range = Range.create2D(WIDTH, HEIGHT);
+        kernel.execute(range);*/
     }
 }
