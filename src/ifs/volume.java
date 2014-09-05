@@ -638,11 +638,11 @@ public class volume {
         if(rp.drawGrid && System.currentTimeMillis() -  rp.gridDrawTime > rp.gridRedrawTime){
             double xmax = 1024;
             double ymax = 1024;
-            double gridspace = SubVolume.size*2;
-            int step = 4;
+            double gridspace = SubVolume.size*8;
+            int step = 8;
             rp.gridDrawTime = System.currentTimeMillis();
             int z = 0;
-            if(rp.shapeVibrating){gridspace*=4;step*=2;}
+            //if(rp.shapeVibrating){gridspace*=4;step*=2;}
 
             for(int x=0; x<xmax/gridspace; x++){
                 for(int y=0; y<ymax; y+=step){

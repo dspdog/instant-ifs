@@ -118,16 +118,11 @@ public class RenderParams implements java.io.Serializable {
         usingGaussian =false;
         potentialRadius=0;
 
-        renderThrottling=false;
-        postProcessPeriod=100;
+        renderThrottling=true;
+        postProcessPeriod=20;
     }
 
     public void limitParams(){
-        //if(brightnessMultiplier <-16){
-        //    brightnessMultiplier =-16;}
-        //if(brightnessMultiplier >16){
-        //    brightnessMultiplier =16;}
-
         if(samplesPerFrame <2){
             samplesPerFrame =2;}
         if(samplesPerFrame >1310720){

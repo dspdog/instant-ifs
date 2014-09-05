@@ -195,14 +195,14 @@ public class ifsys extends JPanel
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            if(theVolume.totalSamples>50000){
+                            //if(theVolume.totalSamples>50000){
                                 theMenu.updateSideMenu();
                                 repaint();
-                            }
+                            //}
                         }
                     });
 
-                    sleep(1L);
+                    sleep(41L);
                 }
                 catch(InterruptedException e) {
                     e.printStackTrace();
@@ -235,7 +235,7 @@ public class ifsys extends JPanel
                         }
                     }
 
-                    sleep(20);
+                    sleep(41);
                 }
                 catch(InterruptedException e) {
                     e.printStackTrace();
