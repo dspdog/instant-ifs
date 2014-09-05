@@ -3,9 +3,6 @@ package ifs.flat;
 import com.amd.aparapi.Kernel;
 import com.amd.aparapi.Range;
 
-/**
- * Created by user on 8/11/14.
- */
 public class RenderBuffer extends Kernel{
 
     public final float ZBuffer[];
@@ -14,6 +11,7 @@ public class RenderBuffer extends Kernel{
     public final float BBuffer[];
 
     boolean cartoon=false;
+    float brightness = 1.0f;
 
     public final int pixels[];
 
@@ -41,7 +39,6 @@ public class RenderBuffer extends Kernel{
         maxColor=0;
     }
 
-
     public boolean putPixel(float x, float y, float z, float R, float G, float B, float dark, boolean rightEye){
         if(ZBuffer[(int)x+(int)y*width] < z){
             ZBuffer[(int)x+(int)y*width] = R*dark;
@@ -54,8 +51,9 @@ public class RenderBuffer extends Kernel{
         }
     }
 
-    public void generatePixels(float brightness, boolean useShadows, boolean rightEye){
+    public void generatePixels(float _brightness, boolean useShadows, boolean rightEye){
         cartoon=useShadows;
+        brightness=_brightness;
         Range range = Range.create2D(width,height);
         this.setExecutionMode(Kernel.EXECUTION_MODE.GPU);
         this.execute(range);
@@ -68,7 +66,7 @@ public class RenderBuffer extends Kernel{
 
         if (x>0 && x<(getGlobalSize(0)-1) && y>0 && y<(getGlobalSize(1)-1)){
             float gradient=1.0f;
-            int brightness = 1;
+            int brightness=1;
 
             if(cartoon){
                 int central = (int) ZBuffer[x+y*width];

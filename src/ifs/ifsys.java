@@ -345,18 +345,16 @@ public class ifsys extends JPanel
             theVolume.myVolumeOneSecondAgo = theVolume.myVolume;
         }
 
-        try{ //TODO why does this err?
-
+        if(renderImage != null){
+            renderGraphics = (Graphics2D)renderImage.getGraphics();
 
             generatePixels();
-
 
             renderGraphics.setColor(rp.bgColor);
             renderGraphics.fillRect(0, 0, rp.screenwidth, rp.screenheight);
 
             renderImageSource.newPixels();
             renderGraphics.drawImage(misImage, 0, 0, rp.screenwidth, rp.screenheight, this);
-
             renderGraphics.setColor(Color.blue);
 
             if(!rp.guidesHidden){
@@ -366,15 +364,11 @@ public class ifsys extends JPanel
             }
 
             //if(!rp.infoHidden && theShape.pointNearest >=0){
-                overlays.drawInfoBox(renderGraphics);
+            overlays.drawInfoBox(renderGraphics);
             //}
-
 
             gr.drawImage(renderImage, 0, 0, rp.screenwidth, rp.screenheight, this);
             lastRenderTime = System.currentTimeMillis();
-
-        }catch (Exception e){
-            e.printStackTrace();
         }
     }
 
@@ -584,21 +578,13 @@ public class ifsys extends JPanel
                 ifsPt xtra = new ifsPt(0,0,0);
 
                 if(ctrlDown){
-                    /*theVolume.changed=true;
-                    xtra.x+=xDelta/100.0f;
-                    xtra.y+=yDelta/100.0f;
-                    theShape.selectedPt.rotationPitch = theShape.selectedPt.savedrotationpitch + xtra.y;
-                    theShape.selectedPt.rotationYaw = theShape.selectedPt.savedrotationyaw + xtra.x;*/
-
                     if(shiftDown){
                         theVolume.camRoll=theVolume.savedRoll - (mousePt.x-mouseStartDrag.x)/3.0f;
 
                     }else{
                         theVolume.camPitch=theVolume.savedPitch - (mousePt.x-mouseStartDrag.x)/3.0f;
                         theVolume.camYaw=theVolume.savedYaw - (mousePt.y-mouseStartDrag.y)/3.0f;
-
                     }
-
                 }else if(altDown){
                     xtra.x+=xDelta/100.0f;
                     xtra.y+=yDelta/100.0f;
