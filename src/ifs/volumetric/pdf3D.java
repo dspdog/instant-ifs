@@ -27,7 +27,7 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
     int samplePixelsY[];
     int samplePixelsZ[];
 
-    public comboMode thePdfComboMode = comboMode.ADD;
+    //public comboMode thePdfComboMode = comboMode.ADD;
 
     public pdf3D(){
         width = 512;
@@ -37,7 +37,7 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
         volume = new float[width*height*depth];
         samplePixels = new int[width*height];
 
-        loadImgs3D("circle2b.png", "circle2b.png", "circle2b.png");
+        loadImgs3D("circle2.png", "circle.png", "flat.png");
         //loadImgs3D("g.png", "e.png", "b.png");
     }
 
@@ -93,10 +93,10 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
         edgePts = new intPt[width*width*width];
 
         int edgeUnit = 1;
-
+        long time = System.currentTimeMillis();
         updateVolumePixels(edgeUnit);
 
-        System.out.println(edgeValues + " edges %" + (100.0* edgeValues /512/512/512));
+        System.out.println(edgeValues + " edges %" + (100.0* edgeValues /512/512/512) + " TIME " + (System.currentTimeMillis()-time)+"ms");
     }
 
     public boolean pointValid(int x, int y, int z){
@@ -123,53 +123,12 @@ public class pdf3D implements java.io.Serializable{ //3d probabilty density func
     }
 
     public void updateVolumePixels(int edgeUnit){
+        //System.out.println("updating...." + thePdfComboMode.toString());
         for(int y=sampleMin.y; y<sampleMax.y; y++){
             for(int x=sampleMin.x; x<sampleMax.x; x++){
                 for(int z=sampleMin.z; z<sampleMax.z; z++){
-                    switch(thePdfComboMode){
-                        case ADD:
-                            volume[x+y*width+z*width*height] = samplePixelsX[y+z*width]+
-                                    samplePixelsY[x+z*width]+
-                                    samplePixelsZ[x+y*width];
-                            break;
-                        case AVERAGE:
-                                        volume[x+y*width+z*width*height] = (samplePixelsX[y+z*width]+
-                                                samplePixelsY[x+z*width]+
-                                                samplePixelsZ[x+y*width])/3;
-                            break;
-                        case MULTIPLY:
-                            volume[x+y*width+z*width*height] = samplePixelsX[y+z*width]*
-                                    samplePixelsY[x+z*width]*
-                                    samplePixelsZ[x+y*width]/255/255;
-                            break;
-                        case MAX:
-                            volume[x+y*width+z*width*height] = Math.max(Math.max(samplePixelsX[y+z*width],
-                                    samplePixelsY[x+z*width]), samplePixelsZ[x+y*width]);
-                            break;
-                        case MIN:
-                            volume[x+y*width+z*width*height] = Math.min(Math.min(samplePixelsX[y + z * width],
-                                    samplePixelsY[x + z * width]), samplePixelsZ[x + y * width]);
-                            break;
-
-                    }
-
-                    /*
-                    if(Math.min(Math.min(
-                            samplePixelsX[y + z * width],
-                            samplePixelsY[x + z * width]),
-                            samplePixelsZ[x + y * width]) > 0){
-                        if(x<samplePixelsX[y + z * width]/255*(sampleMax.x-sampleMin.x)+sampleMin.x &&
-                           y<samplePixelsY[x + z * width]/255*(sampleMax.y-sampleMin.y)+sampleMin.y &&
-                           z<samplePixelsZ[x + y * width]/255*(sampleMax.z-sampleMin.z)+sampleMin.z){
-                            volume[x+y*width+z*width*height] = 255;
-                        }else{
-                            volume[x+y*width+z*width*height] = 0;
-                        }
-                    }else{
-                        volume[x+y*width+z*width*height] = 0;
-                    }
-                    */
-
+                    volume[x+y*width+z*width*height] = Math.min(Math.min(samplePixelsX[y + z * width],
+                            samplePixelsY[x + z * width]), samplePixelsZ[x + y * width]);
                     if(pointValid(x,y,z)){
                         if(isNearEdge(x,y,z, edgeUnit)){
                             edgePts[edgeValues]=new intPt(x,y,z);

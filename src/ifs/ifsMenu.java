@@ -242,7 +242,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
         layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
 
         final Component parent = this;
-
+/*
         ((JComboBox)addLabeled(pdfModeCombo, layout, "Mix", panel)).addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -265,7 +265,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 }
             }
         });
-
+*/
         ((JCheckBox)addLabeled(smearCheck, layout, "Smear PDF", panel)).addChangeListener(updateAndClear);
 
         WebButton XButton = new WebButton("", new ImageIcon("./instant-ifs/icons/front.png"));
@@ -654,7 +654,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 //zMaxSpinner.setValue(myIfsSys.rp.zMax);
             }
         }
-
+        /*
         switch (myIfsSys.thePdf.thePdfComboMode){
             case ADD:
                 if(pdfModeCombo.getSelectedIndex()!=0)
@@ -676,7 +676,7 @@ public class ifsMenu extends Component implements ItemListener, ChangeListener, 
                 if(pdfModeCombo.getSelectedIndex()!=4)
                     pdfModeCombo.setSelectedIndex(4);
                 break;
-        }
+        }*/
 
         switch (myIfsSys.eShape.myScoreParams.myPreset){
             case MAX_SURFACE:

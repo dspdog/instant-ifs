@@ -108,7 +108,7 @@ public class ifsys extends JPanel
         theVolume.clear();
         thePdf = new pdf3D();
 
-        thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
+        //thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
 
         eShape = new EvolvingShape(theShape, this);
         System.out.println("dubbuff?" + this.isDoubleBuffered());
