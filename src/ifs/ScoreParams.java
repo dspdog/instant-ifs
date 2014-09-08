@@ -1,6 +1,6 @@
 package ifs;
 
-public class ScoreParams{
+final class ScoreParams{
     float surfaceScale;
     float volumeScale;
     float avD_Scale;

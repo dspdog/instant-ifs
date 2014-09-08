@@ -4,7 +4,7 @@ import ifs.flat.OneDBuffer;
 
 import java.awt.*;
 
-public class RenderParams implements java.io.Serializable {
+final class RenderParams implements java.io.Serializable {
 
     int screenwidth;
     int screenheight;
@@ -81,7 +81,7 @@ public class RenderParams implements java.io.Serializable {
         odbX = new OneDBuffer();
         odbY = new OneDBuffer();
         odbZ = new OneDBuffer();
-        rightEye=false;
+        rightEye=true;
         bgColor = new Color(0,112/2,184/2); //half darkened spanish blue
         scoreParams = new ScoreParams(ScoreParams.Presets.MIN_DistSurface);
 

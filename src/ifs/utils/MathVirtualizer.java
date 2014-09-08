@@ -1,6 +1,6 @@
 package ifs.utils;
 
-public class MathVirtualizer {
+public final class MathVirtualizer {
 
     static boolean virtualized = false;
     static final int num_buckets = 512;

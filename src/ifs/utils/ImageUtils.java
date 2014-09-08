@@ -9,7 +9,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.text.DecimalFormat;
 
-public class ImageUtils extends Component {
+public final class ImageUtils extends Component {
     public void saveImg(String folder, int width, int height, int[] pixels){
         DecimalFormat df = new DecimalFormat("000000");
 

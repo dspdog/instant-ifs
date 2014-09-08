@@ -3,7 +3,7 @@ package ifs.flat;
 import com.amd.aparapi.Kernel;
 import com.amd.aparapi.Range;
 
-public class RenderBuffer extends Kernel{
+public final class RenderBuffer extends Kernel{
 
     public final float ZBuffer[];
     public final float RBuffer[];

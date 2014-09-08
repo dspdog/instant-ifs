@@ -3,7 +3,7 @@ package ifs;
 import java.awt.*;
 import java.text.DecimalFormat;
 
-public class ifsOverlays {
+final class ifsOverlays {
     ifsys myIfsSys;
     Graphics theGraphics;
     DragAxis selectedAxis;

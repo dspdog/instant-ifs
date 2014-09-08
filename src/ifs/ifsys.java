@@ -16,7 +16,7 @@ import java.util.Calendar;
 
 import com.amd.aparapi.Kernel;
 
-public class ifsys extends JPanel
+final class ifsys extends JPanel
     implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener, ActionListener, Serializable
 {
     animationThread theAnimationThread;
@@ -66,7 +66,6 @@ public class ifsys extends JPanel
     static boolean mousedown;
     static int mousex, mousey;
     int mouseScroll;
-    int rotateMode;
 
     boolean evolutionDescSelected;
 
@@ -195,10 +194,10 @@ public class ifsys extends JPanel
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            //if(theVolume.totalSamples>50000){
+                            if(theVolume.totalSamples>500000){
                                 theMenu.updateSideMenu();
                                 repaint();
-                            //}
+                            }
                         }
                     });
 
@@ -289,14 +288,15 @@ public class ifsys extends JPanel
 
     public class mainthread extends Thread{
         public void run(){
-            while(!quit)
-                try{
+            try{
+                while(!quit){
                     gamefunc();
                     sleep(1L);
                 }
-                catch(InterruptedException e) {
+            }catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
         }
 
         public mainthread(){
@@ -384,6 +384,8 @@ public class ifsys extends JPanel
     }
 
     public void clearframe(){
+        theVolume.totalSamples=0;
+        theVolume.drawTime = System.currentTimeMillis();
         long wait = rp.shapeVibrating ? 40 : 10;
         if(!rp.holdFrame && System.currentTimeMillis() - lastClearTime > wait){
             resetBuckets();
@@ -826,8 +828,9 @@ public class ifsys extends JPanel
 
         if(e.getKeyChar() == ' '){
             rp.rightEye=!rp.rightEye;
-            //clearframe();
+            clearframe();
             gamefunc();
+            System.out.println("right eye: " + rp.rightEye);
         }
 
         switch(e.getKeyChar()){
@@ -892,11 +895,15 @@ public class ifsys extends JPanel
 
         if(e.getKeyChar() == '2'){
             rp.twoD=!rp.twoD;
+            clearframe();
+            gamefunc();
             System.out.println("2d projections: " + rp.twoD);
         }
 
         if(e.getKeyChar() == '3'){
             rp.threeD=!rp.threeD;
+            clearframe();
+            gamefunc();
             System.out.println("3d projection: " + rp.threeD);
         }
 

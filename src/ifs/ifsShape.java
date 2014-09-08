@@ -3,7 +3,7 @@ package ifs;
 import java.io.*;
 import java.util.ArrayList;
 
-class ifsShape implements java.io.Serializable {
+final class ifsShape implements java.io.Serializable {
     public ifsPt pts[];
 
     public float unitScale;

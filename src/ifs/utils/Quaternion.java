@@ -10,7 +10,7 @@ package ifs.utils;
  *
  *************************************************************************/
 
-public class Quaternion {
+public final class Quaternion {
     public double w, x, y, z;
 
     // create a new object with the given components

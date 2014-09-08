@@ -14,7 +14,7 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 
-public class ifsMenu extends Component implements ItemListener, ChangeListener, ActionListener, MouseMotionListener {
+final class ifsMenu extends Component implements ItemListener, ChangeListener, ActionListener, MouseMotionListener {
 
     ifsys myIfsSys;
 

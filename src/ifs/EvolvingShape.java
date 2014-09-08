@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class EvolvingShape {
+final class EvolvingShape {
 
     static final float MINIMUM_SCORE = Float.MAX_VALUE*-1;
 

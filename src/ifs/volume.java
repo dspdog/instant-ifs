@@ -12,7 +12,7 @@ import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class volume {
+final class volume {
     public static enum RenderMode {
         VOLUMETRIC, PROJECT_ONLY
     }

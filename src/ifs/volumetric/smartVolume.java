@@ -1,6 +1,6 @@
 package ifs.volumetric;
 
-public class SmartVolume { //partitions the space into subVolumes but ignores empty space
+public final class SmartVolume { //partitions the space into subVolumes but ignores empty space
     int size;
     int subRes;
     int subResSq;

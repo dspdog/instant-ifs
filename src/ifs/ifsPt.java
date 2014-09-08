@@ -5,9 +5,9 @@ import ifs.utils.Quaternion;
 
 import java.util.Random;
 
-class ifsPt implements java.io.Serializable{
+final class ifsPt implements java.io.Serializable{
 
-    static MathVirtualizer mv = new MathVirtualizer();
+    final static MathVirtualizer mv = new MathVirtualizer();
 
     public float x, y, z;
     public float scale;

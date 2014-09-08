@@ -2,7 +2,7 @@ package ifs.flat;
 
 import java.util.Random;
 
-public class OneDBuffer {
+public final class OneDBuffer {
 
     float vals[];
 

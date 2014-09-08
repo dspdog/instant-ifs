@@ -6,7 +6,7 @@ import java.awt.image.PixelGrabber;
 import java.io.*;
 import java.net.URL;
 
-public class pdf3D implements java.io.Serializable{ //3d probabilty density function
+public final class pdf3D implements java.io.Serializable{ //3d probabilty density function
 
     int width, height, depth;
 

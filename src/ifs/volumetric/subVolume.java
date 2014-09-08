@@ -1,6 +1,6 @@
 package ifs.volumetric;
 
-public class SubVolume {
+public final class SubVolume {
     public static final int size = 16;
     public static final int sizeMask = 15;
     public static final int sizeLog2 = 4;
