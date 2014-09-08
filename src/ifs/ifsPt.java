@@ -89,6 +89,16 @@ final class ifsPt implements java.io.Serializable{
         x = (float)_x; y = (float)_y; z = (float)_z;
     }
 
+    public ifsPt intensify(float x){
+        ifsPt pt= new ifsPt(this, true);
+        pt.x*=x;pt.y*=x;pt.z*=x;
+        pt.scale*=x;
+        pt.rotationPitch*=x;
+        pt.rotationRoll*=x;
+        pt.rotationYaw*=x;
+        return pt;
+    }
+
     public void perturb(ifsPt mutation, long seed){
         Random rnd = new Random();
         if(seed>=0){

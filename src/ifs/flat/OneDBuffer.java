@@ -5,8 +5,10 @@ import java.util.Random;
 public final class OneDBuffer {
 
     float vals[];
+    float intensity;
 
     public OneDBuffer(){
+        intensity=1.0f;
         vals = new float[1024];
         init();
     }
@@ -17,18 +19,9 @@ public final class OneDBuffer {
         if(seed>=0){
             rnd.setSeed(seed);
         }
-        float max = 0;
         for(int i=1; i<vals.length; i++){
-            vals[i]=vals[i-1]+(float)rnd.nextGaussian();
+            vals[i]=vals[i-1]+(float)rnd.nextGaussian()*intensity;
         }
-
-        for(int i=1; i<vals.length; i++){ //skewing it so it ends up at zero
-            //vals[i]=vals[i]-vals[vals.length-1]*i/vals.length;
-
-            max = Math.max(Math.abs(vals[i]), max);
-        }
-
-        //System.out.println("1d inited w max " + max);
     }
 
     public void smooth(){
@@ -48,9 +41,11 @@ public final class OneDBuffer {
         for(int i=0; i<vals.length; i++){
             vals[i]+=od.vals[i]/scaleDown;
         }
+    }
 
+    public void deSkew(){
         for(int i=1; i<vals.length; i++){ //skewing it so it ends up at zero
-           // vals[i]=vals[i]-vals[vals.length-1]*i/vals.length;
+             vals[i]=vals[i]-vals[vals.length-1]*i/vals.length;
         }
     }
 

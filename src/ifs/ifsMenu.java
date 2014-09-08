@@ -47,6 +47,8 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     //JSlider camYawSpinner;
     //JSlider camRollSpinner;
     JSlider camScaleSpinner;
+    JSlider evolveIntensitySpinner;
+    JSlider evolveSpeedSpinner;
 
     JSpinner scaleSpinner;
 
@@ -134,6 +136,9 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 myIfsSys.theVolume.perspectiveScale = Math.max(0.1f, myIfsSys.theVolume.perspectiveScale);
 
                 myIfsSys.lastMoveTime = System.currentTimeMillis();
+
+                myIfsSys.rp.evolveIntensity = evolveIntensitySpinner.getValue();
+                myIfsSys.rp.evolveAnimationPeriod = evolveSpeedSpinner.getValue();
 
                 //myIfsSys.rp.xMin = Integer.parseInt(xMinSpinner.getValue().toString());
                 //myIfsSys.rp.xMax = Integer.parseInt(xMaxSpinner.getValue().toString());
@@ -340,6 +345,14 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 myIfsSys.eShape.myScoreParams = myIfsSys.rp.scoreParams;
             }
         });
+
+        evolveIntensitySpinner=new JSlider();
+        evolveIntensitySpinner.setMaximum(1000);
+        evolveSpeedSpinner=new JSlider();
+        evolveSpeedSpinner.setMaximum(1000);
+
+        ((JSlider)addLabeled(evolveIntensitySpinner, layout, "Intensity", panel)).addChangeListener(updateAndClear);
+        ((JSlider)addLabeled(evolveSpeedSpinner, layout, "Period", panel)).addChangeListener(updateAndClear);
 
         ((JLabel)addLabeled(new JLabel(), layout, "", panel)).addComponentListener(null);
         updateEvolutionTable();
@@ -630,6 +643,8 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 rollSpinner.setValue(editPt.rotationRoll/Math.PI*180);
 
                 camScaleSpinner.setValue((int)myIfsSys.theVolume.perspectiveScale);
+                evolveIntensitySpinner.setValue((int)myIfsSys.rp.evolveIntensity);
+                evolveSpeedSpinner.setValue((int)myIfsSys.rp.evolveAnimationPeriod);
 
                 brightnessSpinner.setValue(myIfsSys.rp.brightnessMultiplier);
                 samplesSpinner.setValue(myIfsSys.rp.samplesPerFrame);

@@ -215,7 +215,7 @@ final class ifsys extends JPanel
             while(!quit)
                 try{
                     if(rp.shapeVibrating){
-                        theShape = theShape.getPerturbedShape(eShape.mutationDescriptorPt, false);
+                        theShape = theShape.getPerturbedShape(eShape.mutationDescriptorPt.intensify(rp.evolveIntensity/100f), false);
                         rp.odbScale.smooth();
                         rp.odbRotationRoll.smooth();
                         rp.odbX.smooth();
@@ -234,7 +234,7 @@ final class ifsys extends JPanel
 
                     }
 
-                    sleep(41);
+                    sleep((long)rp.evolveAnimationPeriod);
                 }
                 catch(InterruptedException e) {
                     e.printStackTrace();
