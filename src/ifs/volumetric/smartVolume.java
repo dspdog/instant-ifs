@@ -9,28 +9,32 @@ public class SmartVolume { //partitions the space into subVolumes but ignores em
 
     private SubVolume[] data;
 
-    boolean inited = false;
-
     public SmartVolume(int _size){
         if(_size% SubVolume.size ==0){
             size=_size;
             subRes = size/ SubVolume.size;
             subResSq = subRes*subRes;
             subResCu = subRes*subRes*subRes;
-            reset();
+            firstTimeReset();
         }else{
             System.out.println("Volume size must be multiple of subvolume size!");
         }
     }
 
-    public void reset(){
+    public void firstTimeReset(){
         totalRegions=0;
-        if(!inited){
-            data = new SubVolume[subResCu];
-            inited=true;
-        }
+        data = new SubVolume[subResCu];
+
         for(int x=0; x<subResCu; x++){
             data[x] = new SubVolume();
+            totalRegions++;
+        }
+    }
+
+    public void reset(){
+        totalRegions=0;
+        for(int x=0; x<subResCu; x++){
+            if(data[x] != null && data[x].inited){data[x] = new SubVolume();}
             totalRegions++;
         }
     }
@@ -38,7 +42,7 @@ public class SmartVolume { //partitions the space into subVolumes but ignores em
     public int getInitCount(){
         int count = 0;
         for(int x=0; x<subResCu; x++){
-            if(data[x].inited)count++;
+            if(data[x] != null && data[x].inited)count++;
         }
         return count;
     }
