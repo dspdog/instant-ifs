@@ -5,19 +5,24 @@ import com.amd.aparapi.Range;
 
 public final class RenderBuffer extends Kernel{
 
+    public final long TBuffer[];
     public final float ZBuffer[];
     public final float RBuffer[];
     public final float GBuffer[];
     public final float BBuffer[];
 
-    boolean cartoon=false;
-    float brightness = 1.0f;
-
     public final int pixels[];
+
+    boolean cartoon=false;
+    boolean clearZBuffer;
+
+    float brightness = 1.0f;
 
     int width, height;
 
     float maxColor = 0;
+
+    private static long time = System.currentTimeMillis();
 
     public RenderBuffer(int w, int h){
         width=w; height=h;
@@ -26,25 +31,33 @@ public final class RenderBuffer extends Kernel{
         BBuffer = new float[width*height];
 
         ZBuffer = new float[width*height];
+        TBuffer = new long[width*height];
 
         clearZProjection();
         cartoon=false;
-        pixels = new int[width*height];
+        pixels=new int[width*height];
     }
 
     public void clearZProjection(){
-        for(int i=0; i<width*height; i++){
-            ZBuffer[i]=0;
-        }
         maxColor=0;
+        clearZBuffer = true; //request Z-buffer clear from GPU kernal
+    }
+
+    public void updateTime(){
+        time = System.currentTimeMillis();
     }
 
     public boolean putPixel(float x, float y, float z, float R, float G, float B, float dark, boolean rightEye){
+
+        x=Math.max((int)x, 0);
+        x=Math.min((int)x, width);
+
         if(ZBuffer[(int)x+(int)y*width] < z){
             ZBuffer[(int)x+(int)y*width] = R*dark;
             GBuffer[(int)x+(int)y*width] = G*dark;
             BBuffer[(int)x+(int)y*width] = B*dark;
             ZBuffer[(int)x+(int)y*width] = z;
+            TBuffer[(int)x+(int)y*width] = time;
             return true;
         }else{
             return false;
@@ -57,6 +70,7 @@ public final class RenderBuffer extends Kernel{
         Range range = Range.create2D(width,height);
         this.setExecutionMode(Kernel.EXECUTION_MODE.GPU);
         this.execute(range);
+        clearZBuffer=false; //de-request z-buffer clear
     }
 
     @Override
@@ -64,28 +78,29 @@ public final class RenderBuffer extends Kernel{
         int x = getGlobalId(0);
         int y = getGlobalId(1);
 
-        if (x>0 && x<(getGlobalSize(0)-1) && y>0 && y<(getGlobalSize(1)-1)){
+        if (x>0 && x<(width-1) && y>0 && y<(height-1)){
             float gradient=1.0f;
             int brightness=1;
 
             if(cartoon){
                 int central = (int) ZBuffer[x+y*width];
                 int maxslope1 = max(max((int) ZBuffer[(x - 1) + (y) * width] - central, (int) ZBuffer[(x + 1) + (y) * width] - central),
-                        max((int) ZBuffer[(x) + (y - 1) * width] - central, (int) ZBuffer[(x) + (y + 1) * width] - central));
+                                max((int) ZBuffer[(x) + (y - 1) * width] - central, (int) ZBuffer[(x) + (y + 1) * width] - central));
                 int maxslope2 = max(max((int) ZBuffer[(x - 1) + (y - 1) * width] - central, (int) ZBuffer[(x + 1) + (y + 1) * width] - central),
-                        max((int) ZBuffer[(x - 1) + (y + 1) * width] - central, (int) ZBuffer[(x + 1) + (y - 1) * width] - central));
+                                max((int) ZBuffer[(x - 1) + (y + 1) * width] - central, (int) ZBuffer[(x + 1) + (y - 1) * width] - central));
                 int maxslope = max(maxslope2, maxslope1);
 
                 if(maxslope>1){
                     maxslope=255;
                     if(ZBuffer[x+y*width]==0){
-                        ZBuffer[x+y*width]=1;}//outside edges
+                        ZBuffer[x+y*width]=1;//outside edges
+                    }
                 }
                 gradient = 1.0f-maxslope/255.0f;
             }
 
             int _argb = 255;
-            if(ZBuffer[x+y*width]==0){
+            if(ZBuffer[x+y*width]==0){ //leaves empty pixels transparent
                 _argb=0;
             }else{
                 _argb = (_argb << 8) + (int)(RBuffer[x+y*width]*brightness*gradient);
@@ -93,7 +108,14 @@ public final class RenderBuffer extends Kernel{
                 _argb = (_argb << 8) + (int)(BBuffer[x+y*width]*brightness*gradient);
             }
 
-            pixels[x+y*getGlobalSize(0)] = _argb;
+            pixels[x+y*width] = _argb;
+
+            if(clearZBuffer){
+                if(time - TBuffer[x+y*width] > 100){
+                    ZBuffer[x+y*width]=0;
+                }
+
+            }
         }
     }
 

@@ -189,6 +189,8 @@ final class ifsys extends JPanel
             while(!quit)
                 try{
 
+                    renderBuffer.updateTime();
+
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
