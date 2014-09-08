@@ -116,7 +116,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
                 myIfsSys.theVolume.usePerspective = !perspectiveCheck.isSelected();
                 myIfsSys.rp.smearPDF = smearCheck.isSelected();
-                myIfsSys.rp.postProcessPeriod = Long.parseLong(delaySpinner.getValue().toString());
+                myIfsSys.rp.minimumSamples = Long.parseLong(delaySpinner.getValue().toString());
                 myIfsSys.rp.renderThrottling = delayCheck.isSelected();
 
                 myIfsSys.rp.holdFrame = frameHoldCheck.isSelected();
@@ -266,7 +266,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
             }
         });
 */
-        ((JCheckBox)addLabeled(smearCheck, layout, "Smear PDF", panel)).addChangeListener(updateAndClear);
+        ((JCheckBox)addLabeled(smearCheck, layout, "Smear", panel)).addChangeListener(updateAndClear);
 
         WebButton XButton = new WebButton("", new ImageIcon("./instant-ifs/icons/front.png"));
         WebButton ZButton = new WebButton("", new ImageIcon("./instant-ifs/icons/side.png"));
@@ -440,8 +440,8 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         ((JCheckBox)addLabeled(gridCheck, layout, "Grid", panel)).addChangeListener(updateAndClear);
         ((JCheckBox)addLabeled(frameHoldCheck, layout, "Hold Frame", panel)).addChangeListener(updateNoClear);
 
-        ((JCheckBox)addLabeled(delayCheck, layout, "Framelimit", panel)).addChangeListener(updateNoClear);
-        ((JSpinner)addLabeled(delaySpinner, layout, "Wait X ms", panel)).addChangeListener(updateNoClear);
+        ((JCheckBox)addLabeled(delayCheck, layout, "Throttle", panel)).addChangeListener(updateNoClear);
+        ((JSpinner)addLabeled(delaySpinner, layout, "Min. KDots", panel)).addChangeListener(updateNoClear);
         //((JSpinner)addLabeled(dotSizeSpinner, layout, "Dot Size", panel)).addChangeListener(updateNoClear);
 
         //xMaxSpinner=new JSpinner();
@@ -579,7 +579,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
             autoScaleButton.addItemListener(this);
             shapeMenu.add(autoScaleButton);
 
-            CheckboxMenuItem imgButton = new CheckboxMenuItem("PDF Samples"); //img samples toggle
+            CheckboxMenuItem imgButton = new CheckboxMenuItem("Kernal Samples"); //img samples toggle
             imgButton.setState(is.rp.usePDFSamples);
             imgButton.addItemListener(this);
             shapeMenu.add(imgButton);
@@ -635,7 +635,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 samplesSpinner.setValue(myIfsSys.rp.samplesPerFrame);
                 iterationsSpinner.setValue(myIfsSys.rp.iterations);
                 potentialSpinner.setValue(myIfsSys.rp.potentialRadius);
-                delaySpinner.setValue(myIfsSys.rp.postProcessPeriod);
+                delaySpinner.setValue(myIfsSys.rp.minimumSamples);
 
                 perspectiveCheck.setSelected(!myIfsSys.theVolume.usePerspective);
                 frameHoldCheck.setSelected(myIfsSys.rp.holdFrame);
@@ -725,7 +725,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
             if(e.getItem()=="AutoScale Points"){
                 myIfsSys.theShape.autoScale = e.getStateChange()==1;
             }
-            if(e.getItem()=="PDF Samples"){
+            if(e.getItem()=="Kernal Samples"){
                 myIfsSys.rp.usePDFSamples = e.getStateChange()==1;
             }
     }

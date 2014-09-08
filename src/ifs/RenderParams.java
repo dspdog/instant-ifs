@@ -33,7 +33,7 @@ final class RenderParams implements java.io.Serializable {
     int potentialRadius;
 
     boolean renderThrottling;
-    long postProcessPeriod;
+    long minimumSamples;
 
     boolean smearPDF;
 
@@ -125,7 +125,7 @@ final class RenderParams implements java.io.Serializable {
         potentialRadius=0;
 
         renderThrottling=true;
-        postProcessPeriod=20;
+        minimumSamples =20;
     }
 
     public void limitParams(){

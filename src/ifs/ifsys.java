@@ -14,8 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import com.amd.aparapi.Kernel;
-
 final class ifsys extends JPanel
     implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener, ActionListener, Serializable
 {
@@ -150,7 +148,7 @@ final class ifsys extends JPanel
         is.init();
         setupMiniFrame(is.theMenu.evolveProperties, 400, 350,   is.rp.screenwidth, 450, "Evolution", "invader.png", desktop);
         setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth+200,0, "Render", "camera.png", desktop);
-        setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth,250, "PDF", "cloud.png", desktop);
+        setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth,250, "Kernal", "cloud.png", desktop);
         setupMiniFrame(is.theMenu.pointProperties, 200, 250,    is.rp.screenwidth,0, "IFS Point", "anchors.png", desktop);
     }
 
@@ -228,10 +226,12 @@ final class ifsys extends JPanel
                         rp.odbX.add(new OneDBuffer(), 20); //offsetX
                         rp.odbY.add(new OneDBuffer(), 20); //offsetY
                         rp.odbZ.add(new OneDBuffer(), 20); //offsetZ
-                        if(theVolume.totalSamples>500000){
+                        if(!rp.renderThrottling || theVolume.totalSamples>rp.minimumSamples*1000){
                             clearframe();
                             gamefunc();
                         }
+
+
                     }
 
                     sleep(41);
@@ -374,9 +374,8 @@ final class ifsys extends JPanel
 
     public void generatePixels(){
         boolean didProcess=false;
-        if(!rp.renderThrottling || System.currentTimeMillis()-lastPostProcessTime>rp.postProcessPeriod){
+        if(!rp.renderThrottling || theVolume.totalSamples>rp.minimumSamples*1000){
             didProcess=true;
-
             renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.useShadows, rp.rightEye);
         }
 
@@ -918,7 +917,7 @@ final class ifsys extends JPanel
             rp.brightnessMultiplier=1;
             rp.smearPDF=true;
             rp.renderThrottling=true;
-            rp.postProcessPeriod=500;
+            rp.minimumSamples =500;
             rp.savingDots=true;
             rp.savedDots=0;
             theVolume.renderMode = volume.RenderMode.VOLUMETRIC;
