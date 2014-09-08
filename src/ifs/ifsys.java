@@ -890,6 +890,16 @@ public class ifsys extends JPanel
             System.out.println("render mode: " + theVolume.renderMode);
         }
 
+        if(e.getKeyChar() == '2'){
+            rp.twoD=!rp.twoD;
+            System.out.println("2d projections: " + rp.twoD);
+        }
+
+        if(e.getKeyChar() == '3'){
+            rp.threeD=!rp.threeD;
+            System.out.println("3d projection: " + rp.threeD);
+        }
+
         if(e.getKeyChar() == 'q'){
             //rp.zMin = 512;rp.zMax=1024;
             //rp.drawGrid=false;

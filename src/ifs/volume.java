@@ -295,11 +295,20 @@ public class volume {
     }
 
     public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, RenderBuffer rb){
-        return old_putPixel(_pt,ptR, ptG, ptB, rp, useCrop, noDark, false, rb);
+        if(rp.twoD){ //projections on XYZ planes
+            float darken = rp.twoD && rp.threeD ? 0.1f : 1.0f;
+            return private_putPixel(new ifsPt(_pt.x, _pt.y, 0), ptR*darken, ptG*darken, ptB*darken, rp, useCrop, noDark, false, rb) ||
+                   private_putPixel(new ifsPt(0, _pt.y, _pt.z), ptR*darken, ptG*darken, ptB*darken, rp, useCrop, noDark, false, rb) ||
+                   private_putPixel(new ifsPt(_pt.x, 0, _pt.z), ptR*darken, ptG*darken, ptB*darken, rp, useCrop, noDark, false, rb) ||
+                   (rp.threeD && private_putPixel(_pt, ptR, ptG, ptB, rp, useCrop, noDark, false, rb)); //normal 3d projection
+        }else{
+            return rp.threeD && private_putPixel(_pt, ptR, ptG, ptB, rp, useCrop, noDark, false, rb);
+        }
     }
 
-    public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric, RenderBuffer rb){
-        return old_putPixel(_pt, ptR, ptG, ptB, rp, useCrop, noDark, noVolumetric, rb);
+    public boolean putGridPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric, RenderBuffer rb){
+        //ignores cartoon mode etc
+        return private_putPixel(_pt, ptR, ptG, ptB, rp, useCrop, noDark, noVolumetric, rb);
     }
     public void putDataUpdateSurfaceVolume(ifsPt _pt){
         if(volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z, 1)==1){//if its the first point there
@@ -322,7 +331,7 @@ public class volume {
         if(pt.z>maxZ){maxZ=pt.z;}
     }
 
-    public boolean old_putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric, RenderBuffer rb){
+    private boolean private_putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric, RenderBuffer rb){
         ifsPt pt = getCameraDistortedPt(_pt, rp.rightEye);
 
         dataPoints++;
@@ -646,30 +655,30 @@ public class volume {
 
             for(int x=0; x<xmax/gridspace; x++){
                 for(int y=0; y<ymax; y+=step){
-                    this.putPixel(new ifsPt(
+                    this.putGridPixel(new ifsPt(
                             x * gridspace,
                             y,
                             z), 64, 64, 64, rp, false, false, true, rb);
-                    this.putPixel(new ifsPt(
+                    this.putGridPixel(new ifsPt(
                             y,
                             x * gridspace,
                             z), 64, 64, 64, rp, false, false, true, rb);
 
 
-                    this.putPixel(new ifsPt(
+                    this.putGridPixel(new ifsPt(
                             x * gridspace,
                             z,
-                            y),  64, 64, 64, rp, false, false, true, rb);
-                    this.putPixel(new ifsPt(
+                            y), 64, 64, 64, rp, false, false, true, rb);
+                    this.putGridPixel(new ifsPt(
                             y,
                             z,
-                            x * gridspace),  64, 64, 64, rp, false, false, true, rb);
+                            x * gridspace), 64, 64, 64, rp, false, false, true, rb);
 
-                    this.putPixel(new ifsPt(
+                    this.putGridPixel(new ifsPt(
                             z,
                             y,
-                            x * gridspace),  64, 64, 64, rp, false, false, true, rb);
-                    this.putPixel(new ifsPt(
+                            x * gridspace), 64, 64, 64, rp, false, false, true, rb);
+                    this.putGridPixel(new ifsPt(
                             z,
                             x * gridspace,
                             y), 64, 64, 64, rp, false, false, true, rb);
@@ -678,29 +687,29 @@ public class volume {
 
 
             for(int i=0; i<ymax; i+=2){
-                this.putPixel(new ifsPt(
+                this.putGridPixel(new ifsPt(
                         rp.xMin,
                         i,
                         0), 64, 0, 0, rp, false, true, true, rb);
-                this.putPixel(new ifsPt(
+                this.putGridPixel(new ifsPt(
                         rp.xMax,
                         i,
                         0), 64, 0, 0, rp, false, true, true, rb);
 
-                this.putPixel(new ifsPt(
+                this.putGridPixel(new ifsPt(
                         0,
                         rp.yMin,
                         i), 0, 64, 0, rp, false, true, true, rb);
-                this.putPixel(new ifsPt(
+                this.putGridPixel(new ifsPt(
                         0,
                         rp.yMax,
                         i), 0, 64, 0, rp, false, true, true, rb);
 
-                this.putPixel(new ifsPt(
+                this.putGridPixel(new ifsPt(
                         i,
                         0,
                         rp.zMin), 0, 0, 64, rp, false, true, true, rb);
-                this.putPixel(new ifsPt(
+                this.putGridPixel(new ifsPt(
                         i,
                         0,
                         rp.zMax), 0, 0, 64, rp, false, true, true, rb);

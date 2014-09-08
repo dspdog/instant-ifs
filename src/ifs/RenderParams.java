@@ -15,6 +15,9 @@ public class RenderParams implements java.io.Serializable {
 
     boolean shapeVibrating=false;
 
+    boolean twoD;
+    boolean threeD;
+
     boolean framesHidden;
     boolean infoHidden;
     boolean usePDFSamples;
@@ -67,6 +70,9 @@ public class RenderParams implements java.io.Serializable {
     OneDBuffer odbY = new OneDBuffer();
     OneDBuffer odbZ = new OneDBuffer();
     public RenderParams(){
+
+        twoD=false;
+        threeD=true;
 
         dotsPerPDF = 128;
 
