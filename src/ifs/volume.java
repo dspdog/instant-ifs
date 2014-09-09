@@ -179,7 +179,7 @@ final class volume {
         float factor = 1.0f;
         ifsPt offset = new ifsPt(0,0,0);
         if(rp.smearPDF){
-            float smearSubdivisions = smearMag;
+            float smearSubdivisions = smearMag;//TODO smear quality?
             factor = 1.0f-(float)((1.0/smearSubdivisions*((bucketVal+bucketId)%smearSubdivisions))+Math.random()/smearSubdivisions);
             dpt = _dpt.interpolateTo(odpt, factor, rp.odbScale.valueAt(factor)/256, rp.odbRotationRoll.valueAt(factor)/(16));
             thePt = _thePt.interpolateTo(theOldPt, factor, rp.odbScale.valueAt(factor)/256, rp.odbRotationRoll.valueAt(factor)/(16));

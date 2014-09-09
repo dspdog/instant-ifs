@@ -86,21 +86,19 @@ public final class RenderBuffer extends Kernel{
 
     @Override
     public void run() {
+        int edge = 4;
         int x = getGlobalId(0);
         int y = getGlobalId(1);
+        float gradient=1.0f;
 
-        if (x>0 && x<(width-1) && y>0 && y<(height-1)){
-            float gradient=1.0f;
-            int brightness=1;
+        if (x>edge && x<(width-edge) && y>edge && y<(height-edge)){
+
+            if((TBuffer[x+y*width]<time-shutterSpeed) && TBuffer[x+y*width]<frameStartTime){
+                ZBuffer[x+y*width]=0;
+            }
 
             if(cartoon){
-                int central = (int) ZBuffer[x+y*width];
-                int maxslope1 = max(max((int) ZBuffer[(x - 1) + (y) * width] - central, (int) ZBuffer[(x + 1) + (y) * width] - central),
-                                max((int) ZBuffer[(x) + (y - 1) * width] - central, (int) ZBuffer[(x) + (y + 1) * width] - central));
-                int maxslope2 = max(max((int) ZBuffer[(x - 1) + (y - 1) * width] - central, (int) ZBuffer[(x + 1) + (y + 1) * width] - central),
-                                max((int) ZBuffer[(x - 1) + (y + 1) * width] - central, (int) ZBuffer[(x + 1) + (y - 1) * width] - central));
-                int maxslope = max(maxslope2, maxslope1);
-
+                int maxslope = getMaxSlope(x,y);
                 if(maxslope>1){
                     maxslope=255;
                     if(ZBuffer[x+y*width]==0){
@@ -110,27 +108,32 @@ public final class RenderBuffer extends Kernel{
                 gradient = 1.0f-maxslope/255.0f;
             }
 
-            int _argb = 255;
+
             if(ZBuffer[x+y*width]==0){ //leaves empty pixels transparent
-                _argb=0;
+                pixels[x+y*width]=0;
             }else{
-                _argb = (_argb << 8) + (int)(RBuffer[x+y*width]*brightness*gradient);
-                _argb = (_argb << 8) + (int)(GBuffer[x+y*width]*brightness*gradient);
-                _argb = (_argb << 8) + (int)(BBuffer[x+y*width]*brightness*gradient);
+                int color = getColor(x,y,gradient);
+                pixels[x+y*width] = color;
             }
 
-            pixels[x+y*width] = _argb;
-
-            //if(clearZBuffer){
-                if((TBuffer[x+y*width]<time-shutterSpeed) && TBuffer[x+y*width]<frameStartTime){
-                    ZBuffer[x+y*width]=0;
-                }
-
-            //}
         }
     }
 
-    public int max(int x, int y){
-        return x-((x-y)&((x-y)>>31));
+    int getColor(int x, int y, float gradient){
+        int _argb = 255;
+        _argb = (_argb << 8) + (int)(RBuffer[x+y*width]*brightness*gradient);
+        _argb = (_argb << 8) + (int)(GBuffer[x+y*width]*brightness*gradient);
+        _argb = (_argb << 8) + (int)(BBuffer[x+y*width]*brightness*gradient);
+        return _argb;
     }
+
+    int getMaxSlope(int x, int y){
+        int central = (int) ZBuffer[x+y*width];
+        int maxslope1 = max(max((int) ZBuffer[(x - 1) + (y) * width] - central, (int) ZBuffer[(x + 1) + (y) * width] - central),
+                max((int) ZBuffer[(x) + (y - 1) * width] - central, (int) ZBuffer[(x) + (y + 1) * width] - central));
+        int maxslope2 = max(max((int) ZBuffer[(x - 1) + (y - 1) * width] - central, (int) ZBuffer[(x + 1) + (y + 1) * width] - central),
+                max((int) ZBuffer[(x - 1) + (y + 1) * width] - central, (int) ZBuffer[(x + 1) + (y - 1) * width] - central));
+        return max(maxslope2, maxslope1);
+    }
+
 }

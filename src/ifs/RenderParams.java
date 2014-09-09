@@ -75,7 +75,7 @@ final class RenderParams implements java.io.Serializable {
         twoD=false;
         threeD=true;
 
-        dotsPerPDF = 128;
+        dotsPerPDF = 256;
 
         odbScale = new OneDBuffer();
         odbRotationRoll = new OneDBuffer();
