@@ -129,20 +129,4 @@ final class RenderParams implements java.io.Serializable {
         renderThrottling=false;
         minimumSamples =20;
     }
-
-    public void limitParams(){
-        if(samplesPerFrame <2){
-            samplesPerFrame =2;}
-        if(samplesPerFrame >1310720){
-            samplesPerFrame =1310720;}
-        if(xMin>xMax){
-            xMax=xMin+1;
-        }
-        if(yMin>yMax){
-            yMax=yMin+1;
-        }
-        if(zMin>zMax){
-            zMax=zMin+1;
-        }
-    }
 }

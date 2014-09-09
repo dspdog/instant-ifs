@@ -2,7 +2,7 @@ package ifs.thirdparty;
 
 import com.alee.laf.slider.WebSlider;
 
-import java.awt.Component;
+import java.awt.*;
 import java.util.Hashtable;
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -54,13 +54,11 @@ public final class SliderWithSpinner extends JPanel {
      * Creates a new slider with spinner which uses the supplied model.
      *
      * @param model non-null pointer (ownership: callee)
+    */
 
-     * @param drawLabels Specifies whether to draw labels on the slider. If <code>true</code>,
-     *		numeric labels will be put at the minimum nad the maximum values.
-     */
-    public SliderWithSpinner(SliderWithSpinnerModel model, int orientation, boolean drawLabels) {
-        assert model != null;
-        assert orientation == SwingConstants.HORIZONTAL || orientation == SwingConstants.VERTICAL;
+    public SliderWithSpinner(SliderWithSpinnerModel model) {
+        boolean drawLabels=false;
+        int orientation = SwingConstants.HORIZONTAL;
 
         this.model = model;
         this.orientation = orientation;
@@ -82,6 +80,15 @@ public final class SliderWithSpinner extends JPanel {
             add(slider);
         }
 
+        this.setPreferredSize(new Dimension(20, 30));
+        this.setMinimumSize(new Dimension(20, 30));
+        this.setMaximumSize(new Dimension(20, 30));
+    }
+
+
+
+    public int getValue(){
+        return this.model.getValue();
     }
 
     /**

@@ -23,16 +23,16 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
     JLabel ptLabel;
     JLabel generationLabel;
-    JSpinner xSpinner;
-    JSpinner ySpinner;
-    JSpinner zSpinner;
+    SliderWithSpinner xSpinner;
+    SliderWithSpinner ySpinner;
+    SliderWithSpinner zSpinner;
 
-    JSpinner brightnessSpinner;
-    JSpinner samplesSpinner;
-    JSpinner iterationsSpinner;
+    SliderWithSpinner brightnessSpinner;
+    SliderWithSpinner samplesSpinner;
+    SliderWithSpinner iterationsSpinner;
 
-    JSpinner potentialSpinner;
-    JSpinner delaySpinner;
+    SliderWithSpinner potentialSpinner;
+    SliderWithSpinner delaySpinner;
     //JSpinner dotSizeSpinner;
 
     //JSpinner xMinSpinner;
@@ -42,19 +42,19 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     //JSpinner zMinSpinner;
     //JSpinner zMaxSpinner;
 
-    JSpinner pitchSpinner;
-    JSpinner yawSpinner;
-    JSpinner rollSpinner;
+    SliderWithSpinner pitchSpinner;
+    SliderWithSpinner yawSpinner;
+    SliderWithSpinner rollSpinner;
 
     //JSlider camPitchSpinner;
     //JSlider camYawSpinner;
     //JSlider camRollSpinner;
-    JSlider camScaleSpinner;
+    SliderWithSpinner camScaleSpinner;
 
-    JSlider evolveIntensitySpinner;
+    SliderWithSpinner evolveIntensitySpinner;
     SliderWithSpinner evolveSpeedSpinner;
 
-    JSpinner scaleSpinner;
+    SliderWithSpinner scaleSpinner;
 
     JCheckBox frameHoldCheck;
 
@@ -106,28 +106,28 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 }
 
                 lastUiChange=System.currentTimeMillis();
-                editPt.x = (float)Double.parseDouble(xSpinner.getValue().toString());
-                editPt.y = (float)Double.parseDouble(ySpinner.getValue().toString());
-                editPt.z = (float)Double.parseDouble(zSpinner.getValue().toString());
-                editPt.scale = (float)(0.01 * Double.parseDouble(scaleSpinner.getValue().toString()));
+                editPt.x = (float)Double.parseDouble(xSpinner.getValue()+"");
+                editPt.y = (float)Double.parseDouble(ySpinner.getValue()+"");
+                editPt.z = (float)Double.parseDouble(zSpinner.getValue()+"");
+                editPt.scale = (float)(0.01 * Double.parseDouble(scaleSpinner.getValue()+""));
 
-                editPt.rotationPitch = (float)(Double.parseDouble(pitchSpinner.getValue().toString())/180.0*Math.PI);
-                editPt.rotationYaw = (float)(Double.parseDouble(yawSpinner.getValue().toString())/180.0*Math.PI);
-                editPt.rotationRoll = (float)(Double.parseDouble(rollSpinner.getValue().toString())/180.0*Math.PI);
+                editPt.rotationPitch = (float)(Double.parseDouble(pitchSpinner.getValue()+"")/180.0*Math.PI);
+                editPt.rotationYaw = (float)(Double.parseDouble(yawSpinner.getValue()+"")/180.0*Math.PI);
+                editPt.rotationRoll = (float)(Double.parseDouble(rollSpinner.getValue()+"")/180.0*Math.PI);
 
-                myIfsSys.rp.iterations = Integer.parseInt(iterationsSpinner.getValue().toString());
+                myIfsSys.rp.iterations = Integer.parseInt(iterationsSpinner.getValue()+"");
                 //myIfsSys.rp.dotSize = Integer.parseInt(dotSizeSpinner.getValue().toString());
-                myIfsSys.rp.brightnessMultiplier = Double.parseDouble(brightnessSpinner.getValue().toString());
-                myIfsSys.rp.samplesPerFrame = (int)Double.parseDouble(samplesSpinner.getValue().toString());
+                myIfsSys.rp.brightnessMultiplier = Double.parseDouble(brightnessSpinner.getValue()+"");
+                myIfsSys.rp.samplesPerFrame = (int)Double.parseDouble(samplesSpinner.getValue()+"");
 
                 myIfsSys.theVolume.usePerspective = !perspectiveCheck.isSelected();
                 myIfsSys.rp.smearPDF = smearCheck.isSelected();
-                myIfsSys.rp.minimumSamples = Long.parseLong(delaySpinner.getValue().toString());
+                myIfsSys.rp.minimumSamples = Long.parseLong(delaySpinner.getValue()+"");
                 myIfsSys.rp.renderThrottling = delayCheck.isSelected();
 
                 myIfsSys.rp.holdFrame = frameHoldCheck.isSelected();
 
-                myIfsSys.rp.potentialRadius = Integer.parseInt(potentialSpinner.getValue().toString());
+                myIfsSys.rp.potentialRadius = Integer.parseInt(potentialSpinner.getValue()+"");
                 myIfsSys.rp.drawGrid = gridCheck.isSelected();
                 myIfsSys.rp.useShadows = cartoonCheck.isSelected();
 
@@ -142,7 +142,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 myIfsSys.lastMoveTime = System.currentTimeMillis();
 
                 myIfsSys.rp.evolveIntensity = evolveIntensitySpinner.getValue();
-                myIfsSys.rp.evolveAnimationPeriod = evolveSpeedSpinner.model.getValue();
+                myIfsSys.rp.evolveAnimationPeriod = evolveSpeedSpinner.getValue();
 
                 //myIfsSys.rp.xMin = Integer.parseInt(xMinSpinner.getValue().toString());
                 //myIfsSys.rp.xMax = Integer.parseInt(xMaxSpinner.getValue().toString());
@@ -188,7 +188,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         int compLeft = 70;
         int compRight = -5;
         int compToSpinner = -5;
-        int topPad=25;
+        int topPad=28;
 
         if(noLabel){ //things without labels get centered...
             compLeft=30;
@@ -209,14 +209,14 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     }
 
     public void setupPointPropertiesPanel(JPanel panel){
-        xSpinner = new JSpinner();
-        ySpinner = new JSpinner();
-        zSpinner = new JSpinner();
-        scaleSpinner = new JSpinner();
+        xSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1024));
+        ySpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1024));
+        zSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1024));
+        scaleSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000));
 
-        pitchSpinner = new JSpinner();
-        yawSpinner = new JSpinner();
-        rollSpinner = new JSpinner();
+        pitchSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 360));
+        yawSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 360));
+        rollSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 360));
 
         ptLabel = new JLabel("Point -1");
 
@@ -229,13 +229,13 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         //panel.add(ptLabel);
         //addLabel(ptLabel, layout, panel);
         ((JLabel)addLabeled(ptLabel, layout, "Point", panel)).addComponentListener(null);
-        ((JSpinner)addLabeled(xSpinner, layout, "X", panel)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(ySpinner, layout, "Y", panel)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(zSpinner, layout, "Z", panel)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(scaleSpinner, layout, "Scale %", panel)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(pitchSpinner, layout, "Pitch°", panel)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(yawSpinner, layout, "Yaw°", panel)).addChangeListener(updateAndClear);
-        ((JSpinner)addLabeled(rollSpinner, layout, "Roll°", panel)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(xSpinner, layout, "X", panel)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(ySpinner, layout, "Y", panel)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(zSpinner, layout, "Z", panel)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(scaleSpinner, layout, "Scale %", panel)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(pitchSpinner, layout, "Pitch°", panel)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(yawSpinner, layout, "Yaw°", panel)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(rollSpinner, layout, "Roll°", panel)).addChangeListener(updateAndClear);
 
     }
 
@@ -350,20 +350,15 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
             }
         });
 
-        evolveIntensitySpinner=new JSlider();
-        evolveIntensitySpinner.setMaximum(1000);
-        evolveSpeedSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000), javax.swing.SwingConstants.HORIZONTAL, false);
-
-        evolveSpeedSpinner.setPreferredSize(new Dimension(20, 30));
-        evolveSpeedSpinner.setMinimumSize(new Dimension(20, 30));
-        evolveSpeedSpinner.setMaximumSize(new Dimension(20, 30));
+        evolveIntensitySpinner=new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000));
+        evolveSpeedSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000));
 
         //evolveSpeedSpinner.setAlignmentY(0.0f);
 
         //evolveSpeedSpinner.setMaximumSize(new Dimension(200,20));
         //evolveSpeedSpinner.setMaximum(1000);
 
-        ((JSlider)addLabeled(evolveIntensitySpinner, layout, "Intensity", panel)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(evolveIntensitySpinner, layout, "Intensity", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(evolveSpeedSpinner, layout, "Period", panel)).addChangeListener(updateAndClear);
 
         ((JLabel)addLabeled(new JLabel(), layout, "", panel)).addComponentListener(null);
@@ -414,12 +409,12 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     }
 
     public void setupRenderPropertiesPanel(JPanel panel){
-        brightnessSpinner = new JSpinner();
-        samplesSpinner = new JSpinner();
-        iterationsSpinner = new JSpinner();
+        brightnessSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 360));
+        samplesSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 360));
+        iterationsSpinner =new SliderWithSpinner(new SliderWithSpinnerModel(3, 0, 360));
 
-        potentialSpinner = new JSpinner();
-        delaySpinner = new JSpinner();
+        potentialSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 360));
+        delaySpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 360));
         //dotSizeSpinner = new JSpinner();
 
         frameHoldCheck = new JCheckBox();
@@ -455,9 +450,9 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
             }
         });
 
-        ((JSpinner)addLabeled(brightnessSpinner, layout, "Brightness", panel)).addChangeListener(updateNoClear);
-        ((JSpinner)addLabeled(samplesSpinner, layout, "Dots/Frame", panel)).addChangeListener(updateNoClear);
-        ((JSpinner)addLabeled(iterationsSpinner, layout, "Iterations", panel)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(brightnessSpinner, layout, "Brightness", panel)).addChangeListener(updateNoClear);
+        ((SliderWithSpinner)addLabeled(samplesSpinner, layout, "Dots/Frame", panel)).addChangeListener(updateNoClear);
+        ((SliderWithSpinner)addLabeled(iterationsSpinner, layout, "Iterations", panel)).addChangeListener(updateAndClear);
 
         //((JSpinner)addLabeled(potentialSpinner, layout, "Blur", panel)).addChangeListener(updateAndClear);
         ((JCheckBox)addLabeled(cartoonCheck, layout, "Cartoon", panel)).addChangeListener(updateAndClear);
@@ -466,7 +461,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         ((JCheckBox)addLabeled(frameHoldCheck, layout, "Hold Frame", panel)).addChangeListener(updateNoClear);
 
         ((JCheckBox)addLabeled(delayCheck, layout, "Throttle", panel)).addChangeListener(updateNoClear);
-        ((JSpinner)addLabeled(delaySpinner, layout, "Min. KDots", panel)).addChangeListener(updateNoClear);
+        ((SliderWithSpinner)addLabeled(delaySpinner, layout, "Min. KDots", panel)).addChangeListener(updateNoClear);
         //((JSpinner)addLabeled(dotSizeSpinner, layout, "Dot Size", panel)).addChangeListener(updateNoClear);
 
         //xMaxSpinner=new JSpinner();
@@ -487,27 +482,9 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         //colorChooser.setPreferredWidth(350);
         // ((WebGradientColorChooser)addLabeled(colorChooser, layout, "Color", panel)).addChangeListener(updateAndClear);
 
+        camScaleSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(60, 1, 300));
 
-
-
-
-        //camPitchSpinner = new JSlider();
-        //camYawSpinner = new JSlider();
-        //camRollSpinner = new JSlider();
-        camScaleSpinner = new JSlider();
-
-        //camPitchSpinner.setMaximum(360);
-        //camYawSpinner.setMaximum(360);
-        //camRollSpinner.setMaximum(360);
-        camScaleSpinner.setMaximum(500);
-
-
-
-
-        //((JSlider)addLabeled(camPitchSpinner, layout, "Pitch", panel)).addChangeListener(updateAndClear);
-        //((JSlider)addLabeled(camYawSpinner, layout, "Yaw", panel)).addChangeListener(updateAndClear);
-        //((JSlider)addLabeled(camRollSpinner, layout, "Roll", panel)).addChangeListener(updateAndClear);
-        ((JSlider)addLabeled(camScaleSpinner, layout, "FOV", panel)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(camScaleSpinner, layout, "FOV", panel)).addChangeListener(updateAndClear);
 
         ActionListener moveCamera = new ActionListener() {
             @Override
@@ -532,8 +509,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 myIfsSys.clearframe();
             }
         };
-
-
 
         perspectiveCheck = new JCheckBox();
         ((JCheckBox)addLabeled(perspectiveCheck, layout, "Ortho", panel)).addChangeListener(updateAndClear);
@@ -630,7 +605,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     }
 
     public void updateSideMenu(){
-        myIfsSys.rp.limitParams();
         autoChange = true;
         generationLabel.setText(myIfsSys.eShape.familyHistory.size() + " Sibling " + myIfsSys.eShape.shapeIndex+"/"+myIfsSys.eShape.sibsPerGen);
         ptLabel.setText(myIfsSys.theShape.pointSelected+"");
@@ -644,31 +618,34 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                     editPt = myIfsSys.theShape.selectedPt;
                 }
 
-                xSpinner.setValue(editPt.x);
-                ySpinner.setValue(editPt.y);
-                zSpinner.setValue(editPt.z);
+                xSpinner.setValue((int)editPt.x);
+                ySpinner.setValue((int)editPt.y);
+                zSpinner.setValue((int)editPt.z);
 
-                scaleSpinner.setValue(editPt.scale * 100);
+                scaleSpinner.setValue((int)(editPt.scale * 100));
 
-                pitchSpinner.setValue(editPt.rotationPitch/Math.PI*180);
-                yawSpinner.setValue(editPt.rotationYaw/Math.PI*180);
-                rollSpinner.setValue(editPt.rotationRoll/Math.PI*180);
+                pitchSpinner.setValue((int)(editPt.rotationPitch/Math.PI*180));
+                yawSpinner.setValue((int)(editPt.rotationYaw/Math.PI*180));
+                rollSpinner.setValue((int)(editPt.rotationRoll/Math.PI*180));
 
                 camScaleSpinner.setValue((int)myIfsSys.theVolume.perspectiveScale);
                 evolveIntensitySpinner.setValue((int)myIfsSys.rp.evolveIntensity);
                 evolveSpeedSpinner.setValue((int)myIfsSys.rp.evolveAnimationPeriod);
 
-                brightnessSpinner.setValue(myIfsSys.rp.brightnessMultiplier);
+                brightnessSpinner.setValue((int)myIfsSys.rp.brightnessMultiplier);
                 samplesSpinner.setValue(myIfsSys.rp.samplesPerFrame);
                 iterationsSpinner.setValue(myIfsSys.rp.iterations);
                 potentialSpinner.setValue(myIfsSys.rp.potentialRadius);
-                delaySpinner.setValue(myIfsSys.rp.minimumSamples);
+                delaySpinner.setValue((int)myIfsSys.rp.minimumSamples);
 
                 perspectiveCheck.setSelected(!myIfsSys.theVolume.usePerspective);
                 frameHoldCheck.setSelected(myIfsSys.rp.holdFrame);
                 gridCheck.setSelected(myIfsSys.rp.drawGrid);
                 delayCheck.setSelected(myIfsSys.rp.renderThrottling);
                 cartoonCheck.setSelected(myIfsSys.rp.useShadows);
+
+                smearCheck.setSelected(myIfsSys.rp.smearPDF);
+
                 //System.out.println(renderModeCombo.setse);
                 renderModeCombo.setSelectedIndex(myIfsSys.theVolume.renderMode == volume.RenderMode.PROJECT_ONLY ? 1 : 0);
                 //dotSizeSpinner.setValue(myIfsSys.rp.dotSize);
