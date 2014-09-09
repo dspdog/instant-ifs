@@ -126,7 +126,7 @@ final class RenderParams implements java.io.Serializable {
         usingGaussian =false;
         potentialRadius=0;
 
-        renderThrottling=true;
+        renderThrottling=false;
         minimumSamples =20;
     }
 

@@ -189,7 +189,7 @@ final class ifsys extends JPanel
             while(!quit)
                 try{
 
-                    renderBuffer.updateTime();
+                    renderBuffer.updateTime(lastClearTime);
 
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
@@ -201,7 +201,7 @@ final class ifsys extends JPanel
                         }
                     });
 
-                    sleep(41L);
+                    sleep(5L);
                 }
                 catch(InterruptedException e) {
                     e.printStackTrace();

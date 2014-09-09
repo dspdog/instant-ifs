@@ -23,6 +23,9 @@ public final class RenderBuffer extends Kernel{
     float maxColor = 0;
 
     private static long time = System.currentTimeMillis();
+    private static long frameStartTime = System.currentTimeMillis();
+
+    public static int shutterSpeed = 50;
 
     public RenderBuffer(int w, int h){
         width=w; height=h;
@@ -43,8 +46,9 @@ public final class RenderBuffer extends Kernel{
         clearZBuffer = true; //request Z-buffer clear from GPU kernal
     }
 
-    public void updateTime(){
+    public void updateTime(long _time){
         time = System.currentTimeMillis();
+        frameStartTime=_time;
     }
 
     public boolean putPixel(float x, float y, float z, float R, float G, float B, float dark, boolean rightEye){
@@ -110,12 +114,12 @@ public final class RenderBuffer extends Kernel{
 
             pixels[x+y*width] = _argb;
 
-            if(clearZBuffer){
-                if(time - TBuffer[x+y*width] > 100){
+            //if(clearZBuffer){
+                if((TBuffer[x+y*width]<time-shutterSpeed) && TBuffer[x+y*width]<frameStartTime){
                     ZBuffer[x+y*width]=0;
                 }
 
-            }
+            //}
         }
     }
 
