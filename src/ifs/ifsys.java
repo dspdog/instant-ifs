@@ -148,7 +148,7 @@ final class ifsys extends JPanel
         is.init();
         setupMiniFrame(is.theMenu.evolveProperties, 400, 350,   is.rp.screenwidth, 450, "Evolution", "invader.png", desktop);
         setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth+200,0, "Render", "camera.png", desktop);
-        setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth,250, "Kernal", "cloud.png", desktop);
+        setupMiniFrame(is.theMenu.pdfProperties, 200, 200,      is.rp.screenwidth,250, "Kernel", "cloud.png", desktop);
         setupMiniFrame(is.theMenu.pointProperties, 200, 250,    is.rp.screenwidth,0, "IFS Point", "anchors.png", desktop);
     }
 

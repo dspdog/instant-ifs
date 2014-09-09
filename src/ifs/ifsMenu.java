@@ -6,7 +6,10 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.table.WebTable;
 import ifs.thirdparty.ImagePreviewPanel;
+import ifs.thirdparty.SliderWithSpinner;
+import ifs.thirdparty.SliderWithSpinnerModel;
 import ifs.volumetric.pdf3D;
+import javafx.scene.control.Slider;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -47,8 +50,9 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     //JSlider camYawSpinner;
     //JSlider camRollSpinner;
     JSlider camScaleSpinner;
+
     JSlider evolveIntensitySpinner;
-    JSlider evolveSpeedSpinner;
+    SliderWithSpinner evolveSpeedSpinner;
 
     JSpinner scaleSpinner;
 
@@ -138,7 +142,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 myIfsSys.lastMoveTime = System.currentTimeMillis();
 
                 myIfsSys.rp.evolveIntensity = evolveIntensitySpinner.getValue();
-                myIfsSys.rp.evolveAnimationPeriod = evolveSpeedSpinner.getValue();
+                myIfsSys.rp.evolveAnimationPeriod = evolveSpeedSpinner.model.getValue();
 
                 //myIfsSys.rp.xMin = Integer.parseInt(xMinSpinner.getValue().toString());
                 //myIfsSys.rp.xMax = Integer.parseInt(xMaxSpinner.getValue().toString());
@@ -348,11 +352,19 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
         evolveIntensitySpinner=new JSlider();
         evolveIntensitySpinner.setMaximum(1000);
-        evolveSpeedSpinner=new JSlider();
-        evolveSpeedSpinner.setMaximum(1000);
+        evolveSpeedSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000), javax.swing.SwingConstants.HORIZONTAL, false);
+
+        evolveSpeedSpinner.setPreferredSize(new Dimension(20, 30));
+        evolveSpeedSpinner.setMinimumSize(new Dimension(20, 30));
+        evolveSpeedSpinner.setMaximumSize(new Dimension(20, 30));
+
+        //evolveSpeedSpinner.setAlignmentY(0.0f);
+
+        //evolveSpeedSpinner.setMaximumSize(new Dimension(200,20));
+        //evolveSpeedSpinner.setMaximum(1000);
 
         ((JSlider)addLabeled(evolveIntensitySpinner, layout, "Intensity", panel)).addChangeListener(updateAndClear);
-        ((JSlider)addLabeled(evolveSpeedSpinner, layout, "Period", panel)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(evolveSpeedSpinner, layout, "Period", panel)).addChangeListener(updateAndClear);
 
         ((JLabel)addLabeled(new JLabel(), layout, "", panel)).addComponentListener(null);
         updateEvolutionTable();
@@ -592,7 +604,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
             autoScaleButton.addItemListener(this);
             shapeMenu.add(autoScaleButton);
 
-            CheckboxMenuItem imgButton = new CheckboxMenuItem("Kernal Samples"); //img samples toggle
+            CheckboxMenuItem imgButton = new CheckboxMenuItem("Kernel Samples"); //img samples toggle
             imgButton.setState(is.rp.usePDFSamples);
             imgButton.addItemListener(this);
             shapeMenu.add(imgButton);
@@ -740,7 +752,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
             if(e.getItem()=="AutoScale Points"){
                 myIfsSys.theShape.autoScale = e.getStateChange()==1;
             }
-            if(e.getItem()=="Kernal Samples"){
+            if(e.getItem()=="Kernel Samples"){
                 myIfsSys.rp.usePDFSamples = e.getStateChange()==1;
             }
     }

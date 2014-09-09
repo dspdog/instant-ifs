@@ -57,7 +57,7 @@ public final class RenderBuffer extends Kernel{
         x=Math.min((int)x, width);
 
         if(ZBuffer[(int)x+(int)y*width] < z){
-            ZBuffer[(int)x+(int)y*width] = R*dark;
+            RBuffer[(int)x+(int)y*width] = R*dark;
             GBuffer[(int)x+(int)y*width] = G*dark;
             BBuffer[(int)x+(int)y*width] = B*dark;
             ZBuffer[(int)x+(int)y*width] = z;
