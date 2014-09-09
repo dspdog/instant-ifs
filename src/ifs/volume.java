@@ -215,6 +215,7 @@ final class volume {
         pointDegreesRoll = thePt.rotationRoll +cumulativeRotationVector.z;
 
         int iters=Math.min(rp.dotsPerPDF, thePdf.edgeValues);
+
         for(int iter=0; iter<iters; iter++){
             rpt = new ifsPt((sampleX-thePdf.center.x)*scale,
                     (sampleY-thePdf.center.y)*scale,
@@ -228,34 +229,31 @@ final class volume {
                     dpt.z+rpt.z);
             ;
 
-            if(rp.gradientColors){
-                Color myColor = color.getColorForLocation((myDist%colorPeriod) / colorPeriod);
-                r = myColor.getRed();
-                g = myColor.getGreen();
-                b = myColor.getBlue();
-            }else{
-                r=(theDot.x - this.minX)/(this.maxX-this.minX)*512;
-                g=(theDot.y - this.minY)/(this.maxY-this.minY)*512;
-                b=(theDot.z - this.minZ)/(this.maxZ-this.minZ)*512;
-            }
+            r=(theDot.x - this.minX)/(this.maxX-this.minX)*512;
+            g=(theDot.y - this.minY)/(this.maxY-this.minY)*512;
+            b=(theDot.z - this.minZ)/(this.maxZ-this.minZ)*512;
 
             this.contributeToAverageDistance(myDist);
 
-            if(this.putPixel(theDot,
-                    r,
-                    g,
-                    b, rp, true, rp.noDark, rb)){ //Z
+            if(
+                this.putPixel(theDot,
+                r,
+                g,
+                b, rp, true, rp.noDark, rb)){
+                    //{ //Z
                 this.pushBounds(theDot);
                 seqIndex++;
             }else{
                 duds++;
-                seqIndex = (int)(Math.random()*thePdf.edgeValues);
-                sampleX = thePdf.edgePts[seqIndex].x+dx + offset.x;
-                sampleY = thePdf.edgePts[seqIndex].y+dy + offset.y;
-                sampleZ = thePdf.edgePts[seqIndex].z+dz + offset.z;
+                seqIndex+=1031*iter; //fast pseudo random
+                seqIndex%=thePdf.edgePts.length;
             }
 
-            if(duds>4 && this.renderMode != RenderMode.VOLUMETRIC){iter=iters;} //skips occluded pdfs unless in ifs.volume mode
+            sampleX = thePdf.edgePts[seqIndex].x+dx + offset.x;
+            sampleY = thePdf.edgePts[seqIndex].y+dy + offset.y;
+            sampleZ = thePdf.edgePts[seqIndex].z+dz + offset.z;
+
+            if(duds>2 && this.renderMode != RenderMode.VOLUMETRIC){iter=iters;} //skips occluded pdfs unless in ifs.volume mode
         }
     }
 

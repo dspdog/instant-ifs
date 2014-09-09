@@ -15,11 +15,11 @@ public final class pdf3D implements java.io.Serializable{ //3d probabilty densit
     intPt sampleMin, sampleMax;
     public intPt center;
 
-    public float volume[];
+    public final float volume[];
 
     public int edgeValues = 0;
 
-    public intPt[] edgePts;
+    public final intPt[] edgePts;
 
     public Image sampleImageX, sampleImageY, sampleImageZ;
     int samplePixels[];
@@ -30,12 +30,14 @@ public final class pdf3D implements java.io.Serializable{ //3d probabilty densit
     //public comboMode thePdfComboMode = comboMode.ADD;
 
     public pdf3D(){
+
         width = 512;
         height = 512;
         depth = 512;
         center = new intPt(width/2, height/2, depth/2);
         volume = new float[width*height*depth];
         samplePixels = new int[width*height];
+        edgePts = new intPt[width*width*width];
 
         loadImgs3D("circle2.png", "circle.png", "flat.png");
         //loadImgs3D("g.png", "e.png", "b.png");
@@ -90,7 +92,6 @@ public final class pdf3D implements java.io.Serializable{ //3d probabilty densit
 
     public void updateVolume(){
         edgeValues = 0;
-        edgePts = new intPt[width*width*width];
 
         int edgeUnit = 1;
         long time = System.currentTimeMillis();

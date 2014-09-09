@@ -189,6 +189,7 @@ final class ifsys extends JPanel
             while(!quit)
                 try{
                     renderBuffer.updateTime(lastClearTime);
+                    renderBuffer.shutterSpeed = rp.shutterPeriod;
 
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
@@ -227,12 +228,10 @@ final class ifsys extends JPanel
                         rp.odbX.add(new OneDBuffer(), 20); //offsetX
                         rp.odbY.add(new OneDBuffer(), 20); //offsetY
                         rp.odbZ.add(new OneDBuffer(), 20); //offsetZ
-                        if(!rp.renderThrottling || theVolume.totalSamples>rp.minimumSamples*1000){
+                        //if(!rp.renderThrottling || theVolume.totalSamples>rp.shutterPeriod *1000){
                             clearframe();
                             gamefunc();
-                        }
-
-
+                        //}
                     }
 
                     sleep((long)rp.evolveAnimationPeriod);
@@ -375,10 +374,10 @@ final class ifsys extends JPanel
 
     public void generatePixels(){
         boolean didProcess=false;
-        if(!rp.renderThrottling || theVolume.totalSamples>rp.minimumSamples*1000){
+        //if(!rp.renderThrottling || theVolume.totalSamples>rp.shutterPeriod*1000){
             didProcess=true;
             renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.useShadows, rp.rightEye);
-        }
+        //}
 
         if(didProcess)lastPostProcessTime=System.currentTimeMillis();
     }
@@ -918,7 +917,7 @@ final class ifsys extends JPanel
             rp.brightnessMultiplier=1;
             rp.smearPDF=true;
             rp.renderThrottling=true;
-            rp.minimumSamples =500;
+            rp.shutterPeriod =500;
             rp.savingDots=true;
             rp.savedDots=0;
             theVolume.renderMode = volume.RenderMode.VOLUMETRIC;

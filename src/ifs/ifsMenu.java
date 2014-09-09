@@ -9,7 +9,6 @@ import ifs.thirdparty.ImagePreviewPanel;
 import ifs.thirdparty.SliderWithSpinner;
 import ifs.thirdparty.SliderWithSpinnerModel;
 import ifs.volumetric.pdf3D;
-import javafx.scene.control.Slider;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -56,13 +55,13 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
     SliderWithSpinner scaleSpinner;
 
-    JCheckBox frameHoldCheck;
+    //JCheckBox frameHoldCheck;
 
     JCheckBox gridCheck;
     JCheckBox cartoonCheck;
 
     JCheckBox perspectiveCheck;
-    JCheckBox delayCheck;
+    //JCheckBox delayCheck;
     JCheckBox smearCheck;
 
     JComboBox renderModeCombo;
@@ -122,10 +121,10 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
                 myIfsSys.theVolume.usePerspective = !perspectiveCheck.isSelected();
                 myIfsSys.rp.smearPDF = smearCheck.isSelected();
-                myIfsSys.rp.minimumSamples = Long.parseLong(delaySpinner.getValue()+"");
-                myIfsSys.rp.renderThrottling = delayCheck.isSelected();
+                myIfsSys.rp.shutterPeriod = delaySpinner.getValue();
+                //myIfsSys.rp.renderThrottling = delayCheck.isSelected();
 
-                myIfsSys.rp.holdFrame = frameHoldCheck.isSelected();
+                //myIfsSys.rp.holdFrame = frameHoldCheck.isSelected();
 
                 myIfsSys.rp.potentialRadius = Integer.parseInt(potentialSpinner.getValue()+"");
                 myIfsSys.rp.drawGrid = gridCheck.isSelected();
@@ -414,15 +413,15 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         iterationsSpinner =new SliderWithSpinner(new SliderWithSpinnerModel(3, 0, 360));
 
         potentialSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 360));
-        delaySpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 360));
+        delaySpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 5000));
         //dotSizeSpinner = new JSpinner();
 
-        frameHoldCheck = new JCheckBox();
+        //frameHoldCheck = new JCheckBox();
 
         gridCheck = new JCheckBox();
         cartoonCheck = new JCheckBox();
 
-        delayCheck = new JCheckBox();
+        //delayCheck = new JCheckBox();
 
         String[] renderModeStrings = {volume.RenderMode.VOLUMETRIC.toString(), volume.RenderMode.PROJECT_ONLY.toString()};
         String[] pdfModeStrings = {
@@ -458,10 +457,10 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         ((JCheckBox)addLabeled(cartoonCheck, layout, "Cartoon", panel)).addChangeListener(updateAndClear);
 
         ((JCheckBox)addLabeled(gridCheck, layout, "Grid", panel)).addChangeListener(updateAndClear);
-        ((JCheckBox)addLabeled(frameHoldCheck, layout, "Hold Frame", panel)).addChangeListener(updateNoClear);
+        //((JCheckBox)addLabeled(frameHoldCheck, layout, "Hold Frame", panel)).addChangeListener(updateNoClear);
 
-        ((JCheckBox)addLabeled(delayCheck, layout, "Throttle", panel)).addChangeListener(updateNoClear);
-        ((SliderWithSpinner)addLabeled(delaySpinner, layout, "Min. KDots", panel)).addChangeListener(updateNoClear);
+        //((JCheckBox)addLabeled(delayCheck, layout, "Throttle", panel)).addChangeListener(updateNoClear);
+        ((SliderWithSpinner)addLabeled(delaySpinner, layout, "Shutter", panel)).addChangeListener(updateNoClear);
         //((JSpinner)addLabeled(dotSizeSpinner, layout, "Dot Size", panel)).addChangeListener(updateNoClear);
 
         //xMaxSpinner=new JSpinner();
@@ -636,12 +635,12 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 samplesSpinner.setValue(myIfsSys.rp.samplesPerFrame);
                 iterationsSpinner.setValue(myIfsSys.rp.iterations);
                 potentialSpinner.setValue(myIfsSys.rp.potentialRadius);
-                delaySpinner.setValue((int)myIfsSys.rp.minimumSamples);
+                delaySpinner.setValue((int)myIfsSys.rp.shutterPeriod);
 
                 perspectiveCheck.setSelected(!myIfsSys.theVolume.usePerspective);
-                frameHoldCheck.setSelected(myIfsSys.rp.holdFrame);
+                //frameHoldCheck.setSelected(myIfsSys.rp.holdFrame);
                 gridCheck.setSelected(myIfsSys.rp.drawGrid);
-                delayCheck.setSelected(myIfsSys.rp.renderThrottling);
+                //delayCheck.setSelected(myIfsSys.rp.renderThrottling);
                 cartoonCheck.setSelected(myIfsSys.rp.useShadows);
 
                 smearCheck.setSelected(myIfsSys.rp.smearPDF);

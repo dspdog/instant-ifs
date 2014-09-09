@@ -69,6 +69,8 @@ public final class SliderWithSpinner extends JPanel {
         spinner = createSpinner(model.getSpinnerModel());
         slider = createSlider(model.getBoundedRangeModel(), orientation, drawLabels);
 
+
+
         if (orientation == SwingConstants.VERTICAL) {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             add(slider);
@@ -80,8 +82,16 @@ public final class SliderWithSpinner extends JPanel {
             add(slider);
         }
 
+        spinner.setPreferredSize(new Dimension(60, 30));
+        spinner.setMinimumSize(new Dimension(60,30));
+        spinner.setMaximumSize(new Dimension(60, 30));
+
+        slider.setPreferredSize(new Dimension(60, 30));
+        slider.setMinimumSize(new Dimension(20, 30));
+        slider.setMaximumSize(new Dimension(300, 30));
+
         this.setPreferredSize(new Dimension(20, 30));
-        this.setMinimumSize(new Dimension(20, 30));
+        this.setMinimumSize(new Dimension(20, 35));
         this.setMaximumSize(new Dimension(20, 30));
     }
 

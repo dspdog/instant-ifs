@@ -25,6 +25,8 @@ public final class RenderBuffer extends Kernel{
     private static long time = System.currentTimeMillis();
     private static long frameStartTime = System.currentTimeMillis();
 
+    public long frameNum=0;
+
     public static int shutterSpeed = 50;
 
     public RenderBuffer(int w, int h){
@@ -74,7 +76,12 @@ public final class RenderBuffer extends Kernel{
         Range range = Range.create2D(width,height);
         this.setExecutionMode(Kernel.EXECUTION_MODE.GPU);
         this.execute(range);
+        frameNum++;
         clearZBuffer=false; //de-request z-buffer clear
+
+        if(frameNum%1000==0){
+            System.out.println(this.getExecutionMode().toString() + " " + this.getExecutionTime());
+        }
     }
 
     @Override
