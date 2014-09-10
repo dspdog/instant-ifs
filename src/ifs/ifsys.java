@@ -770,6 +770,7 @@ final class ifsys extends JPanel
         }
 
         if(e.getKeyChar() == 'v'){
+            saveStuff("");
             rp.shapeVibrating = !rp.shapeVibrating;
         }
 

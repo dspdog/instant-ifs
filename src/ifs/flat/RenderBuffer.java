@@ -112,7 +112,7 @@ public final class RenderBuffer extends Kernel{
             if(ZBuffer[x+y*width]==0){ //leaves empty pixels transparent
                 pixels[x+y*width]=0;
             }else{
-                int color = getColor(x,y,gradient, 200);
+                int color = getColor(x,y,gradient, 255);
                 pixels[x+y*width] = color;
             }
 

@@ -7,6 +7,9 @@ public final class SmartVolume { //partitions the space into subVolumes but igno
     int subResCu;
     public int totalRegions;
 
+    //private static final int size2=1000;
+    //private static final float[] fdata = new float[size2*size2*size2];
+
     private SubVolume[] data;
 
     public SmartVolume(int _size){
@@ -22,6 +25,10 @@ public final class SmartVolume { //partitions the space into subVolumes but igno
     }
 
     public void firstTimeReset(){
+        //for(int i=0; i<fdata.length; i++){
+        //    fdata[i]=0.1f;
+        //}
+        System.out.println("reset....");
         totalRegions=0;
         data = new SubVolume[subResCu];
 
