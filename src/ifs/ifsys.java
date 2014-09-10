@@ -215,14 +215,15 @@ final class ifsys extends JPanel
     public class animationThread extends Thread{
 
         public long lastShapeReload = 0;
+        public int shapeReloadPeriod = 1000;
         public boolean shapeReload = false;
 
         public void run(){
             while(!quit)
                 try{
                     if(rp.shapeVibrating){
-
-                        if(System.currentTimeMillis() - lastShapeReload > 1000){
+                        shapeReloadPeriod = (int)rp.evolveLockPeriod;
+                        if(shapeReload && System.currentTimeMillis() - lastShapeReload > shapeReloadPeriod){
                             float oldIntensity = rp.evolveIntensity;
                             float oldAnim = rp.evolveAnimationPeriod;
                             loadStuff("");

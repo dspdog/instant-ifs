@@ -64,6 +64,7 @@ final class RenderParams implements java.io.Serializable {
 
     float evolveIntensity;
     float evolveAnimationPeriod;
+    float evolveLockPeriod;
 
     OneDBuffer odbScale = new OneDBuffer();
     OneDBuffer odbRotationRoll = new OneDBuffer();
@@ -98,6 +99,7 @@ final class RenderParams implements java.io.Serializable {
 
         evolveIntensity = 100f;
         evolveAnimationPeriod = 41f;
+        evolveLockPeriod = 1000f;
 
         dotSize=0;
         smearPDF = false;

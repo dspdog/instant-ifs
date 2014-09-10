@@ -179,8 +179,7 @@ final class volume {
         float factor = 1.0f;
         ifsPt offset = new ifsPt(0,0,0);
         if(rp.smearPDF){
-            //float smearSubdivisions = smearMag;
-            factor = 1.0f-(float)Math.random();//(float)((1.0/smearSubdivisions*((bucketVal+bucketId)%smearSubdivisions))+Math.random()/smearSubdivisions);
+            factor = 1.0f-(float)Math.random();
             dpt = _dpt.interpolateTo(odpt, factor, rp.odbScale.valueAt(factor)/256, rp.odbRotationRoll.valueAt(factor)/(16));
             thePt = _thePt.interpolateTo(theOldPt, factor, rp.odbScale.valueAt(factor)/256, rp.odbRotationRoll.valueAt(factor)/(16));
             if(odpt.x<1){dpt=_dpt;}//hack to prevent smearing from first pt

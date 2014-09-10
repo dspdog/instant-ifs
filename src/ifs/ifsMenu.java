@@ -52,6 +52,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
     SliderWithSpinner evolveIntensitySpinner;
     SliderWithSpinner evolveSpeedSpinner;
+    SliderWithSpinner evolveLockSpinner;
 
     SliderWithSpinner scaleSpinner;
 
@@ -71,6 +72,8 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     WebTable evolutionTable;
 
     WebGradientColorChooser colorChooser;
+
+    WebButton LockButton;
 
     JPanel pointProperties = new JPanel();
     JPanel renderProperties = new JPanel();
@@ -142,6 +145,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
                 myIfsSys.rp.evolveIntensity = evolveIntensitySpinner.getValue();
                 myIfsSys.rp.evolveAnimationPeriod = evolveSpeedSpinner.getValue();
+                myIfsSys.rp.evolveLockPeriod = evolveLockSpinner.getValue();
 
                 //myIfsSys.rp.xMin = Integer.parseInt(xMinSpinner.getValue().toString());
                 //myIfsSys.rp.xMax = Integer.parseInt(xMaxSpinner.getValue().toString());
@@ -307,7 +311,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
         WebButton NextSibButton = new WebButton("", new ImageIcon("./instant-ifs/icons/next.png"));
         WebButton PrevSibButton = new WebButton("", new ImageIcon("./instant-ifs/icons/back.png"));
-        WebButton LockButton = new WebButton("", new ImageIcon("./instant-ifs/icons/lock.png"));
+        LockButton = new WebButton("", new ImageIcon("./instant-ifs/icons/unlock.png"));
 
         ParentsButton.setName("parents");ParentsButton.addActionListener(this);
         OffspingButton.setName("offspring");OffspingButton.addActionListener(this);
@@ -353,6 +357,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
         evolveIntensitySpinner=new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000));
         evolveSpeedSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000));
+        evolveLockSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(1000, 0, 20000));
 
         //evolveSpeedSpinner.setAlignmentY(0.0f);
 
@@ -361,6 +366,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
         ((SliderWithSpinner)addLabeled(evolveIntensitySpinner, layout, "Intensity", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(evolveSpeedSpinner, layout, "Period", panel)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(evolveLockSpinner, layout, "Lock Period", panel)).addChangeListener(updateAndClear);
 
         ((JLabel)addLabeled(new JLabel(), layout, "", panel)).addComponentListener(null);
         updateEvolutionTable();
@@ -632,6 +638,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 camScaleSpinner.setValue((int)myIfsSys.theVolume.perspectiveScale);
                 evolveIntensitySpinner.setValue((int)myIfsSys.rp.evolveIntensity);
                 evolveSpeedSpinner.setValue((int)myIfsSys.rp.evolveAnimationPeriod);
+                evolveLockSpinner.setValue((int)myIfsSys.rp.evolveLockPeriod);
 
                 brightnessSpinner.setValue((int)myIfsSys.rp.brightnessMultiplier);
                 samplesSpinner.setValue(myIfsSys.rp.samplesPerFrame);
@@ -789,7 +796,12 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
             updateEvolutionTable();
         }else if(wb.getName()=="lock"){
             myIfsSys.theShape.saveToFile("locked.shape");
-            myIfsSys.theAnimationThread.shapeReload=true;
+            myIfsSys.theAnimationThread.shapeReload=!myIfsSys.theAnimationThread.shapeReload;
+            if(myIfsSys.theAnimationThread.shapeReload){
+                LockButton.setIcon(new ImageIcon("./instant-ifs/icons/lock.png"));
+            }else{
+                LockButton.setIcon(new ImageIcon("./instant-ifs/icons/unlock.png"));
+            }
             //myIfsSys.theShape=myIfsSys.eShape.prevShape(0);
             //updateEvolutionTable();
         }else if(wb.getName()=="nextsib"){
