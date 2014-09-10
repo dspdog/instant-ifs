@@ -307,13 +307,15 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
         WebButton NextSibButton = new WebButton("", new ImageIcon("./instant-ifs/icons/next.png"));
         WebButton PrevSibButton = new WebButton("", new ImageIcon("./instant-ifs/icons/back.png"));
+        WebButton LockButton = new WebButton("", new ImageIcon("./instant-ifs/icons/lock.png"));
 
         ParentsButton.setName("parents");ParentsButton.addActionListener(this);
         OffspingButton.setName("offspring");OffspingButton.addActionListener(this);
         NextSibButton.setName("nextsib");NextSibButton.addActionListener(this);
         PrevSibButton.setName("prevsib");PrevSibButton.addActionListener(this);
+        LockButton.setName("lock");LockButton.addActionListener(this);
 
-        WebButtonGroup iconsGroup = new WebButtonGroup ( true, OffspingButton, ParentsButton, PrevSibButton, NextSibButton );
+        WebButtonGroup iconsGroup = new WebButtonGroup ( true, OffspingButton, ParentsButton, PrevSibButton, NextSibButton, LockButton );
         ((WebButtonGroup)addLabeled(iconsGroup, layout, "", panel, true)).addComponentListener(null);
 
         String[] modeStrings = {
@@ -785,6 +787,10 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         }else if(wb.getName()=="prevsib"){
             myIfsSys.theShape=myIfsSys.eShape.prevShape(0);
             updateEvolutionTable();
+        }else if(wb.getName()=="lock"){
+            myIfsSys.theShape.saveToFile("locked.shape");
+            //myIfsSys.theShape=myIfsSys.eShape.prevShape(0);
+            //updateEvolutionTable();
         }else if(wb.getName()=="nextsib"){
             myIfsSys.theShape=myIfsSys.eShape.nextShape(0);
             updateEvolutionTable();

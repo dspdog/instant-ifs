@@ -112,15 +112,15 @@ public final class RenderBuffer extends Kernel{
             if(ZBuffer[x+y*width]==0){ //leaves empty pixels transparent
                 pixels[x+y*width]=0;
             }else{
-                int color = getColor(x,y,gradient);
+                int color = getColor(x,y,gradient, 200);
                 pixels[x+y*width] = color;
             }
 
         }
     }
 
-    int getColor(int x, int y, float gradient){
-        int _argb = 255;
+    int getColor(int x, int y, float gradient, int opacity){
+        int _argb = opacity;
         _argb = (_argb << 8) + (int)(RBuffer[x+y*width]*brightness*gradient);
         _argb = (_argb << 8) + (int)(GBuffer[x+y*width]*brightness*gradient);
         _argb = (_argb << 8) + (int)(BBuffer[x+y*width]*brightness*gradient);

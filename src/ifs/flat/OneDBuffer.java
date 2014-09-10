@@ -1,8 +1,9 @@
 package ifs.flat;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public final class OneDBuffer {
+public final class OneDBuffer implements Serializable{
 
     float vals[];
     float intensity;

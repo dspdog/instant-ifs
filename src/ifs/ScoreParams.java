@@ -1,6 +1,8 @@
 package ifs;
 
-final class ScoreParams{
+import java.io.Serializable;
+
+final class ScoreParams implements Serializable{
     float surfaceScale;
     float volumeScale;
     float avD_Scale;

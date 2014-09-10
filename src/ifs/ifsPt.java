@@ -20,14 +20,7 @@ final class ifsPt implements java.io.Serializable{
     public float rotationRoll;
     public float opacity;
 
-    public float savedopacity;
-    public float savedx, savedy, savedz;
-    public float savedscale;
-    public float saveddegrees;
-    public float savedradius;
-    public float savedrotationyaw;
-    public float savedrotationpitch;
-    public float savedrotationroll;
+    public ifsPt savedPt;
 
     public Quaternion rotationQ;
 
@@ -60,19 +53,20 @@ final class ifsPt implements java.io.Serializable{
     }
 
     public ifsPt(ifsPt pt, boolean full){
-        x=pt.x;
-        y=pt.y;
-        z=pt.z;
+        this.x=pt.x;
+        this.y=pt.y;
+        this.z=pt.z;
 
         if(full){
-            scale = pt.scale;
-            rotationYaw = pt.rotationYaw;
-            rotationPitch = pt.rotationPitch;
-            degreesYaw = pt.degreesYaw;
-            degreesPitch = pt.degreesPitch;
-            degreesRoll = pt.degreesRoll;
-            radius = pt.radius;
-            opacity = pt.opacity;
+            this.scale = pt.scale;
+            this.rotationYaw = pt.rotationYaw;
+            this.rotationPitch = pt.rotationPitch;
+            this.degreesYaw = pt.degreesYaw;
+            this.degreesPitch = pt.degreesPitch;
+            this.degreesRoll = pt.degreesRoll;
+            this.radius = pt.radius;
+            this.opacity = pt.opacity;
+            this.savedPt = pt.savedPt;
         }
     }
 
@@ -190,13 +184,6 @@ final class ifsPt implements java.io.Serializable{
     }
 
     public void saveState(){
-        savedx = x; savedy = y; savedz = z;
-        savedscale = scale;
-        saveddegrees = degreesYaw;
-        savedradius = radius;
-        savedrotationyaw = rotationYaw;
-        savedrotationpitch = rotationPitch;
-        savedrotationroll = rotationRoll;
-        savedopacity = opacity;
+        savedPt = new ifsPt(this, true);
     }
 }

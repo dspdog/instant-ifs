@@ -217,6 +217,7 @@ final class ifsys extends JPanel
             while(!quit)
                 try{
                     if(rp.shapeVibrating){
+
                         theShape = theShape.getPerturbedShape(eShape.mutationDescriptorPt.intensify(rp.evolveIntensity/100f), false);
                         rp.odbScale.smooth();
                         rp.odbRotationRoll.smooth();
@@ -594,10 +595,10 @@ final class ifsys extends JPanel
                         theVolume.changed=true;
 
                         if(shiftDown){
-                            theShape.pts[i].rotationRoll = theShape.pts[i].savedrotationroll + xtra.x;
+                            theShape.pts[i].rotationRoll = theShape.pts[i].savedPt.rotationRoll + xtra.x;
                         }else{
-                            theShape.pts[i].rotationPitch = theShape.pts[i].savedrotationpitch + xtra.x;
-                            theShape.pts[i].rotationYaw = theShape.pts[i].savedrotationyaw + xtra.y;
+                            theShape.pts[i].rotationPitch = theShape.pts[i].savedPt.rotationPitch + xtra.x;
+                            theShape.pts[i].rotationYaw = theShape.pts[i].savedPt.rotationYaw + xtra.y;
                         }
 
                     }
@@ -607,19 +608,19 @@ final class ifsys extends JPanel
                             theVolume.changed=true;
                             xtra.x+=xDelta/2.0f*(xPos?1:-1);
                             xtra.x+=yDelta/2.0f*(yPos?1:-1);
-                            theShape.selectedPt.x = theShape.selectedPt.savedx + xtra.x;
+                            theShape.selectedPt.x = theShape.selectedPt.savedPt.x + xtra.x;
                             break;
                         case Y:
                             theVolume.changed=true;
                             xtra.y+=xDelta/2.0f*(xPos?1:-1);
                             xtra.y+=yDelta/2.0f*(yPos?1:-1);
-                            theShape.selectedPt.y = theShape.selectedPt.savedy + xtra.y;
+                            theShape.selectedPt.y = theShape.selectedPt.savedPt.y + xtra.y;
                             break;
                         case Z:
                             theVolume.changed=true;
                             xtra.z+=xDelta/2.0f*(xPos?1:-1);
                             xtra.z+=yDelta/2.0f*(yPos?1:-1);
-                            theShape.selectedPt.z = theShape.selectedPt.savedz + xtra.z;
+                            theShape.selectedPt.z = theShape.selectedPt.savedPt.z + xtra.z;
                             break;
                         default: //rotate camera
 
@@ -708,7 +709,7 @@ final class ifsys extends JPanel
 
     public void loadStuff(String filename){
         if(filename==""){
-            theShape = theShape.loadFromFile("theShape.ser");
+            theShape = theShape.loadFromFile("locked.shape");
         }else{
             theShape = theShape.loadFromFile(filename);
         }
@@ -718,7 +719,7 @@ final class ifsys extends JPanel
     public void saveStuff(String filename){
         theShape.rp = rp;
         if(filename==""){
-            theShape.saveToFile("theShape.ser");
+            theShape.saveToFile("locked.shape");
         }else{
             theShape.saveToFile(filename);
         }
@@ -746,8 +747,8 @@ final class ifsys extends JPanel
         }
 
         if(e.getKeyChar() == 's'){
-        //    saveStuff("");
-            imageUtils.saveImg(startTimeLog, rp.screenwidth, rp.screenheight, renderBuffer.pixels);
+            saveStuff("");
+            //imageUtils.saveImg(startTimeLog, rp.screenwidth, rp.screenheight, renderBuffer.pixels);
         }
 
         if(e.getKeyChar() == 'l'){

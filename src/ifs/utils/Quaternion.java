@@ -1,5 +1,7 @@
 package ifs.utils;
 
+import java.io.Serializable;
+
 /*************************************************************************
  *  Compilation:  javac ifs.Quaternion.java
  *  Execution:    java ifs.Quaternion
@@ -10,7 +12,7 @@ package ifs.utils;
  *
  *************************************************************************/
 
-public final class Quaternion {
+public final class Quaternion implements Serializable{
     public double w, x, y, z;
 
     // create a new object with the given components
