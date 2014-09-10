@@ -789,6 +789,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
             updateEvolutionTable();
         }else if(wb.getName()=="lock"){
             myIfsSys.theShape.saveToFile("locked.shape");
+            myIfsSys.theAnimationThread.shapeReload=true;
             //myIfsSys.theShape=myIfsSys.eShape.prevShape(0);
             //updateEvolutionTable();
         }else if(wb.getName()=="nextsib"){

@@ -201,7 +201,7 @@ final class ifsys extends JPanel
                         }
                     });
 
-                    sleep(5L);
+                    sleep(50L);
                 }
                 catch(InterruptedException e) {
                     e.printStackTrace();
@@ -213,10 +213,24 @@ final class ifsys extends JPanel
     }
 
     public class animationThread extends Thread{
+
+        public long lastShapeReload = 0;
+        public boolean shapeReload = false;
+
         public void run(){
             while(!quit)
                 try{
                     if(rp.shapeVibrating){
+
+                        if(System.currentTimeMillis() - lastShapeReload > 1000){
+                            float oldIntensity = rp.evolveIntensity;
+                            float oldAnim = rp.evolveAnimationPeriod;
+                            loadStuff("");
+                            rp.shapeVibrating=true;
+                            rp.evolveIntensity=oldIntensity;
+                            rp.evolveAnimationPeriod=oldAnim;
+                            lastShapeReload=System.currentTimeMillis();
+                        }
 
                         theShape = theShape.getPerturbedShape(eShape.mutationDescriptorPt.intensify(rp.evolveIntensity/100f), false);
                         rp.odbScale.smooth();
@@ -713,11 +727,11 @@ final class ifsys extends JPanel
         }else{
             theShape = theShape.loadFromFile(filename);
         }
-        rp = theShape.rp;
+        //rp = theShape.rp;
     }
 
     public void saveStuff(String filename){
-        theShape.rp = rp;
+        //theShape.rp = rp;
         if(filename==""){
             theShape.saveToFile("locked.shape");
         }else{

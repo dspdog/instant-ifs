@@ -101,7 +101,7 @@ final class ifsShape implements java.io.Serializable {
             loadedShape = (ifsShape) in.readObject();
             in.close();
             fileIn.close();
-            System.out.println("loaded " + filename);
+            //System.out.println("loaded " + filename);
         }catch(Exception i)
         {
             i.printStackTrace();
