@@ -199,13 +199,9 @@ final class volume {
         double dz=Math.random()-0.5;
 
         seqIndex = (int)(Math.random()*(thePdf.edgeValues));
-        sampleX = thePdf.edgePts[seqIndex].x+dx + offset.x;
-        sampleY = thePdf.edgePts[seqIndex].y+dy + offset.y;
-        sampleZ = thePdf.edgePts[seqIndex].z+dz + offset.z;
-
-        if(this.renderMode == RenderMode.VOLUMETRIC){
-            dx=0;dy=0;dz=0;
-        }
+        sampleX = offset.x + thePdf.center.x;
+        sampleY = offset.y + thePdf.center.y;
+        sampleZ = offset.z + thePdf.center.z;
 
         scale = cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
 
@@ -213,7 +209,7 @@ final class volume {
         pointDegreesPitch = thePt.rotationPitch +cumulativeRotationVector.y;
         pointDegreesRoll = thePt.rotationRoll +cumulativeRotationVector.z;
 
-        int iters=Math.min(rp.dotsPerPDF, thePdf.edgeValues);
+        int iters=1;//Math.min(rp.dotsPerPDF, thePdf.edgeValues);
 
         for(int iter=0; iter<iters; iter++){
             rpt = new ifsPt((sampleX-thePdf.center.x)*scale,
@@ -241,17 +237,9 @@ final class volume {
                 b, rp, true, rp.noDark, rb)){
                     //{ //Z
                 this.pushBounds(theDot);
-                seqIndex++;
+
             }else{
                 duds++;
-                seqIndex+=1031*iter; //fast pseudo random
-                seqIndex%=thePdf.edgePts.length;
-            }
-
-            if(thePdf.edgePts[seqIndex]!=null){
-                sampleX = thePdf.edgePts[seqIndex].x+dx + offset.x;
-                sampleY = thePdf.edgePts[seqIndex].y+dy + offset.y;
-                sampleZ = thePdf.edgePts[seqIndex].z+dz + offset.z;
             }
 
             if(duds>2 && this.renderMode != RenderMode.VOLUMETRIC){iter=iters;} //skips occluded pdfs unless in ifs.volume mode
