@@ -62,6 +62,8 @@ final class RenderParams implements java.io.Serializable {
 
     int dotsPerPDF;
 
+    int smearSmoothness;
+
     float evolveIntensity;
     float evolveAnimationPeriod;
     float evolveLockPeriod;
@@ -72,6 +74,8 @@ final class RenderParams implements java.io.Serializable {
     OneDBuffer odbY = new OneDBuffer();
     OneDBuffer odbZ = new OneDBuffer();
     public RenderParams(){
+
+        smearSmoothness=50;
 
         twoD=false;
         threeD=true;

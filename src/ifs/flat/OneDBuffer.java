@@ -25,6 +25,11 @@ public final class OneDBuffer implements Serializable{
         }
     }
 
+    public void setIntensity(float i){
+        intensity=i;
+        init();
+    }
+
     public void smooth(){
 
         float[] vals2 = new float[1024];

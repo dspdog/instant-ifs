@@ -54,6 +54,8 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     SliderWithSpinner evolveSpeedSpinner;
     SliderWithSpinner evolveLockSpinner;
 
+    SliderWithSpinner smearSmoothnessSpinner;
+
     SliderWithSpinner scaleSpinner;
 
     //JCheckBox frameHoldCheck;
@@ -74,6 +76,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     WebGradientColorChooser colorChooser;
 
     WebButton LockButton;
+    WebButton PlayButton;
 
     JPanel pointProperties = new JPanel();
     JPanel renderProperties = new JPanel();
@@ -146,6 +149,15 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 myIfsSys.rp.evolveIntensity = evolveIntensitySpinner.getValue();
                 myIfsSys.rp.evolveAnimationPeriod = evolveSpeedSpinner.getValue();
                 myIfsSys.rp.evolveLockPeriod = evolveLockSpinner.getValue();
+
+                myIfsSys.rp.smearSmoothness = smearSmoothnessSpinner.getValue();
+
+                myIfsSys.rp.odbScale.setIntensity((float)Math.sqrt(myIfsSys.rp.smearSmoothness)/10f);
+                myIfsSys.rp.odbRotationRoll.setIntensity((float)Math.sqrt(myIfsSys.rp.smearSmoothness)/10f);
+                myIfsSys.rp.odbX.setIntensity((float)Math.sqrt(myIfsSys.rp.smearSmoothness)/10f);
+                myIfsSys.rp.odbY.setIntensity((float)Math.sqrt(myIfsSys.rp.smearSmoothness)/10f);
+                myIfsSys.rp.odbZ.setIntensity((float)Math.sqrt(myIfsSys.rp.smearSmoothness)/10f);
+
 
                 //myIfsSys.rp.xMin = Integer.parseInt(xMinSpinner.getValue().toString());
                 //myIfsSys.rp.xMax = Integer.parseInt(xMaxSpinner.getValue().toString());
@@ -278,7 +290,8 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
             }
         });
 */
-        ((JCheckBox)addLabeled(smearCheck, layout, "Smear", panel)).addChangeListener(updateAndClear);
+
+        smearSmoothnessSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 100));
 
         WebButton XButton = new WebButton("", new ImageIcon("./instant-ifs/icons/front.png"));
         WebButton ZButton = new WebButton("", new ImageIcon("./instant-ifs/icons/side.png"));
@@ -290,6 +303,9 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
         WebButtonGroup iconsGroup = new WebButtonGroup ( true, XButton, YButton, ZButton );
         ((WebButtonGroup)addLabeled(iconsGroup, layout, "", panel, true)).addComponentListener(null);
+        ((JLabel)addLabeled(new JLabel(""), layout, "", panel, true)).addComponentListener(null);
+        ((JCheckBox)addLabeled(smearCheck, layout, "Smear", panel)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(smearSmoothnessSpinner, layout, "Wobble", panel, false)).addChangeListener(updateAndClear);
 
         panel.addMouseMotionListener(this);
     }
@@ -304,7 +320,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
         generationLabel = new JLabel("0 Sibling 0/"+myIfsSys.eShape.sibsPerGen);
 
-        ((JLabel)addLabeled(generationLabel, layout, "Generation", panel)).addComponentListener(null);
+        //((JLabel)addLabeled(generationLabel, layout, "Generation", panel)).addComponentListener(null);
 
         WebButton ParentsButton = new WebButton("", new ImageIcon("./instant-ifs/icons/parents.png"));
         WebButton OffspingButton = new WebButton("", new ImageIcon("./instant-ifs/icons/offspring.png"));
@@ -312,14 +328,18 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         WebButton NextSibButton = new WebButton("", new ImageIcon("./instant-ifs/icons/next.png"));
         WebButton PrevSibButton = new WebButton("", new ImageIcon("./instant-ifs/icons/back.png"));
         LockButton = new WebButton("", new ImageIcon("./instant-ifs/icons/unlock.png"));
+        PlayButton = new WebButton("", new ImageIcon("./instant-ifs/icons/invader_big.png"));
 
         ParentsButton.setName("parents");ParentsButton.addActionListener(this);
         OffspingButton.setName("offspring");OffspingButton.addActionListener(this);
         NextSibButton.setName("nextsib");NextSibButton.addActionListener(this);
         PrevSibButton.setName("prevsib");PrevSibButton.addActionListener(this);
         LockButton.setName("lock");LockButton.addActionListener(this);
+        PlayButton.setName("play");PlayButton.addActionListener(this);
 
-        WebButtonGroup iconsGroup = new WebButtonGroup ( true, OffspingButton, ParentsButton, PrevSibButton, NextSibButton, LockButton );
+        WebButtonGroup iconsGroup = new WebButtonGroup ( true,
+                //OffspingButton, ParentsButton, PrevSibButton, NextSibButton,
+                LockButton, PlayButton );
         ((WebButtonGroup)addLabeled(iconsGroup, layout, "", panel, true)).addComponentListener(null);
 
         String[] modeStrings = {
@@ -369,15 +389,14 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         ((SliderWithSpinner)addLabeled(evolveLockSpinner, layout, "Lock Period", panel)).addChangeListener(updateAndClear);
 
         ((JLabel)addLabeled(new JLabel(), layout, "", panel)).addComponentListener(null);
-        updateEvolutionTable();
 
         //evolutionTable.setEditable(false);
         //evolutionTable.setAutoResizeMode(WebTable.AUTO_RESIZE_OFF);
         //evolutionTable.setRowSelectionAllowed(true);
         //evolutionTable.setColumnSelectionAllowed(true);
-        evolutionTable.setPreferredScrollableViewportSize(new Dimension(200, 150));
-        evolutionTable.setAutoCreateRowSorter(true);
-        evolutionTable.setAutoscrolls(true);
+        //evolutionTable.setPreferredScrollableViewportSize(new Dimension(200, 150));
+        //evolutionTable.setAutoCreateRowSorter(true);
+        //evolutionTable.setAutoscrolls(true);
          ((WebScrollPane)addLabeled(new WebScrollPane ( evolutionTable ), layout, "", panel, true)).addComponentListener(new ComponentListener() {
              @Override
              public void componentResized(ComponentEvent e) {
@@ -401,18 +420,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
          });
 
         panel.addMouseMotionListener(this);
-    }
-
-    public void updateEvolutionTable(){
-        String[] headers = { "Date", "Name", "Score", "Q", "Method"};
-        //System.out.println("HISTORY"+myIfsSys.eShape.historyIndex);
-        evolutionTable = new WebTable (myIfsSys.eShape.evolutionHistory, headers );
-        //evolutionTable.update(myIfsSys.renderGraphics);
-        evolutionTable.scrollToRow(myIfsSys.eShape.historyIndex);
-        evolveProperties.requestFocusInWindow();
-        myIfsSys.requestFocusInWindow();
-        myIfsSys.clearframe();
-        myIfsSys.gamefunc();
     }
 
     public void setupRenderPropertiesPanel(JPanel panel){
@@ -551,7 +558,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         setupPointPropertiesPanel(pointProperties);
         setupRenderPropertiesPanel(renderProperties);
         setupPdfPropertiesPanel(pdfProperties);
-        //setupCameraPropertiesPanel(cameraProperties);
         setupEvolvePropertiesPanel(evolveProperties);
 
         SpringLayout sideMenuLayout = new SpringLayout();
@@ -639,6 +645,8 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 evolveIntensitySpinner.setValue((int)myIfsSys.rp.evolveIntensity);
                 evolveSpeedSpinner.setValue((int)myIfsSys.rp.evolveAnimationPeriod);
                 evolveLockSpinner.setValue((int)myIfsSys.rp.evolveLockPeriod);
+
+                smearSmoothnessSpinner.setValue((int)myIfsSys.rp.smearSmoothness);
 
                 brightnessSpinner.setValue((int)myIfsSys.rp.brightnessMultiplier);
                 samplesSpinner.setValue(myIfsSys.rp.samplesPerFrame);
@@ -787,13 +795,13 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
         }else if(wb.getName()=="parents"){
             myIfsSys.eShape.parents(myIfsSys.theShape);
-            updateEvolutionTable();
+            //updateEvolutionTable();
         }else if(wb.getName()=="offspring"){
             myIfsSys.eShape.offSpring(myIfsSys.theShape, myIfsSys.rp.evolveIntensity);
-            updateEvolutionTable();
+            //updateEvolutionTable();
         }else if(wb.getName()=="prevsib"){
             myIfsSys.theShape=myIfsSys.eShape.prevShape(0);
-            updateEvolutionTable();
+            //updateEvolutionTable();
         }else if(wb.getName()=="lock"){
             myIfsSys.theShape.saveToFile("locked.shape");
             myIfsSys.theAnimationThread.shapeReload=!myIfsSys.theAnimationThread.shapeReload;
@@ -804,9 +812,21 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
             }
             //myIfsSys.theShape=myIfsSys.eShape.prevShape(0);
             //updateEvolutionTable();
+        }else if(wb.getName()=="play"){
+            myIfsSys.saveStuff("");
+            myIfsSys.rp.shapeVibrating = !myIfsSys.rp.shapeVibrating;
+
+            //myIfsSys.theAnimationThread.shapeReload=!myIfsSys.theAnimationThread.shapeReload;
+            if(myIfsSys.rp.shapeVibrating){
+                PlayButton.setIcon(new ImageIcon("./instant-ifs/icons/invader_alive_big.png"));
+            }else{
+                PlayButton.setIcon(new ImageIcon("./instant-ifs/icons/invader_big.png"));
+            }
+            //myIfsSys.theShape=myIfsSys.eShape.prevShape(0);
+            //updateEvolutionTable();
         }else if(wb.getName()=="nextsib"){
             myIfsSys.theShape=myIfsSys.eShape.nextShape(0);
-            updateEvolutionTable();
+            //updateEvolutionTable();
         }else if(mc.getActionCommand()=="Save Shape..."){
             pdfZImgFile = fc.showSaveDialog(this);
             if(pdfZImgFile == JFileChooser.APPROVE_OPTION){

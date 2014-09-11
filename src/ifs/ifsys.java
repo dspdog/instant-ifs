@@ -284,7 +284,7 @@ final class ifsys extends JPanel
                                     imageUtils.saveImg(startTimeLog, rp.screenwidth, rp.screenheight, renderBuffer.pixels);
                                     eShape.offSpring(eShape.getHighestScoreShape(), rp.evolveIntensity);
                                 }else{
-                                    theMenu.updateEvolutionTable();
+                                    //theMenu.updateEvolutionTable();
                                 }
 
                                 clearframe();
@@ -867,26 +867,26 @@ final class ifsys extends JPanel
 
         if(e.getKeyChar() == 'w'){
             eShape.parents(theShape);
-            theMenu.updateEvolutionTable();
+            //theMenu.updateEvolutionTable();
         }
 
         if(e.getKeyChar() == 'e'){
             eShape.offSpring(theShape, rp.evolveIntensity);
-            theMenu.updateEvolutionTable();
+            //theMenu.updateEvolutionTable();
             clearframe();
             gamefunc();
         }
 
         if(e.getKeyChar() == 'z'){
             theShape=eShape.nextShape(0);
-            theMenu.updateEvolutionTable();
+            //theMenu.updateEvolutionTable();
             clearframe();
             gamefunc();
         }
 
         if(e.getKeyChar() == 'x'){
             theShape=eShape.prevShape(0);
-            theMenu.updateEvolutionTable();
+            //theMenu.updateEvolutionTable();
             clearframe();
             gamefunc();
         }
