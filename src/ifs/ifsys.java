@@ -239,11 +239,11 @@ final class ifsys extends JPanel
                         rp.odbX.smooth();
                         rp.odbY.smooth();
                         rp.odbZ.smooth();
-                        rp.odbScale.add(new OneDBuffer(), 30); //scale
-                        rp.odbRotationRoll.add(new OneDBuffer(), 20); //rotation
-                        rp.odbX.add(new OneDBuffer(), 20); //offsetX
-                        rp.odbY.add(new OneDBuffer(), 20); //offsetY
-                        rp.odbZ.add(new OneDBuffer(), 20); //offsetZ
+                        rp.odbScale.add(new OneDBuffer(10), 30); //scale
+                        rp.odbRotationRoll.add(new OneDBuffer(20), 20); //rotation
+                        rp.odbX.add(new OneDBuffer(30), 20); //offsetX
+                        rp.odbY.add(new OneDBuffer(40), 20); //offsetY
+                        rp.odbZ.add(new OneDBuffer(50), 20); //offsetZ
                         //if(!rp.renderThrottling || theVolume.totalSamples>rp.shutterPeriod *1000){
                             clearframe();
                             gamefunc();
@@ -749,11 +749,11 @@ final class ifsys extends JPanel
         }
 
         if(e.getKeyChar() == 'b'){
-            rp.odbScale = new OneDBuffer();
-            rp.odbRotationRoll = new OneDBuffer();
-            rp.odbX = new OneDBuffer();
-            rp.odbY = new OneDBuffer();
-            rp.odbZ = new OneDBuffer();
+            rp.odbScale = new OneDBuffer(10);
+            rp.odbRotationRoll = new OneDBuffer(20);
+            rp.odbX = new OneDBuffer(30);
+            rp.odbY = new OneDBuffer(40);
+            rp.odbZ = new OneDBuffer(50);
             clearframe();
         }
 

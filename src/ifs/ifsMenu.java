@@ -45,7 +45,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     SliderWithSpinner evolveSpeedSpinner;
     SliderWithSpinner evolveLockSpinner;
 
-    SliderWithSpinner smearSmoothnessSpinner;
+    SliderWithSpinner smearWobbleSpinner;
 
     SliderWithSpinner scaleSpinner;
 
@@ -133,13 +133,13 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 myIfsSys.rp.evolveAnimationPeriod = evolveSpeedSpinner.getValue();
                 myIfsSys.rp.evolveLockPeriod = evolveLockSpinner.getValue();
 
-                myIfsSys.rp.smearSmoothness = smearSmoothnessSpinner.getValue();
+                myIfsSys.rp.smearWobbleIntensity = smearWobbleSpinner.getValue();
 
-                myIfsSys.rp.odbScale.setIntensity((float)Math.sqrt(myIfsSys.rp.smearSmoothness)/10f);
-                myIfsSys.rp.odbRotationRoll.setIntensity((float)Math.sqrt(myIfsSys.rp.smearSmoothness)/10f);
-                myIfsSys.rp.odbX.setIntensity((float)Math.sqrt(myIfsSys.rp.smearSmoothness)/10f);
-                myIfsSys.rp.odbY.setIntensity((float)Math.sqrt(myIfsSys.rp.smearSmoothness)/10f);
-                myIfsSys.rp.odbZ.setIntensity((float)Math.sqrt(myIfsSys.rp.smearSmoothness)/10f);
+                myIfsSys.rp.odbScale.setIntensity((float)Math.sqrt(myIfsSys.rp.smearWobbleIntensity)/10f);
+                myIfsSys.rp.odbRotationRoll.setIntensity((float)Math.sqrt(myIfsSys.rp.smearWobbleIntensity)/10f);
+                myIfsSys.rp.odbX.setIntensity((float)Math.sqrt(myIfsSys.rp.smearWobbleIntensity)/10f);
+                myIfsSys.rp.odbY.setIntensity((float)Math.sqrt(myIfsSys.rp.smearWobbleIntensity)/10f);
+                myIfsSys.rp.odbZ.setIntensity((float)Math.sqrt(myIfsSys.rp.smearWobbleIntensity)/10f);
 
             }
         }
@@ -267,7 +267,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         });
 */
 
-        smearSmoothnessSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 100));
+        smearWobbleSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(5, 0, 25));
 
         WebButton XButton = new WebButton("", new ImageIcon("./instant-ifs/icons/front.png"));
         WebButton ZButton = new WebButton("", new ImageIcon("./instant-ifs/icons/side.png"));
@@ -281,7 +281,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         ((WebButtonGroup)addLabeled(iconsGroup, layout, "", panel, true)).addComponentListener(null);
         ((JLabel)addLabeled(new JLabel(""), layout, "", panel, true)).addComponentListener(null);
         ((JCheckBox)addLabeled(smearCheck, layout, "Smear", panel)).addChangeListener(updateAndClear);
-        ((SliderWithSpinner)addLabeled(smearSmoothnessSpinner, layout, "Wobble", panel, false)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(smearWobbleSpinner, layout, "Wobble", panel, false)).addChangeListener(updateAndClear);
 
         panel.addMouseMotionListener(this);
     }
@@ -622,7 +622,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 evolveSpeedSpinner.setValue((int)myIfsSys.rp.evolveAnimationPeriod);
                 evolveLockSpinner.setValue((int)myIfsSys.rp.evolveLockPeriod);
 
-                smearSmoothnessSpinner.setValue((int)myIfsSys.rp.smearSmoothness);
+                smearWobbleSpinner.setValue((int) myIfsSys.rp.smearWobbleIntensity);
 
                 brightnessSpinner.setValue((int)myIfsSys.rp.brightnessMultiplier);
                 samplesSpinner.setValue(myIfsSys.rp.samplesPerFrame);

@@ -7,15 +7,19 @@ public final class OneDBuffer implements Serializable{
 
     float vals[];
     float intensity;
+    int so=0;
+    static int entropy=0;
 
-    public OneDBuffer(){
+    public OneDBuffer(int seedOffset){
+        entropy +=12345;
         intensity=1.0f;
-        vals = new float[1028];
+        vals = new float[1028*4];
+        so=seedOffset;
         init();
     }
 
     public void init(){ //random brownian line
-        int seed = -1;
+        long seed = System.currentTimeMillis()+so+ entropy;
         Random rnd = new Random();
         if(seed>=0){
             rnd.setSeed(seed);
@@ -32,7 +36,7 @@ public final class OneDBuffer implements Serializable{
 
     public void smooth(){
 
-        float[] vals2 = new float[1028];
+        float[] vals2 = new float[vals.length];
 
         for(int i=1; i<vals.length; i++){
             vals2[i] = (vals[i]+vals[i-1])/2;
@@ -56,7 +60,7 @@ public final class OneDBuffer implements Serializable{
     }
 
     public float valueAt(float x){ //x = 0 to 1
-        float decX = (float)(x*1024f - Math.floor(x*1024f));
-        return (1f-decX)*vals[(int)(x*1024f)]+(decX)*vals[(int)((x*1024f)+1)%1024];
+        float decX = (float)(x*vals.length - Math.floor(x*vals.length));
+        return (1f-decX)*vals[(int)(x*vals.length)%vals.length]+(decX)*vals[(int)((x*vals.length)+1)%vals.length];
     }
 }

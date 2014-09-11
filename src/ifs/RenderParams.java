@@ -62,31 +62,31 @@ final class RenderParams implements java.io.Serializable {
 
     int dotsPerPDF;
 
-    int smearSmoothness;
+    int smearWobbleIntensity;
 
     float evolveIntensity;
     float evolveAnimationPeriod;
     float evolveLockPeriod;
 
-    OneDBuffer odbScale = new OneDBuffer();
-    OneDBuffer odbRotationRoll = new OneDBuffer();
-    OneDBuffer odbX = new OneDBuffer();
-    OneDBuffer odbY = new OneDBuffer();
-    OneDBuffer odbZ = new OneDBuffer();
+    OneDBuffer odbScale = new OneDBuffer(10);
+    OneDBuffer odbRotationRoll = new OneDBuffer(20);
+    OneDBuffer odbX = new OneDBuffer(30);
+    OneDBuffer odbY = new OneDBuffer(40);
+    OneDBuffer odbZ = new OneDBuffer(50);
     public RenderParams(){
 
-        smearSmoothness=50;
+        smearWobbleIntensity =3;
 
         twoD=false;
         threeD=true;
 
         dotsPerPDF = 256;
 
-        odbScale = new OneDBuffer();
-        odbRotationRoll = new OneDBuffer();
-        odbX = new OneDBuffer();
-        odbY = new OneDBuffer();
-        odbZ = new OneDBuffer();
+        odbScale = new OneDBuffer(10);
+        odbRotationRoll = new OneDBuffer(20);
+        odbX = new OneDBuffer(30);
+        odbY = new OneDBuffer(40);
+        odbZ = new OneDBuffer(50);
         rightEye=true;
         bgColor = new Color(0,112/2,184/2); //half darkened spanish blue
         scoreParams = new ScoreParams(ScoreParams.Presets.MIN_DistSurface);
@@ -106,7 +106,7 @@ final class RenderParams implements java.io.Serializable {
         evolveLockPeriod = 1000f;
 
         dotSize=0;
-        smearPDF = false;
+        smearPDF = true;
 
         drawGrid = true;
         gridRedrawTime=10;
@@ -124,7 +124,7 @@ final class RenderParams implements java.io.Serializable {
         infoHidden = false;
         usePDFSamples = true;
         guidesHidden = false;
-        iterations = 1;
+        iterations = 2;
         brightnessMultiplier = 2;
         holdFrame=false;
         samplesPerFrame = 104;

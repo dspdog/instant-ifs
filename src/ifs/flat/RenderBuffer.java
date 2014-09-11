@@ -11,6 +11,8 @@ public final class RenderBuffer extends Kernel{
     public final float GBuffer[];
     public final float BBuffer[];
 
+    public final float postZBuffer[];
+
     public final int pixels[];
 
     boolean cartoon=false;
@@ -37,6 +39,8 @@ public final class RenderBuffer extends Kernel{
 
         ZBuffer = new float[width*height];
         TBuffer = new long[width*height];
+
+        postZBuffer = new float[width*height];
 
         clearZProjection();
         cartoon=false;
@@ -81,6 +85,12 @@ public final class RenderBuffer extends Kernel{
         frameNum++;
         clearZBuffer=false; //de-request z-buffer clear
 
+        for(int i=0; i<width*width; i++){
+            pixels[i]=gray(Math.max(1,(int)postZBuffer[i]));
+        }
+        for(int i=0; i<width*width; i++){
+            postZBuffer[i]=0;
+        }
         if(frameNum%1000==0){
             System.out.println(this.getExecutionMode().toString() + " " + this.getExecutionTime());
         }
@@ -88,10 +98,10 @@ public final class RenderBuffer extends Kernel{
 
     @Override
     public void run() {
-        int edge = 4;
+
+        int edge = 32;
         int x = getGlobalId(0);
         int y = getGlobalId(1);
-        float gradient=1.0f;
 
         if (x>edge && x<(width-edge) && y>edge && y<(height-edge)){
 
@@ -99,25 +109,22 @@ public final class RenderBuffer extends Kernel{
                 ZBuffer[x+y*width]=0;
             }
 
-            if(cartoon){
-                int maxslope = getMaxSlope(x,y);
-                if(maxslope>1){
-                    maxslope=255;
-                    if(ZBuffer[x+y*width]==0){
-                        ZBuffer[x+y*width]=1;//outside edges
-                    }
+            if(ZBuffer[x+y*width]>0){
+                postZBuffer[x+y*width]=(int)ZBuffer[x+y*width];
+                //putThing(x,y,ZBuffer[x+y*width]);
+            }
+
+        }
+    }
+
+    void putThing(int x, int y, float origz){
+        int size = (int)(64*origz/512);
+        for(int _x=-size; _x<size+1; _x++){
+            for(int _y=-size; _y<size+1; _y++){
+                if(_x*_x+_y*_y<size*size){
+                    postZBuffer[(x+_x)+(y+_y)*width]=max(origz, postZBuffer[(x+_x)+(y+_y)*width]);
                 }
-                gradient = 1.0f-maxslope/255.0f;
             }
-
-
-            if(ZBuffer[x+y*width]==0){ //leaves empty pixels transparent
-                pixels[x+y*width]=0;
-            }else{
-                int color = getColor(x,y,gradient, 255);
-                pixels[x+y*width] = color;
-            }
-
         }
     }
 
@@ -127,6 +134,16 @@ public final class RenderBuffer extends Kernel{
         _argb = (_argb << 8) + (int)(RBuffer[x+y*width]*brightness*gradient);
         _argb = (_argb << 8) + (int)(GBuffer[x+y*width]*brightness*gradient);
         _argb = (_argb << 8) + (int)(BBuffer[x+y*width]*brightness*gradient);
+
+        return _argb;
+    }
+
+    int gray(int g){
+        int _argb = 255;
+
+        _argb = (_argb << 8) + g;
+        _argb = (_argb << 8) + g;
+        _argb = (_argb << 8) + g;
 
         return _argb;
     }

@@ -184,7 +184,7 @@ final class volume {
             thePt = _thePt.interpolateTo(theOldPt, factor, rp.odbScale.valueAt(factor)/256f, rp.odbRotationRoll.valueAt(factor)/(16f));
             if(odpt.x<1){dpt=_dpt;}//hack to prevent smearing from first pt
 
-            offset = new ifsPt(rp.odbX.valueAt(factor),rp.odbY.valueAt(factor),rp.odbZ.valueAt(factor)).scale(10);
+            offset = new ifsPt(rp.odbX.valueAt(factor),rp.odbY.valueAt(factor),rp.odbZ.valueAt(factor)).scale(3);
         }
 
         int duds = 0;
