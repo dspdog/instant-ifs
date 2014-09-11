@@ -1,13 +1,10 @@
 package ifs;
 
-import ifs.utils.MathVirtualizer;
 import ifs.utils.Quaternion;
 
 import java.util.Random;
 
 final class ifsPt implements java.io.Serializable{
-
-    final static MathVirtualizer mv = new MathVirtualizer();
 
     public float x, y, z;
     public float scale;
@@ -177,8 +174,8 @@ final class ifsPt implements java.io.Serializable{
 
     public ifsPt qRotate(ifsPt r, float a){
         a/=2;
-        float sa2 = mv.virtualSin(a);
-        Quaternion q2 = new Quaternion(mv.virtualCos(a), r.x*sa2, r.y*sa2, r.z*sa2);
+        float sa2 = (float)Math.sin(a);
+        Quaternion q2 = new Quaternion(Math.cos(a), r.x*sa2, r.y*sa2, r.z*sa2);
         Quaternion q3 = q2.times(new Quaternion(0, this.x, this.y, this.z)).times(q2.conjugate());
         return new ifsPt(q3.x, q3.y, q3.z);
     }

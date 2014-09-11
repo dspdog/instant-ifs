@@ -34,20 +34,11 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     SliderWithSpinner delaySpinner;
     //JSpinner dotSizeSpinner;
 
-    //JSpinner xMinSpinner;
-    //JSpinner xMaxSpinner;
-    //JSpinner yMinSpinner;
-    //JSpinner yMaxSpinner;
-    //JSpinner zMinSpinner;
-    //JSpinner zMaxSpinner;
 
     SliderWithSpinner pitchSpinner;
     SliderWithSpinner yawSpinner;
     SliderWithSpinner rollSpinner;
 
-    //JSlider camPitchSpinner;
-    //JSlider camYawSpinner;
-    //JSlider camRollSpinner;
     SliderWithSpinner camScaleSpinner;
 
     SliderWithSpinner evolveIntensitySpinner;
@@ -58,13 +49,11 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
     SliderWithSpinner scaleSpinner;
 
-    //JCheckBox frameHoldCheck;
-
     JCheckBox gridCheck;
     JCheckBox cartoonCheck;
 
     JCheckBox perspectiveCheck;
-    //JCheckBox delayCheck;
+
     JCheckBox smearCheck;
 
     JComboBox renderModeCombo;
@@ -81,7 +70,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     JPanel pointProperties = new JPanel();
     JPanel renderProperties = new JPanel();
     JPanel pdfProperties = new JPanel();
-    //JPanel cameraProperties = new JPanel();
+
     JPanel evolveProperties = new JPanel();
 
     Frame parentFrame = new Frame();
@@ -128,9 +117,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 myIfsSys.theVolume.usePerspective = !perspectiveCheck.isSelected();
                 myIfsSys.rp.smearPDF = smearCheck.isSelected();
                 myIfsSys.rp.shutterPeriod = delaySpinner.getValue();
-                //myIfsSys.rp.renderThrottling = delayCheck.isSelected();
-
-                //myIfsSys.rp.holdFrame = frameHoldCheck.isSelected();
 
                 myIfsSys.rp.potentialRadius = Integer.parseInt(potentialSpinner.getValue()+"");
                 myIfsSys.rp.drawGrid = gridCheck.isSelected();
@@ -138,9 +124,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
                 myIfsSys.theShape.updateCenter();
 
-                //myIfsSys.theVolume.camPitch = camPitchSpinner.getValue() - 180;
-                //myIfsSys.theVolume.camYaw = camYawSpinner.getValue() - 180;
-                //myIfsSys.theVolume.camRoll = camRollSpinner.getValue() - 180;
                 myIfsSys.theVolume.perspectiveScale = camScaleSpinner.getValue();
                 myIfsSys.theVolume.perspectiveScale = Math.max(0.1f, myIfsSys.theVolume.perspectiveScale);
 
@@ -158,13 +141,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 myIfsSys.rp.odbY.setIntensity((float)Math.sqrt(myIfsSys.rp.smearSmoothness)/10f);
                 myIfsSys.rp.odbZ.setIntensity((float)Math.sqrt(myIfsSys.rp.smearSmoothness)/10f);
 
-
-                //myIfsSys.rp.xMin = Integer.parseInt(xMinSpinner.getValue().toString());
-                //myIfsSys.rp.xMax = Integer.parseInt(xMaxSpinner.getValue().toString());
-                //myIfsSys.rp.yMin = Integer.parseInt(yMinSpinner.getValue().toString());
-                //myIfsSys.rp.yMax = Integer.parseInt(yMaxSpinner.getValue().toString());
-                //myIfsSys.rp.zMin = Integer.parseInt(zMinSpinner.getValue().toString());
-                //myIfsSys.rp.zMax = Integer.parseInt(zMaxSpinner.getValue().toString());
             }
         }
     };
@@ -428,7 +404,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         iterationsSpinner =new SliderWithSpinner(new SliderWithSpinnerModel(3, 0, 360));
 
         potentialSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 360));
-        delaySpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 5000));
+        delaySpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000));
         //dotSizeSpinner = new JSpinner();
 
         //frameHoldCheck = new JCheckBox();

@@ -180,8 +180,8 @@ final class volume {
         ifsPt offset = new ifsPt(0,0,0);
         if(rp.smearPDF){
             factor = 1.0f-(float)Math.random();
-            dpt = _dpt.interpolateTo(odpt, factor, rp.odbScale.valueAt(factor)/256, rp.odbRotationRoll.valueAt(factor)/(16));
-            thePt = _thePt.interpolateTo(theOldPt, factor, rp.odbScale.valueAt(factor)/256, rp.odbRotationRoll.valueAt(factor)/(16));
+            dpt = _dpt.interpolateTo(odpt, factor, rp.odbScale.valueAt(factor)/256f, rp.odbRotationRoll.valueAt(factor)/(16f));
+            thePt = _thePt.interpolateTo(theOldPt, factor, rp.odbScale.valueAt(factor)/256f, rp.odbRotationRoll.valueAt(factor)/(16f));
             if(odpt.x<1){dpt=_dpt;}//hack to prevent smearing from first pt
 
             offset = new ifsPt(rp.odbX.valueAt(factor),rp.odbY.valueAt(factor),rp.odbZ.valueAt(factor)).scale(10);
@@ -213,7 +213,7 @@ final class volume {
         pointDegreesPitch = thePt.rotationPitch +cumulativeRotationVector.y;
         pointDegreesRoll = thePt.rotationRoll +cumulativeRotationVector.z;
 
-        int iters=Math.min(rp.dotsPerPDF, thePdf.edgeValues);
+        int iters=1;//Math.min(rp.dotsPerPDF, thePdf.edgeValues);
 
         for(int iter=0; iter<iters; iter++){
             rpt = new ifsPt((sampleX-thePdf.center.x)*scale,
