@@ -213,7 +213,7 @@ final class volume {
         pointDegreesPitch = thePt.rotationPitch +cumulativeRotationVector.y;
         pointDegreesRoll = thePt.rotationRoll +cumulativeRotationVector.z;
 
-        int iters=1;//Math.min(rp.dotsPerPDF, thePdf.edgeValues);
+        int iters=Math.min(rp.dotsPerPDF, thePdf.edgeValues);
 
         for(int iter=0; iter<iters; iter++){
             rpt = new ifsPt((sampleX-thePdf.center.x)*scale,

@@ -10,7 +10,7 @@ public final class OneDBuffer implements Serializable{
 
     public OneDBuffer(){
         intensity=1.0f;
-        vals = new float[1024];
+        vals = new float[1028];
         init();
     }
 
@@ -32,7 +32,7 @@ public final class OneDBuffer implements Serializable{
 
     public void smooth(){
 
-        float[] vals2 = new float[1024];
+        float[] vals2 = new float[1028];
 
         for(int i=1; i<vals.length; i++){
             vals2[i] = (vals[i]+vals[i-1])/2;
@@ -56,8 +56,7 @@ public final class OneDBuffer implements Serializable{
     }
 
     public float valueAt(float x){ //x = 0 to 1
-        //return (float)Math.cos(x*5d)*10f;
-        double decX = x - Math.floor(x);
-        return (float)((1-decX)*vals[((int)(x*vals.length))%1024] + decX*vals[(1+(int)(x*vals.length))%1024]);
+        float decX = (float)(x*1024f - Math.floor(x*1024f));
+        return (1f-decX)*vals[(int)(x*1024f)]+(decX)*vals[(int)((x*1024f)+1)%1024];
     }
 }

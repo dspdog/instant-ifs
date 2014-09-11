@@ -39,7 +39,7 @@ public final class pdf3D implements java.io.Serializable{ //3d probabilty densit
         samplePixels = new int[width*height];
         edgePts = new intPt[width*width*width];
 
-        loadImgs3D("circle2.png", "circletiny.png", "flat.png");
+        loadImgs3D("circle2.png", "circle.png", "flat.png");
         //loadImgs3D("g.png", "e.png", "b.png");
     }
 
