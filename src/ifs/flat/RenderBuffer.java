@@ -56,7 +56,9 @@ public final class RenderBuffer extends Kernel{
     public boolean putPixel(float x, float y, float z, float R, float G, float B, float dark, boolean rightEye){
 
         x=Math.max((int)x, 0);
-        x=Math.min((int)x, width);
+        x=Math.min((int)x, width-1);
+        y=Math.max((int)y, 0);
+        y=Math.min((int)y, height-1);
 
         if(ZBuffer[(int)x+(int)y*width] < z){
             RBuffer[(int)x+(int)y*width] = R*dark;
@@ -121,14 +123,16 @@ public final class RenderBuffer extends Kernel{
 
     int getColor(int x, int y, float gradient, int opacity){
         int _argb = opacity;
+
         _argb = (_argb << 8) + (int)(RBuffer[x+y*width]*brightness*gradient);
         _argb = (_argb << 8) + (int)(GBuffer[x+y*width]*brightness*gradient);
         _argb = (_argb << 8) + (int)(BBuffer[x+y*width]*brightness*gradient);
+
         return _argb;
     }
 
     int getMaxSlope(int x, int y){
-        int central = (int) ZBuffer[x+y*width];
+        int central = (int) (ZBuffer[x+y*width]);
         int maxslope1 = max(max((int) ZBuffer[(x - 1) + (y) * width] - central, (int) ZBuffer[(x + 1) + (y) * width] - central),
                 max((int) ZBuffer[(x) + (y - 1) * width] - central, (int) ZBuffer[(x) + (y + 1) * width] - central));
         int maxslope2 = max(max((int) ZBuffer[(x - 1) + (y - 1) * width] - central, (int) ZBuffer[(x + 1) + (y + 1) * width] - central),

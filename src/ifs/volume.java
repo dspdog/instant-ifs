@@ -248,9 +248,11 @@ final class volume {
                 seqIndex%=thePdf.edgePts.length;
             }
 
-            sampleX = thePdf.edgePts[seqIndex].x+dx + offset.x;
-            sampleY = thePdf.edgePts[seqIndex].y+dy + offset.y;
-            sampleZ = thePdf.edgePts[seqIndex].z+dz + offset.z;
+            if(thePdf.edgePts[seqIndex]!=null){
+                sampleX = thePdf.edgePts[seqIndex].x+dx + offset.x;
+                sampleY = thePdf.edgePts[seqIndex].y+dy + offset.y;
+                sampleZ = thePdf.edgePts[seqIndex].z+dz + offset.z;
+            }
 
             if(duds>2 && this.renderMode != RenderMode.VOLUMETRIC){iter=iters;} //skips occluded pdfs unless in ifs.volume mode
         }

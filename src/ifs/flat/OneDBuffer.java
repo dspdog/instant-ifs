@@ -56,6 +56,9 @@ public final class OneDBuffer implements Serializable{
     }
 
     public float valueAt(float x){ //x = 0 to 1
+
+        x=(float)Math.min(x,1.0-2/1024f);
+
         float decX = x - (float)Math.floor(x);
         return (1-decX)*vals[(int)(x*vals.length)] + decX*vals[1+(int)(x*vals.length)];
     }

@@ -498,12 +498,8 @@ final class ifsys extends JPanel
                         break;
                     }else{
                         if(!(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
-                            try{//TODO why the err?
-                                theVolume.putPdfSample(dpt, cumulativeRotation, cumulativeScale, thePt, theShape.pts[oldRandomIndex], olddpt,
-                                        buckets[bucketIndex], bucketIndex, distance, rp, thePdf, renderBuffer, rpt.magnitude(), theMenu.colorChooser);
-                            }catch (Exception e){
-                                //e.printStackTrace();
-                            }
+                            theVolume.putPdfSample(dpt, cumulativeRotation, cumulativeScale, thePt, theShape.pts[oldRandomIndex], olddpt,
+                                    buckets[bucketIndex], bucketIndex, distance, rp, thePdf, renderBuffer, rpt.magnitude(), theMenu.colorChooser);
                         }
                         cumulativeScale *= thePt.scale/centerPt.scale;
                     }
