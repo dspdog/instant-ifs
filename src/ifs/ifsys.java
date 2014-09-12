@@ -50,7 +50,7 @@ final class ifsys extends JPanel
 
     static int numBuckets = 10_000_000;
     static int numBucketsAnimated = 1_000_000;
-    int[] buckets = new int[numBuckets]; //used for "load balancing" across the branches
+    //int[] buckets = new int[numBuckets]; //used for "load balancing" across the branches
 
     static ifsOverlays.DragAxis selectedMovementAxis = ifsOverlays.DragAxis.NONE;
 
@@ -239,11 +239,11 @@ final class ifsys extends JPanel
                         rp.odbX.smooth();
                         rp.odbY.smooth();
                         rp.odbZ.smooth();
-                        rp.odbScale.add(new OneDBuffer(10), 30); //scale
-                        rp.odbRotationRoll.add(new OneDBuffer(20), 20); //rotation
-                        rp.odbX.add(new OneDBuffer(30), 20); //offsetX
-                        rp.odbY.add(new OneDBuffer(40), 20); //offsetY
-                        rp.odbZ.add(new OneDBuffer(50), 20); //offsetZ
+                        rp.odbScale.add(new OneDBuffer(10, rp.smearSmooth, System.currentTimeMillis()), 30); //scale
+                        rp.odbRotationRoll.add(new OneDBuffer(20, rp.smearSmooth, System.currentTimeMillis()), 20); //rotation
+                        rp.odbX.add(new OneDBuffer(30, rp.smearSmooth, System.currentTimeMillis()), 20); //offsetX
+                        rp.odbY.add(new OneDBuffer(40, rp.smearSmooth, System.currentTimeMillis()), 20); //offsetY
+                        rp.odbZ.add(new OneDBuffer(50, rp.smearSmooth, System.currentTimeMillis()), 20); //offsetZ
                         //if(!rp.renderThrottling || theVolume.totalSamples>rp.shutterPeriod *1000){
                             clearframe();
                             gamefunc();
@@ -390,26 +390,27 @@ final class ifsys extends JPanel
 
     public void generatePixels(){
         boolean didProcess=false;
-        if(theVolume.totalSamples>5000){
+        //if(theVolume.totalSamples>5000){
             didProcess=true;
-            renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.cartoonMode, rp.rightEye, rp.postProcess);
-        }
+            renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.cartoonMode, rp.rightEye, rp.postProcess, rp.smearSize/8f);
+        //}
 
         if(didProcess)lastPostProcessTime=System.currentTimeMillis();
     }
 
     public void clearframe(){
         theVolume.totalSamples=0;
+        //resetBuckets();
         theVolume.drawTime = System.currentTimeMillis();
         long wait = rp.shapeVibrating ? 40 : 10;
         if(!rp.holdFrame && System.currentTimeMillis() - lastClearTime > wait){
-            resetBuckets();
+
             if(theVolume.changed && theVolume.doneClearing)theVolume.clear();
             lastClearTime=System.currentTimeMillis();
             renderBuffer.clearZProjection();
         }
     }
-
+/*
     public void resetBuckets(){
         buckets = new int[rp.shapeVibrating ? numBucketsAnimated : numBuckets];
     }
@@ -437,7 +438,7 @@ final class ifsys extends JPanel
             return minIndex;
         }
     }
-
+*/
     public void selectEvolutionDescriptorPt(){
         evolutionDescSelected=true;
     }
@@ -447,6 +448,11 @@ final class ifsys extends JPanel
     }
 
     public void gamefunc(){
+
+        if(theShape.hasDrawList){
+            theShape.getDrawList();
+        }
+
         rp.guidesHidden = System.currentTimeMillis() - lastMoveTime > rp.linesHideTime;
 
         if(theShape.pointsInUse != 0){
@@ -474,18 +480,18 @@ final class ifsys extends JPanel
                     }
 
                     int oldRandomIndex = randomIndex;
-                    if(bucketIndex*(theShape.pointsInUse-1)<buckets.length){
-                        randomIndex = smallestIndexAtThisNode(bucketIndex*(theShape.pointsInUse-1))+1; //send new data where its needed most...
-                    }else{
+                    //if(bucketIndex*(theShape.pointsInUse-1)<buckets.length){
+                    //    randomIndex = smallestIndexAtThisNode(bucketIndex*(theShape.pointsInUse-1))+1; //send new data where its needed most...
+                    //}else{
                         randomIndex = 1 + (int)(Math.random() * (double) (theShape.pointsInUse-1));
-                    }
+                    //}
 
                     nextBucketIndex = bucketIndex*(theShape.pointsInUse-1)+randomIndex-1;
-                    if(nextBucketIndex<buckets.length){
-                        bucketIndex=nextBucketIndex;
-                    }
+                    //if(nextBucketIndex<buckets.length){
+                    //    bucketIndex=nextBucketIndex;
+                    //}
 
-                    buckets[bucketIndex]++;
+                    ///buckets[bucketIndex]++;
 
                     if(d==0){randomIndex=0;}
 
@@ -506,7 +512,7 @@ final class ifsys extends JPanel
                     }else{
                         if(!(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
                             theVolume.putPdfSample(dpt, cumulativeRotation, cumulativeScale, thePt, theShape.pts[oldRandomIndex], olddpt,
-                                    buckets[bucketIndex], bucketIndex, distance, rp, thePdf, renderBuffer, rpt.magnitude(), theMenu.colorChooser, factorMax);
+                                    0, bucketIndex, distance, rp, thePdf, renderBuffer, rpt.magnitude(), theMenu.colorChooser, factorMax);
                         }
                         cumulativeScale *= thePt.scale/centerPt.scale;
                     }
@@ -756,11 +762,11 @@ final class ifsys extends JPanel
         }
 
         if(e.getKeyChar() == 'b'){
-            rp.odbScale = new OneDBuffer(10);
-            rp.odbRotationRoll = new OneDBuffer(20);
-            rp.odbX = new OneDBuffer(30);
-            rp.odbY = new OneDBuffer(40);
-            rp.odbZ = new OneDBuffer(50);
+            rp.odbScale = new OneDBuffer(10, rp.smearSmooth, rp.wobbleRandomSeed);
+            rp.odbRotationRoll = new OneDBuffer(20, rp.smearSmooth, rp.wobbleRandomSeed);
+            rp.odbX = new OneDBuffer(30, rp.smearSmooth, rp.wobbleRandomSeed);
+            rp.odbY = new OneDBuffer(40, rp.smearSmooth, rp.wobbleRandomSeed);
+            rp.odbZ = new OneDBuffer(50, rp.smearSmooth, rp.wobbleRandomSeed);
             clearframe();
         }
 

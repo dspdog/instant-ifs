@@ -39,6 +39,8 @@ public final class RenderBuffer extends Kernel{
 
     public int mode = 0; //z-process
 
+    public float scaleUp =1.0f;
+
     public boolean addSamples=true;
 
     public RenderBuffer(int w, int h){
@@ -92,10 +94,11 @@ public final class RenderBuffer extends Kernel{
         }
     }
 
-    public void generatePixels(float _brightness, boolean useShadows, boolean rightEye, boolean _putSamples){
+    public void generatePixels(float _brightness, boolean useShadows, boolean rightEye, boolean _putSamples, float _size){
         cartoon=useShadows;
         addSamples=_putSamples;
         brightness=_brightness;
+        scaleUp=_size;
 
         Range range = Range.create2D(width,height);
 
@@ -176,11 +179,14 @@ public final class RenderBuffer extends Kernel{
         float origr = RBuffer[x+y*width];
         float origg = GBuffer[x+y*width];
         float origb = BBuffer[x+y*width];
-        int size = (int)( max(1,(int)(16f*SBuffer[x+y*width]*(origz*origz)/1024f)));
+        float newVal=0;
+        int size = (int)( max(1,(int)(scaleUp*SBuffer[x+y*width]*(origz*origz)/1024f)));
         for(int _x=-size; _x<size+1; _x++){
             for(int _y=-size; _y<size+1; _y++){
-                if(_x*_x+_y*_y<size*size && origz>postZBuffer[(x+_x)+(y+_y)*width]){
-                    postZBuffer[(x+_x)+(y+_y)*width]=origz;
+                newVal=origz;//sprite function goes here
+
+                if(_x*_x+_y*_y<size*size && newVal>postZBuffer[(x+_x)+(y+_y)*width]){
+                    postZBuffer[(x+_x)+(y+_y)*width]=newVal;
                     postRBuffer[(x+_x)+(y+_y)*width]=origr;
                     postGBuffer[(x+_x)+(y+_y)*width]=origg;
                     postBBuffer[(x+_x)+(y+_y)*width]=origb;

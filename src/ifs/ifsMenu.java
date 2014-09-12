@@ -46,6 +46,8 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     SliderWithSpinner evolveLockSpinner;
 
     SliderWithSpinner smearWobbleSpinner;
+    SliderWithSpinner smearSizeSpinner;
+    SliderWithSpinner smearSmoothSpinner;
 
     SliderWithSpinner scaleSpinner;
 
@@ -109,7 +111,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 editPt.rotationYaw = (float)(Double.parseDouble(yawSpinner.getValue()+"")/180.0*Math.PI);
                 editPt.rotationRoll = (float)(Double.parseDouble(rollSpinner.getValue()+"")/180.0*Math.PI);
 
-                myIfsSys.rp.iterations = Integer.parseInt(iterationsSpinner.getValue()+"");
+                myIfsSys.rp.iterations = Integer.parseInt(iterationsSpinner.getValue() + "");
                 //myIfsSys.rp.dotSize = Integer.parseInt(dotSizeSpinner.getValue().toString());
                 myIfsSys.rp.brightnessMultiplier = Double.parseDouble(brightnessSpinner.getValue()+"");
                 myIfsSys.rp.samplesPerFrame = (int)Double.parseDouble(samplesSpinner.getValue()+"");
@@ -133,7 +135,9 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 myIfsSys.rp.evolveAnimationPeriod = evolveSpeedSpinner.getValue();
                 myIfsSys.rp.evolveLockPeriod = evolveLockSpinner.getValue();
 
+                myIfsSys.rp.smearSmooth = smearSmoothSpinner.getValue();
                 myIfsSys.rp.smearWobbleIntensity = smearWobbleSpinner.getValue();
+                myIfsSys.rp.smearSize = smearSizeSpinner.getValue();
 
                 myIfsSys.rp.odbScale.setIntensity((float)Math.sqrt(myIfsSys.rp.smearWobbleIntensity)/10f);
                 myIfsSys.rp.odbRotationRoll.setIntensity((float)Math.sqrt(myIfsSys.rp.smearWobbleIntensity)/10f);
@@ -241,7 +245,9 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         panel.setLayout(layout);
         layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
 
-        smearWobbleSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(5, 0, 25));
+        smearWobbleSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(5, 0, 200));
+        smearSmoothSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(512, 0, 2000));
+        smearSizeSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(16, 0, 200));
 
         WebButton XButton = new WebButton("", new ImageIcon("./instant-ifs/icons/front.png"));
         WebButton ZButton = new WebButton("", new ImageIcon("./instant-ifs/icons/side.png"));
@@ -255,7 +261,9 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         //((WebButtonGroup)addLabeled(iconsGroup, layout, "", panel, true)).addComponentListener(null);
         ((JLabel)addLabeled(new JLabel(""), layout, "", panel, true)).addComponentListener(null);
         ((JCheckBox)addLabeled(smearCheck, layout, "Smear", panel)).addChangeListener(updateAndClear);
-        ((SliderWithSpinner)addLabeled(smearWobbleSpinner, layout, "Wobble", panel, false)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(smearWobbleSpinner, layout, "WobbleMag", panel, false)).addChangeListener(updateAndClear);
+        //((SliderWithSpinner)addLabeled(smearSmoothSpinner, layout, "WobSmooth", panel, false)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(smearSizeSpinner, layout, "Size", panel, false)).addChangeListener(updateAndClear);
 
         panel.addMouseMotionListener(this);
     }
@@ -597,6 +605,8 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 evolveLockSpinner.setValue((int)myIfsSys.rp.evolveLockPeriod);
 
                 smearWobbleSpinner.setValue((int) myIfsSys.rp.smearWobbleIntensity);
+                smearSizeSpinner.setValue((int) myIfsSys.rp.smearSize);
+                smearSmoothSpinner.setValue((int) myIfsSys.rp.smearSmooth);
 
                 brightnessSpinner.setValue((int)myIfsSys.rp.brightnessMultiplier);
                 samplesSpinner.setValue(myIfsSys.rp.samplesPerFrame);

@@ -22,8 +22,10 @@ final class ifsShape implements java.io.Serializable {
     float score;
 
     boolean disqualified;
+    boolean hasDrawList = false;
 
     public ifsShape(){
+        hasDrawList = false;
         evolutionDisqualified=false;
         disqualified=false;
         score=EvolvingShape.MINIMUM_SCORE;
@@ -36,6 +38,11 @@ final class ifsShape implements java.io.Serializable {
         unitScale = 115.47005383792515f; //distance from center to one of the points in preset #1
         autoScale = true;
         freshPoints();
+    }
+
+    public void getDrawList(){
+        //TODO get draw list
+        //hasDrawList=true;
     }
 
     public void findNearestPt(int _mousex, int _mousey, double minDist, volume distortionVolume){

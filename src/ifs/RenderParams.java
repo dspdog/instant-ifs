@@ -64,32 +64,36 @@ final class RenderParams implements java.io.Serializable {
     int dotsPerPDF;
 
     int smearWobbleIntensity;
+    int smearSmooth;
+    long wobbleRandomSeed;
+    float smearSize;
 
     float evolveIntensity;
     float evolveAnimationPeriod;
     float evolveLockPeriod;
 
-    OneDBuffer odbScale = new OneDBuffer(10);
-    OneDBuffer odbRotationRoll = new OneDBuffer(20);
-    OneDBuffer odbX = new OneDBuffer(30);
-    OneDBuffer odbY = new OneDBuffer(40);
-    OneDBuffer odbZ = new OneDBuffer(50);
+    OneDBuffer odbScale = new OneDBuffer(10, 1,1);
+    OneDBuffer odbRotationRoll = new OneDBuffer(20,1,1);
+    OneDBuffer odbX = new OneDBuffer(30,1,1);
+    OneDBuffer odbY = new OneDBuffer(40,1,1);
+    OneDBuffer odbZ = new OneDBuffer(50,1,1);
     public RenderParams(){
-
+        smearSmooth =512;
+        smearSize=32;
         postProcess=true;
 
         smearWobbleIntensity =3;
 
         twoD=false;
         threeD=true;
-
+        wobbleRandomSeed=57;
         dotsPerPDF = 256;
 
-        odbScale = new OneDBuffer(10);
-        odbRotationRoll = new OneDBuffer(20);
-        odbX = new OneDBuffer(30);
-        odbY = new OneDBuffer(40);
-        odbZ = new OneDBuffer(50);
+        odbScale = new OneDBuffer(10, smearSmooth,wobbleRandomSeed);
+        odbRotationRoll = new OneDBuffer(20, smearSmooth,wobbleRandomSeed);
+        odbX = new OneDBuffer(30, smearSmooth,wobbleRandomSeed);
+        odbY = new OneDBuffer(40, smearSmooth,wobbleRandomSeed);
+        odbZ = new OneDBuffer(50, smearSmooth,wobbleRandomSeed);
         rightEye=true;
         bgColor = new Color(0,112/2,184/2); //half darkened spanish blue
         scoreParams = new ScoreParams(ScoreParams.Presets.MIN_DistSurface);
