@@ -21,7 +21,7 @@ final class ifsys extends JPanel
     paintThread thePaintThread;
     mainthread[] threads;
     evolutionThread theEvolutionThread;
-    int numThreads = Runtime.getRuntime().availableProcessors()/2;
+    int numThreads = 2;//Runtime.getRuntime().availableProcessors()/2;
     boolean quit;
 
     static ImageUtils imageUtils = new ImageUtils();

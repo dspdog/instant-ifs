@@ -21,6 +21,8 @@ public final class RenderBuffer extends Kernel{
 
     boolean cartoon=false;
 
+    final boolean shading = true;
+
     float brightness = 1.0f;
 
     int width, height;
@@ -56,6 +58,7 @@ public final class RenderBuffer extends Kernel{
         cartoon=false;
         pixels=new int[width*height];
         addSamples=true;
+        this.setExecutionMode(Kernel.EXECUTION_MODE.GPU);
     }
 
     public void clearZProjection(){
@@ -90,8 +93,8 @@ public final class RenderBuffer extends Kernel{
         cartoon=useShadows;
         addSamples=_putSamples;
         brightness=_brightness;
+
         Range range = Range.create2D(width,height);
-        this.setExecutionMode(Kernel.EXECUTION_MODE.GPU);
 
         mode=0; //Z-PROCESS
         this.execute(range);
@@ -132,16 +135,21 @@ public final class RenderBuffer extends Kernel{
             }
         }else if(mode == 1){//GENERATE PIXELS
             float gradient=1.0f;
+
+            float gms = getMaxSlope(x,y);
+            float maxslope = min(gms*255f, 255f);
+
             if(cartoon){
-                int maxslope = getMaxSlope(x,y);
-                if(maxslope>1){
-                    maxslope=255;
+                if(gms>1){
+                    maxslope=254f;
                     if(postZBuffer[x+y*width]==0){
                         postZBuffer[x+y*width]=1;//outside edges
                     }
                 }
-                gradient = 1.0f-maxslope/255.0f;
             }
+
+            gradient = shading ? 1.0f-maxslope/255.0f : 1.0f;
+
             if(postZBuffer[x+y*width]==0){
                 int _argb = 255;
 
@@ -200,12 +208,12 @@ public final class RenderBuffer extends Kernel{
         return _argb;
     }
 
-    int getMaxSlope(int x, int y){
-        int central = (int) (postZBuffer[x+y*width]);
-        int maxslope1 = max(max((int) postZBuffer[(x - 1) + (y) * width] - central, (int) postZBuffer[(x + 1) + (y) * width] - central),
-                max((int) postZBuffer[(x) + (y - 1) * width] - central, (int) postZBuffer[(x) + (y + 1) * width] - central));
-        int maxslope2 = max(max((int) postZBuffer[(x - 1) + (y - 1) * width] - central, (int) postZBuffer[(x + 1) + (y + 1) * width] - central),
-                max((int) postZBuffer[(x - 1) + (y + 1) * width] - central, (int) postZBuffer[(x + 1) + (y - 1) * width] - central));
+    float getMaxSlope(int x, int y){
+        float central =  (postZBuffer[x+y*width]);
+        float maxslope1 = max(max((float) postZBuffer[(x - 1) + (y) * width] - central, (float) postZBuffer[(x + 1) + (y) * width] - central),
+                max((float) postZBuffer[(x) + (y - 1) * width] - central, (float) postZBuffer[(x) + (y + 1) * width] - central));
+        float maxslope2 = max(max((float) postZBuffer[(x - 1) + (y - 1) * width] - central, (float) postZBuffer[(x + 1) + (y + 1) * width] - central),
+                max((float) postZBuffer[(x - 1) + (y + 1) * width] - central, (float) postZBuffer[(x + 1) + (y - 1) * width] - central));
         return max(maxslope2, maxslope1);
     }
 
