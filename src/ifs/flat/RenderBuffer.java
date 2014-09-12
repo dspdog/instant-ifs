@@ -7,6 +7,7 @@ public final class RenderBuffer extends Kernel{
 
     public final long TBuffer[];
     public final float ZBuffer[];
+    public final float SBuffer[];
     public final float RBuffer[];
     public final float GBuffer[];
     public final float BBuffer[];
@@ -46,6 +47,7 @@ public final class RenderBuffer extends Kernel{
         GBuffer = new float[width*height];
         BBuffer = new float[width*height];
 
+        SBuffer = new float[width*height];
         ZBuffer = new float[width*height];
         TBuffer = new long[width*height];
 
@@ -70,7 +72,7 @@ public final class RenderBuffer extends Kernel{
         frameStartTime=_time;
     }
 
-    public boolean putPixel(float x, float y, float z, float R, float G, float B, float dark, boolean rightEye){
+    public boolean putPixel(float x, float y, float z, float R, float G, float B, float scale, float dark, boolean rightEye){
 
         x=Math.max((int)x, 0);
         x=Math.min((int)x, width-1);
@@ -83,6 +85,7 @@ public final class RenderBuffer extends Kernel{
             BBuffer[(int)x+(int)y*width] = B*dark;
             ZBuffer[(int)x+(int)y*width] = z;
             TBuffer[(int)x+(int)y*width] = time;
+            SBuffer[(int)x+(int)y*width] = scale;
             return true;
         }else{
             return false;
@@ -173,7 +176,7 @@ public final class RenderBuffer extends Kernel{
         float origr = RBuffer[x+y*width];
         float origg = GBuffer[x+y*width];
         float origb = BBuffer[x+y*width];
-        int size = max(1,(int)((origz*origz)/1024f));
+        int size = (int)( max(1,(int)(16f*SBuffer[x+y*width]*(origz*origz)/1024f)));
         for(int _x=-size; _x<size+1; _x++){
             for(int _y=-size; _y<size+1; _y++){
                 if(_x*_x+_y*_y<size*size && origz>postZBuffer[(x+_x)+(y+_y)*width]){

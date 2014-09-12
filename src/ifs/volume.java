@@ -232,7 +232,7 @@ final class volume {
                 this.putPixel(theDot,
                 r,
                 g,
-                b, rp, true, rp.noDark, rb)){
+                b,(float)scale, rp, true, rp.noDark, rb)){
                     //{ //Z
                 this.pushBounds(theDot);
 
@@ -279,21 +279,21 @@ final class volume {
         return pt;
     }
 
-    public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, RenderBuffer rb){
+    public boolean putPixel(ifsPt _pt, float ptR, float ptG, float ptB, float ptScale, RenderParams rp, boolean useCrop, boolean noDark, RenderBuffer rb){
         if(rp.twoD){ //projections on XYZ planes
             float darken = rp.twoD && rp.threeD ? 0.1f : 1.0f;
-            return private_putPixel(new ifsPt(_pt.x, _pt.y, 0), ptR*darken, ptG*darken, ptB*darken, rp, useCrop, noDark, false, rb) ||
-                   private_putPixel(new ifsPt(0, _pt.y, _pt.z), ptR*darken, ptG*darken, ptB*darken, rp, useCrop, noDark, false, rb) ||
-                   private_putPixel(new ifsPt(_pt.x, 0, _pt.z), ptR*darken, ptG*darken, ptB*darken, rp, useCrop, noDark, false, rb) ||
-                   (rp.threeD && private_putPixel(_pt, ptR, ptG, ptB, rp, useCrop, noDark, false, rb)); //normal 3d projection
+            return private_putPixel(new ifsPt(_pt.x, _pt.y, 0), ptR*darken, ptG*darken, ptB*darken, ptScale, rp, useCrop, noDark, false, rb) ||
+                   private_putPixel(new ifsPt(0, _pt.y, _pt.z), ptR*darken, ptG*darken, ptB*darken, ptScale, rp, useCrop, noDark, false, rb) ||
+                   private_putPixel(new ifsPt(_pt.x, 0, _pt.z), ptR*darken, ptG*darken, ptB*darken, ptScale, rp, useCrop, noDark, false, rb) ||
+                   (rp.threeD && private_putPixel(_pt, ptR, ptG, ptB, ptScale, rp, useCrop, noDark, false, rb)); //normal 3d projection
         }else{
-            return rp.threeD && private_putPixel(_pt, ptR, ptG, ptB, rp, useCrop, noDark, false, rb);
+            return rp.threeD && private_putPixel(_pt, ptR, ptG, ptB, ptScale, rp, useCrop, noDark, false, rb);
         }
     }
 
     public boolean putGridPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric, RenderBuffer rb){
         //ignores cartoon mode etc
-        return private_putPixel(_pt, ptR, ptG, ptB, rp, useCrop, noDark, noVolumetric, rb);
+        return private_putPixel(_pt, ptR, ptG, ptB, 1.0f, rp, useCrop, noDark, noVolumetric, rb);
     }
     public void putDataUpdateSurfaceVolume(ifsPt _pt){
         if(volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z, 1)==1){//if its the first point there
@@ -316,7 +316,7 @@ final class volume {
         if(pt.z>maxZ){maxZ=pt.z;}
     }
 
-    private boolean private_putPixel(ifsPt _pt, float ptR, float ptG, float ptB, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric, RenderBuffer rb){
+    private boolean private_putPixel(ifsPt _pt, float ptR, float ptG, float ptB, float ptScale, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric, RenderBuffer rb){
         ifsPt pt = getCameraDistortedPt(_pt, rp.rightEye);
 
         dataPoints++;
@@ -333,7 +333,7 @@ final class volume {
             totalSamples++;
 
             if(useZBuffer){
-                return rb.putPixel(pt.x, pt.y, noVolumetric ? 1 : pt.z, ptR, ptG, ptB, dark, rp.rightEye);
+                return rb.putPixel(pt.x, pt.y, noVolumetric ? 1 : pt.z, ptR, ptG, ptB, ptScale, dark, rp.rightEye);
             }
         }
 
