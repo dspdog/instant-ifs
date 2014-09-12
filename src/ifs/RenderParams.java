@@ -37,7 +37,7 @@ final class RenderParams implements java.io.Serializable {
 
     boolean smearPDF;
 
-    boolean useShadows;
+    boolean cartoonMode;
 
     boolean drawGrid;
     long gridDrawTime;
@@ -57,6 +57,7 @@ final class RenderParams implements java.io.Serializable {
     boolean noDark;
     boolean gradientColors;
     boolean rightEye;
+    boolean postProcess;
 
     ScoreParams scoreParams;
 
@@ -75,6 +76,8 @@ final class RenderParams implements java.io.Serializable {
     OneDBuffer odbZ = new OneDBuffer(50);
     public RenderParams(){
 
+        postProcess=true;
+
         smearWobbleIntensity =3;
 
         twoD=false;
@@ -91,7 +94,7 @@ final class RenderParams implements java.io.Serializable {
         bgColor = new Color(0,112/2,184/2); //half darkened spanish blue
         scoreParams = new ScoreParams(ScoreParams.Presets.MIN_DistSurface);
 
-        useShadows=false;
+        cartoonMode=true;
         savedDots=0;
         savingDots=false;
         saveInterval=2000;

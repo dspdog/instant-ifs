@@ -179,7 +179,7 @@ final class volume {
         float factor = 1.0f;
         ifsPt offset = new ifsPt(0,0,0);
 
-        int iters=(int)Math.min(32,smearMag);
+        int iters=(int)Math.min(32,smearMag)+1;
         float rnd = ((bucketVal+bucketId)%iters);
         float rndOffset = (float)Math.random()/iters;
         for(int iter=0; iter<iters; iter++){

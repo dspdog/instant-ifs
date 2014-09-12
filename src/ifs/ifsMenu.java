@@ -120,7 +120,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
                 myIfsSys.rp.potentialRadius = Integer.parseInt(potentialSpinner.getValue()+"");
                 myIfsSys.rp.drawGrid = gridCheck.isSelected();
-                myIfsSys.rp.useShadows = cartoonCheck.isSelected();
+                myIfsSys.rp.cartoonMode = cartoonCheck.isSelected();
 
                 myIfsSys.theShape.updateCenter();
 
@@ -608,7 +608,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 //frameHoldCheck.setSelected(myIfsSys.rp.holdFrame);
                 gridCheck.setSelected(myIfsSys.rp.drawGrid);
                 //delayCheck.setSelected(myIfsSys.rp.renderThrottling);
-                cartoonCheck.setSelected(myIfsSys.rp.useShadows);
+                cartoonCheck.setSelected(myIfsSys.rp.cartoonMode);
 
                 smearCheck.setSelected(myIfsSys.rp.smearPDF);
 

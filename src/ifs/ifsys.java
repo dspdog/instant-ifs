@@ -21,7 +21,7 @@ final class ifsys extends JPanel
     paintThread thePaintThread;
     mainthread[] threads;
     evolutionThread theEvolutionThread;
-    int numThreads = 2; //Runtime.getRuntime().availableProcessors()/2;
+    int numThreads = Runtime.getRuntime().availableProcessors()/2;
     boolean quit;
 
     static ImageUtils imageUtils = new ImageUtils();
@@ -390,10 +390,10 @@ final class ifsys extends JPanel
 
     public void generatePixels(){
         boolean didProcess=false;
-        //if(!rp.renderThrottling || theVolume.totalSamples>rp.shutterPeriod*1000){
+        if(theVolume.totalSamples>5000){
             didProcess=true;
-            renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.useShadows, rp.rightEye);
-        //}
+            renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.cartoonMode, rp.rightEye, rp.postProcess);
+        }
 
         if(didProcess)lastPostProcessTime=System.currentTimeMillis();
     }
@@ -857,7 +857,7 @@ final class ifsys extends JPanel
                 gamefunc();
                 break;
             case 'h':
-                rp.useShadows = !rp.useShadows;
+                rp.cartoonMode = !rp.cartoonMode;
                 break;
         }
 
@@ -883,6 +883,12 @@ final class ifsys extends JPanel
         if(e.getKeyChar() == 'x'){
             theShape=eShape.prevShape(0);
             //theMenu.updateEvolutionTable();
+            clearframe();
+            gamefunc();
+        }
+
+        if(e.getKeyChar() == 'p'){
+            rp.postProcess=!rp.postProcess;
             clearframe();
             gamefunc();
         }
@@ -926,7 +932,7 @@ final class ifsys extends JPanel
             theShape.setToPreset(9);
             theVolume.clear();
             rp.iterations=8;
-            rp.useShadows=true;
+            rp.cartoonMode =true;
             rp.brightnessMultiplier=1;
             rp.smearPDF=true;
             rp.renderThrottling=true;
