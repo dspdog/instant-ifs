@@ -96,11 +96,9 @@ public final class RenderBuffer extends Kernel{
 
         Range range = Range.create2D(width,height);
 
-        mode=0; //Z-PROCESS
-        this.execute(range);
-
-        mode=1; //GENERATE PIXELS
-        this.execute(range);
+        //pass 1 Z-PROCESS
+        //pass 2 GENERATE PIXELS
+        this.execute(range, 2);
 
         frameNum++;
 
@@ -115,7 +113,7 @@ public final class RenderBuffer extends Kernel{
         int x = getGlobalId(0);
         int y = getGlobalId(1);
 
-        if(mode==0){ //Z-PROCESS
+        if(getPassId()==0){ //Z-PROCESS
             int edge = 32;
             if (x>edge && x<(width-edge) && y>edge && y<(height-edge)){
                 if((TBuffer[x+y*width]<time-shutterSpeed) && TBuffer[x+y*width]<frameStartTime){
@@ -133,7 +131,7 @@ public final class RenderBuffer extends Kernel{
                     }
                 }
             }
-        }else if(mode == 1){//GENERATE PIXELS
+        }else if(getPassId() == 1){//GENERATE PIXELS
             float gradient=1.0f;
 
             float gms = getMaxSlope(x,y);
