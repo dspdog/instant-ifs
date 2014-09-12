@@ -194,10 +194,10 @@ final class ifsys extends JPanel
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            if(theVolume.totalSamples>5000000){
+                            //if(theVolume.totalSamples>5000000){
                                 theMenu.updateSideMenu();
                                 repaint();
-                            }
+                            //}
                         }
                     });
 
@@ -464,8 +464,15 @@ final class ifsys extends JPanel
                 int nextBucketIndex;
 
                 float distance = 0.0f;
+                float fiters = rp.iterations*0.01f;
 
-                for(int d = 0; d < rp.iterations; d++){
+                for(float d = 0; d < fiters; d++){
+
+                    float factorMax = 1.0f;
+                    if(fiters-d<1.0){
+                        factorMax = fiters-d;
+                    }
+
                     int oldRandomIndex = randomIndex;
                     if(bucketIndex*(theShape.pointsInUse-1)<buckets.length){
                         randomIndex = smallestIndexAtThisNode(bucketIndex*(theShape.pointsInUse-1))+1; //send new data where its needed most...
@@ -499,7 +506,7 @@ final class ifsys extends JPanel
                     }else{
                         if(!(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
                             theVolume.putPdfSample(dpt, cumulativeRotation, cumulativeScale, thePt, theShape.pts[oldRandomIndex], olddpt,
-                                    buckets[bucketIndex], bucketIndex, distance, rp, thePdf, renderBuffer, rpt.magnitude(), theMenu.colorChooser);
+                                    buckets[bucketIndex], bucketIndex, distance, rp, thePdf, renderBuffer, rpt.magnitude(), theMenu.colorChooser, factorMax);
                         }
                         cumulativeScale *= thePt.scale/centerPt.scale;
                     }

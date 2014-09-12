@@ -173,7 +173,7 @@ final class volume {
     public void putPdfSample(ifsPt _dpt,
                              ifsPt cumulativeRotationVector,
                              double cumulativeScale,
-                             ifsPt _thePt, ifsPt theOldPt, ifsPt odpt, int bucketVal, int bucketId, float distance, RenderParams rp, pdf3D thePdf, RenderBuffer rb, float smearMag, WebGradientColorChooser color){
+                             ifsPt _thePt, ifsPt theOldPt, ifsPt odpt, int bucketVal, int bucketId, float distance, RenderParams rp, pdf3D thePdf, RenderBuffer rb, float smearMag, WebGradientColorChooser color, float factorMax){
         ifsPt dpt = _dpt;
         ifsPt thePt = _thePt;
         float factor = 1.0f;
@@ -186,7 +186,7 @@ final class volume {
 
             if(rp.smearPDF){
                 factor = rnd/iters+1.0f-1.0f*iter/iters;
-                factor = (factor+1.0f+rndOffset)%1.0f;
+                factor = 1.0f-(factor+1.0f+rndOffset)%factorMax;
                 dpt = _dpt.interpolateTo(odpt, factor, rp.odbScale.valueAt(factor)/256f, rp.odbRotationRoll.valueAt(factor)/(16f));
                 thePt = _thePt.interpolateTo(theOldPt, factor, rp.odbScale.valueAt(factor)/256f, rp.odbRotationRoll.valueAt(factor)/(16f));
                 if(odpt.x<1){dpt=_dpt;}//hack to prevent smearing from first pt

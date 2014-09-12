@@ -375,7 +375,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     public void setupRenderPropertiesPanel(JPanel panel){
         brightnessSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 360));
         samplesSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 2000));
-        iterationsSpinner =new SliderWithSpinner(new SliderWithSpinnerModel(3, 0, 360));
+        iterationsSpinner =new SliderWithSpinner(new SliderWithSpinnerModel(100, 0, 1000));
 
         potentialSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 360));
         delaySpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000));
