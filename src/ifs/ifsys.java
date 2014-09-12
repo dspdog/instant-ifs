@@ -194,7 +194,7 @@ final class ifsys extends JPanel
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            if(theVolume.totalSamples>500000){
+                            if(theVolume.totalSamples>5000000){
                                 theMenu.updateSideMenu();
                                 repaint();
                             }

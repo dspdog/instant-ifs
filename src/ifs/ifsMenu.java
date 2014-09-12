@@ -241,32 +241,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         panel.setLayout(layout);
         layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
 
-        final Component parent = this;
-/*
-        ((JComboBox)addLabeled(pdfModeCombo, layout, "Mix", panel)).addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JComboBox cb = (JComboBox)e.getSource();
-                if(cb.getSelectedItem() == pdf3D.comboMode.ADD.toString()){
-                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.ADD;
-                    myIfsSys.thePdf.updateVolume();
-                }else if(cb.getSelectedItem() == pdf3D.comboMode.AVERAGE.toString()){
-                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.AVERAGE;
-                    myIfsSys.thePdf.updateVolume();
-                }else if(cb.getSelectedItem() == pdf3D.comboMode.MULTIPLY.toString()){
-                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.MULTIPLY;
-                    myIfsSys.thePdf.updateVolume();
-                }else if(cb.getSelectedItem() == pdf3D.comboMode.MAX.toString()){
-                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.MAX;
-                    myIfsSys.thePdf.updateVolume();
-                }else if(cb.getSelectedItem() == pdf3D.comboMode.MIN.toString()){
-                    myIfsSys.thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
-                    myIfsSys.thePdf.updateVolume();
-                }
-            }
-        });
-*/
-
         smearWobbleSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(5, 0, 25));
 
         WebButton XButton = new WebButton("", new ImageIcon("./instant-ifs/icons/front.png"));
@@ -278,7 +252,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         ZButton.setName("Z");ZButton.addActionListener(this);
 
         WebButtonGroup iconsGroup = new WebButtonGroup ( true, XButton, YButton, ZButton );
-        ((WebButtonGroup)addLabeled(iconsGroup, layout, "", panel, true)).addComponentListener(null);
+        //((WebButtonGroup)addLabeled(iconsGroup, layout, "", panel, true)).addComponentListener(null);
         ((JLabel)addLabeled(new JLabel(""), layout, "", panel, true)).addComponentListener(null);
         ((JCheckBox)addLabeled(smearCheck, layout, "Smear", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(smearWobbleSpinner, layout, "Wobble", panel, false)).addChangeListener(updateAndClear);

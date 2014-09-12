@@ -13,7 +13,7 @@ public final class OneDBuffer implements Serializable{
     public OneDBuffer(int seedOffset){
         entropy +=12345;
         intensity=1.0f;
-        vals = new float[1028*4];
+        vals = new float[1028];
         so=seedOffset;
         init();
     }

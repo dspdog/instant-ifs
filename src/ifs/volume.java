@@ -178,40 +178,38 @@ final class volume {
         ifsPt thePt = _thePt;
         float factor = 1.0f;
         ifsPt offset = new ifsPt(0,0,0);
-        if(rp.smearPDF){
-            factor = 1.0f-(float)Math.random();
-            dpt = _dpt.interpolateTo(odpt, factor, rp.odbScale.valueAt(factor)/256f, rp.odbRotationRoll.valueAt(factor)/(16f));
-            thePt = _thePt.interpolateTo(theOldPt, factor, rp.odbScale.valueAt(factor)/256f, rp.odbRotationRoll.valueAt(factor)/(16f));
-            if(odpt.x<1){dpt=_dpt;}//hack to prevent smearing from first pt
 
-            offset = new ifsPt(rp.odbX.valueAt(factor),rp.odbY.valueAt(factor),rp.odbZ.valueAt(factor)).scale(3);
-        }
-
-        int duds = 0;
-
-        double sampleX, sampleY, sampleZ;
-        double scale, pointDegreesYaw, pointDegreesPitch, pointDegreesRoll;
-        ifsPt rpt;
-
-        int seqIndex;
-        double dx=Math.random()-0.5;
-        double dy=Math.random()-0.5;
-        double dz=Math.random()-0.5;
-
-        seqIndex = (int)(Math.random()*(thePdf.edgeValues));
-        sampleX = offset.x + thePdf.center.x;
-        sampleY = offset.y + thePdf.center.y;
-        sampleZ = offset.z + thePdf.center.z;
-
-        scale = cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
-
-        pointDegreesYaw = thePt.rotationYaw +cumulativeRotationVector.x;
-        pointDegreesPitch = thePt.rotationPitch +cumulativeRotationVector.y;
-        pointDegreesRoll = thePt.rotationRoll +cumulativeRotationVector.z;
-
-        int iters=1;//Math.min(rp.dotsPerPDF, thePdf.edgeValues);
-
+        int iters=(int)Math.min(32,smearMag);
+        float rnd = ((bucketVal+bucketId)%iters);
+        float rndOffset = (float)Math.random()/iters;
         for(int iter=0; iter<iters; iter++){
+
+            if(rp.smearPDF){
+                factor = rnd/iters+1.0f-1.0f*iter/iters;
+                factor = (factor+1.0f+rndOffset)%1.0f;
+                dpt = _dpt.interpolateTo(odpt, factor, rp.odbScale.valueAt(factor)/256f, rp.odbRotationRoll.valueAt(factor)/(16f));
+                thePt = _thePt.interpolateTo(theOldPt, factor, rp.odbScale.valueAt(factor)/256f, rp.odbRotationRoll.valueAt(factor)/(16f));
+                if(odpt.x<1){dpt=_dpt;}//hack to prevent smearing from first pt
+
+                offset = new ifsPt(rp.odbX.valueAt(factor),rp.odbY.valueAt(factor),rp.odbZ.valueAt(factor)).scale(3);
+            }
+
+            int duds = 0;
+
+            double sampleX, sampleY, sampleZ;
+            double scale, pointDegreesYaw, pointDegreesPitch, pointDegreesRoll;
+            ifsPt rpt;
+
+            sampleX = offset.x + thePdf.center.x;
+            sampleY = offset.y + thePdf.center.y;
+            sampleZ = offset.z + thePdf.center.z;
+
+            scale = cumulativeScale*thePt.scale*thePt.radius/thePdf.sampleWidth;
+
+            pointDegreesYaw = thePt.rotationYaw +cumulativeRotationVector.x;
+            pointDegreesPitch = thePt.rotationPitch +cumulativeRotationVector.y;
+            pointDegreesRoll = thePt.rotationRoll +cumulativeRotationVector.z;
+
             rpt = new ifsPt((sampleX-thePdf.center.x)*scale,
                     (sampleY-thePdf.center.y)*scale,
                     (sampleZ-thePdf.center.z)*scale).getRotatedPt_Right(-(float) pointDegreesPitch, -(float) pointDegreesYaw, -(float) pointDegreesRoll); //placed point

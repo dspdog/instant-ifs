@@ -118,7 +118,7 @@ public final class RenderBuffer extends Kernel{
     }
 
     void putThing(int x, int y, float origz){
-        int size = (int)(64*origz/512);
+        int size = (int)(64*(origz)/512);
         for(int _x=-size; _x<size+1; _x++){
             for(int _y=-size; _y<size+1; _y++){
                 if(_x*_x+_y*_y<size*size){

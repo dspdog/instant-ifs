@@ -127,7 +127,7 @@ final class RenderParams implements java.io.Serializable {
         iterations = 2;
         brightnessMultiplier = 2;
         holdFrame=false;
-        samplesPerFrame = 104;
+        samplesPerFrame = 8;
 
         usingGaussian =false;
         potentialRadius=0;
