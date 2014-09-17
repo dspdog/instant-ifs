@@ -391,7 +391,7 @@ final class ifsys extends JPanel
         boolean didProcess=false;
         //if(theVolume.totalSamples>5000){
             didProcess=true;
-            renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.cartoonMode, rp.rightEye, rp.postProcess, rp.smearSize/8f);
+            renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.cartoonMode, rp.rightEye, rp.postProcess, rp.smearSize/8f, theVolume.camPitch, theVolume.camYaw, theVolume.camRoll);
         //}
 
         if(didProcess)lastPostProcessTime=System.currentTimeMillis();
@@ -474,15 +474,15 @@ final class ifsys extends JPanel
         ifsPt odp = new ifsPt(dpt);
         dpt._add(rpt);
 
-        ifsPt proj_odp = theVolume.getCameraDistortedPt(odp, rp.rightEye);
-        ifsPt proj_dpt = theVolume.getCameraDistortedPt(dpt, rp.rightEye);
+        ifsPt proj_odp = odp; //theVolume.getCameraDistortedPt(odp, rp.rightEye);
+        ifsPt proj_dpt = dpt; //theVolume.getCameraDistortedPt(dpt, rp.rightEye);
 
         renderBuffer.lineX1[renderBuffer.lineIndex]=proj_dpt.x;
         renderBuffer.lineY1[renderBuffer.lineIndex]=proj_dpt.y;
         renderBuffer.lineZ1[renderBuffer.lineIndex]=proj_dpt.z;
-        renderBuffer.lineX2[renderBuffer.lineIndex]=proj_odp.x;
-        renderBuffer.lineY2[renderBuffer.lineIndex]=proj_odp.y;
-        renderBuffer.lineZ2[renderBuffer.lineIndex]=proj_odp.z;
+        //renderBuffer.lineX2[renderBuffer.lineIndex]=proj_odp.x;
+        //renderBuffer.lineY2[renderBuffer.lineIndex]=proj_odp.y;
+        //renderBuffer.lineZ2[renderBuffer.lineIndex]=proj_odp.z;
         renderBuffer.lineMag[renderBuffer.lineIndex]=(float)proj_odp.distTo(proj_dpt);
         renderBuffer.lineIndex++;
         renderBuffer.lineIndex=Math.min(renderBuffer.lineIndex, renderBuffer.lineX1.length-1);
