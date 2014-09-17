@@ -201,7 +201,7 @@ final class ifsys extends JPanel
                             //}
                         }
                     });
-
+                    //System.out.println(theVolume.changed);
                     sleep(10L);
                 }
                 catch(InterruptedException e) {
@@ -389,10 +389,9 @@ final class ifsys extends JPanel
 
     public void generatePixels(){
         boolean didProcess=false;
-        //if(theVolume.totalSamples>5000){
+
             didProcess=true;
-            renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.cartoonMode, rp.rightEye, rp.postProcess, rp.smearSize/8f, theVolume.camPitch, theVolume.camYaw, theVolume.camRoll);
-        //}
+            renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.cartoonMode, rp.rightEye, rp.postProcess, rp.smearSize/8f, theVolume.camPitch, theVolume.camYaw, theVolume.camRoll, true);
 
         if(didProcess)lastPostProcessTime=System.currentTimeMillis();
     }
@@ -401,45 +400,26 @@ final class ifsys extends JPanel
         theVolume.totalSamples=0;
         //resetBuckets();
         renderBuffer.lastLineIndex=renderBuffer.lineIndex;
-        renderBuffer.lineIndex=0;
+
         theVolume.drawTime = System.currentTimeMillis();
         long wait = rp.shapeVibrating ? 40 : 10;
         if(!rp.holdFrame && System.currentTimeMillis() - lastClearTime > wait){
 
-            if(theVolume.changed && theVolume.doneClearing)theVolume.clear();
+            if(theVolume.changed && theVolume.doneClearing){
+                theVolume.clear();
+
+                if(System.currentTimeMillis()-lastIndex>50){
+                    renderBuffer.lineIndex=0;
+                    indexFunction(0, rp.iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]));
+                    lastIndex = System.currentTimeMillis();
+                }
+            }
+
             lastClearTime=System.currentTimeMillis();
             renderBuffer.clearZProjection();
         }
     }
-/*
-    public void resetBuckets(){
-        buckets = new int[rp.shapeVibrating ? numBucketsAnimated : numBuckets];
-    }
 
-    public int smallestIndexAtThisNode(int node){
-        int min=Integer.MAX_VALUE;
-        int minIndex=0;
-        ArrayList<Integer> winners = new ArrayList<Integer>(); //chooses a random "winner" in the event of a "tie"
-
-        for(int i=node; i<node+ theShape.pointsInUse-1; i++){
-            if(buckets[i]<=min){
-                if(buckets[i]==min){
-                    winners.add(i-node);
-                }else{
-                    winners.clear();
-                }
-                min=buckets[i];
-                minIndex=i-node;
-            }
-        }
-
-        if(winners.size()>0){
-            return winners.get((int)(Math.random()*winners.size()));
-        }else{
-            return minIndex;
-        }
-    }
-*/
     public void selectEvolutionDescriptorPt(){
         evolutionDescSelected=true;
     }
@@ -455,10 +435,10 @@ final class ifsys extends JPanel
 
     public void gamefunc(int _iterations){
         rp.guidesHidden = System.currentTimeMillis() - lastMoveTime > rp.linesHideTime;
-        if(System.currentTimeMillis()-lastIndex>500){
-            indexFunction(0, _iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]));
-            lastIndex = System.currentTimeMillis();
-        }
+        //if(System.currentTimeMillis()-lastIndex>50){
+        //    indexFunction(0, _iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]));
+        //    lastIndex = System.currentTimeMillis();
+        //}
     }
 
     long lastIndex = System.currentTimeMillis();
@@ -474,16 +454,16 @@ final class ifsys extends JPanel
         ifsPt odp = new ifsPt(dpt);
         dpt._add(rpt);
 
-        ifsPt proj_odp = odp; //theVolume.getCameraDistortedPt(odp, rp.rightEye);
+        //ifsPt proj_odp = odp; //theVolume.getCameraDistortedPt(odp, rp.rightEye);
         ifsPt proj_dpt = dpt; //theVolume.getCameraDistortedPt(dpt, rp.rightEye);
 
-        renderBuffer.lineX1[renderBuffer.lineIndex]=proj_dpt.x;
-        renderBuffer.lineY1[renderBuffer.lineIndex]=proj_dpt.y;
-        renderBuffer.lineZ1[renderBuffer.lineIndex]=proj_dpt.z;
+        renderBuffer.lineX1[renderBuffer.lineIndex]=dpt.x;
+        renderBuffer.lineY1[renderBuffer.lineIndex]=dpt.y;
+        renderBuffer.lineZ1[renderBuffer.lineIndex]=dpt.z;
         //renderBuffer.lineX2[renderBuffer.lineIndex]=proj_odp.x;
         //renderBuffer.lineY2[renderBuffer.lineIndex]=proj_odp.y;
         //renderBuffer.lineZ2[renderBuffer.lineIndex]=proj_odp.z;
-        renderBuffer.lineMag[renderBuffer.lineIndex]=(float)proj_odp.distTo(proj_dpt);
+        //renderBuffer.lineMag[renderBuffer.lineIndex]=(float)proj_odp.distTo(proj_dpt);
         renderBuffer.lineIndex++;
         renderBuffer.lineIndex=Math.min(renderBuffer.lineIndex, renderBuffer.lineX1.length-1);
 
@@ -546,18 +526,12 @@ final class ifsys extends JPanel
             isRightPressed = false;
         }
 
-        //setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-        //mousemode = 0;
         isDragging=false;
     }
 
-    public void mouseEntered(MouseEvent e){
-        //setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-    }
+    public void mouseEntered(MouseEvent e){}
 
-    public void mouseExited(MouseEvent e){
-        //setCursor (Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-    }
+    public void mouseExited(MouseEvent e){}
 
     public void getMouseXYZ(MouseEvent e){
         mousex = e.getX();

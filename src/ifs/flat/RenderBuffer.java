@@ -60,6 +60,7 @@ public final class RenderBuffer extends Kernel{
     public float scaleUp =1.0f;
 
     public boolean addSamples=true;
+    public boolean usePerspective = true;
 
     public RenderBuffer(int w, int h){
         width=1024; height=1024;
@@ -129,10 +130,11 @@ public final class RenderBuffer extends Kernel{
         }
     }
 
-    public void generatePixels(float _brightness, boolean useShadows, boolean rightEye, boolean _putSamples, float _size, float pitch, float yaw, float roll){
+    public void generatePixels(float _brightness, boolean useShadows, boolean rightEye, boolean _putSamples, float _size, float pitch, float yaw, float roll, boolean _usePerspective){
         camPitch=pitch;
         camRoll=roll;
         camYaw=yaw;
+        usePerspective = _usePerspective;
 
         cartoon=useShadows;
         addSamples=_putSamples;
@@ -167,7 +169,7 @@ public final class RenderBuffer extends Kernel{
         pixels[x+y*width] = white();
     }
 
-  /*  public void drawLine(int _index){
+    public void drawLine(int _index){
         float mag = lineMag[_index];
         mag = min(max(mag, 1), 1024);
         for(int i=0; i<mag; i++){
@@ -182,34 +184,10 @@ public final class RenderBuffer extends Kernel{
 
             pixels[x+y*width] = gray(dz);
         }
-    }*/
+    }
 
     public void rotate(int _index, float x, float y, float z, float _a){ //quaternion rotate
-        /*
-        --        a/=2;
-        --        float sa2 = (float)Math.sin(a);
-                Quaternion q2 = new Quaternion(Math.cos(a), x*sa2, y*sa2, z*sa2);
-                Quaternion q2b = new Quaternion(0, thisX, thisY, thisZ);
-                Quaternion q2c = q2.conjugate();
-                Quaternion q3 = q2.times(q2b).times(q2c);
-                return new ifsPt(q3.x, q3.y, q3.z);
-         */
-
-                /*
-        --        _a/=2;
-        --        float sa2 = (float)Math.sin(a);
-
-              --  Quaternion d = new Quaternion(Math.cos(a), x*sa2, y*sa2, z*sa2);
-             --   d*=((0, thisX, thisY, thisZ))
-             --   d*=(Math.cos(a), -x*sa2, -y*sa2, -z*sa2);
-
-             --   lineX1[_index] = d.x;
-             --   lineY1[_index] = d.y;
-             --   lineZ1[_index] = d.z;
-         */
-
-
-        _a/=2;
+         _a/=2;
         float sa2 = sin(_a);
 
         float qw=cos(_a);
@@ -229,7 +207,7 @@ public final class RenderBuffer extends Kernel{
 
         qw=_qw;qx=_qx;qy=_qy;qz=_qz;
 
-        _qw = qTimes_W(qw, qx, qy, qz, cos(_a), -x*sa2, -y*sa2, -z*sa2);
+        //_qw = qTimes_W(qw, qx, qy, qz, cos(_a), -x*sa2, -y*sa2, -z*sa2);
         _qx = qTimes_X(qw, qx, qy, qz, cos(_a), -x*sa2, -y*sa2, -z*sa2);
         _qy = qTimes_Y(qw, qx, qy, qz, cos(_a), -x*sa2, -y*sa2, -z*sa2);
         _qz = qTimes_Z(qw, qx, qy, qz, cos(_a), -x*sa2, -y*sa2, -z*sa2);
@@ -240,19 +218,19 @@ public final class RenderBuffer extends Kernel{
     }
 
     public float qTimes_W(float aW, float aX, float aY, float aZ, float w, float x, float y, float z){
-        return (float)(aW *w - aX *x - aY *y - aZ *z);
+        return aW *w - aX *x - aY *y - aZ *z;
     }
 
     public float qTimes_X(float aW, float aX, float aY, float aZ, float w, float x, float y, float z){
-        return (float)(aW *x + aX *w + aY *z - aZ *y);
+        return aW *x + aX *w + aY *z - aZ *y;
     }
 
     public float qTimes_Y(float aW, float aX, float aY, float aZ, float w, float x, float y, float z){
-        return (float)(aW *y - aX *z + aY *w + aZ *x);
+        return aW *y - aX *z + aY *w + aZ *x;
     }
 
     public float qTimes_Z(float aW, float aX, float aY, float aZ, float w, float x, float y, float z){
-        return (float)(aW *z + aX *y - aY *x + aZ *w);
+        return aW *z + aX *y - aY *x + aZ *w;
     }
 
     public void cameraDistort(int _index){
@@ -263,43 +241,33 @@ public final class RenderBuffer extends Kernel{
         //--         .scale(camScale)
         //--         .add(camCenter);
 
-
         //params
             float camCenterX = 512f;
             float camCenterY = 512f;
             float camCenterZ = 512f;
             float camScale = 1.0f;
 
-        float pitch = camPitch / 180.0f * PFf;
-        float yaw = camYaw / 180.0f * PFf;
-        float roll = camRoll / 180.0f * PFf;
+        projX1[_index] = lineX1[_index] - camCenterX;
+        projY1[_index] = lineY1[_index] - camCenterY;
+        projZ1[_index] = lineZ1[_index] - camCenterZ;
 
-        projX1[_index] = lineX1[_index];
-        projY1[_index] = lineY1[_index];
-        projZ1[_index] = lineZ1[_index];
+        rotate(_index, 1.0f, 0.0f, 0.0f, camPitch / 180.0f * PFf);
+        rotate(_index, 0.0f, 1.0f, 0.0f, camYaw / 180.0f * PFf);
+        rotate(_index, 0.0f, 0.0f, 1.0f, camRoll / 180.0f * PFf);
 
-        projX1[_index] -= camCenterX;
-        projY1[_index] -= camCenterY;
-        projZ1[_index] -= camCenterZ;
+        projX1[_index] = projX1[_index]*camScale+camCenterX;
+        projY1[_index] = projY1[_index]*camScale+camCenterY;
+        projZ1[_index] = projZ1[_index]*camScale+camCenterZ;
 
-        // return this.qRotate(ifsPt.X_UNIT, pitch).qRotate(ifsPt.Y_UNIT, yaw).qRotate(ifsPt.Z_UNIT,roll);
+        float vx = 512.0f; //vanishing pt onscreen
+        float vy = 512.0f;
+        float perspectiveScale=200f;
 
-        //qw[_index] = 0f;
-        //qx[_index] = projX1[_index]+0;
-        //qy[_index] = projY1[_index]+0;
-        //qz[_index] = projZ1[_index]+0;
-
-        rotate(_index, 1.0f, 0.0f, 0.0f, pitch);
-        rotate(_index, 0.0f, 1.0f, 0.0f, yaw);
-        rotate(_index, 0.0f, 0.0f, 1.0f, roll);
-
-        projX1[_index] *= camScale;
-        projY1[_index] *= camScale;
-        projZ1[_index] *= camScale;
-
-        projX1[_index] += camCenterX;
-        projY1[_index] += camCenterY;
-        projZ1[_index] += camCenterZ;
+        if(usePerspective){
+            float downScale=perspectiveScale*0.1f/(float)sqrt(1024f-projZ1[_index]);
+            projX1[_index]=(projX1[_index]-vx)*downScale + vx;
+            projY1[_index]=(projY1[_index]-vy)*downScale + vy;
+        }
     }
 
     @Override
