@@ -46,7 +46,7 @@ public final class RenderBuffer extends Kernel{
 
     float maxColor = 0;
 
-    public float camPitch, camYaw, camRoll;
+    public float camPitch, camYaw, camRoll, camScale, camCenterX, camCenterY, camCenterZ;
 
     private static long time = System.currentTimeMillis();
     private static long frameStartTime = System.currentTimeMillis();
@@ -130,10 +130,15 @@ public final class RenderBuffer extends Kernel{
         }
     }
 
-    public void generatePixels(float _brightness, boolean useShadows, boolean rightEye, boolean _putSamples, float _size, float pitch, float yaw, float roll, boolean _usePerspective){
+    public void generatePixels(float _brightness, boolean useShadows, boolean rightEye, boolean _putSamples, float _size, float pitch, float yaw, float roll, boolean _usePerspective,
+                               float scale, float camX, float camY, float camZ){
         camPitch=pitch;
         camRoll=roll;
         camYaw=yaw;
+        camCenterX = camX;
+        camCenterY = camY;
+        camCenterZ = camZ;
+        camScale = scale;
         usePerspective = _usePerspective;
 
         cartoon=useShadows;
@@ -165,8 +170,10 @@ public final class RenderBuffer extends Kernel{
 
         int x = min(max((int) dx, 1), width - 1);
         int y = min(max((int) dy, 1), height - 1);
+        int grayval = (int)((projZ1[_index]*projZ1[_index]/255/16));
 
-        pixels[x+y*width] = white();
+        if((pixels[x+y*width]&255)<grayval)
+            pixels[x+y*width] = gray((int)(grayval));
     }
 
     public void drawLine(int _index){
@@ -182,7 +189,7 @@ public final class RenderBuffer extends Kernel{
             int y = min(max((int) dy, 1), height - 1);
             dz = max(dz, pixels[x+y*width]&255);
 
-            pixels[x+y*width] = gray(dz);
+          //  pixels[x+y*width] = gray(dz);
         }
     }
 
@@ -241,12 +248,6 @@ public final class RenderBuffer extends Kernel{
         //--         .scale(camScale)
         //--         .add(camCenter);
 
-        //params
-            float camCenterX = 512f;
-            float camCenterY = 512f;
-            float camCenterZ = 512f;
-            float camScale = 1.0f;
-
         projX1[_index] = lineX1[_index] - camCenterX;
         projY1[_index] = lineY1[_index] - camCenterY;
         projZ1[_index] = lineZ1[_index] - camCenterZ;
@@ -280,7 +281,7 @@ public final class RenderBuffer extends Kernel{
         }
         if(getPassId()==1){
             int myLineIndex = x+y*width;
-            if(myLineIndex<min(lineIndex, 100000))
+            if(myLineIndex<lineIndex)
                 drawDot(myLineIndex);
         }
     }
@@ -305,10 +306,7 @@ public final class RenderBuffer extends Kernel{
         return _argb;
     }
 
-    int gray(float _g){
-        int g = (int)_g;
-
-        g = max(min(g, 255), 1);
+    int gray(int g){
 
         int _argb = 255;
 

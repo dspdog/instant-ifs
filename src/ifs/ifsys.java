@@ -391,7 +391,10 @@ final class ifsys extends JPanel
         boolean didProcess=false;
 
             didProcess=true;
-            renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.cartoonMode, rp.rightEye, rp.postProcess, rp.smearSize/8f, theVolume.camPitch, theVolume.camYaw, theVolume.camRoll, true);
+            renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.cartoonMode, rp.rightEye, rp.postProcess, rp.smearSize/8f,
+                                        theVolume.camPitch, theVolume.camYaw, theVolume.camRoll, true,
+                                        theVolume.camScale,
+                                        theVolume.camCenter.x, theVolume.camCenter.y, theVolume.camCenter.z);
 
         if(didProcess)lastPostProcessTime=System.currentTimeMillis();
     }
