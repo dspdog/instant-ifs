@@ -21,7 +21,7 @@ final class ifsys extends JPanel
     paintThread thePaintThread;
     mainthread[] threads;
     evolutionThread theEvolutionThread;
-    int numThreads = 2;//Runtime.getRuntime().availableProcessors()/2;
+    int numThreads = 1;//Runtime.getRuntime().availableProcessors()/2;
     boolean quit;
 
     static ImageUtils imageUtils = new ImageUtils();
@@ -196,12 +196,13 @@ final class ifsys extends JPanel
                         public void run() {
                             //if(theVolume.totalSamples>5000000){
                                 theMenu.updateSideMenu();
+                                generatePixels();
                                 repaint();
                             //}
                         }
                     });
 
-                    sleep(50L);
+                    sleep(10L);
                 }
                 catch(InterruptedException e) {
                     e.printStackTrace();
@@ -346,7 +347,7 @@ final class ifsys extends JPanel
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        theVolume.drawGrid(rp, renderBuffer);
+        //theVolume.drawGrid(rp, renderBuffer);
         draw(g);
     }
 
@@ -363,8 +364,6 @@ final class ifsys extends JPanel
 
         if(renderImage != null){
             renderGraphics = (Graphics2D)renderImage.getGraphics();
-
-            generatePixels();
 
             renderGraphics.setColor(rp.bgColor);
             renderGraphics.fillRect(0, 0, rp.screenwidth, rp.screenheight);
@@ -401,6 +400,8 @@ final class ifsys extends JPanel
     public void clearframe(){
         theVolume.totalSamples=0;
         //resetBuckets();
+        renderBuffer.lastLineIndex=renderBuffer.lineIndex;
+        renderBuffer.lineIndex=0;
         theVolume.drawTime = System.currentTimeMillis();
         long wait = rp.shapeVibrating ? 40 : 10;
         if(!rp.holdFrame && System.currentTimeMillis() - lastClearTime > wait){
@@ -453,15 +454,14 @@ final class ifsys extends JPanel
 
 
     public void gamefunc(int _iterations){
-
-        if(renderBuffer.lineIndex%10==0){
-            System.out.println(renderBuffer.lineIndex + "lineindex");
-        }
-
         rp.guidesHidden = System.currentTimeMillis() - lastMoveTime > rp.linesHideTime;
-        indexFunction(0, _iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]));
-     }
+        if(System.currentTimeMillis()-lastIndex>500){
+            indexFunction(0, _iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]));
+            lastIndex = System.currentTimeMillis();
+        }
+    }
 
+    long lastIndex = System.currentTimeMillis();
     private void indexFunction(int _index, int _iterations, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt){
         ifsPt dpt = new ifsPt(_dpt);
         ifsPt cumulativeRotation = new ifsPt(_cumulativeRotation);
@@ -483,8 +483,9 @@ final class ifsys extends JPanel
         renderBuffer.lineX2[renderBuffer.lineIndex]=proj_odp.x;
         renderBuffer.lineY2[renderBuffer.lineIndex]=proj_odp.y;
         renderBuffer.lineZ2[renderBuffer.lineIndex]=proj_odp.z;
+        renderBuffer.lineMag[renderBuffer.lineIndex]=(float)proj_odp.distTo(proj_dpt);
         renderBuffer.lineIndex++;
-        renderBuffer.lineIndex=renderBuffer.lineIndex%renderBuffer.lineX1.length;
+        renderBuffer.lineIndex=Math.min(renderBuffer.lineIndex, renderBuffer.lineX1.length-1);
 
         //theVolume.putPdfSample(dpt, cumulativeRotation, _cumulativeScale, thePt, theShape.pts[0], odp,
         //                        0, 0, 0, rp, thePdf, renderBuffer, rpt.magnitude(), theMenu.colorChooser, 1.0f);

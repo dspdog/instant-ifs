@@ -18,13 +18,15 @@ public final class RenderBuffer extends Kernel{
 
     public final float postZBuffer[];
 
-    public final float lineX1[] = new float[1000000];
-    public final float lineY1[] = new float[1000000];
-    public final float lineZ1[] = new float[1000000];
-    public final float lineX2[] = new float[1000000];
-    public final float lineY2[] = new float[1000000];
-    public final float lineZ2[] = new float[1000000];
+    public final float lineX1[];
+    public final float lineY1[];
+    public final float lineZ1[];
+    public final float lineX2[];
+    public final float lineY2[];
+    public final float lineZ2[];
+    public final float lineMag[];
     public int lineIndex = 0;
+    public int lastLineIndex =0;
 
     public final int pixels[];
 
@@ -52,7 +54,7 @@ public final class RenderBuffer extends Kernel{
     public boolean addSamples=true;
 
     public RenderBuffer(int w, int h){
-        width=w; height=h;
+        width=1024; height=1024;
         RBuffer = new float[width*height];
         GBuffer = new float[width*height];
         BBuffer = new float[width*height];
@@ -65,6 +67,14 @@ public final class RenderBuffer extends Kernel{
         postRBuffer = new float[width*height];
         postGBuffer = new float[width*height];
         postBBuffer = new float[width*height];
+
+        lineX1 = new float[width*height];
+        lineY1 = new float[width*height];
+        lineZ1 = new float[width*height];
+        lineX2 = new float[width*height];
+        lineY2 = new float[width*height];
+        lineZ2 = new float[width*height];
+        lineMag = new float[width*height];
 
         clearZProjection();
         cartoon=false;
@@ -84,7 +94,7 @@ public final class RenderBuffer extends Kernel{
 
     public boolean putPixel(float x, float y, float z, float R, float G, float B, float scale, float dark, boolean rightEye){
 
-        x=Math.max((int)x, 0);
+        x=Math.max((int) x, 0);
         x=Math.min((int)x, width-1);
         y=Math.max((int)y, 0);
         y=Math.min((int)y, height-1);
@@ -119,122 +129,81 @@ public final class RenderBuffer extends Kernel{
         }
     }
 
+    public void drawDot(int _index){
+        float dx = lineX1[_index];
+        float dy = lineY1[_index];
+
+        int x = min(max((int) dx, 1), width - 1);
+        int y = min(max((int) dy, 1), height - 1);
+
+        pixels[x+y*width] = white();
+    }
+
+    public void drawLine(int _index){
+        float mag = lineMag[_index];
+        mag = min(max(mag, 1), 1024);
+        for(int i=0; i<mag; i++){
+            float dx = lineX1[_index] + i*(lineX2[_index] - lineX1[_index])/mag;
+            float dy = lineY1[_index] + i*(lineY2[_index] - lineY1[_index])/mag;
+            float dz = lineZ1[_index] + i*(lineZ2[_index] - lineZ1[_index])/mag;
+
+
+            int x = min(max((int) dx, 1), width - 1);
+            int y = min(max((int) dy, 1), height - 1);
+            dz = max(dz, pixels[x+y*width]&255);
+
+            pixels[x+y*width] = gray(dz);
+        }
+    }
+
     @Override
     public void run() {
 
         int x = getGlobalId(0);
         int y = getGlobalId(1);
 
-        if(getPassId()==0){ //draw lines....
-            postZBuffer[x+y*width]=(int)ZBuffer[x+y*width];
-            postRBuffer[x+y*width]=(int)RBuffer[x+y*width];
-            postGBuffer[x+y*width]=(int)GBuffer[x+y*width];
-            postBBuffer[x+y*width]=(int)BBuffer[x+y*width];
+        if(getPassId()==0){
+            pixels[x+y*width]=black();
         }
-        /*
-        if(getPassId()==0){ //Z-PROCESS
-            int edge = 32;
-            if (x>edge && x<(width-edge) && y>edge && y<(height-edge)){
-                if((TBuffer[x+y*width]<time-shutterSpeed) && TBuffer[x+y*width]<frameStartTime){
-                    ZBuffer[x+y*width]=0;
-                }
-
-                if(ZBuffer[x+y*width]>0){
-                    if(addSamples){
-                        putThing(x,y);
-                    }else{
-                        postZBuffer[x+y*width]=(int)ZBuffer[x+y*width];
-                        postRBuffer[x+y*width]=(int)RBuffer[x+y*width];
-                        postGBuffer[x+y*width]=(int)GBuffer[x+y*width];
-                        postBBuffer[x+y*width]=(int)BBuffer[x+y*width];
-                    }
-                }
-            }
-        }else if(getPassId() == 1){//GENERATE PIXELS
-            float gradient=1.0f;
-
-            float gms = getMaxSlope(x,y);
-            float maxslope = min(gms*255f, 255f);
-
-            if(cartoon){
-                if(gms>1){
-                    maxslope=254f;
-                    if(postZBuffer[x+y*width]==0){
-                        postZBuffer[x+y*width]=1;//outside edges
-                    }
-                }
-            }
-
-            gradient = shading ? 1.0f-maxslope/255.0f : 1.0f;
-
-            if(postZBuffer[x+y*width]==0){
-                int _argb = 255;
-
-                _argb = (_argb << 8) + (int)(0);
-                _argb = (_argb << 8) + (int)(89);
-                _argb = (_argb << 8) + (int)(114);
-
-                pixels[x+y*width]=_argb;
-            }else{
-                pixels[x+y*width]=getColor(x,y,gradient);
-            }
-
-            postZBuffer[x+y*width]=0; //clear post buffer
-            postRBuffer[x+y*width]=0;
-            postGBuffer[x+y*width]=0;
-            postBBuffer[x+y*width]=0;
-        }
-*/
-    }
-
-    void putThing(int x, int y){
-        float origz = ZBuffer[x+y*width];
-        float origr = RBuffer[x+y*width];
-        float origg = GBuffer[x+y*width];
-        float origb = BBuffer[x+y*width];
-        float newVal=0;
-        int size = (int)( max(1,(int)(scaleUp*SBuffer[x+y*width]*(origz*origz)/1024f)));
-        for(int _x=-size; _x<size+1; _x++){
-            for(int _y=-size; _y<size+1; _y++){
-                newVal=origz;//sprite function goes here
-
-                if(_x*_x+_y*_y<size*size && newVal>postZBuffer[(x+_x)+(y+_y)*width]){
-                    postZBuffer[(x+_x)+(y+_y)*width]=newVal;
-                    postRBuffer[(x+_x)+(y+_y)*width]=origr;
-                    postGBuffer[(x+_x)+(y+_y)*width]=origg;
-                    postBBuffer[(x+_x)+(y+_y)*width]=origb;
-                }
-            }
+        if(getPassId()==1){
+            int myLineIndex = x+y*width;
+            if(myLineIndex<min(lineIndex, 10000))
+                drawLine(myLineIndex);
         }
     }
 
-    int getColor(int x, int y, float gradient){
+    int black(){
         int _argb = 255;
 
-        _argb = (_argb << 8) + (int)(postRBuffer[x+y*width]*brightness*gradient);
-        _argb = (_argb << 8) + (int)(postGBuffer[x+y*width]*brightness*gradient);
-        _argb = (_argb << 8) + (int)(postBBuffer[x+y*width]*brightness*gradient);
+        _argb = (_argb << 8) + 1;
+        _argb = (_argb << 8) + 1;
+        _argb = (_argb << 8) + 1;
 
         return _argb;
     }
 
-    int gray(int g){
+    int white(){
         int _argb = 255;
 
+        _argb = (_argb << 8) + 255;
+        _argb = (_argb << 8) + 255;
+        _argb = (_argb << 8) + 255;
+
+        return _argb;
+    }
+
+    int gray(float _g){
+        int g = (int)_g;
+
+        g = max(min(g, 255), 1);
+
+        int _argb = 255;
+
+        g=max(1, min(g, 255))  ;
         _argb = (_argb << 8) + g;
         _argb = (_argb << 8) + g;
         _argb = (_argb << 8) + g;
 
         return _argb;
     }
-
-    float getMaxSlope(int x, int y){
-        float central =  (postZBuffer[x+y*width]);
-        float maxslope1 = max(max((float) postZBuffer[(x - 1) + (y) * width] - central, (float) postZBuffer[(x + 1) + (y) * width] - central),
-                max((float) postZBuffer[(x) + (y - 1) * width] - central, (float) postZBuffer[(x) + (y + 1) * width] - central));
-        float maxslope2 = max(max((float) postZBuffer[(x - 1) + (y - 1) * width] - central, (float) postZBuffer[(x + 1) + (y + 1) * width] - central),
-                max((float) postZBuffer[(x - 1) + (y + 1) * width] - central, (float) postZBuffer[(x + 1) + (y - 1) * width] - central));
-        return max(maxslope2, maxslope1);
-    }
-
 }
