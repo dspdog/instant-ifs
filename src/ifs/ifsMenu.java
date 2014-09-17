@@ -259,7 +259,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
         WebButtonGroup iconsGroup = new WebButtonGroup ( true, XButton, YButton, ZButton );
         //((WebButtonGroup)addLabeled(iconsGroup, layout, "", panel, true)).addComponentListener(null);
-        ((JLabel)addLabeled(new JLabel(""), layout, "", panel, true)).addComponentListener(null);
+        //((JLabel)addLabeled(new JLabel(""), layout, "", panel, true)).addComponentListener(null);
         ((JCheckBox)addLabeled(smearCheck, layout, "Smear", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(smearWobbleSpinner, layout, "WobbleMag", panel, false)).addChangeListener(updateAndClear);
         //((SliderWithSpinner)addLabeled(smearSmoothSpinner, layout, "WobSmooth", panel, false)).addChangeListener(updateAndClear);

@@ -448,75 +448,40 @@ final class ifsys extends JPanel
     }
 
     public void gamefunc(){
+        gamefunc(rp.iterations);
+    }
 
-        if(theShape.hasDrawList){
-            theShape.getDrawList();
-        }
 
+    public void gamefunc(int _iterations){
         rp.guidesHidden = System.currentTimeMillis() - lastMoveTime > rp.linesHideTime;
+        indexFunction(0, _iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]));
+     }
 
-        if(theShape.pointsInUse != 0){
+    public void indexFunction(int _index, int _iterations, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt){
+        ifsPt dpt = new ifsPt(_dpt, true);
+        ifsPt rpt;
 
-            for(int a = 0; a < rp.samplesPerFrame; a++){
-                int randomIndex = 0;
-                ifsPt dpt = new ifsPt(theShape.pts[randomIndex]);
-                ifsPt rpt = new ifsPt();
+        float cumulativeScale = _cumulativeScale;
+        ifsPt cumulativeRotation = new ifsPt(_cumulativeRotation);
 
-                float cumulativeScale = 1.0f;
+        if(_iterations>0){
+            ifsPt olddpt;
+            ifsPt thePt = theShape.pts[_index];
+            ifsPt centerPt = theShape.pts[0];
 
-                ifsPt cumulativeRotation = new ifsPt(0,0,0);
+            cumulativeRotation = cumulativeRotation.add(new ifsPt(thePt.rotationPitch,thePt.rotationYaw,thePt.rotationRoll));
 
-                int bucketIndex=0;
-                int nextBucketIndex;
+            rpt = thePt.subtract(centerPt).scale(cumulativeScale).getRotatedPt(cumulativeRotation);
+            olddpt = new ifsPt(dpt);
+            dpt._add(rpt);
 
-                float distance = 0.0f;
-                float fiters = rp.iterations*0.01f;
+            theVolume.putPdfSample(dpt, cumulativeRotation, cumulativeScale, thePt, theShape.pts[0], olddpt,
+                    0, 0, 0, rp, thePdf, renderBuffer, rpt.magnitude(), theMenu.colorChooser, 1.0f);
 
-                for(float d = 0; d < fiters; d++){
+            cumulativeScale *= thePt.scale/centerPt.scale;
 
-                    float factorMax = 1.0f;
-                    if(fiters-d<1.0){
-                        factorMax = fiters-d;
-                    }
-
-                    int oldRandomIndex = randomIndex;
-                    //if(bucketIndex*(theShape.pointsInUse-1)<buckets.length){
-                    //    randomIndex = smallestIndexAtThisNode(bucketIndex*(theShape.pointsInUse-1))+1; //send new data where its needed most...
-                    //}else{
-                        randomIndex = 1 + (int)(Math.random() * (double) (theShape.pointsInUse-1));
-                    //}
-
-                    nextBucketIndex = bucketIndex*(theShape.pointsInUse-1)+randomIndex-1;
-                    //if(nextBucketIndex<buckets.length){
-                    //    bucketIndex=nextBucketIndex;
-                    //}
-
-                    ///buckets[bucketIndex]++;
-
-                    if(d==0){randomIndex=0;}
-
-                    ifsPt olddpt = new ifsPt();
-                    ifsPt thePt = theShape.pts[randomIndex];
-                    ifsPt centerPt = theShape.pts[0];
-                    if(d!=0){
-                        cumulativeRotation = cumulativeRotation.add(new ifsPt(thePt.rotationPitch,thePt.rotationYaw,thePt.rotationRoll));
-                        rpt = thePt.subtract(centerPt).scale(cumulativeScale).getRotatedPt(cumulativeRotation);
-                        olddpt = new ifsPt(dpt);
-                        distance += rpt.magnitude();
-                        dpt._add(rpt);
-                    }
-
-                    if(!theVolume.croppedVolumeContains(dpt, rp)){ //skip points if they leave the cropped area
-                        theShape.disqualified = true;
-                        break;
-                    }else{
-                        if(!(rp.smearPDF && d==0)){ //skips first iteration PDF if smearing
-                            theVolume.putPdfSample(dpt, cumulativeRotation, cumulativeScale, thePt, theShape.pts[oldRandomIndex], olddpt,
-                                    0, bucketIndex, distance, rp, thePdf, renderBuffer, rpt.magnitude(), theMenu.colorChooser, factorMax);
-                        }
-                        cumulativeScale *= thePt.scale/centerPt.scale;
-                    }
-                }
+            for(int i=0; i<theShape.pointsInUse; i++){
+                indexFunction(i, _iterations-1, cumulativeScale, cumulativeRotation, dpt);
             }
         }
     }

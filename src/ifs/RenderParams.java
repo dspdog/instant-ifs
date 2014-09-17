@@ -113,7 +113,7 @@ final class RenderParams implements java.io.Serializable {
         evolveLockPeriod = 1000f;
 
         dotSize=0;
-        smearPDF = true;
+        smearPDF = false;
 
         drawGrid = true;
         gridRedrawTime=10;
@@ -131,7 +131,7 @@ final class RenderParams implements java.io.Serializable {
         infoHidden = false;
         usePDFSamples = true;
         guidesHidden = false;
-        iterations = 2;
+        iterations = 3;
         brightnessMultiplier = 2;
         holdFrame=false;
         samplesPerFrame = 8;
