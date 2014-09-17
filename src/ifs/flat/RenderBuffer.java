@@ -18,6 +18,14 @@ public final class RenderBuffer extends Kernel{
 
     public final float postZBuffer[];
 
+    public final float lineX1[] = new float[1000000];
+    public final float lineY1[] = new float[1000000];
+    public final float lineZ1[] = new float[1000000];
+    public final float lineX2[] = new float[1000000];
+    public final float lineY2[] = new float[1000000];
+    public final float lineZ2[] = new float[1000000];
+    public int lineIndex = 0;
+
     public final int pixels[];
 
     boolean cartoon=false;
@@ -102,8 +110,6 @@ public final class RenderBuffer extends Kernel{
 
         Range range = Range.create2D(width,height);
 
-        //pass 1 Z-PROCESS
-        //pass 2 GENERATE PIXELS
         this.execute(range, 2);
 
         frameNum++;
@@ -119,6 +125,13 @@ public final class RenderBuffer extends Kernel{
         int x = getGlobalId(0);
         int y = getGlobalId(1);
 
+        if(getPassId()==0){ //draw lines....
+            postZBuffer[x+y*width]=(int)ZBuffer[x+y*width];
+            postRBuffer[x+y*width]=(int)RBuffer[x+y*width];
+            postGBuffer[x+y*width]=(int)GBuffer[x+y*width];
+            postBBuffer[x+y*width]=(int)BBuffer[x+y*width];
+        }
+        /*
         if(getPassId()==0){ //Z-PROCESS
             int edge = 32;
             if (x>edge && x<(width-edge) && y>edge && y<(height-edge)){
@@ -171,7 +184,7 @@ public final class RenderBuffer extends Kernel{
             postGBuffer[x+y*width]=0;
             postBBuffer[x+y*width]=0;
         }
-
+*/
     }
 
     void putThing(int x, int y){

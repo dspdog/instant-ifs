@@ -307,7 +307,7 @@ final class ifsys extends JPanel
             try{
                 while(!quit){
                     gamefunc();
-                    sleep(1L);
+                    sleep(100L);
                 }
             }catch (InterruptedException e) {
                     e.printStackTrace();
@@ -331,9 +331,9 @@ final class ifsys extends JPanel
 
         clearframe();
 
-        for(int i=0; i< threads.length; i++){
-            threads[i].start();
-        }
+        //for(int i=0; i< threads.length; i++){
+            threads[0].start();
+        //}
 
         theShape.setToPreset(0);
 
@@ -453,35 +453,46 @@ final class ifsys extends JPanel
 
 
     public void gamefunc(int _iterations){
+
+        if(renderBuffer.lineIndex%10==0){
+            System.out.println(renderBuffer.lineIndex + "lineindex");
+        }
+
         rp.guidesHidden = System.currentTimeMillis() - lastMoveTime > rp.linesHideTime;
         indexFunction(0, _iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]));
      }
 
-    public void indexFunction(int _index, int _iterations, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt){
-        ifsPt dpt = new ifsPt(_dpt, true);
-        ifsPt rpt;
-
-        float cumulativeScale = _cumulativeScale;
+    private void indexFunction(int _index, int _iterations, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt){
+        ifsPt dpt = new ifsPt(_dpt);
         ifsPt cumulativeRotation = new ifsPt(_cumulativeRotation);
+        ifsPt thePt = theShape.pts[_index];
+        ifsPt centerPt = theShape.pts[0];
 
-        if(_iterations>0){
-            ifsPt olddpt;
-            ifsPt thePt = theShape.pts[_index];
-            ifsPt centerPt = theShape.pts[0];
+        cumulativeRotation = cumulativeRotation.add(new ifsPt(thePt.rotationPitch,thePt.rotationYaw,thePt.rotationRoll));
 
-            cumulativeRotation = cumulativeRotation.add(new ifsPt(thePt.rotationPitch,thePt.rotationYaw,thePt.rotationRoll));
+        ifsPt rpt = thePt.subtract(centerPt).scale(_cumulativeScale).getRotatedPt(cumulativeRotation);
+        ifsPt odp = new ifsPt(dpt);
+        dpt._add(rpt);
 
-            rpt = thePt.subtract(centerPt).scale(cumulativeScale).getRotatedPt(cumulativeRotation);
-            olddpt = new ifsPt(dpt);
-            dpt._add(rpt);
+        ifsPt proj_odp = theVolume.getCameraDistortedPt(odp, rp.rightEye);
+        ifsPt proj_dpt = theVolume.getCameraDistortedPt(dpt, rp.rightEye);
 
-            theVolume.putPdfSample(dpt, cumulativeRotation, cumulativeScale, thePt, theShape.pts[0], olddpt,
-                    0, 0, 0, rp, thePdf, renderBuffer, rpt.magnitude(), theMenu.colorChooser, 1.0f);
+        renderBuffer.lineX1[renderBuffer.lineIndex]=proj_dpt.x;
+        renderBuffer.lineY1[renderBuffer.lineIndex]=proj_dpt.y;
+        renderBuffer.lineZ1[renderBuffer.lineIndex]=proj_dpt.z;
+        renderBuffer.lineX2[renderBuffer.lineIndex]=proj_odp.x;
+        renderBuffer.lineY2[renderBuffer.lineIndex]=proj_odp.y;
+        renderBuffer.lineZ2[renderBuffer.lineIndex]=proj_odp.z;
+        renderBuffer.lineIndex++;
+        renderBuffer.lineIndex=renderBuffer.lineIndex%renderBuffer.lineX1.length;
 
-            cumulativeScale *= thePt.scale/centerPt.scale;
+        //theVolume.putPdfSample(dpt, cumulativeRotation, _cumulativeScale, thePt, theShape.pts[0], odp,
+        //                        0, 0, 0, rp, thePdf, renderBuffer, rpt.magnitude(), theMenu.colorChooser, 1.0f);
 
+        if(_iterations>1){
+            _cumulativeScale *= thePt.scale/centerPt.scale;
             for(int i=0; i<theShape.pointsInUse; i++){
-                indexFunction(i, _iterations-1, cumulativeScale, cumulativeRotation, dpt);
+                indexFunction(i, _iterations-1, _cumulativeScale, cumulativeRotation, dpt);
             }
         }
     }
