@@ -234,6 +234,7 @@ final class ifsys extends JPanel
                             rp.evolveAnimationPeriod=oldAnim;
                             lastShapeReload=System.currentTimeMillis();
                         }
+                        //renderBuffer.totalLines=0;
                         theVolume.changed=true;
                         theShape = theShape.getPerturbedShape(eShape.mutationDescriptorPt.intensify(rp.evolveIntensity/100f), false);
                         rp.odbScale.smooth();
@@ -414,6 +415,7 @@ final class ifsys extends JPanel
                 theVolume.clear();
 
                 if(System.currentTimeMillis()-lastIndex>50){
+                    renderBuffer.totalLines =renderBuffer.lineIndex;
                     renderBuffer.lineIndex=0;
                     indexFunction(0, rp.iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]));
                     lastIndex = System.currentTimeMillis();

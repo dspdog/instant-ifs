@@ -68,7 +68,10 @@ public final class RenderBuffer extends Kernel{
 
     final int NUM_LINES = 1024*1024/4;
 
+    public int totalLines;
+
     public RenderBuffer(int w, int h){
+        totalLines=100;
         width=1024; height=1024;
         /*
         RBuffer = new float[width*height];
@@ -374,22 +377,20 @@ public final class RenderBuffer extends Kernel{
         int x = getGlobalId(0);
         int y = getGlobalId(1);
 
-        if(getPassId()==0){
+        if(getPassId()==0){ //clear frame
             pixels[x+y*width]=black();
         }
-        if(getPassId()==1){
+        if(getPassId()==1){ //draw skeleton
             int myLineIndex = x+y*width;
-            if(myLineIndex<NUM_LINES && myLineIndex<lineIndex)
+            if(myLineIndex<NUM_LINES && myLineIndex<totalLines)
                 drawLine(myLineIndex);
         }
-        if(getPassId()==2){
-            //int q=0;
-            putThing(x,y);
+        if(getPassId()==2){ //draw flesh
+            putSprite(x, y);
         }
-
     }
 
-    void putThing(int x, int y){
+    void putSprite(int x, int y){
         int size = 4;
 
         if(x>size && y>size && x<(width-size) && y<(height-size)){
