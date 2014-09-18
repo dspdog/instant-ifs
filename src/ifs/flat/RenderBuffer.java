@@ -141,33 +141,6 @@ public final class RenderBuffer extends Kernel{
         return false;
     }
 
-    public void generatePixels(float _brightness, boolean useShadows, boolean rightEye, boolean _putSamples, float _size, float pitch, float yaw, float roll, boolean _usePerspective,
-                               float scale, float camX, float camY, float camZ){
-        camPitch=pitch;
-        camRoll=roll;
-        camYaw=yaw;
-        camCenterX = camX;
-        camCenterY = camY;
-        camCenterZ = camZ;
-        camScale = scale;
-        usePerspective = _usePerspective;
-
-        cartoon=useShadows;
-        addSamples=_putSamples;
-        brightness=_brightness;
-        scaleUp=_size;
-
-        Range range = Range.create2D(width,height);
-
-        this.execute(range, 2);
-
-        frameNum++;
-
-        if(frameNum%1000==0){
-            System.out.println(this.getExecutionMode().toString() + " " + this.getExecutionTime());
-        }
-    }
-
     public void drawDot(int _index){
 
         projX1[_index] = lineX1[_index];
@@ -221,7 +194,7 @@ public final class RenderBuffer extends Kernel{
             int grayval = (int)((dz*dz/255/16));
 
             if((pixels[x+y*width]&255)<grayval)
-                pixels[x+y*width] = gray((int)(grayval));
+                pixels[x+y*width] = blue((int) (grayval));
 
           //  pixels[x+y*width] = gray(dz);
         }
@@ -369,6 +342,33 @@ public final class RenderBuffer extends Kernel{
         }
     }
 
+    public void generatePixels(float _brightness, boolean useShadows, boolean rightEye, boolean _putSamples, float _size, float pitch, float yaw, float roll, boolean _usePerspective,
+                               float scale, float camX, float camY, float camZ){
+        camPitch=pitch;
+        camRoll=roll;
+        camYaw=yaw;
+        camCenterX = camX;
+        camCenterY = camY;
+        camCenterZ = camZ;
+        camScale = scale;
+        usePerspective = _usePerspective;
+
+        cartoon=useShadows;
+        addSamples=_putSamples;
+        brightness=_brightness;
+        scaleUp=_size;
+
+        Range range = Range.create2D(width,height);
+
+        this.execute(range, 3);
+
+        frameNum++;
+
+        if(frameNum%1000==0){
+            System.out.println(this.getExecutionMode().toString() + " " + this.getExecutionTime());
+        }
+    }
+
     @Override
     public void run() {
         int x = getGlobalId(0);
@@ -382,6 +382,29 @@ public final class RenderBuffer extends Kernel{
             if(myLineIndex<NUM_LINES && myLineIndex<lineIndex)
                 drawLine(myLineIndex);
         }
+        if(getPassId()==2){
+            //int q=0;
+            putThing(x,y);
+        }
+
+    }
+
+    void putThing(int x, int y){
+        int size = 4;
+
+        if(x>size && y>size && x<(width-size) && y<(height-size)){
+            int startingVal=pixels[(x)+(y)*width]&255;
+            if(startingVal>1)
+            for(int _x=-size; _x<size+1; _x++){
+                for(int _y=-size; _y<size+1; _y++){
+                    int currentVal = pixels[(x+_x)+(y+_y)*width]&255;
+                    if(_x*_x+_y*_y<size*size && startingVal>currentVal){
+                        pixels[(x+_x)+(y+_y)*width]|=red(startingVal);
+                    }
+                }
+            }
+        }
+
     }
 
     int black(){
@@ -412,6 +435,30 @@ public final class RenderBuffer extends Kernel{
         _argb = (_argb << 8) + g;
         _argb = (_argb << 8) + g;
         _argb = (_argb << 8) + g;
+
+        return _argb;
+    }
+
+    int blue(int b){
+
+        int _argb = 255;
+
+        b=max(1, min(b, 255))  ;
+        _argb = (_argb << 8) + 0;
+        _argb = (_argb << 8) + 0;
+        _argb = (_argb << 8) + b;
+
+        return _argb;
+    }
+
+    int red(int r){
+
+        int _argb = 255;
+
+        r=max(1, min(r, 255))  ;
+        _argb = (_argb << 8) + r;
+        _argb = (_argb << 8) + 0;
+        _argb = (_argb << 8) + 0;
 
         return _argb;
     }
