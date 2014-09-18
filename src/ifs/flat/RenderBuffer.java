@@ -375,13 +375,30 @@ public final class RenderBuffer extends Kernel{
         if(getPassId()==2){ //draw flesh
             putSprite(x, y);
         }
-        if(getPassId()==3){ //genPixels
-            getColor(x, y);
+        if(getPassId()==3){ //z-process
+
+            float gradient=1.0f;
+
+            float gms = x>1&&y>1&&x<width-1&&y<height-1 ? getMaxSlope(x,y)/16f : 0;
+            float maxslope = min(gms*255f, 255f);
+
+            gradient = shading ? 1.0f-maxslope/255.0f : 1.0f;
+
+            getColor(x, y, gradient);
         }
     }
 
-    void getColor(int x, int y){
-        pixels[(x)+(y)*width] = gray(zbuffer[(x)+(y)*width]);
+    float getMaxSlope(int x, int y){
+        float central =  (zbuffer[x+y*width]);
+        float maxslope1 = max(max((float) zbuffer[(x - 1) + (y) * width] - central, (float) zbuffer[(x + 1) + (y) * width] - central),
+                max((float) zbuffer[(x) + (y - 1) * width] - central, (float) zbuffer[(x) + (y + 1) * width] - central));
+        float maxslope2 = max(max((float) zbuffer[(x - 1) + (y - 1) * width] - central, (float) zbuffer[(x + 1) + (y + 1) * width] - central),
+                max((float) zbuffer[(x - 1) + (y + 1) * width] - central, (float) zbuffer[(x + 1) + (y - 1) * width] - central));
+        return max(maxslope2, maxslope1);
+    }
+
+    void getColor(int x, int y, float gradient){
+        pixels[(x)+(y)*width] = gray((int)(gradient*zbuffer[(x)+(y)*width]));
     }
 
     void putSprite(int x, int y){
