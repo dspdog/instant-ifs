@@ -166,8 +166,12 @@ public final class RenderBuffer extends Kernel{
         return sqrt(x*x+y*y);
     }
 
-    public void drawLine(int _index){
+    public boolean lineValid(int _index){ //TODO clip lines instead of not draw
+        return (projX1[_index]>1 && projY1[_index]>1 && projX2[_index]>1 && projY2[_index]>1) &&
+                (projX1[_index]<width && projY1[_index]<height && projX2[_index]<width && projY2[_index]<height);
+    }
 
+    public void drawLine(int _index){
         projX1[_index] = lineX1[_index];
         projY1[_index] = lineY1[_index];
         projZ1[_index] = lineZ1[_index];
@@ -177,24 +181,26 @@ public final class RenderBuffer extends Kernel{
 
         cameraDistort(_index);
 
-        float mag = distanceProj(_index);
-        mag = min(max(mag, 1), 1024);
-        for(int i=0; i<mag; i++){
-            float dx = projX1[_index] + i*(projX2[_index] - projX1[_index])/mag;
-            float dy = projY1[_index] + i*(projY2[_index] - projY1[_index])/mag;
-            float dz = projZ1[_index] + i*(projZ2[_index] - projZ1[_index])/mag;
-            float ds = lineS1[_index] + i*(lineS2[_index] - lineS1[_index])/mag;
+        if(lineValid(_index)){
+            float mag = distanceProj(_index);
+            mag = min(max(mag, 1), 1024);
+            for(int i=0; i<mag; i++){
+                float dx = projX1[_index] + i*(projX2[_index] - projX1[_index])/mag;
+                float dy = projY1[_index] + i*(projY2[_index] - projY1[_index])/mag;
+                float dz = projZ1[_index] + i*(projZ2[_index] - projZ1[_index])/mag;
+                float ds = lineS1[_index] + i*(lineS2[_index] - lineS1[_index])/mag;
 
-            int x = min(max((int) dx, 1), width - 1);
-            int y = min(max((int) dy, 1), height - 1);
-            //dz = max(dz, pixels[x+y*width]&255);
+                int x = min(max((int) dx, 1), width - 1);
+                int y = min(max((int) dy, 1), height - 1);
+                //dz = max(dz, pixels[x+y*width]&255);
 
-            int grayval = (int)((dz*dz/255/16));
+                int grayval = (int)((dz*dz/255/16));
 
-            //ds = max((pixels[x+y*width]>>8)&255, ds);
+                //ds = max((pixels[x+y*width]>>8)&255, ds);
 
-            if((pixels[x+y*width]&255)<grayval)
-               pixels[x+y*width] = argb(255,0,(int)(ds),grayval);
+                if((pixels[x+y*width]&255)<grayval)
+                    pixels[x+y*width] = argb(255,0,(int)(ds),grayval);
+            }
         }
     }
 
