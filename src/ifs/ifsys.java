@@ -466,9 +466,12 @@ final class ifsys extends JPanel
         renderBuffer.lineX1[renderBuffer.lineIndex]=(short)dpt.x;
         renderBuffer.lineY1[renderBuffer.lineIndex]=(short)dpt.y;
         renderBuffer.lineZ1[renderBuffer.lineIndex]=(short)dpt.z;
+        renderBuffer.lineS1[renderBuffer.lineIndex]=(short)(_cumulativeScale*thePt.scale/centerPt.scale*255f);
+
         renderBuffer.lineX2[renderBuffer.lineIndex]=(short)odp.x;
         renderBuffer.lineY2[renderBuffer.lineIndex]=(short)odp.y;
         renderBuffer.lineZ2[renderBuffer.lineIndex]=(short)odp.z;
+        renderBuffer.lineS2[renderBuffer.lineIndex]=(short)(_cumulativeScale*255f);
         //renderBuffer.lineMag[renderBuffer.lineIndex]=(float)proj_odp.distTo(proj_dpt);
         renderBuffer.lineIndex++;
         renderBuffer.lineIndex=Math.min(renderBuffer.lineIndex, renderBuffer.lineX1.length-1);

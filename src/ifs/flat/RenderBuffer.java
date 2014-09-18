@@ -24,9 +24,11 @@ public final class RenderBuffer extends Kernel{
     public final short lineX1[];
     public final short lineY1[];
     public final short lineZ1[];
+    public final short lineS1[];
     public final short lineX2[];
     public final short lineY2[];
     public final short lineZ2[];
+    public final short lineS2[];
 
     public final short projX1[];
     public final short projY1[];
@@ -34,6 +36,7 @@ public final class RenderBuffer extends Kernel{
     public final short projX2[];
     public final short projY2[];
     public final short projZ2[];
+
 
     public final int pixels[];
     public final short zbuffer[];
@@ -85,9 +88,12 @@ public final class RenderBuffer extends Kernel{
         lineX1 = new short[NUM_LINES];
         lineY1 = new short[NUM_LINES];
         lineZ1 = new short[NUM_LINES];
+        lineS1 = new short[NUM_LINES];
+
         lineX2 = new short[NUM_LINES];
         lineY2 = new short[NUM_LINES];
         lineZ2 = new short[NUM_LINES];
+        lineS2 = new short[NUM_LINES];
 
         clearZProjection();
         cartoon=false;
@@ -177,6 +183,7 @@ public final class RenderBuffer extends Kernel{
             float dx = projX1[_index] + i*(projX2[_index] - projX1[_index])/mag;
             float dy = projY1[_index] + i*(projY2[_index] - projY1[_index])/mag;
             float dz = projZ1[_index] + i*(projZ2[_index] - projZ1[_index])/mag;
+            float ds = lineS1[_index] + i*(lineS2[_index] - lineS1[_index])/mag;
 
             int x = min(max((int) dx, 1), width - 1);
             int y = min(max((int) dy, 1), height - 1);
@@ -184,8 +191,10 @@ public final class RenderBuffer extends Kernel{
 
             int grayval = (int)((dz*dz/255/16));
 
-            if(pixels[x+y*width]<grayval)
-               pixels[x+y*width] = grayval;
+            //ds = max((pixels[x+y*width]>>8)&255, ds);
+
+            if((pixels[x+y*width]&255)<grayval)
+               pixels[x+y*width] = argb(255,0,(int)(ds),grayval);
         }
     }
 
@@ -388,12 +397,12 @@ public final class RenderBuffer extends Kernel{
         }
     }
 
-    float getMaxSlope(int x, int y){
-        float central =  (zbuffer[x+y*width]);
-        float maxslope1 = max(max((float) zbuffer[(x - 1) + (y) * width] - central, (float) zbuffer[(x + 1) + (y) * width] - central),
-                max((float) zbuffer[(x) + (y - 1) * width] - central, (float) zbuffer[(x) + (y + 1) * width] - central));
-        float maxslope2 = max(max((float) zbuffer[(x - 1) + (y - 1) * width] - central, (float) zbuffer[(x + 1) + (y + 1) * width] - central),
-                max((float) zbuffer[(x - 1) + (y + 1) * width] - central, (float) zbuffer[(x + 1) + (y - 1) * width] - central));
+    int getMaxSlope(int x, int y){
+        int central =  (zbuffer[x+y*width]);
+        int maxslope1 = max(max(zbuffer[(x - 1) + (y) * width] - central, zbuffer[(x + 1) + (y) * width] - central),
+                        max(zbuffer[(x) + (y - 1) * width] - central, zbuffer[(x) + (y + 1) * width] - central));
+        int maxslope2 = (int)(1.0f/sqrt(2.0f)*max(max(zbuffer[(x - 1) + (y - 1) * width] - central, zbuffer[(x + 1) + (y + 1) * width] - central),
+                        max(zbuffer[(x - 1) + (y + 1) * width] - central, zbuffer[(x + 1) + (y - 1) * width] - central)));
         return max(maxslope2, maxslope1);
     }
 
@@ -402,10 +411,11 @@ public final class RenderBuffer extends Kernel{
     }
 
     void putSprite(int x, int y){
-        int size = 8;
-
+        int size = (pixels[(x)+(y)*width]>>8)&255; //size is green channel
+        size=(int)(size/8.0);
+        size = max(1, min(size, 8));
         if(x>size && y>size && x<(width-size) && y<(height-size)){
-            short startingVal=(short)pixels[(x)+(y)*width];
+            short startingVal=(short)(pixels[(x)+(y)*width]&255);//depth is blue channe 
             if(startingVal>0)
             for(int _x=-size; _x<size+1; _x++){
                 for(int _y=-size; _y<size+1; _y++){
@@ -423,6 +433,21 @@ public final class RenderBuffer extends Kernel{
         _argb = (_argb << 8) + 0;
         _argb = (_argb << 8) + 0;
         _argb = (_argb << 8) + 0;
+
+        return _argb;
+    }
+
+    int argb(int a, int r, int g, int b){
+
+        a=max(1, min(a, 255))  ;
+        r=max(1, min(r, 255))  ;
+        g=max(1, min(g, 255))  ;
+        b=max(1, min(b, 255))  ;
+
+        int _argb = a;
+        _argb = (_argb << 8) + r;
+        _argb = (_argb << 8) + g;
+        _argb = (_argb << 8) + b;
 
         return _argb;
     }
