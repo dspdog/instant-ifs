@@ -228,12 +228,13 @@ final class ifsys extends JPanel
                             float oldIntensity = rp.evolveIntensity;
                             float oldAnim = rp.evolveAnimationPeriod;
                             loadStuff("");
+
                             rp.shapeVibrating=true;
                             rp.evolveIntensity=oldIntensity;
                             rp.evolveAnimationPeriod=oldAnim;
                             lastShapeReload=System.currentTimeMillis();
                         }
-
+                        theVolume.changed=true;
                         theShape = theShape.getPerturbedShape(eShape.mutationDescriptorPt.intensify(rp.evolveIntensity/100f), false);
                         rp.odbScale.smooth();
                         rp.odbRotationRoll.smooth();
@@ -457,15 +458,15 @@ final class ifsys extends JPanel
         ifsPt odp = new ifsPt(dpt);
         dpt._add(rpt);
 
-        //ifsPt proj_odp = odp; //theVolume.getCameraDistortedPt(odp, rp.rightEye);
+        ifsPt proj_odp = odp; //theVolume.getCameraDistortedPt(odp, rp.rightEye);
         ifsPt proj_dpt = dpt; //theVolume.getCameraDistortedPt(dpt, rp.rightEye);
 
         renderBuffer.lineX1[renderBuffer.lineIndex]=dpt.x;
         renderBuffer.lineY1[renderBuffer.lineIndex]=dpt.y;
         renderBuffer.lineZ1[renderBuffer.lineIndex]=dpt.z;
-        //renderBuffer.lineX2[renderBuffer.lineIndex]=proj_odp.x;
-        //renderBuffer.lineY2[renderBuffer.lineIndex]=proj_odp.y;
-        //renderBuffer.lineZ2[renderBuffer.lineIndex]=proj_odp.z;
+        renderBuffer.lineX2[renderBuffer.lineIndex]=odp.x;
+        renderBuffer.lineY2[renderBuffer.lineIndex]=odp.y;
+        renderBuffer.lineZ2[renderBuffer.lineIndex]=odp.z;
         //renderBuffer.lineMag[renderBuffer.lineIndex]=(float)proj_odp.distTo(proj_dpt);
         renderBuffer.lineIndex++;
         renderBuffer.lineIndex=Math.min(renderBuffer.lineIndex, renderBuffer.lineX1.length-1);

@@ -25,7 +25,7 @@ public final class RenderBuffer extends Kernel{
     public final float lineX2[];
     public final float lineY2[];
     public final float lineZ2[];
-    public final float lineMag[];
+
     public int lineIndex = 0;
     public int lastLineIndex =0;
 
@@ -33,6 +33,9 @@ public final class RenderBuffer extends Kernel{
     public final float projX1[];
     public final float projY1[];
     public final float projZ1[];
+    public final float projX2[];
+    public final float projY2[];
+    public final float projZ2[];
 
     public final int pixels[];
 
@@ -62,6 +65,8 @@ public final class RenderBuffer extends Kernel{
     public boolean addSamples=true;
     public boolean usePerspective = true;
 
+    final int NUM_LINES = 1024*1024/4;
+
     public RenderBuffer(int w, int h){
         width=1024; height=1024;
         RBuffer = new float[width*height];
@@ -77,17 +82,19 @@ public final class RenderBuffer extends Kernel{
         postGBuffer = new float[width*height];
         postBBuffer = new float[width*height];
 
-        projX1 = new float[width*height];
-        projY1 = new float[width*height];
-        projZ1 = new float[width*height];
+        projX1 = new float[NUM_LINES];
+        projY1 = new float[NUM_LINES];
+        projZ1 = new float[NUM_LINES];
+        projX2 = new float[NUM_LINES];
+        projY2 = new float[NUM_LINES];
+        projZ2 = new float[NUM_LINES];
 
-        lineX1 = new float[width*height];
-        lineY1 = new float[width*height];
-        lineZ1 = new float[width*height];
-        lineX2 = new float[width*height];
-        lineY2 = new float[width*height];
-        lineZ2 = new float[width*height];
-        lineMag = new float[width*height];
+        lineX1 = new float[NUM_LINES];
+        lineY1 = new float[NUM_LINES];
+        lineZ1 = new float[NUM_LINES];
+        lineX2 = new float[NUM_LINES];
+        lineY2 = new float[NUM_LINES];
+        lineZ2 = new float[NUM_LINES];
 
         clearZProjection();
         cartoon=false;
@@ -162,6 +169,9 @@ public final class RenderBuffer extends Kernel{
         projX1[_index] = lineX1[_index];
         projY1[_index] = lineY1[_index];
         projZ1[_index] = lineZ1[_index];
+        projX2[_index] = lineX2[_index];
+        projY2[_index] = lineY2[_index];
+        projZ2[_index] = lineZ2[_index];
 
         cameraDistort(_index);
 
@@ -176,18 +186,38 @@ public final class RenderBuffer extends Kernel{
             pixels[x+y*width] = gray((int)(grayval));
     }
 
+    public float distanceProj(int _index){
+        float x = projX2[_index]-projX1[_index];
+        float y = projY2[_index]-projY1[_index];
+        return sqrt(x*x+y*y);
+    }
+
     public void drawLine(int _index){
-        float mag = lineMag[_index];
+
+        projX1[_index] = lineX1[_index];
+        projY1[_index] = lineY1[_index];
+        projZ1[_index] = lineZ1[_index];
+        projX2[_index] = lineX2[_index];
+        projY2[_index] = lineY2[_index];
+        projZ2[_index] = lineZ2[_index];
+
+        cameraDistort(_index);
+
+        float mag = distanceProj(_index);
         mag = min(max(mag, 1), 1024);
         for(int i=0; i<mag; i++){
-            float dx = lineX1[_index] + i*(lineX2[_index] - lineX1[_index])/mag;
-            float dy = lineY1[_index] + i*(lineY2[_index] - lineY1[_index])/mag;
-            float dz = lineZ1[_index] + i*(lineZ2[_index] - lineZ1[_index])/mag;
-
+            float dx = projX1[_index] + i*(projX2[_index] - projX1[_index])/mag;
+            float dy = projY1[_index] + i*(projY2[_index] - projY1[_index])/mag;
+            float dz = projZ1[_index] + i*(projZ2[_index] - projZ1[_index])/mag;
 
             int x = min(max((int) dx, 1), width - 1);
             int y = min(max((int) dy, 1), height - 1);
-            dz = max(dz, pixels[x+y*width]&255);
+            //dz = max(dz, pixels[x+y*width]&255);
+
+            int grayval = (int)((dz*dz/255/16));
+
+            if((pixels[x+y*width]&255)<grayval)
+                pixels[x+y*width] = gray((int)(grayval));
 
           //  pixels[x+y*width] = gray(dz);
         }
@@ -224,6 +254,61 @@ public final class RenderBuffer extends Kernel{
         projZ1[_index]= _qz;
     }
 
+    public void lineRotate(int _index, float x, float y, float z, float _a){ //quaternion rotate
+        _a/=2;
+        float sa2 = sin(_a);
+
+        float qw=cos(_a);
+        float qx=x*sa2;
+        float qy=y*sa2;
+        float qz=z*sa2;
+        float qw2=cos(_a);
+        float qx2=x*sa2;
+        float qy2=y*sa2;
+        float qz2=z*sa2;
+
+        float _qw;
+        float _qx;
+        float _qy;
+        float _qz;
+
+        float _qw2;
+        float _qx2;
+        float _qy2;
+        float _qz2;
+
+        _qw = qTimes_W(qw, qx, qy, qz, 0, projX1[_index], projY1[_index], projZ1[_index]);
+        _qx = qTimes_X(qw, qx, qy, qz, 0, projX1[_index], projY1[_index], projZ1[_index]);
+        _qy = qTimes_Y(qw, qx, qy, qz, 0, projX1[_index], projY1[_index], projZ1[_index]);
+        _qz = qTimes_Z(qw, qx, qy, qz, 0, projX1[_index], projY1[_index], projZ1[_index]);
+
+        _qw2 = qTimes_W(qw, qx, qy, qz, 0, projX2[_index], projY2[_index], projZ2[_index]);
+        _qx2 = qTimes_X(qw, qx, qy, qz, 0, projX2[_index], projY2[_index], projZ2[_index]);
+        _qy2 = qTimes_Y(qw, qx, qy, qz, 0, projX2[_index], projY2[_index], projZ2[_index]);
+        _qz2 = qTimes_Z(qw, qx, qy, qz, 0, projX2[_index], projY2[_index], projZ2[_index]);
+
+
+        qw=_qw;qx=_qx;qy=_qy;qz=_qz;
+        qw2=_qw2;qx2=_qx2;qy2=_qy2;qz2=_qz2;
+
+        //_qw = qTimes_W(qw, qx, qy, qz, cos(_a), -x*sa2, -y*sa2, -z*sa2);
+        _qx = qTimes_X(qw, qx, qy, qz, cos(_a), -x*sa2, -y*sa2, -z*sa2);
+        _qy = qTimes_Y(qw, qx, qy, qz, cos(_a), -x*sa2, -y*sa2, -z*sa2);
+        _qz = qTimes_Z(qw, qx, qy, qz, cos(_a), -x*sa2, -y*sa2, -z*sa2);
+
+        _qx2 = qTimes_X(qw2, qx2, qy2, qz2, cos(_a), -x*sa2, -y*sa2, -z*sa2);
+        _qy2 = qTimes_Y(qw2, qx2, qy2, qz2, cos(_a), -x*sa2, -y*sa2, -z*sa2);
+        _qz2 = qTimes_Z(qw2, qx2, qy2, qz2, cos(_a), -x*sa2, -y*sa2, -z*sa2);
+
+        projX1[_index]= _qx;
+        projY1[_index]= _qy;
+        projZ1[_index]= _qz;
+
+        projX2[_index]= _qx2;
+        projY2[_index]= _qy2;
+        projZ2[_index]= _qz2;
+    }
+
     public float qTimes_W(float aW, float aX, float aY, float aZ, float w, float x, float y, float z){
         return aW *w - aX *x - aY *y - aZ *z;
     }
@@ -251,23 +336,32 @@ public final class RenderBuffer extends Kernel{
         projX1[_index] = lineX1[_index] - camCenterX;
         projY1[_index] = lineY1[_index] - camCenterY;
         projZ1[_index] = lineZ1[_index] - camCenterZ;
+        projX2[_index] = lineX2[_index] - camCenterX;
+        projY2[_index] = lineY2[_index] - camCenterY;
+        projZ2[_index] = lineZ2[_index] - camCenterZ;
 
-        rotate(_index, 1.0f, 0.0f, 0.0f, camPitch / 180.0f * PFf);
-        rotate(_index, 0.0f, 1.0f, 0.0f, camYaw / 180.0f * PFf);
-        rotate(_index, 0.0f, 0.0f, 1.0f, camRoll / 180.0f * PFf);
+        lineRotate(_index, 1.0f, 0.0f, 0.0f, camPitch / 180.0f * PFf);
+        lineRotate(_index, 0.0f, 1.0f, 0.0f, camYaw / 180.0f * PFf);
+        lineRotate(_index, 0.0f, 0.0f, 1.0f, camRoll / 180.0f * PFf);
 
         projX1[_index] = projX1[_index]*camScale+camCenterX;
         projY1[_index] = projY1[_index]*camScale+camCenterY;
         projZ1[_index] = projZ1[_index]*camScale+camCenterZ;
+        projX2[_index] = projX2[_index]*camScale+camCenterX;
+        projY2[_index] = projY2[_index]*camScale+camCenterY;
+        projZ2[_index] = projZ2[_index]*camScale+camCenterZ;
 
         float vx = 512.0f; //vanishing pt onscreen
         float vy = 512.0f;
         float perspectiveScale=200f;
 
         if(usePerspective){
-            float downScale=perspectiveScale*0.1f/(float)sqrt(1024f-projZ1[_index]);
-            projX1[_index]=(projX1[_index]-vx)*downScale + vx;
-            projY1[_index]=(projY1[_index]-vy)*downScale + vy;
+            float downScale1=perspectiveScale*0.1f/(float)sqrt(1024f-projZ1[_index]);
+            float downScale2=perspectiveScale*0.1f/(float)sqrt(1024f-projZ2[_index]);
+            projX1[_index]=(projX1[_index]-vx)*downScale1 + vx;
+            projY1[_index]=(projY1[_index]-vy)*downScale1 + vy;
+            projX2[_index]=(projX2[_index]-vx)*downScale2 + vx;
+            projY2[_index]=(projY2[_index]-vy)*downScale2 + vy;
         }
     }
 
@@ -281,8 +375,8 @@ public final class RenderBuffer extends Kernel{
         }
         if(getPassId()==1){
             int myLineIndex = x+y*width;
-            if(myLineIndex<lineIndex)
-                drawDot(myLineIndex);
+            if(myLineIndex<NUM_LINES && myLineIndex<lineIndex)
+                drawLine(myLineIndex);
         }
     }
 
