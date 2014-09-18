@@ -1,7 +1,10 @@
 package ifs.flat;
 
 import com.amd.aparapi.Kernel;
+import com.amd.aparapi.ProfileInfo;
 import com.amd.aparapi.Range;
+
+import java.util.List;
 
 public final class RenderBuffer extends Kernel{
 
@@ -51,7 +54,7 @@ public final class RenderBuffer extends Kernel{
     float brightness = 1.0f;
 
     int width, height;
-
+    float perspectiveScale=200f;
     float maxColor = 0;
 
     public float camPitch, camYaw, camRoll, camScale, camCenterX, camCenterY, camCenterZ;
@@ -194,7 +197,7 @@ public final class RenderBuffer extends Kernel{
                 int y = min(max((int) dy, 1), height - 1);
                 //dz = max(dz, pixels[x+y*width]&255);
 
-                int grayval = (int)((dz*dz/255/16));
+                int grayval = (int)(dz/16f);//(int)((dz*dz/255/16));
 
                 //ds = max((pixels[x+y*width]>>8)&255, ds);
 
@@ -334,11 +337,11 @@ public final class RenderBuffer extends Kernel{
 
         float vx = 512.0f; //vanishing pt onscreen
         float vy = 512.0f;
-        float perspectiveScale=200f;
+
 
         if(usePerspective){
-            float downScale1=perspectiveScale*0.1f/(float)sqrt(1024f-projZ1[_index]);
-            float downScale2=perspectiveScale*0.1f/(float)sqrt(1024f-projZ2[_index]);
+            float downScale1=scaleDownDistance(projZ1[_index]);
+            float downScale2=scaleDownDistance(projZ2[_index]);
             projX1[_index]=(short)((projX1[_index]-vx)*downScale1 + vx);
             projY1[_index]=(short)((projY1[_index]-vy)*downScale1 + vy);
             projX2[_index]=(short)((projX2[_index]-vx)*downScale2 + vx);
@@ -346,8 +349,12 @@ public final class RenderBuffer extends Kernel{
         }
     }
 
+    public float scaleDownDistance(float input){
+        return perspectiveScale*0.1f/(float)sqrt(1024f-input);
+    }
+
     public void generatePixels(float _brightness, boolean useShadows, boolean rightEye, boolean _putSamples, float _size, float pitch, float yaw, float roll, boolean _usePerspective,
-                               float scale, float camX, float camY, float camZ){
+                               float scale, float camX, float camY, float camZ, float perspScale){
         camPitch=pitch;
         camRoll=roll;
         camYaw=yaw;
@@ -356,6 +363,8 @@ public final class RenderBuffer extends Kernel{
         camCenterZ = camZ;
         camScale = scale;
         usePerspective = _usePerspective;
+
+        perspectiveScale = perspScale;
 
         cartoon=useShadows;
         addSamples=_putSamples;
@@ -368,7 +377,7 @@ public final class RenderBuffer extends Kernel{
 
         frameNum++;
 
-        if(frameNum%1000==0){
+        if(frameNum%100==0){
             System.out.println(this.getExecutionMode().toString() + " " + this.getExecutionTime());
         }
     }
@@ -404,8 +413,8 @@ public final class RenderBuffer extends Kernel{
     }
 
     int getMaxSlope(int x, int y){
-        int central =  (zbuffer[x+y*width]);
-        int maxslope1 = max(max(zbuffer[(x - 1) + (y) * width] - central, zbuffer[(x + 1) + (y) * width] - central),
+        int central =  (int)(zbuffer[x+y*width]);
+        int maxslope1 = (int)max(max(zbuffer[(x - 1) + (y) * width] - central, zbuffer[(x + 1) + (y) * width] - central),
                         max(zbuffer[(x) + (y - 1) * width] - central, zbuffer[(x) + (y + 1) * width] - central));
         int maxslope2 = (int)(1.0f/sqrt(2.0f)*max(max(zbuffer[(x - 1) + (y - 1) * width] - central, zbuffer[(x + 1) + (y + 1) * width] - central),
                         max(zbuffer[(x - 1) + (y + 1) * width] - central, zbuffer[(x + 1) + (y - 1) * width] - central)));
@@ -417,11 +426,15 @@ public final class RenderBuffer extends Kernel{
     }
 
     void putSprite(int x, int y){
+
         int size = (pixels[(x)+(y)*width]>>8)&255; //size is green channel
-        size=(int)(size/8.0);
-        size = max(1, min(size, 8));
+        short z = (short)((pixels[(x)+(y)*width])&255); //z is blue channel
+        float scale = scaleDownDistance(z*16f);
+
+        size=(int)(size*scale/16f);
+        size = max(1, min(size, 16));
         if(x>size && y>size && x<(width-size) && y<(height-size)){
-            short startingVal=(short)(pixels[(x)+(y)*width]&255);//depth is blue channe 
+            short startingVal=z;
             if(startingVal>0)
             for(int _x=-size; _x<size+1; _x++){
                 for(int _y=-size; _y<size+1; _y++){
