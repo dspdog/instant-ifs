@@ -36,6 +36,7 @@ public final class RenderBuffer extends Kernel{
     public final short projZ2[];
 
     public final int pixels[];
+    public final short zbuffer[];
 
     public int lineIndex = 0;
     public int lastLineIndex =0;
@@ -73,20 +74,6 @@ public final class RenderBuffer extends Kernel{
     public RenderBuffer(int w, int h){
         totalLines=100;
         width=1024; height=1024;
-        /*
-        RBuffer = new float[width*height];
-        GBuffer = new float[width*height];
-        BBuffer = new float[width*height];
-
-        SBuffer = new float[width*height];
-        ZBuffer = new float[width*height];
-        TBuffer = new long[width*height];
-
-        postZBuffer = new float[width*height];
-        postRBuffer = new float[width*height];
-        postGBuffer = new float[width*height];
-        postBBuffer = new float[width*height];
-        */
 
         projX1 = new short[NUM_LINES];
         projY1 = new short[NUM_LINES];
@@ -105,6 +92,7 @@ public final class RenderBuffer extends Kernel{
         clearZProjection();
         cartoon=false;
         pixels=new int[width*height];
+        zbuffer= new short[width*height];
         addSamples=true;
 
         camPitch=0;
@@ -196,10 +184,8 @@ public final class RenderBuffer extends Kernel{
 
             int grayval = (int)((dz*dz/255/16));
 
-            if((pixels[x+y*width]&255)<grayval)
-                pixels[x+y*width] = blue((int) (grayval));
-
-          //  pixels[x+y*width] = gray(dz);
+            if(pixels[x+y*width]<grayval)
+               pixels[x+y*width] = grayval;
         }
     }
 
@@ -363,7 +349,7 @@ public final class RenderBuffer extends Kernel{
 
         Range range = Range.create2D(width,height);
 
-        this.execute(range, 3);
+        this.execute(range, 4);
 
         frameNum++;
 
@@ -379,6 +365,7 @@ public final class RenderBuffer extends Kernel{
 
         if(getPassId()==0){ //clear frame
             pixels[x+y*width]=black();
+            zbuffer[(x)+(y)*width]=0;
         }
         if(getPassId()==1){ //draw skeleton
             int myLineIndex = x+y*width;
@@ -388,42 +375,37 @@ public final class RenderBuffer extends Kernel{
         if(getPassId()==2){ //draw flesh
             putSprite(x, y);
         }
+        if(getPassId()==3){ //genPixels
+            getColor(x, y);
+        }
+    }
+
+    void getColor(int x, int y){
+        pixels[(x)+(y)*width] = gray(zbuffer[(x)+(y)*width]);
     }
 
     void putSprite(int x, int y){
-        int size = 4;
+        int size = 8;
 
         if(x>size && y>size && x<(width-size) && y<(height-size)){
-            int startingVal=pixels[(x)+(y)*width]&255;
-            if(startingVal>1)
+            short startingVal=(short)pixels[(x)+(y)*width];
+            if(startingVal>0)
             for(int _x=-size; _x<size+1; _x++){
                 for(int _y=-size; _y<size+1; _y++){
-                    int currentVal = pixels[(x+_x)+(y+_y)*width]&255;
-                    if(_x*_x+_y*_y<size*size && startingVal>currentVal){
-                        pixels[(x+_x)+(y+_y)*width]|=red(startingVal);
+                    if(_x*_x+_y*_y<size*size && startingVal>zbuffer[(x+_x)+(y+_y)*width]){
+                        zbuffer[(x+_x)+(y+_y)*width]=startingVal;
                     }
                 }
             }
         }
-
     }
 
     int black(){
         int _argb = 255;
 
-        _argb = (_argb << 8) + 1;
-        _argb = (_argb << 8) + 1;
-        _argb = (_argb << 8) + 1;
-
-        return _argb;
-    }
-
-    int white(){
-        int _argb = 255;
-
-        _argb = (_argb << 8) + 255;
-        _argb = (_argb << 8) + 255;
-        _argb = (_argb << 8) + 255;
+        _argb = (_argb << 8) + 0;
+        _argb = (_argb << 8) + 0;
+        _argb = (_argb << 8) + 0;
 
         return _argb;
     }
@@ -436,30 +418,6 @@ public final class RenderBuffer extends Kernel{
         _argb = (_argb << 8) + g;
         _argb = (_argb << 8) + g;
         _argb = (_argb << 8) + g;
-
-        return _argb;
-    }
-
-    int blue(int b){
-
-        int _argb = 255;
-
-        b=max(1, min(b, 255))  ;
-        _argb = (_argb << 8) + 0;
-        _argb = (_argb << 8) + 0;
-        _argb = (_argb << 8) + b;
-
-        return _argb;
-    }
-
-    int red(int r){
-
-        int _argb = 255;
-
-        r=max(1, min(r, 255))  ;
-        _argb = (_argb << 8) + r;
-        _argb = (_argb << 8) + 0;
-        _argb = (_argb << 8) + 0;
 
         return _argb;
     }

@@ -404,7 +404,6 @@ final class ifsys extends JPanel
 
     public void clearframe(){
         theVolume.totalSamples=0;
-        //resetBuckets();
         renderBuffer.lastLineIndex=renderBuffer.lineIndex;
 
         theVolume.drawTime = System.currentTimeMillis();
