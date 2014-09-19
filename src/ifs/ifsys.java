@@ -481,7 +481,7 @@ final class ifsys extends JPanel
 
         if(_iterations>1){
             _cumulativeScale *= thePt.scale/centerPt.scale;
-            for(int i=0; i<theShape.pointsInUse; i++){
+            for(int i=1; i<theShape.pointsInUse; i++){
                 indexFunction(i, _iterations-1, _cumulativeScale, cumulativeRotation, dpt);
             }
         }
