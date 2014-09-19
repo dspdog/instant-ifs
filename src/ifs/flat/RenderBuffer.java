@@ -27,7 +27,6 @@ public final class RenderBuffer extends Kernel{
     public final short projZ2[];
 
     public final int pixels[];
-    public final short zbuffer[];
 
     public int lineIndex = 0;
     public int lastLineIndex =0;
@@ -51,14 +50,12 @@ public final class RenderBuffer extends Kernel{
 
     public static int shutterSpeed = 50;
 
-    public int mode = 0; //z-process
-
     public float scaleUp =1.0f;
 
     public boolean addSamples=true;
     public boolean usePerspective = true;
 
-    final int NUM_LINES = 1024*1024/2;
+    final int NUM_LINES = 1024*1024;
 
     public int totalLines;
 
@@ -83,10 +80,9 @@ public final class RenderBuffer extends Kernel{
         lineZ2 = new short[NUM_LINES];
         lineS2 = new short[NUM_LINES];
 
-        clearZProjection();
         cartoon=false;
         pixels=new int[width*height];
-        zbuffer= new short[width*height];
+
         addSamples=true;
 
         camPitch=0;
@@ -94,10 +90,6 @@ public final class RenderBuffer extends Kernel{
         camRoll=0;
 
         this.setExecutionMode(Kernel.EXECUTION_MODE.GPU);
-    }
-
-    public void clearZProjection(){
-        maxColor=0;
     }
 
     public void updateTime(long _time){
@@ -145,7 +137,7 @@ public final class RenderBuffer extends Kernel{
                 int grayval = (int)(dz/16f);
 
                 if((pixels[x+y*width]&255)<grayval)
-                    pixels[x+y*width] = argb(255,0,(int)(ds),grayval);
+                    pixels[x+y*width] = argb(255,1,(int)(ds),grayval);
             }
 
     }
@@ -274,7 +266,6 @@ public final class RenderBuffer extends Kernel{
 
         if(getPassId()==0){ //clear frame
             pixels[x+y*width]=black();
-            zbuffer[(x)+(y)*width]=0;
         }
         if(getPassId()==1){ //draw skeleton
             int myLineIndex = x+y*width;
@@ -298,34 +289,39 @@ public final class RenderBuffer extends Kernel{
     }
 
     int getMaxSlope(int x, int y){
-        int central =  (int)(zbuffer[x+y*width]);
-        int maxslope1 = (int)max(max(zbuffer[(x - 1) + (y) * width] - central, zbuffer[(x + 1) + (y) * width] - central),
-                        max(zbuffer[(x) + (y - 1) * width] - central, zbuffer[(x) + (y + 1) * width] - central));
-        int maxslope2 = (int)(1.0f/sqrt(2.0f)*max(max(zbuffer[(x - 1) + (y - 1) * width] - central, zbuffer[(x + 1) + (y + 1) * width] - central),
-                        max(zbuffer[(x - 1) + (y + 1) * width] - central, zbuffer[(x + 1) + (y - 1) * width] - central)));
+        int central =  (int)(pixels[x+y*width]);
+        int maxslope1 = (int)max(max(pixels[(x - 1) + (y) * width] - central, pixels[(x + 1) + (y) * width] - central),
+                        max(pixels[(x) + (y - 1) * width] - central, pixels[(x) + (y + 1) * width] - central));
+        int maxslope2 = (int)(1.0f/sqrt(2.0f)*max(max(pixels[(x - 1) + (y - 1) * width] - central, pixels[(x + 1) + (y + 1) * width] - central),
+                        max(pixels[(x - 1) + (y + 1) * width] - central, pixels[(x + 1) + (y - 1) * width] - central)));
         return max(maxslope2, maxslope1);
     }
 
     void getColor(int x, int y, float gradient){
-        pixels[(x)+(y)*width] = gray((int)(gradient*zbuffer[(x)+(y)*width]*zbuffer[(x)+(y)*width]/16f));
+        int val = pixels[(x)+(y)*width];
+        pixels[(x)+(y)*width] = gray((int)(gradient*val*val/16f));
     }
 
     void putSprite(int x, int y){
-
-        int size = (pixels[(x)+(y)*width]>>8)&255; //size is green channel
+        int size = (int)(((pixels[(x)+(y)*width]>>8)&255)*camScale); //size is green channel
         short z = (short)((pixels[(x)+(y)*width])&255); //z is blue channel
         float scale = scaleDownDistance(z*16f);
 
         size=(int)(size*scale/16f);
-        size = max(1, min(size, 32));
+        size = max(1, min(size, 64));
+        pixels[(x)+(y)*width]=z;
         if(x>size && y>size && x<(width-size) && y<(height-size)){
             short startingVal=z;
             if(startingVal>0)
             for(int _x=-size; _x<size+1; _x++){
                 for(int _y=-size; _y<size+1; _y++){
-                    if(_x*_x+_y*_y<size*size && startingVal>zbuffer[(x+_x)+(y+_y)*width]){
-                        zbuffer[(x+_x)+(y+_y)*width]=startingVal;
+                    int lineIfOne = (pixels[(x+_x)+(y+_y)*width]>>16)&255;//red is 1 if line
+                    if(lineIfOne!=1){
+                        if(_x*_x+_y*_y<size*size && startingVal>(pixels[(x+_x)+(y+_y)*width]&255)){
+                            pixels[(x+_x)+(y+_y)*width]=startingVal;
+                        }
                     }
+
                 }
             }
         }

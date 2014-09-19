@@ -422,7 +422,6 @@ final class ifsys extends JPanel
             }
 
             lastClearTime=System.currentTimeMillis();
-            renderBuffer.clearZProjection();
         }
     }
 
