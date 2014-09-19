@@ -109,11 +109,6 @@ public final class RenderBuffer extends Kernel{
         return false;
     }
 
-    public boolean lineValid(int _index){ //TODO clip lines instead of not draw
-        return (projX1[_index]>1 && projY1[_index]>1 && projX2[_index]>1 && projY2[_index]>1) &&
-                (projX1[_index]<width && projY1[_index]<height && projX2[_index]<width && projY2[_index]<height);
-    }
-
     public void drawLine(int _index){
         projX1[_index] = lineX1[_index];
         projY1[_index] = lineY1[_index];
@@ -124,7 +119,6 @@ public final class RenderBuffer extends Kernel{
 
         cameraDistort(_index);
 
-        if(lineValid(_index)){
             float X1 = projX1[_index];
             float X2 = projX2[_index];
             float Y1 = projY1[_index];
@@ -137,21 +131,23 @@ public final class RenderBuffer extends Kernel{
             float mag = sqrt((X2-X1)*(X2-X1)+(Y2-Y1)*(Y2-Y1));
 
             mag = min(max(mag, 1), width*sqrt(2));
+
+            if(X1>1 && Y1>1  && X1<width && Y1<height && X2>1 && Y2>1  && X2<width && Y2<height)//valid lines only
             for(int i=0; i<mag; i++){
                 float dx = X1 + i*(X2 - X1)/mag;
                 float dy = Y1 + i*(Y2 - Y1)/mag;
                 float dz = Z1 + i*(Z2 - Z1)/mag;
                 float ds = S1 + i*(S2 - S1)/mag;
 
-                int x = min(max((int) dx, 1), width - 1);
-                int y = min(max((int) dy, 1), height - 1);
+                int x = min(max((int) dx, 0), width);
+                int y = min(max((int) dy, 0), height);
 
-                int grayval = (int)(dz/16f);//(int)((dz*dz/255/16));
+                int grayval = (int)(dz/16f);
 
                 if((pixels[x+y*width]&255)<grayval)
                     pixels[x+y*width] = argb(255,0,(int)(ds),grayval);
             }
-        }
+
     }
 
     private void lineRotate(int _index, float x, float y, float z, float _a){ //quaternion rotate
@@ -260,7 +256,7 @@ public final class RenderBuffer extends Kernel{
         brightness=_brightness;
         scaleUp=_size;
 
-        Range range = Range.create2D(width,height);
+        Range range = Range.create2D(width, height);
 
         this.execute(range, 4);
 
@@ -311,7 +307,7 @@ public final class RenderBuffer extends Kernel{
     }
 
     void getColor(int x, int y, float gradient){
-        pixels[(x)+(y)*width] = gray((int)(gradient*zbuffer[(x)+(y)*width]));
+        pixels[(x)+(y)*width] = gray((int)(gradient*zbuffer[(x)+(y)*width]*zbuffer[(x)+(y)*width]/16f));
     }
 
     void putSprite(int x, int y){
@@ -321,7 +317,7 @@ public final class RenderBuffer extends Kernel{
         float scale = scaleDownDistance(z*16f);
 
         size=(int)(size*scale/16f);
-        size = max(1, min(size, 16));
+        size = max(1, min(size, 32));
         if(x>size && y>size && x<(width-size) && y<(height-size)){
             short startingVal=z;
             if(startingVal>0)
