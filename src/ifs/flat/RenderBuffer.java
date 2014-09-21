@@ -10,14 +10,14 @@ public final class RenderBuffer extends Kernel{
 
     final static float PFf = (float)Math.PI;
 
-    public final short lineX1[];
-    public final short lineY1[];
-    public final short lineZ1[];
-    public final short lineS1[];
-    public final short lineX2[];
-    public final short lineY2[];
-    public final short lineZ2[];
-    public final short lineS2[];
+    public final int lineX1[];
+    public final int lineY1[];
+    public final int lineZ1[];
+    public final int lineS1[];
+    public final int lineX2[];
+    public final int lineY2[];
+    public final int lineZ2[];
+    public final int lineS2[];
 
     public final short projX1[];
     public final short projY1[];
@@ -70,15 +70,15 @@ public final class RenderBuffer extends Kernel{
         projY2 = new short[NUM_LINES];
         projZ2 = new short[NUM_LINES];
 
-        lineX1 = new short[NUM_LINES];
-        lineY1 = new short[NUM_LINES];
-        lineZ1 = new short[NUM_LINES];
-        lineS1 = new short[NUM_LINES];
+        lineX1 = new int[NUM_LINES];
+        lineY1 = new int[NUM_LINES];
+        lineZ1 = new int[NUM_LINES];
+        lineS1 = new int[NUM_LINES];
 
-        lineX2 = new short[NUM_LINES];
-        lineY2 = new short[NUM_LINES];
-        lineZ2 = new short[NUM_LINES];
-        lineS2 = new short[NUM_LINES];
+        lineX2 = new int[NUM_LINES];
+        lineY2 = new int[NUM_LINES];
+        lineZ2 = new int[NUM_LINES];
+        lineS2 = new int[NUM_LINES];
 
         cartoon=false;
         pixels=new int[width*height];
@@ -102,12 +102,12 @@ public final class RenderBuffer extends Kernel{
     }
 
     public void drawLine(int _index){
-        projX1[_index] = lineX1[_index];
-        projY1[_index] = lineY1[_index];
-        projZ1[_index] = lineZ1[_index];
-        projX2[_index] = lineX2[_index];
-        projY2[_index] = lineY2[_index];
-        projZ2[_index] = lineZ2[_index];
+        projX1[_index] = (short)lineX1[_index];
+        projY1[_index] = (short)lineY1[_index];
+        projZ1[_index] = (short)lineZ1[_index];
+        projX2[_index] = (short)lineX2[_index];
+        projY2[_index] = (short)lineY2[_index];
+        projZ2[_index] = (short)lineZ2[_index];
 
         cameraDistort(_index);
 
@@ -151,10 +151,10 @@ public final class RenderBuffer extends Kernel{
         float qx=x*sa2;
         float qy=y*sa2;
         float qz=z*sa2;
-        float qw2=cos(_a);
-        float qx2=x*sa2;
-        float qy2=y*sa2;
-        float qz2=z*sa2;
+        float qw2;
+        float qx2;
+        float qy2;
+        float qz2;
 
         float _qw = qTimes_W(qw, qx, qy, qz, 0, projX1[_index], projY1[_index], projZ1[_index]);
         float _qx = qTimes_X(qw, qx, qy, qz, 0, projX1[_index], projY1[_index], projZ1[_index]);
@@ -230,6 +230,11 @@ public final class RenderBuffer extends Kernel{
         return perspectiveScale*0.1f/(float)sqrt(1024f-input);
     }
 
+    public void updateGeometry(){
+        this.put(lineX1).put(lineY1).put(lineZ1).put(lineS1)
+            .put(lineX2).put(lineY2).put(lineZ2).put(lineS2);
+    }
+
     public void generatePixels(float _brightness, boolean useShadows, boolean rightEye, boolean _putSamples, float _size, float pitch, float yaw, float roll, boolean _usePerspective,
                                float scale, float camX, float camY, float camZ, float perspScale){
         camPitch=pitch;
@@ -248,9 +253,13 @@ public final class RenderBuffer extends Kernel{
         brightness=_brightness;
         scaleUp=_size;
 
+        this.setExplicit(true);
+
         Range range = Range.create2D(width, height);
 
         this.execute(range, 4);
+
+        this.get(pixels);
 
         frameNum++;
 

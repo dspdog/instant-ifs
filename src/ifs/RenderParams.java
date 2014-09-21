@@ -115,7 +115,7 @@ final class RenderParams implements java.io.Serializable {
         dotSize=0;
         smearPDF = false;
 
-        drawGrid = true;
+        drawGrid = false;
         gridRedrawTime=10;
         gridDrawTime=0;
 

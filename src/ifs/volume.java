@@ -128,7 +128,7 @@ final class volume {
 
     public void clear(){
         doneClearing=false;
-        System.out.println("clear volume " + System.currentTimeMillis());
+        //System.out.println("clear volume " + System.currentTimeMillis());
         accumilatedDistance = 0;
         averageDistanceSamples = 0;
 

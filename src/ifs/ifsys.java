@@ -418,6 +418,7 @@ final class ifsys extends JPanel
                     renderBuffer.lineIndex=0;
                     indexFunction(0, rp.iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]));
                     lastIndex = System.currentTimeMillis();
+                    renderBuffer.updateGeometry();
                 }
             }
 
