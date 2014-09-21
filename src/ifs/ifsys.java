@@ -48,10 +48,6 @@ final class ifsys extends JPanel
     ifsMenu theMenu;
     ifsOverlays overlays;
 
-    static int numBuckets = 10_000_000;
-    static int numBucketsAnimated = 1_000_000;
-    //int[] buckets = new int[numBuckets]; //used for "load balancing" across the branches
-
     static ifsOverlays.DragAxis selectedMovementAxis = ifsOverlays.DragAxis.NONE;
 
     static boolean shiftDown;
@@ -368,9 +364,6 @@ final class ifsys extends JPanel
         if(renderImage != null){
             renderGraphics = (Graphics2D)renderImage.getGraphics();
 
-            renderGraphics.setColor(rp.bgColor);
-            renderGraphics.fillRect(0, 0, rp.screenwidth, rp.screenheight);
-
             renderImageSource.newPixels();
             renderGraphics.drawImage(misImage, 0, 0, rp.screenwidth, rp.screenheight, this);
             renderGraphics.setColor(Color.blue);
@@ -391,15 +384,11 @@ final class ifsys extends JPanel
     }
 
     public void generatePixels(){
-        boolean didProcess=false;
-
-            didProcess=true;
-            renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.cartoonMode, rp.rightEye, rp.postProcess, rp.smearSize/8f,
-                                        theVolume.camPitch, theVolume.camYaw, theVolume.camRoll, theVolume.usePerspective,
-                                        theVolume.camScale,
-                                        theVolume.camCenter.x, theVolume.camCenter.y, theVolume.camCenter.z, theVolume.perspectiveScale);
-
-        if(didProcess)lastPostProcessTime=System.currentTimeMillis();
+        renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.cartoonMode, rp.rightEye, rp.postProcess, rp.smearSize/8f,
+                                    theVolume.camPitch, theVolume.camYaw, theVolume.camRoll, theVolume.usePerspective,
+                                    theVolume.camScale,
+                                    theVolume.camCenter.x, theVolume.camCenter.y, theVolume.camCenter.z, theVolume.perspectiveScale);
+        lastPostProcessTime=System.currentTimeMillis();
     }
 
     public void clearframe(){

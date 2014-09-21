@@ -258,12 +258,11 @@ public final class RenderBuffer extends Kernel{
         Range range = Range.create2D(width, height);
 
         this.execute(range, 4);
-
         this.get(pixels);
 
         frameNum++;
 
-        if(frameNum%100==0){
+        if(frameNum%1000==0){
             System.out.println(this.getExecutionMode().toString() + " " + this.getExecutionTime() + " lines: " + totalLines);
         }
     }
