@@ -291,7 +291,6 @@ public final class RenderBuffer extends Kernel{
             float maxslope = min(gms*255f, 255f);
 
             gradient = shading ? 1.0f-maxslope/255.0f : 1.0f;
-
             getColor(x, y, gradient);
         }
     }
@@ -315,21 +314,29 @@ public final class RenderBuffer extends Kernel{
         short z = (short)((pixels[(x)+(y)*width])&255); //z is blue channel
         float scale = scaleDownDistance(z*16f);
 
-        size=(int)(size*scale/16f);
+        size=(int)(size*scale/4f);
         size = max(1, min(size, 64));
         pixels[(x)+(y)*width]=z;
+
+        float sofar=0;
         if(x>size && y>size && x<(width-size) && y<(height-size)){
             short startingVal=z;
-            if(startingVal>0)
-            for(int _x=-size; _x<size+1; _x++){
-                for(int _y=-size; _y<size+1; _y++){
-                    int lineIfOne = (pixels[(x+_x)+(y+_y)*width]>>16)&255;//red is 1 if line
-                    if(lineIfOne!=1){
-                        if(_x*_x+_y*_y<size*size && startingVal>(pixels[(x+_x)+(y+_y)*width]&255)){
+            int _x,_y;
+            float total = size;
+            if(startingVal>0){
+                for(sofar=0; sofar<(int)total;sofar++){
+                    _x = 0;
+                    _y = (int)(sofar-total/2);
+                    if(((pixels[(x+_x)+(y+_y)*width]>>16)&255) != 1){ //if is not line
+                        if(startingVal>(pixels[(x+_x)+(y+_y)*width]&255)){
                             pixels[(x+_x)+(y+_y)*width]=startingVal;
                         }
                     }
-
+                    if(((pixels[(x+_x+1)+(y+_y)*width]>>16)&255) != 1){ //if is not line
+                        if(startingVal>(pixels[(x+_x)+(y+_y)*width]&255)){
+                            pixels[(x+_x)+(y+_y)*width]=startingVal;
+                        }
+                    }
                 }
             }
         }

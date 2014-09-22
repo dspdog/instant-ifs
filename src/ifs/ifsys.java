@@ -721,7 +721,7 @@ final class ifsys extends JPanel
 
         if(e.getKeyChar() == 's'){
             saveStuff("");
-            //imageUtils.saveImg(startTimeLog, rp.screenwidth, rp.screenheight, renderBuffer.pixels);
+            imageUtils.saveImg(startTimeLog, rp.screenwidth, rp.screenheight, renderBuffer.pixels);
         }
 
         if(e.getKeyChar() == 'l'){
