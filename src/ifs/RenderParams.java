@@ -25,6 +25,8 @@ final class RenderParams implements java.io.Serializable {
     int samplesPerFrame;
     int iterations;
 
+    float jitter;
+
     double brightnessMultiplier;
 
     boolean holdFrame;
@@ -83,7 +85,7 @@ final class RenderParams implements java.io.Serializable {
         postProcess=true;
 
         smearWobbleIntensity =3;
-
+        jitter=4;
         twoD=false;
         threeD=true;
         wobbleRandomSeed=57;

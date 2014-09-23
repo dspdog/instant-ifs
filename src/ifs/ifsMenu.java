@@ -40,6 +40,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     SliderWithSpinner rollSpinner;
 
     SliderWithSpinner camScaleSpinner;
+    SliderWithSpinner camJitterSpinner;
 
     SliderWithSpinner evolveIntensitySpinner;
     SliderWithSpinner evolveSpeedSpinner;
@@ -126,6 +127,8 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
                 myIfsSys.theShape.updateCenter();
 
+
+                myIfsSys.rp.jitter = camJitterSpinner.getValue();
                 myIfsSys.theVolume.perspectiveScale = camScaleSpinner.getValue();
                 myIfsSys.theVolume.perspectiveScale = Math.max(0.1f, myIfsSys.theVolume.perspectiveScale);
 
@@ -455,8 +458,10 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         // ((WebGradientColorChooser)addLabeled(colorChooser, layout, "Color", panel)).addChangeListener(updateAndClear);
 
         camScaleSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(60, 1, 300));
+        camJitterSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(60, 1, 300));
 
         ((SliderWithSpinner)addLabeled(camScaleSpinner, layout, "FOV", panel)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(camJitterSpinner, layout, "DOF", panel)).addChangeListener(updateAndClear);
 
         ActionListener moveCamera = new ActionListener() {
             @Override
@@ -600,6 +605,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 rollSpinner.setValue((int)(editPt.rotationRoll/Math.PI*180));
 
                 camScaleSpinner.setValue((int)myIfsSys.theVolume.perspectiveScale);
+                camJitterSpinner.setValue((int)myIfsSys.rp.jitter);
                 evolveIntensitySpinner.setValue((int)myIfsSys.rp.evolveIntensity);
                 evolveSpeedSpinner.setValue((int)myIfsSys.rp.evolveAnimationPeriod);
                 evolveLockSpinner.setValue((int)myIfsSys.rp.evolveLockPeriod);
