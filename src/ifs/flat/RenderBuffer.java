@@ -27,6 +27,7 @@ public final class RenderBuffer extends Kernel{
     public final short projZ2[];
 
     public final int pixels[];
+    public final short accumulator[];
 
     public int lineIndex = 0;
     public int lastLineIndex =0;
@@ -55,7 +56,7 @@ public final class RenderBuffer extends Kernel{
     public boolean addSamples=true;
     public boolean usePerspective = true;
 
-    final int NUM_LINES = 1024*1024;
+    final int NUM_LINES = 1024*1024/2;
 
     public int totalLines;
 
@@ -82,6 +83,7 @@ public final class RenderBuffer extends Kernel{
 
         cartoon=false;
         pixels=new int[width*height];
+        accumulator=new short[width*height];
 
         addSamples=true;
 
@@ -282,7 +284,7 @@ public final class RenderBuffer extends Kernel{
         }
         if(getPassId()==2){ //draw flesh
             if(((pixels[(x)+(y)*width]>>16)&255) == 1)
-            putX(x, y);
+            putCircle(x, y);
         }
         if(getPassId()==3){ //z-process
 
@@ -307,7 +309,12 @@ public final class RenderBuffer extends Kernel{
 
     void getColor(int x, int y, float gradient){
         int val = pixels[(x)+(y)*width]&255;
-        pixels[(x)+(y)*width] = gray((int) (gradient * val * val / 16f));
+        float time = 16f;
+        accumulator[(x)+(y)*width]+=(int) (gradient * val * val / 16f)&255;
+        accumulator[x+y*width]*=(1.0f-1.0f/time);
+
+        pixels[(x)+(y)*width] = gray((int)(accumulator[x+y*width]/time));
+
     }
 
     void putX(int x, int y){

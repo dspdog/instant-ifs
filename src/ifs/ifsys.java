@@ -384,8 +384,9 @@ final class ifsys extends JPanel
     }
 
     public void generatePixels(){
+        float jitter = 1f/10.0f;
         renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.cartoonMode, rp.rightEye, rp.postProcess, rp.smearSize/8f,
-                                    theVolume.camPitch + (float)Math.random()/1f, theVolume.camYaw + (float)Math.random()/1f, theVolume.camRoll + (float)Math.random()/1f, theVolume.usePerspective,
+                                    theVolume.camPitch + (float)Math.random()*jitter, theVolume.camYaw + (float)Math.random()*jitter, theVolume.camRoll, theVolume.usePerspective,
                                     theVolume.camScale,
                                     theVolume.camCenter.x, theVolume.camCenter.y, theVolume.camCenter.z, theVolume.perspectiveScale);
         lastPostProcessTime=System.currentTimeMillis();
