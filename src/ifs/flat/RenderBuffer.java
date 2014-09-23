@@ -282,7 +282,7 @@ public final class RenderBuffer extends Kernel{
         }
         if(getPassId()==2){ //draw flesh
             if(((pixels[(x)+(y)*width]>>16)&255) == 1)
-            putSprite(x, y);
+            putX(x, y);
         }
         if(getPassId()==3){ //z-process
 
@@ -310,7 +310,7 @@ public final class RenderBuffer extends Kernel{
         pixels[(x)+(y)*width] = gray((int) (gradient * val * val / 16f));
     }
 
-    void putSprite(int x, int y){
+    void putX(int x, int y){
         int size = (int)(((pixels[(x)+(y)*width]>>8)&255)*camScale); //size is green channel
         short z = (short)((pixels[(x)+(y)*width])&255); //z is blue channel
         float scale = scaleDownDistance(z*16f);
@@ -335,6 +335,34 @@ public final class RenderBuffer extends Kernel{
                     }
                     _x = (int)(sofar-total/2);
                     _y = 0;
+                    if(((pixels[(x+_x)+(y+_y)*width]>>16)&255) != 1){ //if is not line
+                        if(startingVal>(pixels[(x+_x)+(y+_y)*width]&255)){
+                            pixels[(x+_x)+(y+_y)*width]=startingVal;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void putCircle(int x, int y){
+        int size = (int)(((pixels[(x)+(y)*width]>>8)&255)*camScale); //size is green channel
+        short z = (short)((pixels[(x)+(y)*width])&255); //z is blue channel
+        float scale = scaleDownDistance(z*16f);
+
+        size=(int)(size*scale/4f);
+        size = max(1, min(size, 64));
+        pixels[(x)+(y)*width]=z;
+
+        float sofar=0;
+        if(x>size && y>size && x<(width-size) && y<(height-size)){
+            short startingVal=z;
+            int _x,_y;
+            float total = 2*size*3.14159265f;
+            if(startingVal>0){
+                for(sofar=0; sofar<(int)total;sofar++){
+                    _x = (int)(cos(2f*3.14159265f*sofar/total)*size);
+                    _y = (int)(sin(2f*3.14159265f*sofar/total)*size);//(int)(sofar-total/2);
                     if(((pixels[(x+_x)+(y+_y)*width]>>16)&255) != 1){ //if is not line
                         if(startingVal>(pixels[(x+_x)+(y+_y)*width]&255)){
                             pixels[(x+_x)+(y+_y)*width]=startingVal;
