@@ -136,7 +136,7 @@ public final class RenderBuffer extends Kernel{
 
                 int grayval = (int)(dz/16f);
 
-                if((pixels[x+y*width]&255)<grayval)
+                if((pixels[x+y*width]&255)<=grayval && ((pixels[x+y*width]>>16)&255)<ds)
                     pixels[x+y*width] = argb(255,1,(int)(ds),grayval);
             }
 
@@ -281,6 +281,7 @@ public final class RenderBuffer extends Kernel{
                 drawLine(myLineIndex);
         }
         if(getPassId()==2){ //draw flesh
+            if(((pixels[(x)+(y)*width]>>16)&255) == 1)
             putSprite(x, y);
         }
         if(getPassId()==3){ //z-process
@@ -305,7 +306,7 @@ public final class RenderBuffer extends Kernel{
     }
 
     void getColor(int x, int y, float gradient){
-        int val = pixels[(x)+(y)*width];
+        int val = pixels[(x)+(y)*width]&255;
         pixels[(x)+(y)*width] = gray((int)(gradient*val*val/16f));
     }
 
