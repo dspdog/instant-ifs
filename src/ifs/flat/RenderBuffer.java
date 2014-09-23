@@ -33,7 +33,6 @@ public final class RenderBuffer extends Kernel{
     public int lastLineIndex =0;
 
     boolean cartoon=false;
-
     final boolean shading = true;
 
     float brightness = 1.0f;
@@ -59,6 +58,8 @@ public final class RenderBuffer extends Kernel{
     final int NUM_LINES = 1024*1024/2;
 
     public int totalLines;
+
+    int accumTime;
 
     public RenderBuffer(int w, int h){
         totalLines=100;
@@ -238,7 +239,7 @@ public final class RenderBuffer extends Kernel{
     }
 
     public void generatePixels(float _brightness, boolean useShadows, boolean rightEye, boolean _putSamples, float _size, float pitch, float yaw, float roll, boolean _usePerspective,
-                               float scale, float camX, float camY, float camZ, float perspScale){
+                               float scale, float camX, float camY, float camZ, float perspScale, int _accumTime){
         camPitch=pitch;
         camRoll=roll;
         camYaw=yaw;
@@ -254,6 +255,7 @@ public final class RenderBuffer extends Kernel{
         addSamples=_putSamples;
         brightness=_brightness;
         scaleUp=_size;
+        accumTime = _accumTime;
 
         this.setExplicit(true);
 
@@ -309,7 +311,7 @@ public final class RenderBuffer extends Kernel{
 
     void getColor(int x, int y, float gradient){
         int val = pixels[(x)+(y)*width]&255;
-        float time = 16f;
+        float time = accumTime;
         accumulator[(x)+(y)*width]+=(int) (gradient * val * val / 16f)&255;
         accumulator[x+y*width]*=(1.0f-1.0f/time);
 
@@ -352,6 +354,7 @@ public final class RenderBuffer extends Kernel{
         }
     }
 
+    final float twoPI = 2f*3.14159265f;
     void putCircle(int x, int y){
         int size = (int)(((pixels[(x)+(y)*width]>>8)&255)*camScale); //size is green channel
         short z = (short)((pixels[(x)+(y)*width])&255); //z is blue channel
@@ -365,11 +368,12 @@ public final class RenderBuffer extends Kernel{
         if(x>size && y>size && x<(width-size) && y<(height-size)){
             short startingVal=z;
             int _x,_y;
-            float total = 2*size*3.14159265f;
+
+            float total = twoPI*size;
             if(startingVal>0){
                 for(sofar=0; sofar<(int)total;sofar++){
-                    _x = (int)(cos(2f*3.14159265f*sofar/total)*size);
-                    _y = (int)(sin(2f*3.14159265f*sofar/total)*size);//(int)(sofar-total/2);
+                    _x = (int)(cos(twoPI*sofar/total)*size);
+                    _y = (int)(sin(twoPI*sofar/total)*size);
                     if(((pixels[(x+_x)+(y+_y)*width]>>16)&255) != 1){ //if is not line
                         if(startingVal>(pixels[(x+_x)+(y+_y)*width]&255)){
                             pixels[(x+_x)+(y+_y)*width]=startingVal;

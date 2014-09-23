@@ -140,6 +140,6 @@ final class RenderParams implements java.io.Serializable {
         potentialRadius=0;
 
         renderThrottling=false;
-        shutterPeriod = 60;
+        shutterPeriod = 32;
     }
 }
