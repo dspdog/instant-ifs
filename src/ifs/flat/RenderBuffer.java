@@ -307,7 +307,7 @@ public final class RenderBuffer extends Kernel{
 
     void getColor(int x, int y, float gradient){
         int val = pixels[(x)+(y)*width]&255;
-        pixels[(x)+(y)*width] = gray((int)(gradient*val*val/16f));
+        pixels[(x)+(y)*width] = gray((int) (gradient * val * val / 16f));
     }
 
     void putSprite(int x, int y){
@@ -333,7 +333,9 @@ public final class RenderBuffer extends Kernel{
                             pixels[(x+_x)+(y+_y)*width]=startingVal;
                         }
                     }
-                    if(((pixels[(x+_x+1)+(y+_y)*width]>>16)&255) != 1){ //if is not line
+                    _x = (int)(sofar-total/2);
+                    _y = 0;
+                    if(((pixels[(x+_x)+(y+_y)*width]>>16)&255) != 1){ //if is not line
                         if(startingVal>(pixels[(x+_x)+(y+_y)*width]&255)){
                             pixels[(x+_x)+(y+_y)*width]=startingVal;
                         }

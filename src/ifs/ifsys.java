@@ -385,7 +385,7 @@ final class ifsys extends JPanel
 
     public void generatePixels(){
         renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.cartoonMode, rp.rightEye, rp.postProcess, rp.smearSize/8f,
-                                    theVolume.camPitch, theVolume.camYaw, theVolume.camRoll, theVolume.usePerspective,
+                                    theVolume.camPitch + (float)Math.random()/1f, theVolume.camYaw + (float)Math.random()/1f, theVolume.camRoll + (float)Math.random()/1f, theVolume.usePerspective,
                                     theVolume.camScale,
                                     theVolume.camCenter.x, theVolume.camCenter.y, theVolume.camCenter.z, theVolume.perspectiveScale);
         lastPostProcessTime=System.currentTimeMillis();
