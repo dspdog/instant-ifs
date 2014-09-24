@@ -13,6 +13,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Random;
 
 final class ifsys extends JPanel
     implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, FocusListener, ActionListener, Serializable
@@ -406,7 +407,9 @@ final class ifsys extends JPanel
                 if(System.currentTimeMillis()-lastIndex>50){
                     renderBuffer.totalLines =renderBuffer.lineIndex;
                     renderBuffer.lineIndex=0;
-                    indexFunction(0, rp.iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]));
+                    Random rnd = new Random();
+                    rnd.setSeed(57);
+                    indexFunction(0, rp.iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd);
                     lastIndex = System.currentTimeMillis();
                     renderBuffer.updateGeometry();
                 }
@@ -438,20 +441,23 @@ final class ifsys extends JPanel
     }
 
     long lastIndex = System.currentTimeMillis();
-    private void indexFunction(int _index, int _iterations, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt){
+    private void indexFunction(int _index, int _iterations, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt, Random _rnd){
         ifsPt dpt = new ifsPt(_dpt);
         ifsPt cumulativeRotation = new ifsPt(_cumulativeRotation);
         ifsPt thePt = theShape.pts[_index];
         ifsPt centerPt = theShape.pts[0];
 
-        cumulativeRotation = cumulativeRotation.add(new ifsPt(thePt.rotationPitch,thePt.rotationYaw,thePt.rotationRoll));
+        cumulativeRotation = cumulativeRotation.add(
+                new ifsPt(thePt.rotationPitch+(float)(_rnd.nextGaussian())/2f,
+                            thePt.rotationYaw+(float)(_rnd.nextGaussian())/2f,
+                            thePt.rotationRoll+(float)(_rnd.nextGaussian())/2f));
 
         ifsPt rpt = thePt.subtract(centerPt).scale(_cumulativeScale).getRotatedPt(cumulativeRotation);
         ifsPt odp = new ifsPt(dpt);
         dpt._add(rpt);
 
-        ifsPt proj_odp = odp; //theVolume.getCameraDistortedPt(odp, rp.rightEye);
-        ifsPt proj_dpt = dpt; //theVolume.getCameraDistortedPt(dpt, rp.rightEye);
+        //ifsPt proj_odp = odp; //theVolume.getCameraDistortedPt(odp, rp.rightEye);
+        //ifsPt proj_dpt = dpt; //theVolume.getCameraDistortedPt(dpt, rp.rightEye);
 
         renderBuffer.lineX1[renderBuffer.lineIndex]=(short)dpt.x;
         renderBuffer.lineY1[renderBuffer.lineIndex]=(short)dpt.y;
@@ -462,7 +468,6 @@ final class ifsys extends JPanel
         renderBuffer.lineY2[renderBuffer.lineIndex]=(short)odp.y;
         renderBuffer.lineZ2[renderBuffer.lineIndex]=(short)odp.z;
         renderBuffer.lineS2[renderBuffer.lineIndex]=(short)(_cumulativeScale*255f);
-        //renderBuffer.lineMag[renderBuffer.lineIndex]=(float)proj_odp.distTo(proj_dpt);
         renderBuffer.lineIndex++;
         renderBuffer.lineIndex=Math.min(renderBuffer.lineIndex, renderBuffer.lineX1.length-1);
 
@@ -471,8 +476,9 @@ final class ifsys extends JPanel
 
         if(_iterations>1){
             _cumulativeScale *= thePt.scale/centerPt.scale;
+            _cumulativeScale += (float)(_rnd.nextGaussian())/5f;
             for(int i=1; i<theShape.pointsInUse; i++){
-                indexFunction(i, _iterations-1, _cumulativeScale, cumulativeRotation, dpt);
+                indexFunction(i, _iterations-1, _cumulativeScale, cumulativeRotation, dpt, _rnd);
             }
         }
     }

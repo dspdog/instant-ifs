@@ -286,7 +286,7 @@ public final class RenderBuffer extends Kernel{
         }
         if(getPassId()==2){ //draw flesh
             if(((pixels[(x)+(y)*width]>>16)&255) == 1)
-            putCircle(x, y);
+            putX(x, y);
         }
         if(getPassId()==3){ //z-process
 
