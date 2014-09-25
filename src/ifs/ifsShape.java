@@ -19,6 +19,8 @@ final class ifsShape implements java.io.Serializable {
     int pointNearest, pointSelected;
     ifsPt selectedPt;
 
+    public ifsPt iterationDescriptorPt;
+
     float score;
 
     boolean disqualified;

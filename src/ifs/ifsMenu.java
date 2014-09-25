@@ -238,6 +238,9 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         ((SliderWithSpinner)addLabeled(yawSpinner, layout, "Yaw°", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(rollSpinner, layout, "Roll°", panel)).addChangeListener(updateAndClear);
 
+        randomSeedSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(1000, 0, 100_000));
+        ((SliderWithSpinner)addLabeled(randomSeedSpinner, layout, "Rnd Seed", panel)).addChangeListener(updateAndClear);
+
     }
 
     public void setupPdfPropertiesPanel(JPanel panel){
@@ -342,8 +345,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         evolveIntensitySpinner=new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000));
         evolveSpeedSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000));
         evolveLockSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(1000, 0, 20000));
-        randomSeedSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(1000, 0, 100_000));
-        //evolveSpeedSpinner.setAlignmentY(0.0f);
+                //evolveSpeedSpinner.setAlignmentY(0.0f);
 
         //evolveSpeedSpinner.setMaximumSize(new Dimension(200,20));
         //evolveSpeedSpinner.setMaximum(1000);
@@ -351,8 +353,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         ((SliderWithSpinner)addLabeled(evolveIntensitySpinner, layout, "Intensity", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(evolveSpeedSpinner, layout, "Period", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(evolveLockSpinner, layout, "Lock Period", panel)).addChangeListener(updateAndClear);
-        ((SliderWithSpinner)addLabeled(randomSeedSpinner, layout, "Rnd Seed", panel)).addChangeListener(updateAndClear);
-        ((JLabel)addLabeled(new JLabel(), layout, "", panel)).addComponentListener(null);
+                ((JLabel)addLabeled(new JLabel(), layout, "", panel)).addComponentListener(null);
 
         //evolutionTable.setEditable(false);
         //evolutionTable.setAutoResizeMode(WebTable.AUTO_RESIZE_OFF);
@@ -592,7 +593,10 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 ifsPt editPt;
                 if(myIfsSys.evolutionDescSelected){
                     editPt = myIfsSys.eShape.mutationDescriptorPt;
-                    ptLabel.setText("Mutation");
+                    ptLabel.setText("Evolution Mutation");
+                }else if(myIfsSys.iterationDescSelected){
+                    editPt = myIfsSys.theShape.iterationDescriptorPt;
+                    ptLabel.setText("Iteration Mutation");
                 }else{
                     editPt = myIfsSys.theShape.selectedPt;
                 }

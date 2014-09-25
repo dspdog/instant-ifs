@@ -63,6 +63,7 @@ final class ifsys extends JPanel
     int mouseScroll;
 
     boolean evolutionDescSelected;
+    boolean iterationDescSelected;
 
     ifsPt mousePt;
     ifsPt mouseStartDrag;
@@ -75,6 +76,7 @@ final class ifsys extends JPanel
 
     public ifsys(){
         evolutionDescSelected=false;
+        iterationDescSelected=false;
         rp = new RenderParams();
         renderBuffer = new RenderBuffer(rp.screenwidth, rp.screenheight);
 
@@ -419,14 +421,6 @@ final class ifsys extends JPanel
         }
     }
 
-    public void selectEvolutionDescriptorPt(){
-        evolutionDescSelected=true;
-    }
-
-    public void unselectEvolutionDescriptorPt(){
-        evolutionDescSelected=false;
-    }
-
     public void gamefunc(){
         gamefunc(rp.iterations);
     }
@@ -503,7 +497,8 @@ final class ifsys extends JPanel
         theVolume.saveCam();
         getMouseXYZ(e);
 
-        unselectEvolutionDescriptorPt();
+        evolutionDescSelected=false;
+        iterationDescSelected=false;
         theShape.selectedNearestPt();
 
         if(e.getClickCount()==2){
@@ -681,7 +676,7 @@ final class ifsys extends JPanel
         if(e.getKeyCode()==KeyEvent.VK_SHIFT)
             shiftDown=true;
         if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
-            selectEvolutionDescriptorPt();
+            evolutionDescSelected=true;
         theShape.updateCenter();
         //clearframe();
         gamefunc();
@@ -733,6 +728,10 @@ final class ifsys extends JPanel
 
         if(e.getKeyChar() == 'l'){
             loadStuff("");
+        }
+
+        if(e.getKeyChar() == 'i'){
+            iterationDescSelected=true;
         }
 
         if(e.getKeyChar() == 'v'){
