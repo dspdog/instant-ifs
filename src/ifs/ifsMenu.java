@@ -46,6 +46,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     SliderWithSpinner evolveSpeedSpinner;
     SliderWithSpinner evolveLockSpinner;
     SliderWithSpinner randomSeedSpinner;
+    SliderWithSpinner randomScaleSpinner;
 
     SliderWithSpinner smearWobbleSpinner;
     SliderWithSpinner smearSizeSpinner;
@@ -139,6 +140,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 myIfsSys.rp.evolveAnimationPeriod = evolveSpeedSpinner.getValue();
                 myIfsSys.rp.evolveLockPeriod = evolveLockSpinner.getValue();
                 myIfsSys.rp.randomSeed = randomSeedSpinner.getValue();
+                myIfsSys.rp.randomScale = randomScaleSpinner.getValue();
 
                 myIfsSys.rp.smearSmooth = smearSmoothSpinner.getValue();
                 myIfsSys.rp.smearWobbleIntensity = smearWobbleSpinner.getValue();
@@ -241,6 +243,8 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         randomSeedSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(1000, 0, 100_000));
         ((SliderWithSpinner)addLabeled(randomSeedSpinner, layout, "Rnd Seed", panel)).addChangeListener(updateAndClear);
 
+        randomScaleSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(10, 1, 1000));
+        ((SliderWithSpinner)addLabeled(randomScaleSpinner, layout, "Rnd Scale", panel)).addChangeListener(updateAndClear);
     }
 
     public void setupPdfPropertiesPanel(JPanel panel){
@@ -390,7 +394,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     public void setupRenderPropertiesPanel(JPanel panel){
         brightnessSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 360));
         samplesSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 2000));
-        iterationsSpinner =new SliderWithSpinner(new SliderWithSpinnerModel(100, 0, 1000));
+        iterationsSpinner =new SliderWithSpinner(new SliderWithSpinnerModel(3, 0, 10));
 
         potentialSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 360));
         delaySpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 100));
@@ -617,6 +621,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 evolveSpeedSpinner.setValue((int)myIfsSys.rp.evolveAnimationPeriod);
                 evolveLockSpinner.setValue((int)myIfsSys.rp.evolveLockPeriod);
                 randomSeedSpinner.setValue((int)myIfsSys.rp.randomSeed);
+                randomScaleSpinner.setValue((int)myIfsSys.rp.randomScale);
 
                 smearWobbleSpinner.setValue((int) myIfsSys.rp.smearWobbleIntensity);
                 smearSizeSpinner.setValue((int) myIfsSys.rp.smearSize);

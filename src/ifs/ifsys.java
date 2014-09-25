@@ -148,7 +148,7 @@ final class ifsys extends JPanel
         setupMiniFrame(is.theMenu.evolveProperties, 400, 350,   is.rp.screenwidth, 450, "Evolution", "invader.png", desktop);
         setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth+200,0, "Render", "camera.png", desktop);
         setupMiniFrame(is.theMenu.pdfProperties,    200, 150,   is.rp.screenwidth,300, "Kernel", "cloud.png", desktop);
-        setupMiniFrame(is.theMenu.pointProperties,  200, 300,   is.rp.screenwidth,0, "IFS Point", "anchors.png", desktop);
+        setupMiniFrame(is.theMenu.pointProperties,  200, 340,   is.rp.screenwidth,0, "IFS Point", "anchors.png", desktop);
     }
 
     static void setupMiniFrame(JPanel panel, int width, int height, int x, int y, String title, String iconName, JDesktopPane desktop){
@@ -411,7 +411,7 @@ final class ifsys extends JPanel
                     renderBuffer.lineIndex=0;
                     Random rnd = new Random();
                     rnd.setSeed(rp.randomSeed);
-                    indexFunction(0, rp.iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd);
+                    indexFunction(0, rp.iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd, rp.randomScale);
                     lastIndex = System.currentTimeMillis();
                     renderBuffer.updateGeometry();
                 }
@@ -435,16 +435,16 @@ final class ifsys extends JPanel
     }
 
     long lastIndex = System.currentTimeMillis();
-    private void indexFunction(int _index, int _iterations, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt, Random _rnd){
+    private void indexFunction(int _index, int _iterations, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt, Random _rnd, float rndScale){
         ifsPt dpt = new ifsPt(_dpt);
         ifsPt cumulativeRotation = new ifsPt(_cumulativeRotation);
         ifsPt thePt = theShape.pts[_index];
         ifsPt centerPt = theShape.pts[0];
 
         cumulativeRotation = cumulativeRotation.add(
-                new ifsPt(thePt.rotationPitch+(float)(_rnd.nextGaussian())/2f,
-                            thePt.rotationYaw+(float)(_rnd.nextGaussian())/2f,
-                            thePt.rotationRoll+(float)(_rnd.nextGaussian())/2f));
+                new ifsPt(thePt.rotationPitch+(float)(_rnd.nextGaussian())*rndScale/1000f,
+                            thePt.rotationYaw+(float)(_rnd.nextGaussian())*rndScale/1000f,
+                            thePt.rotationRoll+(float)(_rnd.nextGaussian())*rndScale/1000f));
 
         ifsPt rpt = thePt.subtract(centerPt).scale(_cumulativeScale).getRotatedPt(cumulativeRotation);
         ifsPt odp = new ifsPt(dpt);
@@ -470,9 +470,9 @@ final class ifsys extends JPanel
 
         if(_iterations>1){
             _cumulativeScale *= thePt.scale/centerPt.scale;
-            _cumulativeScale += (float)(_rnd.nextGaussian())/5f;
+            _cumulativeScale *= (float)(1.0f - _rnd.nextGaussian()*rndScale/3000f);
             for(int i=1; i<theShape.pointsInUse; i++){
-                indexFunction(i, _iterations-1, _cumulativeScale, cumulativeRotation, dpt, _rnd);
+                indexFunction(i, _iterations-1, _cumulativeScale, cumulativeRotation, dpt, _rnd, rndScale);
             }
         }
     }

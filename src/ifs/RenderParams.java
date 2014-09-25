@@ -75,6 +75,7 @@ final class RenderParams implements java.io.Serializable {
     float evolveLockPeriod;
 
     long randomSeed;
+    long randomScale;
 
     OneDBuffer odbScale = new OneDBuffer(10, 1,1);
     OneDBuffer odbRotationRoll = new OneDBuffer(20,1,1);
@@ -84,6 +85,7 @@ final class RenderParams implements java.io.Serializable {
     public RenderParams(){
 
         randomSeed=System.currentTimeMillis()%(65535);
+        randomScale=5;
 
         smearSmooth =512;
         smearSize=32;
