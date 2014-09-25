@@ -45,6 +45,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     SliderWithSpinner evolveIntensitySpinner;
     SliderWithSpinner evolveSpeedSpinner;
     SliderWithSpinner evolveLockSpinner;
+    SliderWithSpinner randomSeedSpinner;
 
     SliderWithSpinner smearWobbleSpinner;
     SliderWithSpinner smearSizeSpinner;
@@ -137,6 +138,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 myIfsSys.rp.evolveIntensity = evolveIntensitySpinner.getValue();
                 myIfsSys.rp.evolveAnimationPeriod = evolveSpeedSpinner.getValue();
                 myIfsSys.rp.evolveLockPeriod = evolveLockSpinner.getValue();
+                myIfsSys.rp.randomSeed = randomSeedSpinner.getValue();
 
                 myIfsSys.rp.smearSmooth = smearSmoothSpinner.getValue();
                 myIfsSys.rp.smearWobbleIntensity = smearWobbleSpinner.getValue();
@@ -148,6 +150,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 myIfsSys.rp.odbY.setIntensity((float)Math.sqrt(myIfsSys.rp.smearWobbleIntensity)/10f);
                 myIfsSys.rp.odbZ.setIntensity((float)Math.sqrt(myIfsSys.rp.smearWobbleIntensity)/10f);
 
+                myIfsSys.theVolume.changed=true;
             }
         }
     };
@@ -339,7 +342,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         evolveIntensitySpinner=new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000));
         evolveSpeedSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000));
         evolveLockSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(1000, 0, 20000));
-
+        randomSeedSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(1000, 0, 100_000));
         //evolveSpeedSpinner.setAlignmentY(0.0f);
 
         //evolveSpeedSpinner.setMaximumSize(new Dimension(200,20));
@@ -348,7 +351,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         ((SliderWithSpinner)addLabeled(evolveIntensitySpinner, layout, "Intensity", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(evolveSpeedSpinner, layout, "Period", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(evolveLockSpinner, layout, "Lock Period", panel)).addChangeListener(updateAndClear);
-
+        ((SliderWithSpinner)addLabeled(randomSeedSpinner, layout, "Rnd Seed", panel)).addChangeListener(updateAndClear);
         ((JLabel)addLabeled(new JLabel(), layout, "", panel)).addComponentListener(null);
 
         //evolutionTable.setEditable(false);
@@ -389,7 +392,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         iterationsSpinner =new SliderWithSpinner(new SliderWithSpinnerModel(100, 0, 1000));
 
         potentialSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 360));
-        delaySpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000));
+        delaySpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 100));
         //dotSizeSpinner = new JSpinner();
 
         //frameHoldCheck = new JCheckBox();
@@ -425,19 +428,19 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
             }
         });
 
-        ((SliderWithSpinner)addLabeled(brightnessSpinner, layout, "Brightness", panel)).addChangeListener(updateNoClear);
-        ((SliderWithSpinner)addLabeled(samplesSpinner, layout, "Dots/Frame", panel)).addChangeListener(updateNoClear);
+        ((SliderWithSpinner)addLabeled(brightnessSpinner, layout, "Brightness", panel)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(samplesSpinner, layout, "Dots/Frame", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(iterationsSpinner, layout, "Iterations", panel)).addChangeListener(updateAndClear);
 
         //((JSpinner)addLabeled(potentialSpinner, layout, "Blur", panel)).addChangeListener(updateAndClear);
         ((JCheckBox)addLabeled(cartoonCheck, layout, "Cartoon", panel)).addChangeListener(updateAndClear);
 
         ((JCheckBox)addLabeled(gridCheck, layout, "Grid", panel)).addChangeListener(updateAndClear);
-        //((JCheckBox)addLabeled(frameHoldCheck, layout, "Hold Frame", panel)).addChangeListener(updateNoClear);
+        //((JCheckBox)addLabeled(frameHoldCheck, layout, "Hold Frame", panel)).addChangeListener(updateAndClear);
 
-        //((JCheckBox)addLabeled(delayCheck, layout, "Throttle", panel)).addChangeListener(updateNoClear);
-        ((SliderWithSpinner)addLabeled(delaySpinner, layout, "Shutter", panel)).addChangeListener(updateNoClear);
-        //((JSpinner)addLabeled(dotSizeSpinner, layout, "Dot Size", panel)).addChangeListener(updateNoClear);
+        //((JCheckBox)addLabeled(delayCheck, layout, "Throttle", panel)).addChangeListener(updateAndClear);
+        ((SliderWithSpinner)addLabeled(delaySpinner, layout, "Shutter", panel)).addChangeListener(updateAndClear);
+        //((JSpinner)addLabeled(dotSizeSpinner, layout, "Dot Size", panel)).addChangeListener(updateAndClear);
 
         //xMaxSpinner=new JSpinner();
         //xMinSpinner=new JSpinner();
@@ -609,6 +612,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 evolveIntensitySpinner.setValue((int)myIfsSys.rp.evolveIntensity);
                 evolveSpeedSpinner.setValue((int)myIfsSys.rp.evolveAnimationPeriod);
                 evolveLockSpinner.setValue((int)myIfsSys.rp.evolveLockPeriod);
+                randomSeedSpinner.setValue((int)myIfsSys.rp.randomSeed);
 
                 smearWobbleSpinner.setValue((int) myIfsSys.rp.smearWobbleIntensity);
                 smearSizeSpinner.setValue((int) myIfsSys.rp.smearSize);

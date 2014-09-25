@@ -290,13 +290,13 @@ public final class RenderBuffer extends Kernel{
         }
         if(getPassId()==3){ //z-process
 
-            float gradient=1.0f;
+           // float gradient=1.0f;
 
-            float gms = x>1&&y>1&&x<width-1&&y<height-1 ? getMaxSlope(x,y)/16f : 0;
-            float maxslope = min(gms*255f, 255f);
+           // float gms = x>1&&y>1&&x<width-1&&y<height-1 ? getMaxSlope(x,y)/16f : 0;
+           // float maxslope = min(gms*255f, 255f);
 
-            gradient = shading ? 1.0f-maxslope/255.0f : 1.0f;
-            getColor(x, y, gradient);
+           //  gradient = shading ? 1.0f-maxslope/255.0f : 1.0f;
+            getColor(x, y, 1.0f);
         }
     }
 

@@ -408,7 +408,7 @@ final class ifsys extends JPanel
                     renderBuffer.totalLines =renderBuffer.lineIndex;
                     renderBuffer.lineIndex=0;
                     Random rnd = new Random();
-                    rnd.setSeed(57);
+                    rnd.setSeed(rp.randomSeed);
                     indexFunction(0, rp.iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd);
                     lastIndex = System.currentTimeMillis();
                     renderBuffer.updateGeometry();
