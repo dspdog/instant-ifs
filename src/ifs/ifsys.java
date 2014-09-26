@@ -411,17 +411,21 @@ final class ifsys extends JPanel
                 if(System.currentTimeMillis()-lastIndex>50){
                     renderBuffer.totalLines =renderBuffer.lineIndex;
                     renderBuffer.lineIndex=0;
-                    Random rnd = new Random();
-                    rnd.setSeed(rp.randomSeed);
-                    indexCount=0;
-                    indexFunction(0, rp.iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd, rp.randomScale);
-                    lastIndex = System.currentTimeMillis();
+                    reIndex();
                     renderBuffer.updateGeometry();
                 }
             }
 
             lastClearTime=System.currentTimeMillis();
         }
+    }
+
+    public void reIndex(){
+        Random rnd = new Random();
+        rnd.setSeed(rp.randomSeed);
+        indexCount=0;
+        indexFunction(0, rp.iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd, rp.randomScale);
+        lastIndex = System.currentTimeMillis();
     }
 
     public void gamefunc(){
@@ -473,7 +477,7 @@ final class ifsys extends JPanel
 
         if(_iterations>1){
 
-            double branchThresh=0.1d;
+            double branchThresh=rp.pruneThresh*0.01d;
             Random branchRandom = new Random();
 
             _cumulativeScale *= thePt.scale/centerPt.scale;

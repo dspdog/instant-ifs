@@ -47,6 +47,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     SliderWithSpinner evolveLockSpinner;
     SliderWithSpinner randomSeedSpinner;
     SliderWithSpinner randomScaleSpinner;
+    SliderWithSpinner pruneThreshSpinner;
 
     SliderWithSpinner smearWobbleSpinner;
     SliderWithSpinner smearSizeSpinner;
@@ -141,6 +142,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 myIfsSys.rp.evolveLockPeriod = evolveLockSpinner.getValue();
                 myIfsSys.rp.randomSeed = randomSeedSpinner.getValue();
                 myIfsSys.rp.randomScale = randomScaleSpinner.getValue();
+                myIfsSys.rp.pruneThresh = pruneThreshSpinner.getValue();
 
                 myIfsSys.rp.smearSmooth = smearSmoothSpinner.getValue();
                 myIfsSys.rp.smearWobbleIntensity = smearWobbleSpinner.getValue();
@@ -245,6 +247,9 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
         randomScaleSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(10, 1, 1000));
         ((SliderWithSpinner)addLabeled(randomScaleSpinner, layout, "Rnd Scale", panel)).addChangeListener(updateAndClear);
+
+        pruneThreshSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(10, 1, 100));
+        ((SliderWithSpinner)addLabeled(pruneThreshSpinner, layout, "Prune", panel)).addChangeListener(updateAndClear);
     }
 
     public void setupPdfPropertiesPanel(JPanel panel){
@@ -622,6 +627,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 evolveLockSpinner.setValue((int)myIfsSys.rp.evolveLockPeriod);
                 randomSeedSpinner.setValue((int)myIfsSys.rp.randomSeed);
                 randomScaleSpinner.setValue((int)myIfsSys.rp.randomScale);
+                pruneThreshSpinner.setValue((int)myIfsSys.rp.pruneThresh);
 
                 smearWobbleSpinner.setValue((int) myIfsSys.rp.smearWobbleIntensity);
                 smearSizeSpinner.setValue((int) myIfsSys.rp.smearSize);

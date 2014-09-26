@@ -74,6 +74,8 @@ final class RenderParams implements java.io.Serializable {
     float evolveAnimationPeriod;
     float evolveLockPeriod;
 
+    int pruneThresh;
+
     long randomSeed;
     long randomScale;
 
@@ -83,7 +85,7 @@ final class RenderParams implements java.io.Serializable {
     OneDBuffer odbY = new OneDBuffer(40,1,1);
     OneDBuffer odbZ = new OneDBuffer(50,1,1);
     public RenderParams(){
-
+        pruneThresh=50;
         randomSeed=System.currentTimeMillis()%(65535);
         randomScale=5;
 
