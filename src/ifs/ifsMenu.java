@@ -466,7 +466,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         // ((WebGradientColorChooser)addLabeled(colorChooser, layout, "Color", panel)).addChangeListener(updateAndClear);
 
         camScaleSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(60, 1, 300));
-        camJitterSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(60, 1, 300));
+        camJitterSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(60, 0, 300));
 
         ((SliderWithSpinner)addLabeled(camScaleSpinner, layout, "FOV", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(camJitterSpinner, layout, "DOF", panel)).addChangeListener(updateAndClear);

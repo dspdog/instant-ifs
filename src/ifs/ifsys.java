@@ -40,6 +40,8 @@ final class ifsys extends JPanel
 
     long lastPostProcessTime;
 
+    long indexCount;
+
     volume theVolume;
     pdf3D thePdf;
     RenderBuffer renderBuffer;
@@ -411,6 +413,7 @@ final class ifsys extends JPanel
                     renderBuffer.lineIndex=0;
                     Random rnd = new Random();
                     rnd.setSeed(rp.randomSeed);
+                    indexCount=0;
                     indexFunction(0, rp.iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd, rp.randomScale);
                     lastIndex = System.currentTimeMillis();
                     renderBuffer.updateGeometry();
@@ -469,10 +472,20 @@ final class ifsys extends JPanel
         //                        0, 0, 0, rp, thePdf, renderBuffer, rpt.magnitude(), theMenu.colorChooser, 1.0f);
 
         if(_iterations>1){
+
+            double branchThresh=0.1d;
+            Random branchRandom = new Random();
+
             _cumulativeScale *= thePt.scale/centerPt.scale;
             _cumulativeScale *= (float)(1.0f - _rnd.nextGaussian()*rndScale/3000f);
             for(int i=1; i<theShape.pointsInUse; i++){
-                indexFunction(i, _iterations-1, _cumulativeScale, cumulativeRotation, dpt, _rnd, rndScale);
+
+                branchRandom.setSeed(indexCount*rp.randomSeed*i);
+
+                if(branchRandom.nextDouble()>branchThresh){
+                    indexCount++;
+                    indexFunction(i, _iterations-1, _cumulativeScale, cumulativeRotation, dpt, _rnd, rndScale);
+                }
             }
         }
     }

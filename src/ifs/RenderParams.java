@@ -117,8 +117,8 @@ final class RenderParams implements java.io.Serializable {
 
         linesHideTime=1000;
 
-        evolveIntensity = 100f;
-        evolveAnimationPeriod = 41f;
+        evolveIntensity = 2f;
+        evolveAnimationPeriod = 0f;
         evolveLockPeriod = 1000f;
 
         dotSize=0;
