@@ -11,7 +11,6 @@ import java.awt.event.*;
 import java.awt.image.MemoryImageSource;
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
 
@@ -393,7 +392,7 @@ final class ifsys extends JPanel
         renderBuffer.generatePixels((float)rp.brightnessMultiplier, rp.cartoonMode, rp.rightEye, rp.postProcess, rp.smearSize/8f,
                                     theVolume.camPitch + (float)(Math.random()-0.5)*jitter, theVolume.camYaw + (float)(Math.random()-0.5)*jitter, theVolume.camRoll, theVolume.usePerspective,
                                     theVolume.camScale,
-                                    theVolume.camCenter.x, theVolume.camCenter.y, theVolume.camCenter.z, theVolume.perspectiveScale, rp.shutterPeriod);
+                                    theVolume.camCenter.x, theVolume.camCenter.y, theVolume.camCenter.z, rp.perspectiveScale, rp.shutterPeriod);
         lastPostProcessTime=System.currentTimeMillis();
     }
 
@@ -413,6 +412,7 @@ final class ifsys extends JPanel
                     renderBuffer.lineIndex=0;
                     reIndex();
                     renderBuffer.updateGeometry();
+                    lastIndex = System.currentTimeMillis();
                 }
             }
 
@@ -425,7 +425,6 @@ final class ifsys extends JPanel
         rnd.setSeed(rp.randomSeed);
         indexCount=0;
         indexFunction(0, rp.iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd, rp.randomScale);
-        lastIndex = System.currentTimeMillis();
     }
 
     public void gamefunc(){
@@ -485,9 +484,9 @@ final class ifsys extends JPanel
             for(int i=1; i<theShape.pointsInUse; i++){
 
                 branchRandom.setSeed(indexCount*rp.randomSeed*i);
-
+                indexCount++;
                 if(branchRandom.nextDouble()>branchThresh){
-                    indexCount++;
+
                     indexFunction(i, _iterations-1, _cumulativeScale, cumulativeRotation, dpt, _rnd, rndScale);
                 }
             }
@@ -516,11 +515,11 @@ final class ifsys extends JPanel
 
         evolutionDescSelected=false;
         iterationDescSelected=false;
-        theShape.selectedNearestPt();
 
         if(e.getClickCount()==2){
-            theVolume.camCenter = new ifsPt(theShape.selectedPt);
-            clearframe();
+            theShape.selectNearestPt();
+            //theVolume.camCenter = new ifsPt(theShape.selectedPt);
+            //clearframe();
         }
 
         mouseStartDrag = new ifsPt(mousex, mousey, 0);
@@ -677,7 +676,7 @@ final class ifsys extends JPanel
         this.requestFocusInWindow();
 
         getMouseXYZ(e);
-        theShape.findNearestPt(mousex, mousey, overlays.minInterestDist, theVolume);
+        theShape.findNearestPt(mousex, mousey, overlays.minInterestDist, theVolume, rp);
         if(System.currentTimeMillis()-lastMoveTime>100){gamefunc();}
         lastMoveTime = System.currentTimeMillis();
     }

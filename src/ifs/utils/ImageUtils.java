@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.net.URL;
 import java.text.DecimalFormat;
 
 public final class ImageUtils extends Component {
@@ -51,4 +52,18 @@ public final class ImageUtils extends Component {
         // Return the buffered image
         return bimage;
     }
+
+    public Image getImage(String name){
+        String root;
+        try{
+            root= "file:/C:/Users/user/workspace/instant-ifs/instant-ifs/img/";
+            URL theImgURL = new URL(root + name);
+            return ImageIO.read(theImgURL);
+        }catch (Exception e){
+
+        }
+
+        return null;
+    }
+
 }

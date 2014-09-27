@@ -1,13 +1,19 @@
 package ifs;
 
 import com.alee.extended.colorchooser.WebGradientColorChooser;
+import com.alee.extended.date.WebDateField;
+import com.alee.extended.image.DisplayType;
+import com.alee.extended.image.WebImage;
 import com.alee.extended.panel.WebButtonGroup;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.table.WebTable;
+import com.alee.managers.language.data.TooltipWay;
+import com.alee.managers.tooltip.TooltipManager;
 import ifs.thirdparty.ImagePreviewPanel;
 import ifs.thirdparty.SliderWithSpinner;
 import ifs.thirdparty.SliderWithSpinnerModel;
+import ifs.utils.ImageUtils;
 import ifs.volumetric.pdf3D;
 
 import javax.swing.*;
@@ -132,8 +138,8 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
 
                 myIfsSys.rp.jitter = camJitterSpinner.getValue();
-                myIfsSys.theVolume.perspectiveScale = camScaleSpinner.getValue();
-                myIfsSys.theVolume.perspectiveScale = Math.max(0.1f, myIfsSys.theVolume.perspectiveScale);
+                myIfsSys.rp.perspectiveScale = camScaleSpinner.getValue();
+                myIfsSys.rp.perspectiveScale = Math.max(0.1f, myIfsSys.rp.perspectiveScale);
 
                 myIfsSys.lastMoveTime = System.currentTimeMillis();
 
@@ -245,10 +251,10 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         randomSeedSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(1000, 0, 100_000));
         ((SliderWithSpinner)addLabeled(randomSeedSpinner, layout, "Rnd Seed", panel)).addChangeListener(updateAndClear);
 
-        randomScaleSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(10, 1, 1000));
+        randomScaleSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(10, 0, 1000));
         ((SliderWithSpinner)addLabeled(randomScaleSpinner, layout, "Rnd Scale", panel)).addChangeListener(updateAndClear);
 
-        pruneThreshSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(10, 1, 100));
+        pruneThreshSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(10, 0, 100));
         ((SliderWithSpinner)addLabeled(pruneThreshSpinner, layout, "Prune", panel)).addChangeListener(updateAndClear);
     }
 
@@ -356,8 +362,15 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         evolveLockSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(1000, 0, 20000));
                 //evolveSpeedSpinner.setAlignmentY(0.0f);
 
+
+
         //evolveSpeedSpinner.setMaximumSize(new Dimension(200,20));
         //evolveSpeedSpinner.setMaximum(1000);
+
+        WebImage webImage1 = new WebImage (myIfsSys.imageUtils.getImage("_x.png")).setDisplayType(DisplayType.preferred);
+        webImage1.setPreferredSize(new Dimension(100,25));
+        TooltipManager.setTooltip(webImage1, "example image", TooltipWay.up);
+        ((WebImage)addLabeled(webImage1, layout, "Img Ex", panel)).addComponentListener(null);
 
         ((SliderWithSpinner)addLabeled(evolveIntensitySpinner, layout, "Intensity", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(evolveSpeedSpinner, layout, "Period", panel)).addChangeListener(updateAndClear);
@@ -471,7 +484,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         // ((WebGradientColorChooser)addLabeled(colorChooser, layout, "Color", panel)).addChangeListener(updateAndClear);
 
         camScaleSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(60, 1, 300));
-        camJitterSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(60, 0, 300));
+        camJitterSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(2, 0, 32));
 
         ((SliderWithSpinner)addLabeled(camScaleSpinner, layout, "FOV", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(camJitterSpinner, layout, "DOF", panel)).addChangeListener(updateAndClear);
@@ -620,7 +633,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 yawSpinner.setValue((int)(editPt.rotationYaw/Math.PI*180));
                 rollSpinner.setValue((int)(editPt.rotationRoll/Math.PI*180));
 
-                camScaleSpinner.setValue((int)myIfsSys.theVolume.perspectiveScale);
+                camScaleSpinner.setValue((int)myIfsSys.rp.perspectiveScale);
                 camJitterSpinner.setValue((int)myIfsSys.rp.jitter);
                 evolveIntensitySpinner.setValue((int)myIfsSys.rp.evolveIntensity);
                 evolveSpeedSpinner.setValue((int)myIfsSys.rp.evolveAnimationPeriod);

@@ -78,6 +78,7 @@ final class RenderParams implements java.io.Serializable {
 
     long randomSeed;
     long randomScale;
+    float perspectiveScale;
 
     OneDBuffer odbScale = new OneDBuffer(10, 1,1);
     OneDBuffer odbRotationRoll = new OneDBuffer(20,1,1);
@@ -88,7 +89,7 @@ final class RenderParams implements java.io.Serializable {
         pruneThresh=50;
         randomSeed=System.currentTimeMillis()%(65535);
         randomScale=5;
-
+        perspectiveScale = 200;
         smearSmooth =512;
         smearSize=32;
         postProcess=true;
@@ -117,7 +118,7 @@ final class RenderParams implements java.io.Serializable {
 
         noDark = false;
 
-        linesHideTime=1000;
+        linesHideTime=200;
 
         evolveIntensity = 2f;
         evolveAnimationPeriod = 0f;

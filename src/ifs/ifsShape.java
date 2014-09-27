@@ -42,15 +42,10 @@ final class ifsShape implements java.io.Serializable {
         freshPoints();
     }
 
-    public void getDrawList(){
-        //TODO get draw list
-        //hasDrawList=true;
-    }
-
-    public void findNearestPt(int _mousex, int _mousey, double minDist, volume distortionVolume){
+    public void findNearestPt(int _mousex, int _mousey, double minDist, volume distortionVolume, RenderParams rp){
         int nearest = 0;
         for(int i=0; i<this.pointsInUse; i++){
-            ifsPt _pt = distortionVolume.getCameraDistortedPt(this.pts[i], false);
+            ifsPt _pt = distortionVolume.getCameraDistortedPt(this.pts[i], false, rp.perspectiveScale);
             double dist = _pt.distanceXY(new ifsPt(_mousex, _mousey, 0));
             if(dist<minDist){
                 nearest=i;
@@ -60,7 +55,7 @@ final class ifsShape implements java.io.Serializable {
         pointNearest = nearest;
     }
 
-    public void selectedNearestPt(){
+    public void selectNearestPt(){
         selectedPt = this.pts[pointNearest];
         pointSelected = pointNearest;
     }
@@ -84,7 +79,7 @@ final class ifsShape implements java.io.Serializable {
             pts[a] = new ifsPt();
         }
         pointNearest=0;
-        selectedNearestPt();
+        selectNearestPt();
     }
 
     public void saveToFile(String filename){

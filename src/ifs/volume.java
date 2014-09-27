@@ -25,7 +25,6 @@ final class volume {
     long totalSamples = 0;
 
     float totalSamplesAlpha =0;
-    float perspectiveScale;
 
     public SmartVolume volume;
 
@@ -76,7 +75,7 @@ final class volume {
         theTriangles = new LinkedList<ifsTriangle>();
         myVolume=0;
         mySurfaceArea=0;
-        perspectiveScale=200f;
+
         startDate = Calendar.getInstance().getTime();
 
         width = w;
@@ -244,7 +243,7 @@ final class volume {
         }
     }
 
-    public ifsPt getCameraDistortedPt(ifsPt _pt, boolean rightEye){
+    public ifsPt getCameraDistortedPt(ifsPt _pt, boolean rightEye, float perspectiveScale){
         ifsPt pt;
 
         if(rightEye){
@@ -317,7 +316,7 @@ final class volume {
     }
 
     private boolean private_putPixel(ifsPt _pt, float ptR, float ptG, float ptB, float ptScale, RenderParams rp, boolean useCrop, boolean noDark, boolean noVolumetric, RenderBuffer rb){
-        ifsPt pt = getCameraDistortedPt(_pt, rp.rightEye);
+        ifsPt pt = getCameraDistortedPt(_pt, true, rp.perspectiveScale);
 
         dataPoints++;
         float dark = pt.z/zDarkenScaler;

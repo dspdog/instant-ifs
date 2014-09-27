@@ -190,10 +190,10 @@ final class ifsOverlays {
     public void drawArrows(Graphics rg, ifsPt pt, boolean isSelected, boolean isDragging, boolean isCenter, boolean isNearest, boolean draw){
         double dx=1000, dy=1000, dz=1000, minDis=32;
 
-        ifsPt centerPt = myIfsSys.theVolume.getCameraDistortedPt(pt, myIfsSys.rp.rightEye);
-        ifsPt xArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.X_UNIT.scale(pt.radius * pt.scale)), myIfsSys.rp.rightEye);
-        ifsPt yArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.Y_UNIT.scale(pt.radius * pt.scale)), myIfsSys.rp.rightEye);
-        ifsPt zArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.Z_UNIT.scale(pt.radius * pt.scale)), myIfsSys.rp.rightEye);
+        ifsPt centerPt = myIfsSys.theVolume.getCameraDistortedPt(pt, myIfsSys.rp.rightEye, myIfsSys.rp.perspectiveScale);
+        ifsPt xArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.X_UNIT.scale(pt.radius * pt.scale)), myIfsSys.rp.rightEye, myIfsSys.rp.perspectiveScale);
+        ifsPt yArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.Y_UNIT.scale(pt.radius * pt.scale)), myIfsSys.rp.rightEye, myIfsSys.rp.perspectiveScale);
+        ifsPt zArrow = myIfsSys.theVolume.getCameraDistortedPt(pt.add(ifsPt.Z_UNIT.scale(pt.radius * pt.scale)), myIfsSys.rp.rightEye, myIfsSys.rp.perspectiveScale);
 
         ifsPt centerPt2 = (pt);
         ifsPt xArrow2 = (pt.add(ifsPt.X_UNIT.scale(pt.radius * pt.scale)));
@@ -281,8 +281,8 @@ final class ifsOverlays {
         ifsPt mpt = new ifsPt(myIfsSys.mousePt);
 
         for(int i=0; i<subDivs-1; i++){
-            ipt1 = myIfsSys.theVolume.getCameraDistortedPt(p1.add(p2.subtract(p1).scale(1.0f / subDivs).scale(i)), myIfsSys.rp.rightEye);
-            ipt2 = myIfsSys.theVolume.getCameraDistortedPt(p1.add(p2.subtract(p1).scale(1.0f / subDivs).scale(i + 1)), myIfsSys.rp.rightEye);
+            ipt1 = myIfsSys.theVolume.getCameraDistortedPt(p1.add(p2.subtract(p1).scale(1.0f / subDivs).scale(i)), myIfsSys.rp.rightEye, myIfsSys.rp.perspectiveScale);
+            ipt2 = myIfsSys.theVolume.getCameraDistortedPt(p1.add(p2.subtract(p1).scale(1.0f / subDivs).scale(i + 1)), myIfsSys.rp.rightEye, myIfsSys.rp.perspectiveScale);
             mpt.z=ipt1.z;
             dist = (int)ipt1.distTo(mpt);
             if(dist < distMin){
@@ -346,7 +346,7 @@ final class ifsOverlays {
     public void drawBox(Graphics rg, int ptIndex){
         if(ptIndex>-1){
             ifsPt thePt =  myIfsSys.theShape.pts[ptIndex];
-            ifsPt _thePt =  myIfsSys.theVolume.getCameraDistortedPt(myIfsSys.theShape.pts[ptIndex], myIfsSys.rp.rightEye);
+            ifsPt _thePt =  myIfsSys.theVolume.getCameraDistortedPt(myIfsSys.theShape.pts[ptIndex], myIfsSys.rp.rightEye, myIfsSys.rp.perspectiveScale);
             double wobbleFreq = 6;
             double wobbleSize = 5;
             double width = thePt.scale * thePt.radius;
