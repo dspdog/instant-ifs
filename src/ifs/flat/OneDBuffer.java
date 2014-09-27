@@ -12,9 +12,39 @@ public final class OneDBuffer implements Serializable{
     int segs=0;
     long mySeed=0;
 
+    public int[] getPixels(int width, int height, float xScale, float yScale){
+        int[] pixels = new int[width*height];
+        for(int x=0; x<width;x++){
+            for(int y=0; y<height; y++){
+                if(valueAt((float)xScale*x/width)*yScale+0.5f>(float)y/height){
+                    pixels[x+y*width]=argb(255, 0, 0, 0);
+                }else{
+                    pixels[x+y*width]=argb(255, 255, 255, 255);
+                }
+            }
+        }
+
+        return pixels;
+    }
+
+    int argb(int a, int r, int g, int b){
+
+        a=Math.max(1, Math.min(a, 255))  ;
+        r=Math.max(1, Math.min(r, 128))  ;
+        g=Math.max(1, Math.min(g, 64))  ;
+        b=Math.max(1, Math.min(b, 255))  ;
+
+        int _argb = a;
+        _argb = (_argb << 8) + r;
+        _argb = (_argb << 8) + g;
+        _argb = (_argb << 8) + b;
+
+        return _argb;
+    }
+
     public OneDBuffer(int seedOffset, int smooth, long seed){
         //entropy +=12345;
-        segs=2000;
+        segs=100;
         mySeed=seed;
         intensity=1.0f;
         vals = new float[segs];
@@ -55,6 +85,11 @@ public final class OneDBuffer implements Serializable{
         for(int i=0; i<segs; i++){
             vals[i]+=od.vals[i]/scaleDown;
         }
+    }
+
+    public void set(float what, float where){
+        int index = (int)(where*segs)%segs;
+        vals[index] =what;
     }
 
     public void deSkew(){

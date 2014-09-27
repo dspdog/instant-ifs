@@ -1,6 +1,7 @@
 package ifs.thirdparty;
 
 import com.alee.laf.slider.WebSlider;
+import com.alee.laf.spinner.WebSpinner;
 
 import java.awt.*;
 import java.util.Hashtable;

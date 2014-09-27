@@ -21,6 +21,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.MemoryImageSource;
 
 final class ifsMenu extends Component implements ItemListener, ChangeListener, ActionListener, MouseMotionListener {
 
@@ -360,18 +361,37 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         evolveIntensitySpinner=new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000));
         evolveSpeedSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000));
         evolveLockSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(1000, 0, 20000));
-                //evolveSpeedSpinner.setAlignmentY(0.0f);
 
-
-
-        //evolveSpeedSpinner.setMaximumSize(new Dimension(200,20));
-        //evolveSpeedSpinner.setMaximum(1000);
-
-        WebImage webImage1 = new WebImage (myIfsSys.imageUtils.getImage("_x.png")).setDisplayType(DisplayType.preferred);
-        webImage1.setPreferredSize(new Dimension(100,25));
+        final WebImage webImage1 = new WebImage (myIfsSys.imageUtils.getImage("_x.png")).setDisplayType(DisplayType.preferred);
+        webImage1.setPreferredSize(new Dimension(100,32));
         TooltipManager.setTooltip(webImage1, "example image", TooltipWay.up);
-        ((WebImage)addLabeled(webImage1, layout, "Img Ex", panel)).addComponentListener(null);
+        ((WebImage)addLabeled(webImage1, layout, "Img Ex", panel)).addMouseMotionListener(new MouseMotionListener() {
 
+            float posX, posY;
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                float yScale = 5*0.001f;
+                posX = e.getX();
+                posY = e.getY();
+                myIfsSys.rp.odbX.set(1.0f/yScale*(posY/webImage1.getHeight()-0.5f),posX/webImage1.getWidth());
+
+                System.out.println(posX/webImage1.getWidth());
+
+                MemoryImageSource mis = new MemoryImageSource(webImage1.getWidth(), webImage1.getHeight(),
+                        myIfsSys.rp.odbX.getPixels(webImage1.getWidth(), webImage1.getHeight(), 1f, yScale), 0, webImage1.getWidth());
+                webImage1.setImage(myIfsSys.createImage(mis));
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                //System.out.println("moved");
+            }
+        });
+
+
+
+        ((JLabel)addLabeled(new JLabel(), layout, "", panel)).addComponentListener(null);
         ((SliderWithSpinner)addLabeled(evolveIntensitySpinner, layout, "Intensity", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(evolveSpeedSpinner, layout, "Period", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(evolveLockSpinner, layout, "Lock Period", panel)).addChangeListener(updateAndClear);
