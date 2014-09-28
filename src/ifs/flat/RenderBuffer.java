@@ -112,7 +112,7 @@ public final class RenderBuffer extends Kernel{
         projY2[_index] = (short)lineY2[_index];
         projZ2[_index] = (short)lineZ2[_index];
 
-        cameraDistort(_index);
+        cameraDistort(_index, 1, 1);
 
             float X1 = projX1[_index];
             float X2 = projX2[_index];
@@ -132,6 +132,22 @@ public final class RenderBuffer extends Kernel{
                 float olddx, olddy;
 
                 for(int i=0; i<mag; i++){
+
+
+                    cameraDistort(_index, i, (int)mag);
+
+                    X1 = projX1[_index];
+                    X2 = projX2[_index];
+                    Y1 = projY1[_index];
+                    Y2 = projY2[_index];
+                    Z1 = projZ1[_index];
+                    Z2 = projZ2[_index];
+                    S1 = lineS1[_index];
+                    S2 = lineS2[_index];
+
+
+
+
                     olddx=dx;
                     olddy=dy;
                     dx = X1 + (float)i*(X2 - X1)/mag;
@@ -158,13 +174,13 @@ public final class RenderBuffer extends Kernel{
                     float ny2 = -sdx*_mag + offsetY;
 
                     if(nx1>1 && ny1>1  && nx1<width && ny1<height && nx2>1 && ny2>1  && nx2<width && ny2<height){//valid lines only
-                        for(float _i=0; _i<_mag; _i+=max(_mag/16, 1)){
+                        for(float _i=0; _i<_mag; _i+=max(_mag / 32, 1)){
+
                             float _dx = nx1 + _i*(nx2 - nx1)/_mag;
                             float _dy = ny1 + _i*(ny2 - ny1)/_mag;
 
                             int _x = min(max((int) _dx, 0), width);
                             int _y = min(max((int) _dy, 0), height);
-
                             int grayval = (int)(dz/16f);
 
                             if((pixels[_x+_y*width]&255)<=grayval)
@@ -230,7 +246,11 @@ public final class RenderBuffer extends Kernel{
         return aW *z + aX *y - aY *x + aZ *w;
     }
 
-    public void cameraDistort(int _index){
+    public void cameraDistort(int _index, int sector, int totalSectors){
+
+        float _dx = lineX1[_index] + sector*(lineX2[_index] - lineX1[_index])/totalSectors;
+        float _dy = lineY1[_index] + sector*(lineY2[_index] - lineY1[_index])/totalSectors;
+
         projX1[_index] = (short)(lineX1[_index] - camCenterX);
         projY1[_index] = (short)(lineY1[_index] - camCenterY);
         projZ1[_index] = (short)(lineZ1[_index] - camCenterZ);
