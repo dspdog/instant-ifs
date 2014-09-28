@@ -127,21 +127,57 @@ public final class RenderBuffer extends Kernel{
 
             mag = min(max(mag, 1), width*sqrt(2));
 
-            if(X1>1 && Y1>1  && X1<width && Y1<height && X2>1 && Y2>1  && X2<width && Y2<height)//valid lines only
-            for(int i=0; i<mag; i++){
-                float dx = X1 + i*(X2 - X1)/mag;
-                float dy = Y1 + i*(Y2 - Y1)/mag;
-                float dz = Z1 + i*(Z2 - Z1)/mag;
-                float ds = S1 + i*(S2 - S1)/mag;
+            if(X1>1 && Y1>1  && X1<width && Y1<height && X2>1 && Y2>1  && X2<width && Y2<height){//valid lines only
+                float dx=0, dy=0, dz=0, ds=0;
+                float olddx, olddy;
 
-                int x = min(max((int) dx, 0), width);
-                int y = min(max((int) dy, 0), height);
+                for(int i=0; i<mag; i+=2){
+                    olddx=dx;
+                    olddy=dy;
+                    dx = X1 + i*(X2 - X1)/mag;
+                    dy = Y1 + i*(Y2 - Y1)/mag;
+                    dz = Z1 + i*(Z2 - Z1)/mag;
+                    ds = S1 + i*(S2 - S1)/mag;
 
-                int grayval = (int)(dz/16f);
+                    int x = min(max((int) dx, 0), width);
+                    int y = min(max((int) dy, 0), height);
 
-                if((pixels[x+y*width]&255)<=grayval && ((pixels[x+y*width]>>16)&255)<ds)
-                    pixels[x+y*width] = argb(255,1,(int)(ds),grayval);
+                    //int grayval = (int)(dz/16f);
+
+                    //if((pixels[x+y*width]&255)<=grayval && ((pixels[x+y*width]>>16)&255)<ds)
+                    //    pixels[x+y*width] = argb(255,1,(int)(ds),grayval);
+                    float sX1 = dx;
+                    float sY1 = dy;
+                    float sX2 = olddx;
+                    float sY2 = olddy;
+                    float _mag = 5*sqrt((sX2-sX1)*(sX2-sX1)+(sY2-sY1)*(sY2-sY1));
+                    float offsetX = (sX1+sX2)/2f;
+                    float offsetY = (sY1+sY2)/2f;
+                    float sdx = sX2-sX1;
+                    float sdy = sY2-sY1;
+                    float nx1 = -sdy + offsetX;
+                    float ny1 = sdx + offsetY;
+                    float nx2 = sdy + offsetX;
+                    float ny2 = -sdx + offsetY;
+
+                    if(nx1>1 && ny1>1  && nx1<width && ny1<height && nx2>1 && ny2>1  && nx2<width && ny2<height){//valid lines only
+                        for(int _i=0; _i<_mag; _i+=4){
+                            float _dx = nx1 + _i*(nx2 - nx1)/_mag;
+                            float _dy = ny1 + _i*(ny2 - ny1)/_mag;
+
+                            int _x = min(max((int) _dx, 0), width);
+                            int _y = min(max((int) _dy, 0), height);
+
+                            int grayval = (int)(dz/16f);
+
+                            if((pixels[_x+_y*width]&255)<=grayval)
+                                pixels[_x+_y*width] = argb(255,1,(int)(ds),grayval);
+                        }
+                    }
+
+                }
             }
+
 
     }
 
@@ -261,7 +297,7 @@ public final class RenderBuffer extends Kernel{
 
         Range range = Range.create2D(width, height);
 
-        this.execute(range, 4);
+        this.execute(range, 3);
         this.get(pixels);
 
         frameNum++;
@@ -284,11 +320,7 @@ public final class RenderBuffer extends Kernel{
             if(myLineIndex<NUM_LINES && myLineIndex<totalLines)
                 drawLine(myLineIndex);
         }
-        if(getPassId()==2){ //draw flesh
-            if(((pixels[(x)+(y)*width]>>16)&255) == 1)
-            putX(x, y);
-        }
-        if(getPassId()==3){ //z-process
+        if(getPassId()==2){ //z-process
 
            // float gradient=1.0f;
 
@@ -317,6 +349,41 @@ public final class RenderBuffer extends Kernel{
 
         pixels[(x)+(y)*width] = gray((int)(accumulator[x+y*width]/time));
 
+    }
+
+    void putNormal(int x, int y){
+        int size = (int)(((pixels[(x)+(y)*width]>>8)&255)*camScale); //size is green channel
+        short z = (short)((pixels[(x)+(y)*width])&255); //z is blue channel
+        float scale = scaleDownDistance(z*16f);
+
+        size=(int)(size*scale/4f);
+        size = max(1, min(size, 64));
+        pixels[(x)+(y)*width]=z;
+
+        float sofar=0;
+        if(x>size && y>size && x<(width-size) && y<(height-size)){
+            short startingVal=z;
+            int _x,_y;
+            float total = size;
+            if(startingVal>0){
+                for(sofar=0; sofar<(int)total;sofar++){
+                    _x = 0;
+                    _y = (int)(sofar-total/2);
+                    if(((pixels[(x+_x)+(y+_y)*width]>>16)&255) != 1){ //if is not line
+                        if(startingVal>(pixels[(x+_x)+(y+_y)*width]&255)){
+                            pixels[(x+_x)+(y+_y)*width]=startingVal;
+                        }
+                    }
+                    _x = (int)(sofar-total/2);
+                    _y = 0;
+                    if(((pixels[(x+_x)+(y+_y)*width]>>16)&255) != 1){ //if is not line
+                        if(startingVal>(pixels[(x+_x)+(y+_y)*width]&255)){
+                            pixels[(x+_x)+(y+_y)*width]=startingVal;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     void putX(int x, int y){

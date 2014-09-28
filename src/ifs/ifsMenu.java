@@ -62,8 +62,8 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
     SliderWithSpinner scaleSpinner;
 
-    JCheckBox gridCheck;
-    JCheckBox cartoonCheck;
+    //JCheckBox gridCheck;
+    //JCheckBox cartoonCheck;
 
     JCheckBox perspectiveCheck;
 
@@ -132,8 +132,8 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 myIfsSys.rp.shutterPeriod = delaySpinner.getValue();
 
                 myIfsSys.rp.potentialRadius = Integer.parseInt(potentialSpinner.getValue()+"");
-                myIfsSys.rp.drawGrid = gridCheck.isSelected();
-                myIfsSys.rp.cartoonMode = cartoonCheck.isSelected();
+                //myIfsSys.rp.drawGrid = gridCheck.isSelected();
+                //myIfsSys.rp.cartoonMode = cartoonCheck.isSelected();
 
                 myIfsSys.theShape.updateCenter();
 
@@ -361,9 +361,9 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         evolveIntensitySpinner=new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000));
         evolveSpeedSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000));
         evolveLockSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(1000, 0, 20000));
-
+/*
         final WebImage webImage1 = new WebImage (myIfsSys.imageUtils.getImage("_x.png")).setDisplayType(DisplayType.preferred);
-        webImage1.setPreferredSize(new Dimension(100,32));
+        webImage1.setPreferredSize(new Dimension(100,64));
         TooltipManager.setTooltip(webImage1, "example image", TooltipWay.up);
         ((WebImage)addLabeled(webImage1, layout, "Img Ex", panel)).addMouseMotionListener(new MouseMotionListener() {
 
@@ -375,9 +375,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 posX = e.getX();
                 posY = e.getY();
                 myIfsSys.rp.odbX.set(1.0f/yScale*(posY/webImage1.getHeight()-0.5f),posX/webImage1.getWidth());
-
-                System.out.println(posX/webImage1.getWidth());
-
                 MemoryImageSource mis = new MemoryImageSource(webImage1.getWidth(), webImage1.getHeight(),
                         myIfsSys.rp.odbX.getPixels(webImage1.getWidth(), webImage1.getHeight(), 1f, yScale), 0, webImage1.getWidth());
                 webImage1.setImage(myIfsSys.createImage(mis));
@@ -388,10 +385,9 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 //System.out.println("moved");
             }
         });
-
-
-
-        ((JLabel)addLabeled(new JLabel(), layout, "", panel)).addComponentListener(null);
+*/
+        //((JLabel)addLabeled(new JLabel(), layout, "", panel)).addComponentListener(null);
+        //((JLabel)addLabeled(new JLabel(), layout, "", panel)).addComponentListener(null);
         ((SliderWithSpinner)addLabeled(evolveIntensitySpinner, layout, "Intensity", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(evolveSpeedSpinner, layout, "Period", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(evolveLockSpinner, layout, "Lock Period", panel)).addChangeListener(updateAndClear);
@@ -440,8 +436,8 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
         //frameHoldCheck = new JCheckBox();
 
-        gridCheck = new JCheckBox();
-        cartoonCheck = new JCheckBox();
+        //gridCheck = new JCheckBox();
+        //cartoonCheck = new JCheckBox();
 
         //delayCheck = new JCheckBox();
 
@@ -476,9 +472,9 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         ((SliderWithSpinner)addLabeled(iterationsSpinner, layout, "Iterations", panel)).addChangeListener(updateAndClear);
 
         //((JSpinner)addLabeled(potentialSpinner, layout, "Blur", panel)).addChangeListener(updateAndClear);
-        ((JCheckBox)addLabeled(cartoonCheck, layout, "Cartoon", panel)).addChangeListener(updateAndClear);
+        //((JCheckBox)addLabeled(cartoonCheck, layout, "Cartoon", panel)).addChangeListener(updateAndClear);
 
-        ((JCheckBox)addLabeled(gridCheck, layout, "Grid", panel)).addChangeListener(updateAndClear);
+        //((JCheckBox)addLabeled(gridCheck, layout, "Grid", panel)).addChangeListener(updateAndClear);
         //((JCheckBox)addLabeled(frameHoldCheck, layout, "Hold Frame", panel)).addChangeListener(updateAndClear);
 
         //((JCheckBox)addLabeled(delayCheck, layout, "Throttle", panel)).addChangeListener(updateAndClear);
@@ -674,9 +670,9 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
                 perspectiveCheck.setSelected(!myIfsSys.theVolume.usePerspective);
                 //frameHoldCheck.setSelected(myIfsSys.rp.holdFrame);
-                gridCheck.setSelected(myIfsSys.rp.drawGrid);
+                //gridCheck.setSelected(myIfsSys.rp.drawGrid);
                 //delayCheck.setSelected(myIfsSys.rp.renderThrottling);
-                cartoonCheck.setSelected(myIfsSys.rp.cartoonMode);
+                //cartoonCheck.setSelected(myIfsSys.rp.cartoonMode);
 
                 smearCheck.setSelected(myIfsSys.rp.smearPDF);
 
