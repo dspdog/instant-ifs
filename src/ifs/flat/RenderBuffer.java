@@ -131,37 +131,34 @@ public final class RenderBuffer extends Kernel{
                 float dx=0, dy=0, dz=0, ds=0;
                 float olddx, olddy;
 
-                for(int i=0; i<mag; i+=2){
+                for(int i=0; i<mag; i++){
                     olddx=dx;
                     olddy=dy;
-                    dx = X1 + i*(X2 - X1)/mag;
-                    dy = Y1 + i*(Y2 - Y1)/mag;
-                    dz = Z1 + i*(Z2 - Z1)/mag;
-                    ds = S1 + i*(S2 - S1)/mag;
+                    dx = X1 + (float)i*(X2 - X1)/mag;
+                    dy = Y1 + (float)i*(Y2 - Y1)/mag;
+                    dz = Z1 + (float)i*(Z2 - Z1)/mag;
+                    ds = S1 + (float)i*(S2 - S1)/mag;
 
-                    int x = min(max((int) dx, 0), width);
-                    int y = min(max((int) dy, 0), height);
-
-                    //int grayval = (int)(dz/16f);
-
-                    //if((pixels[x+y*width]&255)<=grayval && ((pixels[x+y*width]>>16)&255)<ds)
-                    //    pixels[x+y*width] = argb(255,1,(int)(ds),grayval);
                     float sX1 = dx;
                     float sY1 = dy;
                     float sX2 = olddx;
                     float sY2 = olddy;
-                    float _mag = 5*sqrt((sX2-sX1)*(sX2-sX1)+(sY2-sY1)*(sY2-sY1));
+
                     float offsetX = (sX1+sX2)/2f;
                     float offsetY = (sY1+sY2)/2f;
                     float sdx = sX2-sX1;
                     float sdy = sY2-sY1;
-                    float nx1 = -sdy + offsetX;
-                    float ny1 = sdx + offsetY;
-                    float nx2 = sdy + offsetX;
-                    float ny2 = -sdx + offsetY;
+                    float downScale=scaleDownDistance(dz);
+                    float _mag = ds/32f * downScale;
+                    _mag = min(max(_mag, 1f), 32f);
+
+                    float nx1 = -sdy*_mag + offsetX;
+                    float ny1 = sdx*_mag + offsetY;
+                    float nx2 = sdy*_mag + offsetX;
+                    float ny2 = -sdx*_mag + offsetY;
 
                     if(nx1>1 && ny1>1  && nx1<width && ny1<height && nx2>1 && ny2>1  && nx2<width && ny2<height){//valid lines only
-                        for(int _i=0; _i<_mag; _i+=4){
+                        for(float _i=0; _i<_mag; _i+=max(_mag/16, 1)){
                             float _dx = nx1 + _i*(nx2 - nx1)/_mag;
                             float _dy = ny1 + _i*(ny2 - ny1)/_mag;
 
@@ -171,7 +168,7 @@ public final class RenderBuffer extends Kernel{
                             int grayval = (int)(dz/16f);
 
                             if((pixels[_x+_y*width]&255)<=grayval)
-                                pixels[_x+_y*width] = argb(255,1,(int)(ds),grayval);
+                                pixels[_x+_y*width] = argb(255,1,(int)(_mag),grayval);
                         }
                     }
 
