@@ -104,94 +104,78 @@ public final class RenderBuffer extends Kernel{
         return false;
     }
 
+    public boolean withinBounds(float x, float y, float x2, float y2){
+        return x>1 && y>1 && x<width && y<height &&
+               x2>1 && y2>1 && x2<width && y2<height;
+    }
+
+    public float length(float X1, float Y1, float X2, float Y2){
+        return sqrt((X2-X1)*(X2-X1)+(Y2-Y1)*(Y2-Y1));
+    }
+
     public void drawLine(int _index){
-        projX1[_index] = (short)lineX1[_index];
-        projY1[_index] = (short)lineY1[_index];
-        projZ1[_index] = (short)lineZ1[_index];
-        projX2[_index] = (short)lineX2[_index];
-        projY2[_index] = (short)lineY2[_index];
-        projZ2[_index] = (short)lineZ2[_index];
+        cameraDistort(_index, 0, 1);
 
-        cameraDistort(_index, 1, 1);
+        float X1 = projX1[_index];
+        float X2 = projX2[_index];
+        float Y1 = projY1[_index];
+        float Y2 = projY2[_index];
+        float S1, S2, Z1, Z2;
+        float fullLength = length(X1, Y1, X2, Y2);
 
-            float X1 = projX1[_index];
-            float X2 = projX2[_index];
-            float Y1 = projY1[_index];
-            float Y2 = projY2[_index];
-            float Z1 = projZ1[_index];
-            float Z2 = projZ2[_index];
-            float S1 = lineS1[_index];
-            float S2 = lineS2[_index];
+        if(withinBounds(X1, Y1, X2, Y2)){
+            float dx=0, dy=0, dz=0, ds=0;
+            float olddx, olddy;
+            X1 = projX1[_index];
+            X2 = projX2[_index];
+            Y1 = projY1[_index];
+            Y2 = projY2[_index];
+            Z1 = projZ1[_index];
+            Z2 = projZ2[_index];
+            S1 = lineS1[_index];
+            S2 = lineS2[_index];
 
-            float mag = sqrt((X2-X1)*(X2-X1)+(Y2-Y1)*(Y2-Y1));
+            for(int i=0; i<fullLength; i++){
+                olddx=dx;
+                olddy=dy;
+                dx = X1 + (float)i*(X2 - X1)/fullLength;
+                dy = Y1 + (float)i*(Y2 - Y1)/fullLength;
+                dz = Z1 + (float)i*(Z2 - Z1)/fullLength;
+                ds = S1 + (float)i*(S2 - S1)/fullLength;
 
-            mag = min(max(mag, 1), width*sqrt(2));
+                float subX1 = olddx;
+                float subY1 = olddy;
+                float subX2 = dx;
+                float subY2 = dy;
 
-            if(X1>1 && Y1>1  && X1<width && Y1<height && X2>1 && Y2>1  && X2<width && Y2<height){//valid lines only
-                float dx=0, dy=0, dz=0, ds=0;
-                float olddx, olddy;
+                float thickness = ds/32f * scaleDownDistance(dz);
 
-                for(int i=0; i<mag; i++){
+                float sdx = subX2-subX1;
+                float sdy = subY2-subY1;
+                float X1normal = -sdy*thickness + subX1;
+                float Y1normal =  sdx*thickness + subY1;
+                float X2normal =  sdy*thickness + subX1;
+                float Y2normal = -sdx*thickness + subY1;
 
-
-                    cameraDistort(_index, i, (int)mag);
-
-                    X1 = projX1[_index];
-                    X2 = projX2[_index];
-                    Y1 = projY1[_index];
-                    Y2 = projY2[_index];
-                    Z1 = projZ1[_index];
-                    Z2 = projZ2[_index];
-                    S1 = lineS1[_index];
-                    S2 = lineS2[_index];
-
-
-
-
-                    olddx=dx;
-                    olddy=dy;
-                    dx = X1 + (float)i*(X2 - X1)/mag;
-                    dy = Y1 + (float)i*(Y2 - Y1)/mag;
-                    dz = Z1 + (float)i*(Z2 - Z1)/mag;
-                    ds = S1 + (float)i*(S2 - S1)/mag;
-
-                    float sX1 = dx;
-                    float sY1 = dy;
-                    float sX2 = olddx;
-                    float sY2 = olddy;
-
-                    float offsetX = (sX1+sX2)/2f;
-                    float offsetY = (sY1+sY2)/2f;
-                    float sdx = sX2-sX1;
-                    float sdy = sY2-sY1;
-                    float downScale=scaleDownDistance(dz);
-                    float _mag = ds/32f * downScale;
-                    _mag = min(max(_mag, 1f), 32f);
-
-                    float nx1 = -sdy*_mag + offsetX;
-                    float ny1 = sdx*_mag + offsetY;
-                    float nx2 = sdy*_mag + offsetX;
-                    float ny2 = -sdx*_mag + offsetY;
-
-                    if(nx1>1 && ny1>1  && nx1<width && ny1<height && nx2>1 && ny2>1  && nx2<width && ny2<height){//valid lines only
-                        for(float _i=0; _i<_mag; _i+=max(_mag / 32, 1)){
-
-                            float _dx = nx1 + _i*(nx2 - nx1)/_mag;
-                            float _dy = ny1 + _i*(ny2 - ny1)/_mag;
-
-                            int _x = min(max((int) _dx, 0), width);
-                            int _y = min(max((int) _dy, 0), height);
-                            int grayval = (int)(dz/16f);
-
-                            if((pixels[_x+_y*width]&255)<=grayval)
-                                pixels[_x+_y*width] = argb(255,1,(int)(_mag),grayval);
-                        }
-                    }
-
-                }
+                plotLine(X1normal, Y1normal, X2normal, Y2normal, (int)(dz/16f), 32);
             }
+        }
+    }
 
+    void plotLine(float X1, float Y1, float X2, float Y2, float color, int maxLen){
+        if(withinBounds(X1, Y1, X2, Y2)){
 
+            float fullLength = sqrt((X2-X1)*(X2-X1)+(Y2-Y1)*(Y2-Y1));
+
+            for(float _i=0; _i<fullLength; _i+=max(fullLength / maxLen, 1)){
+                float _dx = X1 + _i*(X2 - X1)/fullLength;
+                float _dy = Y1 + _i*(Y2 - Y1)/fullLength;
+                int _x = min(max((int) _dx, 0), width);
+                int _y = min(max((int) _dy, 0), height);
+                if((pixels[_x+_y*width]&255)<=color)
+                    pixels[_x+_y*width] = argb(255,1,(int)(fullLength),(int)color);
+            }
+        }
     }
 
     private void lineRotate(int _index, float x, float y, float z, float _a){ //quaternion rotate
@@ -247,16 +231,20 @@ public final class RenderBuffer extends Kernel{
     }
 
     public void cameraDistort(int _index, int sector, int totalSectors){
+        sector = min(totalSectors-1,sector);
+        float sx1 = lineX1[_index];// + sector*(lineX2[_index] - lineX1[_index])/totalSectors;
+        float sy1 = lineY1[_index];// + sector*(lineY2[_index] - lineY1[_index])/totalSectors;
+        float sz1 = lineZ1[_index];// + sector*(lineZ2[_index] - lineZ1[_index])/totalSectors;
+        float sx2 = lineX2[_index];// + (sector+1)*(lineX2[_index] - lineX1[_index])/totalSectors;
+        float sy2 = lineY2[_index];// + (sector+1)*(lineY2[_index] - lineY1[_index])/totalSectors;
+        float sz2 = lineZ2[_index];// + (sector+1)*(lineZ2[_index] - lineZ1[_index])/totalSectors;
 
-        float _dx = lineX1[_index] + sector*(lineX2[_index] - lineX1[_index])/totalSectors;
-        float _dy = lineY1[_index] + sector*(lineY2[_index] - lineY1[_index])/totalSectors;
-
-        projX1[_index] = (short)(lineX1[_index] - camCenterX);
-        projY1[_index] = (short)(lineY1[_index] - camCenterY);
-        projZ1[_index] = (short)(lineZ1[_index] - camCenterZ);
-        projX2[_index] = (short)(lineX2[_index] - camCenterX);
-        projY2[_index] = (short)(lineY2[_index] - camCenterY);
-        projZ2[_index] = (short)(lineZ2[_index] - camCenterZ);
+        projX1[_index] = (short)(sx1 - camCenterX);
+        projY1[_index] = (short)(sy1 - camCenterY);
+        projZ1[_index] = (short)(sz1 - camCenterZ);
+        projX2[_index] = (short)(sx2 - camCenterX);
+        projY2[_index] = (short)(sy2 - camCenterY);
+        projZ2[_index] = (short)(sz2 - camCenterZ);
 
         lineRotate(_index, 1.0f, 0.0f, 0.0f, camPitch / 180.0f * PFf);
         lineRotate(_index, 0.0f, 1.0f, 0.0f, camYaw / 180.0f * PFf);
