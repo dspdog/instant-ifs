@@ -121,11 +121,11 @@ public final class RenderBuffer extends Kernel{
         float Y1 = projY1[_index];
         float Y2 = projY2[_index];
         float S1, S2, Z1, Z2;
-        float fullLength = length(X1, Y1, X2, Y2);
 
         if(withinBounds(X1, Y1, X2, Y2)){
-            float dx=0, dy=0, dz=0, ds=0;
-            float olddx, olddy;
+
+            cameraDistort(_index, 0, 2);
+
             X1 = projX1[_index];
             X2 = projX2[_index];
             Y1 = projY1[_index];
@@ -135,30 +135,39 @@ public final class RenderBuffer extends Kernel{
             S1 = lineS1[_index];
             S2 = lineS2[_index];
 
-            for(int i=0; i<fullLength; i++){
-                olddx=dx;
-                olddy=dy;
-                dx = X1 + (float)i*(X2 - X1)/fullLength;
-                dy = Y1 + (float)i*(Y2 - Y1)/fullLength;
-                dz = Z1 + (float)i*(Z2 - Z1)/fullLength;
-                ds = S1 + (float)i*(S2 - S1)/fullLength;
+            plotLineThick(X1, Y1, X2, Y2, Z1, Z2, S1, S2);
+        }
+    }
 
-                float subX1 = olddx;
-                float subY1 = olddy;
-                float subX2 = dx;
-                float subY2 = dy;
+    void plotLineThick(float X1, float Y1, float X2, float Y2, float Z1, float Z2, float S1, float S2){
+        float dx=0, dy=0, dz=0, ds=0;
+        float olddx, olddy;
 
-                float thickness = ds/32f * scaleDownDistance(dz);
+        float subLength = length(X1, Y1, X2, Y2);
 
-                float sdx = subX2-subX1;
-                float sdy = subY2-subY1;
-                float X1normal = -sdy*thickness + subX1;
-                float Y1normal =  sdx*thickness + subY1;
-                float X2normal =  sdy*thickness + subX1;
-                float Y2normal = -sdx*thickness + subY1;
+        for(int i=0; i<subLength; i++){
+            olddx=dx;
+            olddy=dy;
+            dx = X1 + (float)i*(X2 - X1)/subLength;
+            dy = Y1 + (float)i*(Y2 - Y1)/subLength;
+            dz = Z1 + (float)i*(Z2 - Z1)/subLength;
+            ds = S1 + (float)i*(S2 - S1)/subLength;
 
-                plotLine(X1normal, Y1normal, X2normal, Y2normal, (int)(dz/16f), 32);
-            }
+            float subX1 = olddx;
+            float subY1 = olddy;
+            float subX2 = dx;
+            float subY2 = dy;
+
+            float thickness = ds/32f * scaleDownDistance(dz);
+
+            float sdx = subX2-subX1;
+            float sdy = subY2-subY1;
+            float X1normal = -sdy*thickness + subX1;
+            float Y1normal =  sdx*thickness + subY1;
+            float X2normal =  sdy*thickness + subX1;
+            float Y2normal = -sdx*thickness + subY1;
+
+            plotLine(X1normal, Y1normal, X2normal, Y2normal, (int)(dz/16f), 32);
         }
     }
 
@@ -232,12 +241,12 @@ public final class RenderBuffer extends Kernel{
 
     public void cameraDistort(int _index, int sector, int totalSectors){
         sector = min(totalSectors-1,sector);
-        float sx1 = lineX1[_index];// + sector*(lineX2[_index] - lineX1[_index])/totalSectors;
-        float sy1 = lineY1[_index];// + sector*(lineY2[_index] - lineY1[_index])/totalSectors;
-        float sz1 = lineZ1[_index];// + sector*(lineZ2[_index] - lineZ1[_index])/totalSectors;
-        float sx2 = lineX2[_index];// + (sector+1)*(lineX2[_index] - lineX1[_index])/totalSectors;
-        float sy2 = lineY2[_index];// + (sector+1)*(lineY2[_index] - lineY1[_index])/totalSectors;
-        float sz2 = lineZ2[_index];// + (sector+1)*(lineZ2[_index] - lineZ1[_index])/totalSectors;
+        float sx1 = lineX1[_index] + sector*(lineX2[_index] - lineX1[_index])/totalSectors;
+        float sy1 = lineY1[_index] + sector*(lineY2[_index] - lineY1[_index])/totalSectors;
+        float sz1 = lineZ1[_index] + sector*(lineZ2[_index] - lineZ1[_index])/totalSectors;
+        float sx2 = lineX1[_index] + (sector+1)*(lineX2[_index] - lineX1[_index])/totalSectors;
+        float sy2 = lineY1[_index] + (sector+1)*(lineY2[_index] - lineY1[_index])/totalSectors;
+        float sz2 = lineZ1[_index] + (sector+1)*(lineZ2[_index] - lineZ1[_index])/totalSectors;
 
         projX1[_index] = (short)(sx1 - camCenterX);
         projY1[_index] = (short)(sy1 - camCenterY);
