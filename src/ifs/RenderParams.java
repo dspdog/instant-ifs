@@ -95,7 +95,7 @@ final class RenderParams implements java.io.Serializable {
         postProcess=true;
 
         smearWobbleIntensity =3;
-        jitter=4;
+        jitter=0;
         twoD=false;
         threeD=true;
         wobbleRandomSeed=57;
@@ -152,6 +152,6 @@ final class RenderParams implements java.io.Serializable {
         potentialRadius=0;
 
         renderThrottling=false;
-        shutterPeriod = 32;
+        shutterPeriod = 2;
     }
 }

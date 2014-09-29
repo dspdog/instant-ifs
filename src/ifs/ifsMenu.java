@@ -524,6 +524,12 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                     myIfsSys.theVolume.camPitch=0;
                     myIfsSys.theVolume.camRoll=-90;
                     myIfsSys.theVolume.camYaw=0;
+                }else if(cb.getName()=="sports"){
+                    myIfsSys.rp.shutterPeriod=2;
+                    myIfsSys.rp.jitter = 0;
+                }else if(cb.getName()=="portrait"){
+                    myIfsSys.rp.shutterPeriod=32;
+                    myIfsSys.rp.jitter = 4;
                 }
                 myIfsSys.clearframe();
             }
@@ -536,15 +542,22 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         WebButton XYButton = new WebButton("", new ImageIcon("./instant-ifs/icons/side.png"));
         WebButton XZButton = new WebButton("", new ImageIcon("./instant-ifs/icons/top.png"));
 
+        WebButton SportsButton = new WebButton("", new ImageIcon("./instant-ifs/icons/mountains.png"));
+        WebButton PortraitButton = new WebButton("", new ImageIcon("./instant-ifs/icons/robot.png"));
+
         YZButton.setName("YZ");YZButton.addActionListener(moveCamera);
         XYButton.setName("XZ");XYButton.addActionListener(moveCamera);
         XZButton.setName("XY");XZButton.addActionListener(moveCamera);
 
+        SportsButton.setName("sports");SportsButton.addActionListener(moveCamera);
+        PortraitButton.setName("portrait");PortraitButton.addActionListener(moveCamera);
+
         WebButtonGroup iconsGroup = new WebButtonGroup ( true, YZButton, XZButton, XYButton );
-        ((WebButtonGroup)addLabeled(iconsGroup, layout, "dir", panel, true)).addComponentListener(null);
+        ((WebButtonGroup)addLabeled(iconsGroup, layout, "", panel, true)).addComponentListener(null);
 
-
-
+        WebButtonGroup iconsGroup2 = new WebButtonGroup ( true, SportsButton, PortraitButton );
+        ((JLabel)addLabeled(new JLabel(), layout, "", panel, true)).addComponentListener(null);
+        ((WebButtonGroup)addLabeled(iconsGroup2, layout, "", panel, true)).addComponentListener(null);
     }
 
     public ifsMenu(Frame f, ifsys is){

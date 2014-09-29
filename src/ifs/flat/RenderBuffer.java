@@ -140,7 +140,7 @@ public final class RenderBuffer extends Kernel{
                 S1 = lineS1[_index] + (i)*(lineS2[_index] - lineS1[_index])/segs;
                 S2 = lineS1[_index] + (i+1)*(lineS2[_index] - lineS1[_index])/segs;
 
-                plotLineThick(X1, Y1, X2, Y2, Z1, Z2, S1, S2);
+                plotLine(X1, Y1, X2, Y2, 255, 256);
 
 
             }
@@ -176,14 +176,14 @@ public final class RenderBuffer extends Kernel{
             float X2normal =  sdy*thickness + subX1;
             float Y2normal = -sdx*thickness + subY1;
 
-            plotLine(X1normal, Y1normal, X2normal, Y2normal, (int)(dz/16f), 32);
+            plotLine(X1normal, Y1normal, X2normal, Y2normal, (int)(dz/32f), 16);
         }
     }
 
     void plotLine(float X1, float Y1, float X2, float Y2, float color, int maxLen){
         if(withinBounds(X1, Y1, X2, Y2)){
             float fullLength = length(X1, Y1, X2, Y2);
-            for(float _i=0; _i<fullLength; _i++){
+            for(float _i=0; _i<fullLength; _i+=max(fullLength/maxLen, 1)){
                 float _dx = X1 + _i*(X2 - X1)/fullLength;
                 float _dy = Y1 + _i*(Y2 - Y1)/fullLength;
                 if((pixels[(int)_dx+(int)_dy*width]&255)<=color)
