@@ -124,11 +124,9 @@ public final class RenderBuffer extends Kernel{
 
         if(withinBounds(X1, Y1, X2, Y2)){
 
-            int segs = 10;
+            int segs = 100;
             for(int i=0; i<segs; i++){
                 cameraDistort(_index, i, segs);
-
-                //TODO distort section-by-section
 
                 X1 = projX1[_index];
                 X2 = projX2[_index];
