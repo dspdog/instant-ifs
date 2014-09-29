@@ -124,19 +124,27 @@ public final class RenderBuffer extends Kernel{
 
         if(withinBounds(X1, Y1, X2, Y2)){
 
-            cameraDistort(_index, 0, 2);
+            int segs = 10;
+            for(int i=0; i<segs; i++){
+                cameraDistort(_index, i, segs);
 
-            //TODO distort section-by-section
+                //TODO distort section-by-section
 
-            X1 = projX1[_index];
-            X2 = projX2[_index];
-            Y1 = projY1[_index];
-            Y2 = projY2[_index];
-            Z1 = projZ1[_index];
-            Z2 = projZ2[_index];
-            S1 = lineS1[_index];
-            S2 = lineS2[_index];
-            plotLineThick(X1, Y1, X2, Y2, Z1, Z2, S1, S2);
+                X1 = projX1[_index];
+                X2 = projX2[_index];
+                Y1 = projY1[_index];
+                Y2 = projY2[_index];
+                Z1 = projZ1[_index];
+                Z2 = projZ2[_index];
+
+                S1 = lineS1[_index] + (i)*(lineS2[_index] - lineS1[_index])/segs;
+                S2 = lineS1[_index] + (i+1)*(lineS2[_index] - lineS1[_index])/segs;
+
+                plotLineThick(X1, Y1, X2, Y2, Z1, Z2, S1, S2);
+
+
+            }
+
         }
     }
 
