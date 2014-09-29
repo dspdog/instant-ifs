@@ -126,6 +126,8 @@ public final class RenderBuffer extends Kernel{
 
             cameraDistort(_index, 0, 2);
 
+            //TODO distort section-by-section
+
             X1 = projX1[_index];
             X2 = projX2[_index];
             Y1 = projY1[_index];
@@ -134,7 +136,6 @@ public final class RenderBuffer extends Kernel{
             Z2 = projZ2[_index];
             S1 = lineS1[_index];
             S2 = lineS2[_index];
-
             plotLineThick(X1, Y1, X2, Y2, Z1, Z2, S1, S2);
         }
     }
@@ -173,16 +174,12 @@ public final class RenderBuffer extends Kernel{
 
     void plotLine(float X1, float Y1, float X2, float Y2, float color, int maxLen){
         if(withinBounds(X1, Y1, X2, Y2)){
-
-            float fullLength = sqrt((X2-X1)*(X2-X1)+(Y2-Y1)*(Y2-Y1));
-
-            for(float _i=0; _i<fullLength; _i+=max(fullLength / maxLen, 1)){
+            float fullLength = length(X1, Y1, X2, Y2);
+            for(float _i=0; _i<fullLength; _i++){
                 float _dx = X1 + _i*(X2 - X1)/fullLength;
                 float _dy = Y1 + _i*(Y2 - Y1)/fullLength;
-                int _x = min(max((int) _dx, 0), width);
-                int _y = min(max((int) _dy, 0), height);
-                if((pixels[_x+_y*width]&255)<=color)
-                    pixels[_x+_y*width] = argb(255,1,(int)(fullLength),(int)color);
+                if((pixels[(int)_dx+(int)_dy*width]&255)<=color)
+                    pixels[(int)_dx+(int)_dy*width] = argb(255,1,(int)(fullLength),(int)color);
             }
         }
     }

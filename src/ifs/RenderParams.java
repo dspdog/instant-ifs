@@ -86,7 +86,7 @@ final class RenderParams implements java.io.Serializable {
     OneDBuffer odbY = new OneDBuffer(40,1,1);
     OneDBuffer odbZ = new OneDBuffer(50,1,1);
     public RenderParams(){
-        pruneThresh=50;
+        pruneThresh=0;
         randomSeed=System.currentTimeMillis()%(65535);
         randomScale=5;
         perspectiveScale = 200;
