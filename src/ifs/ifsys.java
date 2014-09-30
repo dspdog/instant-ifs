@@ -459,17 +459,17 @@ final class ifsys extends JPanel
         //ifsPt proj_odp = odp; //theVolume.getCameraDistortedPt(odp, rp.rightEye);
         //ifsPt proj_dpt = dpt; //theVolume.getCameraDistortedPt(dpt, rp.rightEye);
 
-        renderBuffer.lineX1[renderBuffer.lineIndex]=(int)dpt.x;
-        renderBuffer.lineY1[renderBuffer.lineIndex]=(int)dpt.y;
-        renderBuffer.lineZ1[renderBuffer.lineIndex]=(int)dpt.z;
-        renderBuffer.lineS1[renderBuffer.lineIndex]=(int)(1024f *_cumulativeScale*thePt.scale/centerPt.scale);
+        renderBuffer.lineXY1[renderBuffer.lineIndex]=(((short)(dpt.x))<<16) + ((short)dpt.y);
+        //renderBuffer.lineY1[renderBuffer.lineIndex]=(short)dpt.y;
+        renderBuffer.lineZ1[renderBuffer.lineIndex]=(short)dpt.z;
+        renderBuffer.lineS1[renderBuffer.lineIndex]=(short)(1024f *_cumulativeScale*thePt.scale/centerPt.scale);
 
-        renderBuffer.lineX2[renderBuffer.lineIndex]=(int)odp.x;
-        renderBuffer.lineY2[renderBuffer.lineIndex]=(int)odp.y;
-        renderBuffer.lineZ2[renderBuffer.lineIndex]=(int)odp.z;
-        renderBuffer.lineS2[renderBuffer.lineIndex]=(int)(1024f * _cumulativeScale);
+        renderBuffer.lineXY2[renderBuffer.lineIndex]=(((short)(odp.x))<<16) + ((short)odp.y);
+        //renderBuffer.lineY2[renderBuffer.lineIndex]=(short)odp.y;
+        renderBuffer.lineZ2[renderBuffer.lineIndex]=(short)odp.z;
+        renderBuffer.lineS2[renderBuffer.lineIndex]=(short)(1024f * _cumulativeScale);
         renderBuffer.lineIndex++;
-        renderBuffer.lineIndex=Math.min(renderBuffer.lineIndex, renderBuffer.lineX1.length-1);
+        renderBuffer.lineIndex=Math.min(renderBuffer.lineIndex, renderBuffer.lineXY1.length-1);
 
         //theVolume.putPdfSample(dpt, cumulativeRotation, _cumulativeScale, thePt, theShape.pts[0], odp,
         //                        0, 0, 0, rp, thePdf, renderBuffer, rpt.magnitude(), theMenu.colorChooser, 1.0f);

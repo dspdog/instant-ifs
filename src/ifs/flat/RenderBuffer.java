@@ -1,21 +1,18 @@
 package ifs.flat;
 
 import com.amd.aparapi.Kernel;
-import com.amd.aparapi.ProfileInfo;
 import com.amd.aparapi.Range;
-
-import java.util.List;
 
 public final class RenderBuffer extends Kernel{
 
     final static float PFf = (float)Math.PI;
 
-    public final int lineX1[];
-    public final int lineY1[];
+    public final int lineXY1[];
+    //public final int lineY1[];
     public final int lineZ1[];
     public final int lineS1[];
-    public final int lineX2[];
-    public final int lineY2[];
+    public final int lineXY2[];
+    //public final int lineY2[];
     public final int lineZ2[];
     public final int lineS2[];
 
@@ -72,13 +69,13 @@ public final class RenderBuffer extends Kernel{
         projY2 = new float[NUM_LINES];
         projZ2 = new float[NUM_LINES];
 
-        lineX1 = new int[NUM_LINES];
-        lineY1 = new int[NUM_LINES];
+        lineXY1 = new int[NUM_LINES];
+        //lineY1 = new int[NUM_LINES];
         lineZ1 = new int[NUM_LINES];
         lineS1 = new int[NUM_LINES];
 
-        lineX2 = new int[NUM_LINES];
-        lineY2 = new int[NUM_LINES];
+        lineXY2 = new int[NUM_LINES];
+        //lineY2 = new int[NUM_LINES];
         lineZ2 = new int[NUM_LINES];
         lineS2 = new int[NUM_LINES];
 
@@ -242,13 +239,31 @@ public final class RenderBuffer extends Kernel{
         return aW *z + aX *y - aY *x + aZ *w;
     }
 
+    private int getX1(int index){
+        return lineXY1[index]>>16;
+    }
+
+    private int getY1(int index){
+        return lineXY1[index]&65535;
+    }
+
+    private int getX2(int index){
+        return lineXY2[index]>>16;
+    }
+
+    private int getY2(int index){
+        return lineXY2[index]&65535;
+    }
+
     public void cameraDistort(int _index, int sector, int totalSectors){
         sector = min(totalSectors-1,sector);
-        float sx1 = lineX1[_index] + sector*(lineX2[_index] - lineX1[_index])/totalSectors;
-        float sy1 = lineY1[_index] + sector*(lineY2[_index] - lineY1[_index])/totalSectors;
+
+        float sx1 = getX1(_index) + sector*(getX2(_index) - getX1(_index))/totalSectors;
+        float sy1 = getY1(_index) + sector*(getY2(_index) - getY1(_index))/totalSectors;
         float sz1 = lineZ1[_index] + sector*(lineZ2[_index] - lineZ1[_index])/totalSectors;
-        float sx2 = lineX1[_index] + (sector+1)*(lineX2[_index] - lineX1[_index])/totalSectors;
-        float sy2 = lineY1[_index] + (sector+1)*(lineY2[_index] - lineY1[_index])/totalSectors;
+
+        float sx2 = getX1(_index) + (sector+1)*(getX2(_index) - getX1(_index))/totalSectors;
+        float sy2 = getY1(_index) + (sector+1)*(getY2(_index) - getY1(_index))/totalSectors;
         float sz2 = lineZ1[_index] + (sector+1)*(lineZ2[_index] - lineZ1[_index])/totalSectors;
 
         projX1[_index] = (sx1 - camCenterX);
@@ -287,8 +302,8 @@ public final class RenderBuffer extends Kernel{
     }
 
     public void updateGeometry(){
-        this.put(lineX1).put(lineY1).put(lineZ1).put(lineS1)
-            .put(lineX2).put(lineY2).put(lineZ2).put(lineS2);
+        this.put(lineXY1).put(lineZ1).put(lineS1)
+            .put(lineXY2).put(lineZ2).put(lineS2);
     }
 
     public void generatePixels(float _brightness, boolean useShadows, boolean rightEye, boolean _putSamples, float _size, float pitch, float yaw, float roll, boolean _usePerspective,
