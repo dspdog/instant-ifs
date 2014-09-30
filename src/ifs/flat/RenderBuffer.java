@@ -176,7 +176,7 @@ public final class RenderBuffer extends Kernel{
         }
     }
 
-    private void lineRotate(int _index, float x, float y, float z, float _a){ //quaternion rotate
+    private void qRotate(int _index, float x, float y, float z, float _a){ //quaternion rotate
         _a/=2;
         float sa2 = sin(_a);
         float ca = cos(_a);
@@ -249,21 +249,17 @@ public final class RenderBuffer extends Kernel{
 
         if(end)sector++;
 
-        float sx = getX1(_index) + sector*(getX2(_index) - getX1(_index))/totalSectors;
-        float sy = getY1(_index) + sector*(getY2(_index) - getY1(_index))/totalSectors;
-        float sz = getZ1(_index) + sector*(getZ2(_index) - getZ1(_index))/totalSectors;
+        projX[_index] = getX1(_index) + sector*(getX2(_index) - getX1(_index))/totalSectors - camCenterX;
+        projY[_index] = getY1(_index) + sector*(getY2(_index) - getY1(_index))/totalSectors - camCenterY;
+        projZ[_index] = getZ1(_index) + sector*(getZ2(_index) - getZ1(_index))/totalSectors - camCenterZ;
 
-        projX[_index] = (sx - camCenterX);
-        projY[_index] = (sy - camCenterY);
-        projZ[_index] = (sz - camCenterZ);
+        qRotate(_index, 1.0f, 0.0f, 0.0f, camPitch / 180.0f * PFf);
+        qRotate(_index, 0.0f, 1.0f, 0.0f, camYaw / 180.0f * PFf);
+        qRotate(_index, 0.0f, 0.0f, 1.0f, camRoll / 180.0f * PFf);
 
-        lineRotate(_index, 1.0f, 0.0f, 0.0f, camPitch / 180.0f * PFf);
-        lineRotate(_index, 0.0f, 1.0f, 0.0f, camYaw / 180.0f * PFf);
-        lineRotate(_index, 0.0f, 0.0f, 1.0f, camRoll / 180.0f * PFf);
-
-        projX[_index] =( projX[_index]*camScale+camCenterX);
-        projY[_index] =( projY[_index]*camScale+camCenterY);
-        projZ[_index] =( projZ[_index]*camScale+camCenterZ);
+        projX[_index] = projX[_index]*camScale+camCenterX;
+        projY[_index] = projY[_index]*camScale+camCenterY;
+        projZ[_index] = projZ[_index]*camScale+camCenterZ;
 
         float vx = width/2; //vanishing pt onscreen
         float vy = height/2;
