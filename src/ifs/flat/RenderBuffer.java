@@ -12,9 +12,9 @@ public final class RenderBuffer extends Kernel{
     public final int lineXY2[];
     public final int lineZS2[];
 
-    public final float projX1[];
-    public final float projY1[];
-    public final float projZ1[];
+    public final float projX[];
+    public final float projY[];
+    public final float projZ[];
 
     public final int pixels[];
     public final short accumulator[];
@@ -55,9 +55,9 @@ public final class RenderBuffer extends Kernel{
         totalLines=100;
         width=1024; height=1024;
 
-        projX1 = new float[NUM_LINES];
-        projY1 = new float[NUM_LINES];
-        projZ1 = new float[NUM_LINES];
+        projX = new float[NUM_LINES];
+        projY = new float[NUM_LINES];
+        projZ = new float[NUM_LINES];
 
         lineXY1 = new int[NUM_LINES];
         lineZS1 = new int[NUM_LINES];
@@ -97,11 +97,11 @@ public final class RenderBuffer extends Kernel{
 
     private void drawLine(int _index){
         cameraDistort(_index, 0, 1, false);
-        float X1 = projX1[_index];
-        float Y1 = projY1[_index];
+        float X1 = projX[_index];
+        float Y1 = projY[_index];
         cameraDistort(_index, 0, 1, true);
-        float X2 = projX1[_index];
-        float Y2 = projY1[_index];
+        float X2 = projX[_index];
+        float Y2 = projY[_index];
         float S1, S2, Z1, Z2;
 
         if(withinBounds(X1, Y1, X2, Y2)){
@@ -109,13 +109,13 @@ public final class RenderBuffer extends Kernel{
             int segs = 1;
             for(int i=0; i<segs; i++){
                 cameraDistort(_index, i, segs, false);
-                X1 = projX1[_index];
-                Y1 = projY1[_index];
-                Z1 = projZ1[_index];
+                X1 = projX[_index];
+                Y1 = projY[_index];
+                Z1 = projZ[_index];
                 cameraDistort(_index, i, segs, true);
-                X2 = projX1[_index];
-                Y2 = projY1[_index];
-                Z2 = projZ1[_index];
+                X2 = projX[_index];
+                Y2 = projY[_index];
+                Z2 = projZ[_index];
 
                 S1 = getS1(_index) + (i)*(getS2(_index) - getS1(_index))/segs;
                 S2 = getS1(_index) + (i+1)*(getS2(_index) - getS1(_index))/segs;
@@ -176,7 +176,7 @@ public final class RenderBuffer extends Kernel{
         }
     }
 
-    private void lineRotate(int _index, float x, float y, float z, float _a, boolean end){ //quaternion rotate
+    private void lineRotate(int _index, float x, float y, float z, float _a){ //quaternion rotate
         _a/=2;
         float sa2 = sin(_a);
         float ca = cos(_a);
@@ -185,27 +185,15 @@ public final class RenderBuffer extends Kernel{
         float qy=y*sa2;
         float qz=z*sa2;
 
-        if(end){
-            float _qw = qTimes_W(qw, qx, qy, qz, 0, projX1[_index], projY1[_index], projZ1[_index]);
-            float _qx = qTimes_X(qw, qx, qy, qz, 0, projX1[_index], projY1[_index], projZ1[_index]);
-            float _qy = qTimes_Y(qw, qx, qy, qz, 0, projX1[_index], projY1[_index], projZ1[_index]);
-            float _qz = qTimes_Z(qw, qx, qy, qz, 0, projX1[_index], projY1[_index], projZ1[_index]);
-            qw=_qw;qx=_qx;qy=_qy;qz=_qz;
+        float _qw = qTimes_W(qw, qx, qy, qz, 0, projX[_index], projY[_index], projZ[_index]);
+        float _qx = qTimes_X(qw, qx, qy, qz, 0, projX[_index], projY[_index], projZ[_index]);
+        float _qy = qTimes_Y(qw, qx, qy, qz, 0, projX[_index], projY[_index], projZ[_index]);
+        float _qz = qTimes_Z(qw, qx, qy, qz, 0, projX[_index], projY[_index], projZ[_index]);
+        qw=_qw;qx=_qx;qy=_qy;qz=_qz;
 
-            projX1[_index]= qTimes_X(qw, qx, qy, qz, ca, -x*sa2, -y*sa2, -z*sa2);
-            projY1[_index]= qTimes_Y(qw, qx, qy, qz, ca, -x*sa2, -y*sa2, -z*sa2);
-            projZ1[_index]= qTimes_Z(qw, qx, qy, qz, ca, -x*sa2, -y*sa2, -z*sa2);
-        }else{
-            float _qw = qTimes_W(qw, qx, qy, qz, 0, projX1[_index], projY1[_index], projZ1[_index]);
-            float _qx = qTimes_X(qw, qx, qy, qz, 0, projX1[_index], projY1[_index], projZ1[_index]);
-            float _qy = qTimes_Y(qw, qx, qy, qz, 0, projX1[_index], projY1[_index], projZ1[_index]);
-            float _qz = qTimes_Z(qw, qx, qy, qz, 0, projX1[_index], projY1[_index], projZ1[_index]);
-            qw=_qw;qx=_qx;qy=_qy;qz=_qz;
-
-            projX1[_index]= qTimes_X(qw, qx, qy, qz, ca, -x*sa2, -y*sa2, -z*sa2);
-            projY1[_index]= qTimes_Y(qw, qx, qy, qz, ca, -x*sa2, -y*sa2, -z*sa2);
-            projZ1[_index]= qTimes_Z(qw, qx, qy, qz, ca, -x*sa2, -y*sa2, -z*sa2);
-        }
+        projX[_index]= qTimes_X(qw, qx, qy, qz, ca, -x*sa2, -y*sa2, -z*sa2);
+        projY[_index]= qTimes_Y(qw, qx, qy, qz, ca, -x*sa2, -y*sa2, -z*sa2);
+        projZ[_index]= qTimes_Z(qw, qx, qy, qz, ca, -x*sa2, -y*sa2, -z*sa2);
     }
 
     private float qTimes_W(float aW, float aX, float aY, float aZ, float w, float x, float y, float z){
@@ -259,53 +247,31 @@ public final class RenderBuffer extends Kernel{
     private void cameraDistort(int _index, int sector, int totalSectors, boolean end){
         sector = min(totalSectors-1,sector);
 
-        if(end){
-            float sx2 = getX1(_index) + (sector+1)*(getX2(_index) - getX1(_index))/totalSectors;
-            float sy2 = getY1(_index) + (sector+1)*(getY2(_index) - getY1(_index))/totalSectors;
-            float sz2 = getZ1(_index) + (sector+1)*(getZ2(_index) - getZ1(_index))/totalSectors;
-            projX1[_index] = (sx2 - camCenterX);
-            projY1[_index] = (sy2 - camCenterY);
-            projZ1[_index] = (sz2 - camCenterZ);
+        if(end)sector++;
 
-            lineRotate(_index, 1.0f, 0.0f, 0.0f, camPitch / 180.0f * PFf, end);
-            lineRotate(_index, 0.0f, 1.0f, 0.0f, camYaw / 180.0f * PFf, end);
-            lineRotate(_index, 0.0f, 0.0f, 1.0f, camRoll / 180.0f * PFf, end);
+        float sx = getX1(_index) + sector*(getX2(_index) - getX1(_index))/totalSectors;
+        float sy = getY1(_index) + sector*(getY2(_index) - getY1(_index))/totalSectors;
+        float sz = getZ1(_index) + sector*(getZ2(_index) - getZ1(_index))/totalSectors;
 
-            projX1[_index] = projX1[_index]*camScale+camCenterX;
-            projY1[_index] = projY1[_index]*camScale+camCenterY;
-            projZ1[_index] = projZ1[_index]*camScale+camCenterZ;
-            float vx = width/2; //vanishing pt onscreen
-            float vy = height/2;
-            if(usePerspective){
-                float downScale2=scaleDownDistance(projZ1[_index]);
-                projX1[_index]=((projX1[_index]-vx)*downScale2 + vx);
-                projY1[_index]=((projY1[_index]-vy)*downScale2 + vy);
-            }
-        }else{
-            float sx1 = getX1(_index) + sector*(getX2(_index) - getX1(_index))/totalSectors;
-            float sy1 = getY1(_index) + sector*(getY2(_index) - getY1(_index))/totalSectors;
-            float sz1 = getZ1(_index) + sector*(getZ2(_index) - getZ1(_index))/totalSectors;
+        projX[_index] = (sx - camCenterX);
+        projY[_index] = (sy - camCenterY);
+        projZ[_index] = (sz - camCenterZ);
 
-            projX1[_index] = (sx1 - camCenterX);
-            projY1[_index] = (sy1 - camCenterY);
-            projZ1[_index] = (sz1 - camCenterZ);
+        lineRotate(_index, 1.0f, 0.0f, 0.0f, camPitch / 180.0f * PFf);
+        lineRotate(_index, 0.0f, 1.0f, 0.0f, camYaw / 180.0f * PFf);
+        lineRotate(_index, 0.0f, 0.0f, 1.0f, camRoll / 180.0f * PFf);
 
-            lineRotate(_index, 1.0f, 0.0f, 0.0f, camPitch / 180.0f * PFf, end);
-            lineRotate(_index, 0.0f, 1.0f, 0.0f, camYaw / 180.0f * PFf, end);
-            lineRotate(_index, 0.0f, 0.0f, 1.0f, camRoll / 180.0f * PFf, end);
+        projX[_index] =( projX[_index]*camScale+camCenterX);
+        projY[_index] =( projY[_index]*camScale+camCenterY);
+        projZ[_index] =( projZ[_index]*camScale+camCenterZ);
 
-            projX1[_index] =( projX1[_index]*camScale+camCenterX);
-            projY1[_index] =( projY1[_index]*camScale+camCenterY);
-            projZ1[_index] =( projZ1[_index]*camScale+camCenterZ);
+        float vx = width/2; //vanishing pt onscreen
+        float vy = height/2;
 
-            float vx = width/2; //vanishing pt onscreen
-            float vy = height/2;
-
-            if(usePerspective){
-                float downScale1=scaleDownDistance(projZ1[_index]);
-                projX1[_index]=((projX1[_index]-vx)*downScale1 + vx);
-                projY1[_index]=((projY1[_index]-vy)*downScale1 + vy);
-            }
+        if(usePerspective){
+            float downScale1=scaleDownDistance(projZ[_index]);
+            projX[_index]=((projX[_index]-vx)*downScale1 + vx);
+            projY[_index]=((projY[_index]-vy)*downScale1 + vy);
         }
     }
 
