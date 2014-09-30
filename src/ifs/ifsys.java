@@ -460,14 +460,10 @@ final class ifsys extends JPanel
         //ifsPt proj_dpt = dpt; //theVolume.getCameraDistortedPt(dpt, rp.rightEye);
 
         renderBuffer.lineXY1[renderBuffer.lineIndex]=(((short)(dpt.x))<<16) + ((short)dpt.y);
-        //renderBuffer.lineY1[renderBuffer.lineIndex]=(short)dpt.y;
-        renderBuffer.lineZ1[renderBuffer.lineIndex]=(short)dpt.z;
-        renderBuffer.lineS1[renderBuffer.lineIndex]=(short)(1024f *_cumulativeScale*thePt.scale/centerPt.scale);
-
+        renderBuffer.lineZS1[renderBuffer.lineIndex]=(((short)(dpt.z))<<16) + ((short)(1024f *_cumulativeScale*thePt.scale/centerPt.scale));
         renderBuffer.lineXY2[renderBuffer.lineIndex]=(((short)(odp.x))<<16) + ((short)odp.y);
-        //renderBuffer.lineY2[renderBuffer.lineIndex]=(short)odp.y;
-        renderBuffer.lineZ2[renderBuffer.lineIndex]=(short)odp.z;
-        renderBuffer.lineS2[renderBuffer.lineIndex]=(short)(1024f * _cumulativeScale);
+        renderBuffer.lineZS2[renderBuffer.lineIndex]=(((short)(odp.z))<<16) + ((short)(1024f * _cumulativeScale));
+
         renderBuffer.lineIndex++;
         renderBuffer.lineIndex=Math.min(renderBuffer.lineIndex, renderBuffer.lineXY1.length-1);
 

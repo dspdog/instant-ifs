@@ -8,13 +8,9 @@ public final class RenderBuffer extends Kernel{
     final static float PFf = (float)Math.PI;
 
     public final int lineXY1[];
-    //public final int lineY1[];
-    public final int lineZ1[];
-    public final int lineS1[];
+    public final int lineZS1[];
     public final int lineXY2[];
-    //public final int lineY2[];
-    public final int lineZ2[];
-    public final int lineS2[];
+    public final int lineZS2[];
 
     public final float projX1[];
     public final float projY1[];
@@ -70,14 +66,10 @@ public final class RenderBuffer extends Kernel{
         projZ2 = new float[NUM_LINES];
 
         lineXY1 = new int[NUM_LINES];
-        //lineY1 = new int[NUM_LINES];
-        lineZ1 = new int[NUM_LINES];
-        lineS1 = new int[NUM_LINES];
+        lineZS1 = new int[NUM_LINES];
 
         lineXY2 = new int[NUM_LINES];
-        //lineY2 = new int[NUM_LINES];
-        lineZ2 = new int[NUM_LINES];
-        lineS2 = new int[NUM_LINES];
+        lineZS2 = new int[NUM_LINES];
 
         cartoon=false;
         pixels=new int[width*height];
@@ -121,7 +113,7 @@ public final class RenderBuffer extends Kernel{
 
         if(withinBounds(X1, Y1, X2, Y2)){
 
-            int segs = 100;
+            int segs = 1;
             for(int i=0; i<segs; i++){
                 cameraDistort(_index, i, segs);
 
@@ -132,14 +124,12 @@ public final class RenderBuffer extends Kernel{
                 Z1 = projZ1[_index];
                 Z2 = projZ2[_index];
 
-                S1 = lineS1[_index] + (i)*(lineS2[_index] - lineS1[_index])/segs;
-                S2 = lineS1[_index] + (i+1)*(lineS2[_index] - lineS1[_index])/segs;
+                S1 = getS1(_index) + (i)*(getS2(_index) - getS1(_index))/segs;
+                S2 = getS1(_index) + (i+1)*(getS2(_index) - getS1(_index))/segs;
 
-                plotLine(X1, Y1, X2, Y2, 255, 256);
-
-
+                //plotLineThick(X1, Y1, X2, Y2, Z1, Z2, S1, S2);
+                plotLine(X1, Y1, X2, Y2, Z1, 1024);
             }
-
         }
     }
 
@@ -255,16 +245,32 @@ public final class RenderBuffer extends Kernel{
         return lineXY2[index]&65535;
     }
 
+    private int getZ1(int index){
+        return lineZS1[index]>>16;
+    }
+
+    private int getS1(int index){
+        return lineZS1[index]&65535;
+    }
+
+    private int getZ2(int index){
+        return lineZS2[index]>>16;
+    }
+
+    private int getS2(int index){
+        return lineZS2[index]&65535;
+    }
+
     public void cameraDistort(int _index, int sector, int totalSectors){
         sector = min(totalSectors-1,sector);
 
         float sx1 = getX1(_index) + sector*(getX2(_index) - getX1(_index))/totalSectors;
         float sy1 = getY1(_index) + sector*(getY2(_index) - getY1(_index))/totalSectors;
-        float sz1 = lineZ1[_index] + sector*(lineZ2[_index] - lineZ1[_index])/totalSectors;
+        float sz1 = getZ1(_index) + sector*(getZ2(_index) - getZ1(_index))/totalSectors;
 
         float sx2 = getX1(_index) + (sector+1)*(getX2(_index) - getX1(_index))/totalSectors;
         float sy2 = getY1(_index) + (sector+1)*(getY2(_index) - getY1(_index))/totalSectors;
-        float sz2 = lineZ1[_index] + (sector+1)*(lineZ2[_index] - lineZ1[_index])/totalSectors;
+        float sz2 = getZ1(_index) + (sector+1)*(getZ2(_index) - getZ1(_index))/totalSectors;
 
         projX1[_index] = (sx1 - camCenterX);
         projY1[_index] = (sy1 - camCenterY);
@@ -302,8 +308,8 @@ public final class RenderBuffer extends Kernel{
     }
 
     public void updateGeometry(){
-        this.put(lineXY1).put(lineZ1).put(lineS1)
-            .put(lineXY2).put(lineZ2).put(lineS2);
+        this.put(lineXY1).put(lineZS1)
+            .put(lineXY2).put(lineZS2);
     }
 
     public void generatePixels(float _brightness, boolean useShadows, boolean rightEye, boolean _putSamples, float _size, float pitch, float yaw, float roll, boolean _usePerspective,
