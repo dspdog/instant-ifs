@@ -103,10 +103,10 @@ public final class RenderBuffer extends Kernel{
 
     private void drawLine(int _index){
         cameraDistort(_index, 0, 1, false);
-        cameraDistort(_index, 0, 1, true);
         float X1 = projX1[_index];
-        float X2 = projX2[_index];
         float Y1 = projY1[_index];
+        cameraDistort(_index, 0, 1, true);
+        float X2 = projX2[_index];
         float Y2 = projY2[_index];
         float S1, S2, Z1, Z2;
 
@@ -115,13 +115,12 @@ public final class RenderBuffer extends Kernel{
             int segs = 1;
             for(int i=0; i<segs; i++){
                 cameraDistort(_index, i, segs, false);
-                cameraDistort(_index, i, segs, true);
-
                 X1 = projX1[_index];
-                X2 = projX2[_index];
                 Y1 = projY1[_index];
-                Y2 = projY2[_index];
                 Z1 = projZ1[_index];
+                cameraDistort(_index, i, segs, true);
+                X2 = projX2[_index];
+                Y2 = projY2[_index];
                 Z2 = projZ2[_index];
 
                 S1 = getS1(_index) + (i)*(getS2(_index) - getS1(_index))/segs;
