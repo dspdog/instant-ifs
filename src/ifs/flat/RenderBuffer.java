@@ -19,12 +19,12 @@ public final class RenderBuffer extends Kernel{
     public final int lineZ2[];
     public final int lineS2[];
 
-    public final short projX1[];
-    public final short projY1[];
-    public final short projZ1[];
-    public final short projX2[];
-    public final short projY2[];
-    public final short projZ2[];
+    public final float projX1[];
+    public final float projY1[];
+    public final float projZ1[];
+    public final float projX2[];
+    public final float projY2[];
+    public final float projZ2[];
 
     public final int pixels[];
     public final short accumulator[];
@@ -65,12 +65,12 @@ public final class RenderBuffer extends Kernel{
         totalLines=100;
         width=1024; height=1024;
 
-        projX1 = new short[NUM_LINES];
-        projY1 = new short[NUM_LINES];
-        projZ1 = new short[NUM_LINES];
-        projX2 = new short[NUM_LINES];
-        projY2 = new short[NUM_LINES];
-        projZ2 = new short[NUM_LINES];
+        projX1 = new float[NUM_LINES];
+        projY1 = new float[NUM_LINES];
+        projZ1 = new float[NUM_LINES];
+        projX2 = new float[NUM_LINES];
+        projY2 = new float[NUM_LINES];
+        projZ2 = new float[NUM_LINES];
 
         lineX1 = new int[NUM_LINES];
         lineY1 = new int[NUM_LINES];
@@ -217,13 +217,13 @@ public final class RenderBuffer extends Kernel{
         qw=_qw;qx=_qx;qy=_qy;qz=_qz;
         qw2=_qw2;qx2=_qx2;qy2=_qy2;qz2=_qz2;
 
-        projX1[_index]= (short)qTimes_X(qw, qx, qy, qz, ca, -x*sa2, -y*sa2, -z*sa2);
-        projY1[_index]= (short)qTimes_Y(qw, qx, qy, qz, ca, -x*sa2, -y*sa2, -z*sa2);
-        projZ1[_index]= (short)qTimes_Z(qw, qx, qy, qz, ca, -x*sa2, -y*sa2, -z*sa2);
+        projX1[_index]= qTimes_X(qw, qx, qy, qz, ca, -x*sa2, -y*sa2, -z*sa2);
+        projY1[_index]= qTimes_Y(qw, qx, qy, qz, ca, -x*sa2, -y*sa2, -z*sa2);
+        projZ1[_index]= qTimes_Z(qw, qx, qy, qz, ca, -x*sa2, -y*sa2, -z*sa2);
 
-        projX2[_index]= (short)qTimes_X(qw2, qx2, qy2, qz2, ca, -x*sa2, -y*sa2, -z*sa2);
-        projY2[_index]= (short)qTimes_Y(qw2, qx2, qy2, qz2, ca, -x*sa2, -y*sa2, -z*sa2);
-        projZ2[_index]= (short)qTimes_Z(qw2, qx2, qy2, qz2, ca, -x*sa2, -y*sa2, -z*sa2);
+        projX2[_index]= qTimes_X(qw2, qx2, qy2, qz2, ca, -x*sa2, -y*sa2, -z*sa2);
+        projY2[_index]= qTimes_Y(qw2, qx2, qy2, qz2, ca, -x*sa2, -y*sa2, -z*sa2);
+        projZ2[_index]= qTimes_Z(qw2, qx2, qy2, qz2, ca, -x*sa2, -y*sa2, -z*sa2);
     }
 
     private float qTimes_W(float aW, float aX, float aY, float aZ, float w, float x, float y, float z){
@@ -251,23 +251,23 @@ public final class RenderBuffer extends Kernel{
         float sy2 = lineY1[_index] + (sector+1)*(lineY2[_index] - lineY1[_index])/totalSectors;
         float sz2 = lineZ1[_index] + (sector+1)*(lineZ2[_index] - lineZ1[_index])/totalSectors;
 
-        projX1[_index] = (short)(sx1 - camCenterX);
-        projY1[_index] = (short)(sy1 - camCenterY);
-        projZ1[_index] = (short)(sz1 - camCenterZ);
-        projX2[_index] = (short)(sx2 - camCenterX);
-        projY2[_index] = (short)(sy2 - camCenterY);
-        projZ2[_index] = (short)(sz2 - camCenterZ);
+        projX1[_index] = (sx1 - camCenterX);
+        projY1[_index] = (sy1 - camCenterY);
+        projZ1[_index] = (sz1 - camCenterZ);
+        projX2[_index] = (sx2 - camCenterX);
+        projY2[_index] = (sy2 - camCenterY);
+        projZ2[_index] = (sz2 - camCenterZ);
 
         lineRotate(_index, 1.0f, 0.0f, 0.0f, camPitch / 180.0f * PFf);
         lineRotate(_index, 0.0f, 1.0f, 0.0f, camYaw / 180.0f * PFf);
         lineRotate(_index, 0.0f, 0.0f, 1.0f, camRoll / 180.0f * PFf);
 
-        projX1[_index] =(short)( projX1[_index]*camScale+camCenterX);
-        projY1[_index] =(short)( projY1[_index]*camScale+camCenterY);
-        projZ1[_index] =(short)( projZ1[_index]*camScale+camCenterZ);
-        projX2[_index] =(short)( projX2[_index]*camScale+camCenterX);
-        projY2[_index] =(short)( projY2[_index]*camScale+camCenterY);
-        projZ2[_index] =(short)( projZ2[_index]*camScale+camCenterZ);
+        projX1[_index] =( projX1[_index]*camScale+camCenterX);
+        projY1[_index] =( projY1[_index]*camScale+camCenterY);
+        projZ1[_index] =( projZ1[_index]*camScale+camCenterZ);
+        projX2[_index] =( projX2[_index]*camScale+camCenterX);
+        projY2[_index] =( projY2[_index]*camScale+camCenterY);
+        projZ2[_index] =( projZ2[_index]*camScale+camCenterZ);
 
         float vx = width/2; //vanishing pt onscreen
         float vy = height/2;
@@ -275,10 +275,10 @@ public final class RenderBuffer extends Kernel{
         if(usePerspective){
             float downScale1=scaleDownDistance(projZ1[_index]);
             float downScale2=scaleDownDistance(projZ2[_index]);
-            projX1[_index]=(short)((projX1[_index]-vx)*downScale1 + vx);
-            projY1[_index]=(short)((projY1[_index]-vy)*downScale1 + vy);
-            projX2[_index]=(short)((projX2[_index]-vx)*downScale2 + vx);
-            projY2[_index]=(short)((projY2[_index]-vy)*downScale2 + vy);
+            projX1[_index]=((projX1[_index]-vx)*downScale1 + vx);
+            projY1[_index]=((projY1[_index]-vy)*downScale1 + vy);
+            projX2[_index]=((projX2[_index]-vx)*downScale2 + vx);
+            projY2[_index]=((projY2[_index]-vy)*downScale2 + vy);
         }
     }
 
