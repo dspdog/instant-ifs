@@ -146,7 +146,7 @@ final class ifsys extends JPanel
         is.theMenu = new ifsMenu(parentFrame, is);
 
         is.init();
-        setupMiniFrame(is.theMenu.shapeProperties, 400, 350,   is.rp.screenwidth, 300, "Shape", "invader.png", desktop);
+        setupMiniFrame(is.theMenu.shapeProperties, 200, 350,   is.rp.screenwidth, 300, "Shape", "invader.png", desktop);
         setupMiniFrame(is.theMenu.renderProperties, 200, 300,   is.rp.screenwidth+200,0, "Camera", "camera.png", desktop);
         //setupMiniFrame(is.theMenu.pdfProperties,    200, 150,   is.rp.screenwidth,300, "Kernel", "cloud.png", desktop);
         setupMiniFrame(is.theMenu.pointProperties,  200, 300,   is.rp.screenwidth,0, "IFS Point", "anchors.png", desktop);
@@ -462,9 +462,9 @@ final class ifsys extends JPanel
         renderBuffer.lineDI[renderBuffer.lineIndex]=(((short)(dist))<<16) + ((short)_iterations);
 
         renderBuffer.lineXY1[renderBuffer.lineIndex]=(((short)(dpt.x))<<16) + ((short)dpt.y);
-        renderBuffer.lineZS1[renderBuffer.lineIndex]=(((short)(dpt.z))<<16) + ((short)(1024f *_cumulativeScale*thePt.scale/centerPt.scale));
+        renderBuffer.lineZS1[renderBuffer.lineIndex]=(((short)(dpt.z))<<16) + ((short)(256f *_cumulativeScale*thePt.scale/centerPt.scale));
         renderBuffer.lineXY2[renderBuffer.lineIndex]=(((short)(odp.x))<<16) + ((short)odp.y);
-        renderBuffer.lineZS2[renderBuffer.lineIndex]=(((short)(odp.z))<<16) + ((short)(1024f * _cumulativeScale));
+        renderBuffer.lineZS2[renderBuffer.lineIndex]=(((short)(odp.z))<<16) + ((short)(256f * _cumulativeScale));
 
         renderBuffer.lineIndex++;
         renderBuffer.lineIndex=Math.min(renderBuffer.lineIndex, renderBuffer.lineXY1.length-1);

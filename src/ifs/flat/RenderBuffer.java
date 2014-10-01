@@ -130,12 +130,12 @@ public final class RenderBuffer extends Kernel{
                 D1 = getD1(_index) + (i)*(getD2(_index) - getD1(_index))/segs;
                 D2 = getD1(_index) + (i+1)*(getD2(_index) - getD1(_index))/segs;
 
-                plotLineThick(X1, Y1, X2, Y2, Z1, Z2, S1, S2,0);
+                plotLineThick(X1, Y1, X2, Y2, Z1, Z2, S1, S2, 0);
             }
         }
     }
 
-    private void plotLineThick(float X1, float Y1, float X2, float Y2, float Z1, float Z2, float S1, float S2, int maxSegments){
+    private void plotLineThick(float X1, float Y1, float X2, float Y2, float Z1, float Z2, float S1, float S2, int maxThickness){ //max thickness = "max # of lines per thick line"
         float dx=0, dy=0, dz=0, ds=0;
         float olddx, olddy;
 
@@ -154,26 +154,40 @@ public final class RenderBuffer extends Kernel{
             float subX2 = dx;
             float subY2 = dy;
 
-            float thickness = ds/32f * scaleDownDistance(dz);
+            float thickness = ds * scaleDownDistance(dz);
 
             int color = (int)(dz/16f);
 
-            if(min(thickness,maxSegments)<1){
+            if(min(thickness,maxThickness)<1){
                 if((pixels[(int)subX1+(int)subY1*width]&255)<=color)
-                    pixels[(int)subX1+(int)subY1*width] = argb(255,1,1,(int)color);
+                    pixels[(int)subX1+(int)subY1*width] = argb(255,1,(int)thickness,(int)color);
             }else{
-                float sdx = subX2-subX1;
-                float sdy = subY2-subY1;
-                float X1normal = -sdy*thickness + subX1;
-                float Y1normal =  sdx*thickness + subY1;
-                float X2normal =  sdy*thickness + subX1;
-                float Y2normal = -sdx*thickness + subY1;
+                boolean horizontalMode = true;
+                if(horizontalMode){
+                    plotLineFlat((int)(dx - thickness), (int)dy, (int)(dx + thickness), maxThickness, color);
+                }else{//"normals" mode
+                    float sdx = subX2-subX1;
+                    float sdy = subY2-subY1;
+                    float X1normal = -sdy*thickness + subX1;
+                    float Y1normal =  sdx*thickness + subY1;
+                    float X2normal =  sdy*thickness + subX1;
+                    float Y2normal = -sdx*thickness + subY1;
 
-                plotLine(X1normal, Y1normal, X2normal, Y2normal, color, maxSegments);
+                    plotLine(X1normal, Y1normal, X2normal, Y2normal, color, maxThickness);
+                }
             }
         }
     }
 
+    private void plotLineFlat(int X1, int Y1, int X2, int maxLen, float color){
+        if(withinBounds(X1, Y1, X2, Y1)){
+            for(int _i=X1; _i<X2; _i++){
+                if((pixels[_i+Y1*width]&255)<=color)
+                    pixels[_i+Y1*width] = argb(255,1,(int)(X2-X1),(int)color);
+            }
+        }
+    }
+      
     private void plotLine(float X1, float Y1, float X2, float Y2, float color, int maxLen){
         if(withinBounds(X1, Y1, X2, Y2)){
             float fullLength = length(X1, Y1, X2, Y2);
@@ -332,7 +346,7 @@ public final class RenderBuffer extends Kernel{
 
         Range range = Range.create2D(width, height);
 
-        this.execute(range, 3);
+        this.execute(range, 4);
         this.get(pixels);
 
         frameNum++;
@@ -355,24 +369,27 @@ public final class RenderBuffer extends Kernel{
             if(myLineIndex<NUM_LINES && myLineIndex<totalLines)
                 drawLine(myLineIndex);
         }
-        if(getPassId()==2){ //z-process
+        if(getPassId()==2){ //draw flesh
+            putBar(x, y);
+        }
+        if(getPassId()==3){ //z-process
+            /*
+            float gradient=1.0f;
 
-           // float gradient=1.0f;
+            float gms = x>1&&y>1&&x<width-1&&y<height-1 ? getMaxSlope(x,y)/16f : 0;
+            float maxslope = min(gms*255f, 255f);
 
-           // float gms = x>1&&y>1&&x<width-1&&y<height-1 ? getMaxSlope(x,y)/16f : 0;
-           // float maxslope = min(gms*255f, 255f);
-
-           //  gradient = shading ? 1.0f-maxslope/255.0f : 1.0f;
+             gradient = shading ? 1.0f-maxslope/255.0f : 1.0f;*/
             getColor(x, y, 1.0f);
         }
     }
 
     int getMaxSlope(int x, int y){
-        int central =  (int)(pixels[x+y*width]);
-        int maxslope1 = (int)max(max(pixels[(x - 1) + (y) * width] - central, pixels[(x + 1) + (y) * width] - central),
-                        max(pixels[(x) + (y - 1) * width] - central, pixels[(x) + (y + 1) * width] - central));
-        int maxslope2 = (int)(1.0f/sqrt(2.0f)*max(max(pixels[(x - 1) + (y - 1) * width] - central, pixels[(x + 1) + (y + 1) * width] - central),
-                        max(pixels[(x - 1) + (y + 1) * width] - central, pixels[(x + 1) + (y - 1) * width] - central)));
+        int central =  (int)(pixels[x+y*width]&255);
+        int maxslope1 = (int)max(max(pixels[(x - 1) + (y) * width]&255 - central, pixels[(x + 1) + (y) * width]&255 - central),
+                        max(pixels[(x) + (y - 1) * width]&255 - central, pixels[(x) + (y + 1) * width]&255 - central));
+        int maxslope2 = (int)(1.0f/sqrt(2.0f)*max(max(pixels[(x - 1) + (y - 1) * width]&255 - central, pixels[(x + 1) + (y + 1) * width]&255 - central),
+                        max(pixels[(x - 1) + (y + 1) * width]&255 - central, pixels[(x + 1) + (y - 1) * width]&255 - central)));
         return max(maxslope2, maxslope1);
     }
 
@@ -382,7 +399,7 @@ public final class RenderBuffer extends Kernel{
         accumulator[(x)+(y)*width]+=(int) (gradient * val * val / 16f)&255;
         accumulator[x+y*width]*=(1.0f-1.0f/time);
 
-        pixels[(x)+(y)*width] = gray((int)(accumulator[x+y*width]/time));
+        pixels[(x)+(y)*width] = gray((int)(pow(accumulator[x+y*width]/time, 1.05))); //gamma correction 
 
     }
 
@@ -426,7 +443,7 @@ public final class RenderBuffer extends Kernel{
         short z = (short)((pixels[(x)+(y)*width])&255); //z is blue channel
         float scale = scaleDownDistance(z*16f);
 
-        size=(int)(size*scale/4f);
+        size=(int)(size*scale);
         size = max(1, min(size, 64));
         pixels[(x)+(y)*width]=z;
 
@@ -456,6 +473,33 @@ public final class RenderBuffer extends Kernel{
         }
     }
 
+    private void putBar(int x, int y){
+        int size = (int)(((pixels[(x)+(y)*width]>>8)&255)*camScale); //size is green channel
+        short z = (short)((pixels[(x)+(y)*width])&255); //z is blue channel
+        float scale = scaleDownDistance(z*16f);
+
+        size=(int)(size*scale/4f);
+        size = max(1, min(size, 64));
+        pixels[(x)+(y)*width]=z;
+
+        float sofar=0;
+        if(x>size && y>size && x<(width-size) && y<(height-size)){
+            short startingVal=z;
+            int _x,_y;
+            float total = size;
+            if(startingVal>0){
+                for(sofar=0; sofar<(int)total;sofar++){
+                    _x = (int)(sofar-total/2);
+                    _y = 0;
+                    if(((pixels[(x+_x)+(y+_y)*width]>>16)&255) != 1){ //if is not line
+                        if(startingVal>(pixels[(x+_x)+(y+_y)*width]&255)){
+                            pixels[(x+_x)+(y+_y)*width]=startingVal;
+                        }
+                    }
+                }
+            }
+        }
+    } 
     final float twoPI = 2f*3.14159265f;
     private void putCircle(int x, int y){
         int size = (int)(((pixels[(x)+(y)*width]>>8)&255)*camScale); //size is green channel
