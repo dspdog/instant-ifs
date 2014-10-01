@@ -2,7 +2,6 @@ package ifs;
 
 import com.alee.extended.colorchooser.WebGradientColorChooser;
 import ifs.flat.RenderBuffer;
-import ifs.volumetric.*;
 
 import java.awt.*;
 import java.io.*;
@@ -25,8 +24,6 @@ final class volume {
     long totalSamples = 0;
 
     float totalSamplesAlpha =0;
-
-    public SmartVolume volume;
 
     public long dataPoints = 0;
 
@@ -94,8 +91,6 @@ final class volume {
 
         camCenter = new ifsPt(512.0f,512.0f,512.0f);
 
-        volume = new SmartVolume(width);
-
         zDarkenScaler=512f;
 
         colorPeriod = 512;
@@ -112,7 +107,7 @@ final class volume {
         if(renderMode == renderMode.VOLUMETRIC){
             mySurfaceArea=0;
             myVolume=0;
-            volume.reset();
+
         }
     }
 
@@ -195,18 +190,6 @@ final class volume {
         return pt;
     }
 
-    public void putDataUpdateSurfaceVolume(ifsPt _pt){
-        if(volume.putData((int) _pt.x, (int) _pt.y, (int) _pt.z, 1)==1){//if its the first point there
-            myVolume++; //add it to ifs.volume
-            if(volume.getData((int)_pt.x+1, (int)_pt.y, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
-            if(volume.getData((int)_pt.x,   (int)_pt.y+1, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
-            if(volume.getData((int)_pt.x,   (int)_pt.y, (int)_pt.z+1)>0){mySurfaceArea--;}else{mySurfaceArea++;}
-            if(volume.getData((int)_pt.x-1, (int)_pt.y, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
-            if(volume.getData((int)_pt.x,   (int)_pt.y-1, (int)_pt.z)>0){mySurfaceArea--;}else{mySurfaceArea++;}
-            if(volume.getData((int)_pt.x,   (int)_pt.y, (int)_pt.z-1)>0){mySurfaceArea--;}else{mySurfaceArea++;}
-        }
-    }
-
     public void saveCam(){
         camCenter.saveState();
         savedPitch = camPitch;
@@ -218,13 +201,13 @@ final class volume {
 
         myVolume++;
 
-        boolean x1Valid=volume.isNotEmpty(x+1,y,z);
-        boolean y1Valid=volume.isNotEmpty(x,y+1,z);
-        boolean z1Valid=volume.isNotEmpty(x,y,z+1);
+        boolean x1Valid=true;
+        boolean y1Valid=true;
+        boolean z1Valid=true;
 
-        boolean xn1Valid=volume.isNotEmpty(x-1,y,z);
-        boolean yn1Valid=volume.isNotEmpty(x,y-1,z);
-        boolean zn1Valid=volume.isNotEmpty(x,y,z-1);
+        boolean xn1Valid=true;
+        boolean yn1Valid=true;
+        boolean zn1Valid=true;
 
         if(x1Valid && y1Valid && z1Valid && xn1Valid && yn1Valid && zn1Valid){}//skip "surrounded" cubes
         else{
@@ -285,10 +268,10 @@ final class volume {
         for(int _x=1; _x<width-1;_x++){
             for(int _y=1; _y<height-1;_y++){
                 for(int _z=1; _z<depth-1;_z++){
-                    boolean currentValid=volume.isNotEmpty(_x,_y,_z);
-                    if(currentValid){
-                        addCubeTriangles( _x, _y, _z);
-                    }
+                    //boolean currentValid=volume.isNotEmpty(_x,_y,_z);
+                    //if(currentValid){
+                    //    addCubeTriangles( _x, _y, _z);
+                    //}
                 }
             }
 

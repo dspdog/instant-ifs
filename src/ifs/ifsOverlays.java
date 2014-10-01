@@ -361,20 +361,6 @@ final class ifsOverlays {
         }
     }
 
-    public void drawPDF(Graphics rg){
-        int size = 128;
-        int x=myIfsSys.rp.screenwidth-size*3;
-        int y=myIfsSys.rp.screenheight-size*2;
-        int pady = 5;
-        rg.setColor(Color.WHITE);
-        rg.drawImage(myIfsSys.thePdf.sampleImageX, x, y, size, size, myIfsSys);
-        rg.drawString("PDF X", x, y-pady);
-        rg.drawImage(myIfsSys.thePdf.sampleImageY, x + size, y, size, size, myIfsSys);
-        rg.drawString("PDF Y", x + size, y - pady);
-        rg.drawImage(myIfsSys.thePdf.sampleImageZ, x + size * 2, y, size, size, myIfsSys);
-        rg.drawString("PDF Z", x + size * 2, y - pady);
-    }
-
     public void drawBoxBrackets(Graphics rg, int x, int y, int width, int height, int bracketSize){
         //upper left
         rg.drawLine(x,y,x+bracketSize,y);
@@ -407,7 +393,7 @@ final class ifsOverlays {
             drawStringOverlay(rg, log10String("AvD/V  ", (float) myIfsSys.theVolume.averageDistance / (float) myIfsSys.theVolume.myVolume) + "U-1");
             drawStringOverlay(rg, log10String("S/V    ", (float) myIfsSys.theVolume.mySurfaceArea / (float) myIfsSys.theVolume.myVolume) + "U-1");
             drawStringOverlay(rg, "Score   " + myIfsSys.theVolume.getScore(myIfsSys.rp.scoreParams));
-            drawStringOverlay(rg, "Regions " + myIfsSys.theVolume.volume.getInitCount() + "/" + myIfsSys.theVolume.volume.totalRegions + " (" + (100 * myIfsSys.theVolume.volume.getInitCount() / myIfsSys.theVolume.volume.totalRegions) + "%)");
+
             drawStringOverlay(rg, " ");
             if(myIfsSys.eShape.evolving){
                 drawStringOverlay(rg, "Generation " + myIfsSys.eShape.familyHistory.size() + " Sibling " + (myIfsSys.eShape.evolvedSibs) + "/" + myIfsSys.eShape.shapeList.size());

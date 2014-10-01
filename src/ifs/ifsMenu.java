@@ -8,7 +8,6 @@ import com.alee.laf.table.WebTable;
 import ifs.thirdparty.ImagePreviewPanel;
 import ifs.thirdparty.SliderWithSpinner;
 import ifs.thirdparty.SliderWithSpinnerModel;
-import ifs.volumetric.pdf3D;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -441,16 +440,8 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         //delayCheck = new JCheckBox();
 
         String[] renderModeStrings = {volume.RenderMode.VOLUMETRIC.toString(), volume.RenderMode.PROJECT_ONLY.toString()};
-        String[] pdfModeStrings = {
-                                       pdf3D.comboMode.ADD.toString(),
-                                       pdf3D.comboMode.AVERAGE.toString(),
-                                       pdf3D.comboMode.MULTIPLY.toString(),
-                                       pdf3D.comboMode.MAX.toString(),
-                                       pdf3D.comboMode.MIN.toString(),
-                                };
 
         renderModeCombo = new JComboBox(renderModeStrings);
-        pdfModeCombo = new JComboBox(pdfModeStrings);
 
         SpringLayout layout = new SpringLayout();
         panel.setLayout(layout);
@@ -801,24 +792,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         }catch (Exception _e){
 
         }
-
-        if(wb.getName()=="X"){
-            pdfXImgFile = fc.showOpenDialog(this);
-            if(pdfXImgFile == JFileChooser.APPROVE_OPTION){
-                myIfsSys.thePdf.setSampleImage(fc.getSelectedFile(), pdf3D.Dimension.X);
-            }
-        }else if(wb.getName()=="Y"){
-            pdfYImgFile = fc.showOpenDialog(this);
-            if(pdfYImgFile == JFileChooser.APPROVE_OPTION){
-                myIfsSys.thePdf.setSampleImage(fc.getSelectedFile(), pdf3D.Dimension.Y);
-            }
-        }else if(wb.getName()=="Z"){
-            pdfZImgFile = fc.showOpenDialog(this);
-            if(pdfZImgFile == JFileChooser.APPROVE_OPTION){
-                myIfsSys.thePdf.setSampleImage(fc.getSelectedFile(), pdf3D.Dimension.Z);
-            }
-
-        }else if(wb.getName()=="parents"){
+        if(wb.getName()=="parents"){
             myIfsSys.eShape.parents(myIfsSys.theShape);
         }else if(wb.getName()=="offspring"){
             myIfsSys.eShape.offSpring(myIfsSys.theShape, myIfsSys.rp.evolveIntensity);

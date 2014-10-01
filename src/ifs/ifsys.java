@@ -3,7 +3,6 @@ package ifs;
 import ifs.flat.OneDBuffer;
 import ifs.flat.RenderBuffer;
 import ifs.utils.ImageUtils;
-import ifs.volumetric.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,7 +41,7 @@ final class ifsys extends JPanel
     long indexCount;
 
     volume theVolume;
-    pdf3D thePdf;
+
     RenderBuffer renderBuffer;
     RenderParams rp;
     ifsShape theShape;
@@ -103,7 +102,7 @@ final class ifsys extends JPanel
 
         theVolume = new volume(1024, 1024, 1024);
         theVolume.clear();
-        thePdf = new pdf3D();
+
 
         //thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
 

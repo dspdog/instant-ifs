@@ -150,7 +150,7 @@ public final class RenderBuffer extends Kernel{
             float subX2 = dx;
             float subY2 = dy;
 
-            float thickness = ds * scaleDownDistance(dz);
+            float thickness = ds * scaleDownDistance(dz) / 4f;
 
             int color = (int)(dz/16f);
 
@@ -367,6 +367,7 @@ public final class RenderBuffer extends Kernel{
         }
         if(getPassId()==2){ //draw flesh
             putBar(x, y);
+            //int k=0;
         }
         if(getPassId()==3){ //z-process
             /*
