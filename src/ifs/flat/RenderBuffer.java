@@ -7,10 +7,12 @@ public final class RenderBuffer extends Kernel{
 
     final static float PFf = (float)Math.PI;
 
-    public final int lineXY1[];
-    public final int lineZS1[];
+    public final int lineXY1[]; //X,Y coords
+    public final int lineZS1[]; //z coord, scale
     public final int lineXY2[];
     public final int lineZS2[];
+
+    public final int lineDI[]; //distance, iterations
 
     public final float projX[];
     public final float projY[];
@@ -64,6 +66,8 @@ public final class RenderBuffer extends Kernel{
         lineXY2 = new int[NUM_LINES];
         lineZS2 = new int[NUM_LINES];
 
+        lineDI = new int[NUM_LINES];
+
         cartoon=false;
         pixels=new int[width*height];
         accumulator=new short[width*height];
@@ -103,7 +107,7 @@ public final class RenderBuffer extends Kernel{
         float X2 = projX[_index];
         float Y2 = projY[_index];
         float S1, S2, Z1, Z2;
-
+        float D1, D2, I1, I2;
         if(withinBounds(X1, Y1, X2, Y2)){
 
             int segs = 1;
@@ -119,6 +123,12 @@ public final class RenderBuffer extends Kernel{
 
                 S1 = getS1(_index) + (i)*(getS2(_index) - getS1(_index))/segs;
                 S2 = getS1(_index) + (i+1)*(getS2(_index) - getS1(_index))/segs;
+
+                I1 = getI1(_index) + (i)*(getI2(_index) - getI1(_index))/segs;
+                I2 = getI1(_index) + (i+1)*(getI2(_index) - getI1(_index))/segs;
+
+                D1 = getD1(_index) + (i)*(getD2(_index) - getD1(_index))/segs;
+                D2 = getD1(_index) + (i+1)*(getD2(_index) - getD1(_index))/segs;
 
                 plotLineThick(X1, Y1, X2, Y2, Z1, Z2, S1, S2,0);
             }
@@ -244,6 +254,25 @@ public final class RenderBuffer extends Kernel{
         return lineZS2[index]&65535;
     }
 
+
+
+    private int getD1(int index){
+        return lineDI[index]>>16;
+    }
+
+    private int getD2(int index){
+        int lineLength = (int)(length(getX1(index),getY1(index),getX2(index),getY2(index)) * 256f); //TODO scale?
+        return getD1(index)+lineLength;
+    }
+
+    private int getI1(int index){
+        return lineDI[index]&65535;
+    }
+
+    private int getI2(int index){
+        return getI1(index)+1;
+    }
+
     private void cameraDistort(int _index, int sector, int totalSectors, boolean end){
         sector = min(totalSectors-1,sector);
 
@@ -276,7 +305,7 @@ public final class RenderBuffer extends Kernel{
     }
 
     public void updateGeometry(){
-        this.put(lineXY1).put(lineZS1)
+        this.put(lineXY1).put(lineZS1).put(lineDI)
             .put(lineXY2).put(lineZS2);
     }
 

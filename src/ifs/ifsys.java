@@ -146,9 +146,9 @@ final class ifsys extends JPanel
         is.theMenu = new ifsMenu(parentFrame, is);
 
         is.init();
-        setupMiniFrame(is.theMenu.evolveProperties, 400, 350,   is.rp.screenwidth, 450, "Evolution", "invader.png", desktop);
-        setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth+200,0, "Render", "camera.png", desktop);
-        setupMiniFrame(is.theMenu.pdfProperties,    200, 150,   is.rp.screenwidth,300, "Kernel", "cloud.png", desktop);
+        setupMiniFrame(is.theMenu.shapeProperties, 400, 350,   is.rp.screenwidth, 450, "Shape", "invader.png", desktop);
+        setupMiniFrame(is.theMenu.renderProperties, 200, 450,   is.rp.screenwidth+200,0, "Camera", "camera.png", desktop);
+        //setupMiniFrame(is.theMenu.pdfProperties,    200, 150,   is.rp.screenwidth,300, "Kernel", "cloud.png", desktop);
         setupMiniFrame(is.theMenu.pointProperties,  200, 340,   is.rp.screenwidth,0, "IFS Point", "anchors.png", desktop);
     }
 
@@ -424,7 +424,7 @@ final class ifsys extends JPanel
         Random rnd = new Random();
         rnd.setSeed(rp.randomSeed);
         indexCount=0;
-        indexFunction(0, rp.iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd, rp.randomScale);
+        indexFunction(0, rp.iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd, rp.randomScale, (short)0);
     }
 
     public void gamefunc(){
@@ -441,7 +441,7 @@ final class ifsys extends JPanel
     }
 
     long lastIndex = System.currentTimeMillis();
-    private void indexFunction(int _index, int _iterations, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt, Random _rnd, float rndScale){
+    private void indexFunction(int _index, int _iterations, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt, Random _rnd, float rndScale, short dist){
         ifsPt dpt = new ifsPt(_dpt);
         ifsPt cumulativeRotation = new ifsPt(_cumulativeRotation);
         ifsPt thePt = theShape.pts[_index];
@@ -458,6 +458,8 @@ final class ifsys extends JPanel
 
         //ifsPt proj_odp = odp; //theVolume.getCameraDistortedPt(odp, rp.rightEye);
         //ifsPt proj_dpt = dpt; //theVolume.getCameraDistortedPt(dpt, rp.rightEye);
+
+        renderBuffer.lineDI[renderBuffer.lineIndex]=(((short)(dist))<<16) + ((short)_iterations);
 
         renderBuffer.lineXY1[renderBuffer.lineIndex]=(((short)(dpt.x))<<16) + ((short)dpt.y);
         renderBuffer.lineZS1[renderBuffer.lineIndex]=(((short)(dpt.z))<<16) + ((short)(1024f *_cumulativeScale*thePt.scale/centerPt.scale));
@@ -482,8 +484,8 @@ final class ifsys extends JPanel
                 branchRandom.setSeed(indexCount*rp.randomSeed*i);
                 indexCount++;
                 if(branchRandom.nextDouble()>branchThresh){
-
-                    indexFunction(i, _iterations-1, _cumulativeScale, cumulativeRotation, dpt, _rnd, rndScale);
+                    dist+=_cumulativeScale*256; //256 is arbitrary
+                    indexFunction(i, _iterations-1, _cumulativeScale, cumulativeRotation, dpt, _rnd, rndScale, dist);
                 }
             }
         }
@@ -843,26 +845,22 @@ final class ifsys extends JPanel
 
         if(e.getKeyChar() == 'w'){
             eShape.parents(theShape);
-            //theMenu.updateEvolutionTable();
         }
 
         if(e.getKeyChar() == 'e'){
             eShape.offSpring(theShape, rp.evolveIntensity);
-            //theMenu.updateEvolutionTable();
             clearframe();
             gamefunc();
         }
 
         if(e.getKeyChar() == 'z'){
             theShape=eShape.nextShape(0);
-            //theMenu.updateEvolutionTable();
             clearframe();
             gamefunc();
         }
 
         if(e.getKeyChar() == 'x'){
             theShape=eShape.prevShape(0);
-            //theMenu.updateEvolutionTable();
             clearframe();
             gamefunc();
         }

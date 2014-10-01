@@ -1,19 +1,13 @@
 package ifs;
 
 import com.alee.extended.colorchooser.WebGradientColorChooser;
-import com.alee.extended.date.WebDateField;
-import com.alee.extended.image.DisplayType;
-import com.alee.extended.image.WebImage;
 import com.alee.extended.panel.WebButtonGroup;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.table.WebTable;
-import com.alee.managers.language.data.TooltipWay;
-import com.alee.managers.tooltip.TooltipManager;
 import ifs.thirdparty.ImagePreviewPanel;
 import ifs.thirdparty.SliderWithSpinner;
 import ifs.thirdparty.SliderWithSpinnerModel;
-import ifs.utils.ImageUtils;
 import ifs.volumetric.pdf3D;
 
 import javax.swing.*;
@@ -21,7 +15,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.MemoryImageSource;
 
 final class ifsMenu extends Component implements ItemListener, ChangeListener, ActionListener, MouseMotionListener {
 
@@ -84,7 +77,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     JPanel renderProperties = new JPanel();
     JPanel pdfProperties = new JPanel();
 
-    JPanel evolveProperties = new JPanel();
+    JPanel shapeProperties = new JPanel();
 
     Frame parentFrame = new Frame();
 
@@ -248,15 +241,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         ((SliderWithSpinner)addLabeled(pitchSpinner, layout, "Pitch°", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(yawSpinner, layout, "Yaw°", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(rollSpinner, layout, "Roll°", panel)).addChangeListener(updateAndClear);
-
-        randomSeedSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(1000, 0, 100_000));
-        ((SliderWithSpinner)addLabeled(randomSeedSpinner, layout, "Rnd Seed", panel)).addChangeListener(updateAndClear);
-
-        randomScaleSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(10, 0, 1000));
-        ((SliderWithSpinner)addLabeled(randomScaleSpinner, layout, "Rnd Scale", panel)).addChangeListener(updateAndClear);
-
-        pruneThreshSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(10, 0, 100));
-        ((SliderWithSpinner)addLabeled(pruneThreshSpinner, layout, "Prune", panel)).addChangeListener(updateAndClear);
     }
 
     public void setupPdfPropertiesPanel(JPanel panel){
@@ -294,7 +278,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     }
 
 
-    public void setupEvolvePropertiesPanel(JPanel panel){
+    public void setupShapePropertiesPanel(JPanel panel){
 
         int topPad=5;
         SpringLayout layout = new SpringLayout();
@@ -319,6 +303,22 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         PrevSibButton.setName("prevsib");PrevSibButton.addActionListener(this);
         LockButton.setName("lock");LockButton.addActionListener(this);
         PlayButton.setName("play");PlayButton.addActionListener(this);
+
+
+
+        iterationsSpinner =new SliderWithSpinner(new SliderWithSpinnerModel(3, 0, 10));
+        ((SliderWithSpinner)addLabeled(iterationsSpinner, layout, "Iterations", panel)).addChangeListener(updateAndClear);
+
+        pruneThreshSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(10, 0, 100));
+        ((SliderWithSpinner)addLabeled(pruneThreshSpinner, layout, "Prune", panel)).addChangeListener(updateAndClear);
+
+        randomSeedSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(1000, 0, 100_000));
+        ((SliderWithSpinner)addLabeled(randomSeedSpinner, layout, "Rnd Seed", panel)).addChangeListener(updateAndClear);
+
+        randomScaleSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(10, 0, 1000));
+        ((SliderWithSpinner)addLabeled(randomScaleSpinner, layout, "Rnd Scale", panel)).addChangeListener(updateAndClear);
+
+
 
         WebButtonGroup iconsGroup = new WebButtonGroup ( true,
                 //OffspingButton, ParentsButton, PrevSibButton, NextSibButton,
@@ -428,7 +428,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     public void setupRenderPropertiesPanel(JPanel panel){
         brightnessSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 360));
         samplesSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 2000));
-        iterationsSpinner =new SliderWithSpinner(new SliderWithSpinnerModel(3, 0, 10));
 
         potentialSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 360));
         delaySpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 100));
@@ -468,8 +467,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         });
 
         ((SliderWithSpinner)addLabeled(brightnessSpinner, layout, "Brightness", panel)).addChangeListener(updateAndClear);
-        ((SliderWithSpinner)addLabeled(samplesSpinner, layout, "Dots/Frame", panel)).addChangeListener(updateAndClear);
-        ((SliderWithSpinner)addLabeled(iterationsSpinner, layout, "Iterations", panel)).addChangeListener(updateAndClear);
+        //((SliderWithSpinner)addLabeled(samplesSpinner, layout, "Dots/Frame", panel)).addChangeListener(updateAndClear);
 
         //((JSpinner)addLabeled(potentialSpinner, layout, "Blur", panel)).addChangeListener(updateAndClear);
         //((JCheckBox)addLabeled(cartoonCheck, layout, "Cartoon", panel)).addChangeListener(updateAndClear);
@@ -569,14 +567,14 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         renderProperties = new JPanel();
         pdfProperties = new JPanel();
         //cameraProperties = new JPanel();
-        evolveProperties = new JPanel();
+        shapeProperties = new JPanel();
 
         //SIDE MENU
 
         setupPointPropertiesPanel(pointProperties);
         setupRenderPropertiesPanel(renderProperties);
         setupPdfPropertiesPanel(pdfProperties);
-        setupEvolvePropertiesPanel(evolveProperties);
+        setupShapePropertiesPanel(shapeProperties);
 
         SpringLayout sideMenuLayout = new SpringLayout();
 
@@ -822,13 +820,10 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
         }else if(wb.getName()=="parents"){
             myIfsSys.eShape.parents(myIfsSys.theShape);
-            //updateEvolutionTable();
         }else if(wb.getName()=="offspring"){
             myIfsSys.eShape.offSpring(myIfsSys.theShape, myIfsSys.rp.evolveIntensity);
-            //updateEvolutionTable();
         }else if(wb.getName()=="prevsib"){
             myIfsSys.theShape=myIfsSys.eShape.prevShape(0);
-            //updateEvolutionTable();
         }else if(wb.getName()=="lock"){
             myIfsSys.theShape.saveToFile("locked.shape");
             myIfsSys.theAnimationThread.shapeReload=!myIfsSys.theAnimationThread.shapeReload;
@@ -837,23 +832,18 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
             }else{
                 LockButton.setIcon(new ImageIcon("./instant-ifs/icons/unlock.png"));
             }
-            //myIfsSys.theShape=myIfsSys.eShape.prevShape(0);
-            //updateEvolutionTable();
         }else if(wb.getName()=="play"){
             myIfsSys.saveStuff("");
             myIfsSys.rp.shapeVibrating = !myIfsSys.rp.shapeVibrating;
 
-            //myIfsSys.theAnimationThread.shapeReload=!myIfsSys.theAnimationThread.shapeReload;
             if(myIfsSys.rp.shapeVibrating){
                 PlayButton.setIcon(new ImageIcon("./instant-ifs/icons/invader_alive_big.png"));
             }else{
                 PlayButton.setIcon(new ImageIcon("./instant-ifs/icons/invader_big.png"));
             }
-            //myIfsSys.theShape=myIfsSys.eShape.prevShape(0);
-            //updateEvolutionTable();
+
         }else if(wb.getName()=="nextsib"){
             myIfsSys.theShape=myIfsSys.eShape.nextShape(0);
-            //updateEvolutionTable();
         }else if(mc.getActionCommand()=="Save Shape..."){
             pdfZImgFile = fc.showSaveDialog(this);
             if(pdfZImgFile == JFileChooser.APPROVE_OPTION){
