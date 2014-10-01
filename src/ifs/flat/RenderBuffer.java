@@ -86,10 +86,6 @@ public final class RenderBuffer extends Kernel{
         frameStartTime=_time;
     }
 
-    public boolean putPixel(float x, float y, float z, float R, float G, float B, float scale, float dark, boolean rightEye){
-        return false;
-    }
-
     private boolean withinBounds(float x, float y, float x2, float y2){
         return x>1 && y>1 && x<width && y<height &&
                x2>1 && y2>1 && x2<width && y2<height;
@@ -399,7 +395,7 @@ public final class RenderBuffer extends Kernel{
         accumulator[(x)+(y)*width]+=(int) (gradient * val * val / 16f)&255;
         accumulator[x+y*width]*=(1.0f-1.0f/time);
 
-        pixels[(x)+(y)*width] = gray((int)(pow(accumulator[x+y*width]/time, 1.05))); //gamma correction 
+        pixels[(x)+(y)*width] = gray((int)(pow(accumulator[x+y*width]/time, 1.05))); //gamma correction
 
     }
 
