@@ -2,6 +2,7 @@ package ifs;
 
 import ifs.flat.OneDBuffer;
 import ifs.flat.RenderBuffer;
+import ifs.flat.ShapeAnalyzer;
 import ifs.utils.ImageUtils;
 
 import javax.swing.*;
@@ -23,6 +24,8 @@ final class ifsys extends JPanel
     int numThreads = 1;//Runtime.getRuntime().availableProcessors()/2;
     boolean quit;
 
+    boolean shapeAnalyzing = true;
+
     static ImageUtils imageUtils = new ImageUtils();
 
     Image renderImage;
@@ -42,6 +45,7 @@ final class ifsys extends JPanel
 
     volume theVolume;
 
+    ShapeAnalyzer shapeAnalyzer;
     RenderBuffer renderBuffer;
     RenderParams rp;
     ifsShape theShape;
@@ -79,6 +83,7 @@ final class ifsys extends JPanel
         iterationDescSelected=false;
         rp = new RenderParams();
         renderBuffer = new RenderBuffer(rp.screenwidth, rp.screenheight);
+        shapeAnalyzer = new ShapeAnalyzer();
 
         System.out.println(numThreads + " threads");
 
@@ -411,6 +416,9 @@ final class ifsys extends JPanel
                     renderBuffer.lineIndex=0;
                     reIndex();
                     renderBuffer.updateGeometry();
+                    if(shapeAnalyzing){
+                        shapeAnalyzer.updateGeometry();
+                    }
                     lastIndex = System.currentTimeMillis();
                 }
             }
@@ -464,6 +472,14 @@ final class ifsys extends JPanel
         renderBuffer.lineZS1[renderBuffer.lineIndex]=(((short)(dpt.z))<<16) + ((short)(256f *_cumulativeScale*thePt.scale/centerPt.scale));
         renderBuffer.lineXY2[renderBuffer.lineIndex]=(((short)(odp.x))<<16) + ((short)odp.y);
         renderBuffer.lineZS2[renderBuffer.lineIndex]=(((short)(odp.z))<<16) + ((short)(256f * _cumulativeScale));
+
+        if(shapeAnalyzing){
+            shapeAnalyzer.lineXY1[renderBuffer.lineIndex] = renderBuffer.lineDI[renderBuffer.lineIndex];
+            shapeAnalyzer.lineXY1[renderBuffer.lineIndex] = renderBuffer.lineXY1[renderBuffer.lineIndex];
+            shapeAnalyzer.lineZS1[renderBuffer.lineIndex] = renderBuffer.lineZS1[renderBuffer.lineIndex];
+            shapeAnalyzer.lineXY2[renderBuffer.lineIndex] = renderBuffer.lineXY2[renderBuffer.lineIndex];
+            shapeAnalyzer.lineZS2[renderBuffer.lineIndex] = renderBuffer.lineZS2[renderBuffer.lineIndex];
+        }
 
         renderBuffer.lineIndex++;
         renderBuffer.lineIndex=Math.min(renderBuffer.lineIndex, renderBuffer.lineXY1.length-1);
