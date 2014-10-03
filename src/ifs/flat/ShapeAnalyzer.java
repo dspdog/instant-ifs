@@ -1,12 +1,30 @@
 package ifs.flat;
 
 import com.amd.aparapi.Kernel;
-import com.amd.aparapi.Range;
+
+//TODO this class should provide potential data for cube marcher
 
 public final class ShapeAnalyzer extends Kernel{
 
-    public ShapeAnalyzer(int w, int h){
+    final int NUM_CELLS = 1000000; //100x100x100 to start...
+    final int MAX_TRIANGLES = NUM_CELLS * 5; //polygonize function can return at most 5 triangles per cell
 
+    final float[] triangleX1, triangleY1, triangleZ1;
+    final float[] triangleX2, triangleY2, triangleZ2;
+    final float[] triangleX3, triangleY3, triangleZ3;
+
+    public ShapeAnalyzer(int w, int h){
+        triangleX1 = new float[MAX_TRIANGLES];
+        triangleY1 = new float[MAX_TRIANGLES];
+        triangleZ1 = new float[MAX_TRIANGLES];
+
+        triangleX2 = new float[MAX_TRIANGLES];
+        triangleY2 = new float[MAX_TRIANGLES];
+        triangleZ2 = new float[MAX_TRIANGLES];
+
+        triangleX3 = new float[MAX_TRIANGLES];
+        triangleY3 = new float[MAX_TRIANGLES];
+        triangleZ3 = new float[MAX_TRIANGLES];
         this.setExecutionMode(Kernel.EXECUTION_MODE.GPU);
     }
 
@@ -16,40 +34,12 @@ public final class ShapeAnalyzer extends Kernel{
         int y = getGlobalId(1);
     }
 
-    int argb(int a, int r, int g, int b){
 
-        a=max(1, min(a, 255))  ;
-        r=max(1, min(r, 255))  ;
-        g=max(1, min(g, 255))  ;
-        b=max(1, min(b, 255))  ;
-
-        int _argb = a;
-        _argb = (_argb << 8) + r;
-        _argb = (_argb << 8) + g;
-        _argb = (_argb << 8) + b;
-
-        return _argb;
+    public float potentialFunction(float x, float y, float z){
+        return distance3d(0, 0, 0, x, y, z);
     }
 
-    int gray(int g){
-
-        int _argb = 255;
-
-        g=max(1, min(g, 255))  ;
-        _argb = (_argb << 8) + g;
-        _argb = (_argb << 8) + g;
-        _argb = (_argb << 8) + g;
-
-        return _argb;
-    }
-
-    int black(){
-        int _argb = 255;
-
-        _argb = (_argb << 8) + 0;
-        _argb = (_argb << 8) + 0;
-        _argb = (_argb << 8) + 0;
-
-        return _argb;
+    private float distance3d(float X1, float Y1, float Z1, float X2, float Y2, float Z2){
+        return sqrt((X2-X1)*(X2-X1)+(Y2-Y1)*(Y2-Y1)+(Z2-Z1)*(Z2-Z1));
     }
 }
