@@ -3,6 +3,7 @@ package ifs;
 import ifs.flat.OneDBuffer;
 import ifs.flat.RenderBuffer;
 import ifs.flat.ShapeAnalyzer;
+import ifs.flat.TetraMarcher;
 import ifs.utils.ImageUtils;
 
 import javax.swing.*;
@@ -172,6 +173,31 @@ final class ifsys extends JPanel
         theInternalFrame.setVisible(true);
         theInternalFrame.getContentPane().add(panel);
         theInternalFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    }
+
+    public void getPotentials(){
+        ShapeAnalyzer sa = new ShapeAnalyzer();
+        TetraMarcher tm = new TetraMarcher();
+
+        TetraMarcher.Triangle[] tri = tm.generateTriangleArray();
+
+        double x,y,z;
+        double iso = 0.5;
+        long numPolys=0;
+
+        double inc = 2;
+
+        for(x=0; x<1024; x+=inc){
+            System.out.println("potential "+ (int)(100f*x/1024f) + "% " + numPolys + " triangles");
+            for(y=0; y<1024; y+=inc){
+                for(z=0; z<1024; z+=inc){
+                    numPolys += tm.PolygoniseGrid(
+                                tm.generateCell(x,y,z,inc, sa),
+                                                iso,
+                                                tri);
+                }
+            }
+        }
     }
 
     public void init() {
@@ -437,7 +463,6 @@ final class ifsys extends JPanel
     public void gamefunc(){
         gamefunc(rp.iterations);
     }
-
 
     public void gamefunc(int _iterations){
         rp.guidesHidden = System.currentTimeMillis() - lastMoveTime > rp.linesHideTime;
@@ -909,6 +934,12 @@ final class ifsys extends JPanel
             clearframe();
             gamefunc();
             System.out.println("2d projections: " + rp.twoD);
+        }
+
+        if(e.getKeyChar() == 'g'){
+            System.out.println("getting potentials!");
+
+            getPotentials();
         }
 
         if(e.getKeyChar() == '3'){

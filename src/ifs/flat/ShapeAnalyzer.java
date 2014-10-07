@@ -2,8 +2,6 @@ package ifs.flat;
 
 import com.amd.aparapi.Kernel;
 
-//TODO this class should provide potential data for cube marcher
-
 public final class ShapeAnalyzer extends Kernel{
 
     public final int lineXY1[]; //X,Y coords
@@ -31,12 +29,37 @@ public final class ShapeAnalyzer extends Kernel{
         int y = getGlobalId(1);
     }
 
+    /*
+    // dist_Point_to_Segment(): get the distance of a point to a segment
+    //     Input:  a Point P and a Segment S (in any dimension)
+    //     Return: the shortest distance from P to S
+    float
+    dist_Point_to_Segment( Point P, Segment S)
+    {
+         Vector v = S.P1 - S.P0;
+         Vector w = P - S.P0;
 
-    public float potentialFunction(float x, float y, float z){
-        return distance3d(0, 0, 0, x, y, z);
+         double c1 = dot(w,v);
+         if ( c1 <= 0 )
+              return d(P, S.P0);
+
+         double c2 = dot(v,v);
+         if ( c2 <= c1 )
+              return d(P, S.P1);
+
+         double b = c1 / c2;
+         Point Pb = S.P0 + b * v;
+         return d(P, Pb);
     }
 
-    private float distance3d(float X1, float Y1, float Z1, float X2, float Y2, float Z2){
+    * */
+
+    public double potentialFunction(double x, double y, double z){
+        return 5.0;
+        //return distance3d(0, 0, 0, x, y, z);
+    }
+
+    private double distance3d(double X1, double Y1, double Z1, double X2, double Y2, double Z2){
         return sqrt((X2-X1)*(X2-X1)+(Y2-Y1)*(Y2-Y1)+(Z2-Z1)*(Z2-Z1));
     }
 
