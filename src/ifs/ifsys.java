@@ -12,6 +12,7 @@ import java.awt.event.*;
 import java.awt.image.MemoryImageSource;
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
 
@@ -182,7 +183,7 @@ final class ifsys extends JPanel
         TetraMarcher.Triangle[] tri = tm.generateTriangleArray();
 
         double x,y,z;
-        double iso = 0.5;
+        double iso = 200;
         long numPolys=0;
 
         double inc = 2;
@@ -198,6 +199,9 @@ final class ifsys extends JPanel
                 }
             }
         }
+
+        System.out.println(tm.triangleList.size() + " TRIS");
+        tm.saveToBinarySTL(tm.triangleList.size());
     }
 
     public void init() {
@@ -936,7 +940,7 @@ final class ifsys extends JPanel
             System.out.println("2d projections: " + rp.twoD);
         }
 
-        if(e.getKeyChar() == 'g'){
+        if(e.getKeyChar() == '6'){
             System.out.println("getting potentials!");
 
             getPotentials();

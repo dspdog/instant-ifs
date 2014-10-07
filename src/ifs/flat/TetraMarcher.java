@@ -5,6 +5,15 @@ package ifs.flat;
 
 //java version of the algo from http://paulbourke.net/geometry/polygonise/
 
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
 public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/geometry/polygonise/
 
     public class xyz {
@@ -33,6 +42,13 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
             val = new double[8];
         }
     }
+
+    public ArrayList<Triangle> triangleList;
+
+    public TetraMarcher(){
+        triangleList = new ArrayList<Triangle>();
+    }
+
     /*
        Polygonise a tetrahedron given its vertices within a cube
        This is an alternative algorithm to polygonisegrid.
@@ -85,6 +101,8 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
                 triangles[triIndex].p[2].x = temp_tris[0].p[2].x;
                 triangles[triIndex].p[2].y = temp_tris[0].p[2].y;
                 triangles[triIndex].p[2].z = temp_tris[0].p[2].z;
+
+                triangleList.add(triangles[triIndex]);
                 return 1;
             case 2:
                 triangles[triIndex] = new Triangle();
@@ -108,6 +126,9 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
                 triangles[triIndex+1].p[2].x = temp_tris[1].p[2].x;
                 triangles[triIndex+1].p[2].y = temp_tris[1].p[2].y;
                 triangles[triIndex+1].p[2].z = temp_tris[1].p[2].z;
+
+                triangleList.add(triangles[triIndex]);
+                triangleList.add(triangles[triIndex+1]);
                 return 2;
         }
 
@@ -297,5 +318,52 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
         return(p);
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void saveToBinarySTL(int totalTriangles){
+        Date startDate = Calendar.getInstance().getTime();
+        String timeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate)+ ".stl";
+        //File logFile = new File(timeLog);
+
+        System.out.println("saving stl...");
+        byte[] title = new byte[80];
+
+        try(FileChannel ch=new RandomAccessFile(timeLog , "rw").getChannel())
+        {
+            ByteBuffer bb= ByteBuffer.allocate(10000).order(ByteOrder.LITTLE_ENDIAN);
+            bb.put(title); // Header (80 bytes)
+            bb.putInt(totalTriangles); // Number of triangles (UINT32)
+            int triNo=0;
+            for(Triangle tri : triangleList){
+                if(triNo<totalTriangles){
+                    bb.putFloat(0).putFloat(0).putFloat(0); //TODO normals?
+                    bb.putFloat((float)tri.p[0].x).putFloat((float)tri.p[0].y).putFloat((float) tri.p[0].z);
+                    bb.putFloat((float)tri.p[1].x).putFloat((float)tri.p[1].y).putFloat((float)tri.p[1].z);
+                    bb.putFloat((float)tri.p[2].x).putFloat((float)tri.p[2].y).putFloat((float)tri.p[2].z);
+                    bb.putShort((short)12); //TODO colors?
+
+                    bb.flip();
+                    ch.write(bb);
+                    bb.clear();
+
+                    triNo++;
+                    if(triNo%256==0){
+                        System.out.println("TRI "+triNo+"/"+totalTriangles + " saved - " + (int)(100.0*triNo/totalTriangles)+"%");
+                    }
+                }
+            }
+            ch.close();
+
+            System.out.println("done! " + timeLog);
+
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+
 
 }

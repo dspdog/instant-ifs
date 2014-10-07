@@ -55,8 +55,7 @@ public final class ShapeAnalyzer extends Kernel{
     * */
 
     public double potentialFunction(double x, double y, double z){
-        return 5.0;
-        //return distance3d(0, 0, 0, x, y, z);
+        return distance3d(0, 0, 0, x, y, z);
     }
 
     private double distance3d(double X1, double Y1, double Z1, double X2, double Y2, double Z2){
