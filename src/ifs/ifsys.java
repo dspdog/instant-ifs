@@ -186,12 +186,35 @@ final class ifsys extends JPanel
         double iso = 200;
         long numPolys=0;
 
-        double inc = 2;
+        double inc = 8;
+        int minX=1024, maxX=0, minY=1024, maxY=0, minZ=1024, maxZ=0;
+
+        //TODO better version -- find rough version of subcubes -- apply "expand" operation to cover stuff missed
+        long startTime = System.currentTimeMillis();
 
         for(x=0; x<1024; x+=inc){
-            System.out.println("potential "+ (int)(100f*x/1024f) + "% " + numPolys + " triangles");
+            //System.out.println("estimating obj bounds"+ (int)(100f*x/1024f) + "% ");
             for(y=0; y<1024; y+=inc){
                 for(z=0; z<1024; z+=inc){
+                    if(sa.potentialFunction(x,y,z)<=iso){
+                        minZ=(int)Math.max(Math.min(z-1, minZ),0);
+                        maxZ=(int)Math.min(Math.max(z + 1, maxZ), 1024);
+                        minY=(int)Math.max(Math.min(y-1, minY),0);
+                        maxY=(int)Math.min(Math.max(y+1, maxY),1024);
+                        minX=(int)Math.max(Math.min(x-1, minX),0);
+                        maxX=(int)Math.min(Math.max(x+1, maxX),1024);
+                    }
+                }
+            }
+        }
+
+        System.out.println("range " + (maxX-minX));
+
+        inc = 4;
+        for(x=minX; x<maxX; x+=inc){
+            System.out.println("potential "+ (int)(100f*(x-minX)/(maxX-minX)) + "% " + numPolys + " triangles");
+            for(y=minY; y<maxY; y+=inc){
+                for(z=minZ; z<maxZ; z+=inc){
                     numPolys += tm.PolygoniseGrid(
                                 tm.generateCell(x,y,z,inc, sa),
                                                 iso,
@@ -201,7 +224,14 @@ final class ifsys extends JPanel
         }
 
         System.out.println(tm.triangleList.size() + " TRIS");
+
+        long buildTime = System.currentTimeMillis() - startTime;
+
         tm.saveToBinarySTL(tm.triangleList.size());
+
+        long saveTime = (System.currentTimeMillis() - startTime)-buildTime;
+
+        System.out.println("done - built in " + buildTime/1000.0 + "s, saved in " + saveTime/1000.0 + "s");
     }
 
     public void init() {

@@ -217,27 +217,27 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
    /* Form the vertices of the triangles for each case */
         switch (triindex) {
-            case 0x00:
-            case 0x0F:
+            case 0b0000: //completely above iso value - "empty"
+            case 0b1111: //completely below iso value - "full"
                 break;
-            case 0x0E:
-            case 0x01:
+            case 0b1110: //same as 0001 but reversed
+            case 0b0001:
                 tri[0] = new Triangle();
                 tri[0].p[0] = VertexInterp(iso,g.p[v0],g.p[v1],g.val[v0],g.val[v1]);
                 tri[0].p[1] = VertexInterp(iso,g.p[v0],g.p[v2],g.val[v0],g.val[v2]);
                 tri[0].p[2] = VertexInterp(iso,g.p[v0],g.p[v3],g.val[v0],g.val[v3]);
                 ntri++;
                 break;
-            case 0x0D:
-            case 0x02:
+            case 0b1101: //same as 0010 but reversed
+            case 0b0010:
                 tri[0] = new Triangle();
                 tri[0].p[0] = VertexInterp(iso,g.p[v1],g.p[v0],g.val[v1],g.val[v0]);
                 tri[0].p[1] = VertexInterp(iso,g.p[v1],g.p[v3],g.val[v1],g.val[v3]);
                 tri[0].p[2] = VertexInterp(iso,g.p[v1],g.p[v2],g.val[v1],g.val[v2]);
                 ntri++;
                 break;
-            case 0x0C:
-            case 0x03:
+            case 0b1100: //same as 0011 but reversed
+            case 0b0011:
                 tri[0] = new Triangle();
                 tri[1] = new Triangle();
                 tri[0].p[0] = VertexInterp(iso,g.p[v0],g.p[v3],g.val[v0],g.val[v3]);
@@ -249,16 +249,16 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
                 tri[1].p[2] = tri[0].p[1];
                 ntri++;
                 break;
-            case 0x0B:
-            case 0x04:
+            case 0b1011: //same as 0100 but reversed
+            case 0b0100:
                 tri[0] = new Triangle();
                 tri[0].p[0] = VertexInterp(iso,g.p[v2],g.p[v0],g.val[v2],g.val[v0]);
                 tri[0].p[1] = VertexInterp(iso,g.p[v2],g.p[v1],g.val[v2],g.val[v1]);
                 tri[0].p[2] = VertexInterp(iso,g.p[v2],g.p[v3],g.val[v2],g.val[v3]);
                 ntri++;
                 break;
-            case 0x0A:
-            case 0x05:
+            case 0b1010: //same as 0101 but reversed
+            case 0b0101:
                 tri[0] = new Triangle();
                 tri[1] = new Triangle();
                 tri[0].p[0] = VertexInterp(iso,g.p[v0],g.p[v1],g.val[v0],g.val[v1]);
@@ -270,8 +270,8 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
                 tri[1].p[2] = tri[0].p[1];
                 ntri++;
                 break;
-            case 0x09:
-            case 0x06:
+            case 0b1001: //same as 0110 but reversed
+            case 0b0110:
                 tri[0] = new Triangle();
                 tri[1] = new Triangle();
                 tri[0].p[0] = VertexInterp(iso,g.p[v0],g.p[v1],g.val[v0],g.val[v1]);
@@ -283,8 +283,8 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
                 tri[1].p[2] = tri[0].p[2];
                 ntri++;
                 break;
-            case 0x07:
-            case 0x08:
+            case 0b1000: //same as 1000 but reversed
+            case 0b0111:
                 tri[0] = new Triangle();
                 tri[0].p[0] = VertexInterp(iso,g.p[v3],g.p[v0],g.val[v3],g.val[v0]);
                 tri[0].p[1] = VertexInterp(iso,g.p[v3],g.p[v2],g.val[v3],g.val[v2]);
