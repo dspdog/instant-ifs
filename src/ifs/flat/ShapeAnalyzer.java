@@ -54,6 +54,29 @@ public final class ShapeAnalyzer extends Kernel{
 
     * */
 
+    double dot_product(double x0, double y0, double z0, double x1, double y1, double z1){
+        return x0*x1 + y0*y1 + z0*z1;
+    }
+
+    double dist_Point_to_Segment( double px, double py, double pz, double s0x, double s0y, double s0z, double s1x, double s1y, double s1z)
+    {   //P --> px, etc
+        //S --> s0x, s1x
+        Vector v = S.P1 - S.P0;
+        Vector w = P - S.P0;
+
+        double c1 = dot(w,v);
+        if ( c1 <= 0 )
+            return d(P, S.P0);
+
+        double c2 = dot(v,v);
+        if ( c2 <= c1 )
+            return d(P, S.P1);
+
+        double b = c1 / c2;
+        Point Pb = S.P0 + b * v;
+        return d(P, Pb);
+    }
+
     public double potentialFunction(double x, double y, double z){
         return distance3d(512, 512, 512, x, y, z);
     }

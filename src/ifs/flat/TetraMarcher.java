@@ -381,7 +381,9 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
         return determinant*1/6.0f;
     }
 
-    public double getSurfaceArea(Triangle t){ //TODO use cross product instead -- //http://darrenirvine.blogspot.com/2011/06/area-of-triangle-given-coordinates.html
+    public double getSurfaceArea(Triangle t){
+        //TODO use cross product instead -- //http://darrenirvine.blogspot.com/2011/06/area-of-triangle-given-coordinates.html
+        // http://math.stackexchange.com/questions/128991/how-to-calculate-area-of-3d-triangle
         double a = distance3d(t.p[0].x, t.p[0].y, t.p[0].z, t.p[1].x, t.p[1].y, t.p[1].z);
         double b = distance3d(t.p[1].x, t.p[1].y, t.p[1].z, t.p[2].x, t.p[2].y, t.p[2].z);
         double c = distance3d(t.p[2].x, t.p[2].y, t.p[2].z, t.p[0].x, t.p[0].y, t.p[0].z);
@@ -397,4 +399,15 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
         return Math.sqrt(s*(s-a)*(s-b)*(s-c));
     }
 
+    double dot_product(double x0, double y0, double z0, double x1, double y1, double z1){
+        return x0*x1 + y0*y1 + z0*z1;
+    }
+
+    xyz cross_product(double x0, double y0, double z0, double x1, double y1, double z1){
+        xyz res = new xyz();
+        res.x = y0*z1 - z0*y1;
+        res.y = z0*x1 - x0*z1;
+        res.z = x0*y1 - y0*x1;
+        return res;
+    }
 }
