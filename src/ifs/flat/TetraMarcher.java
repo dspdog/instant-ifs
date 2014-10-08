@@ -296,6 +296,8 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
         return(ntri);
     }
 
+
+
     /*
        Linearly interpolate the position where an isosurface cuts
        an edge between two vertices, each with their own scalar value
@@ -364,6 +366,20 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
     }
 
+    public double getSurfaceArea(Triangle t){ //TODO use vector math instead 
+        double a = distance3d(t.p[0].x, t.p[0].y, t.p[0].z, t.p[1].x, t.p[1].y, t.p[1].z);
+        double b = distance3d(t.p[1].x, t.p[1].y, t.p[1].z, t.p[2].x, t.p[2].y, t.p[2].z);
+        double c = distance3d(t.p[2].x, t.p[2].y, t.p[2].z, t.p[0].x, t.p[0].y, t.p[0].z);
+        return surfaceArea(a,b,c);
+    }
 
+    private double distance3d(double X1, double Y1, double Z1, double X2, double Y2, double Z2){
+        return Math.sqrt((X2 - X1) * (X2 - X1) + (Y2 - Y1) * (Y2 - Y1) + (Z2 - Z1)*(Z2 - Z1));
+    }
+
+    double surfaceArea(double a, double b, double c){
+        double s = (a+b+c)/2;
+        return Math.sqrt(s*(s-a)*(s-b)*(s-c));
+    }
 
 }
