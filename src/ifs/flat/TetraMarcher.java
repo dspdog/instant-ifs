@@ -366,7 +366,22 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
     }
 
-    public double getSurfaceArea(Triangle t){ //TODO use vector math instead 
+    public double tetraVolume(Triangle base, xyz pinnacle){ //http://www.had2know.com/academics/tetrahedron-volume-4-vertices.html
+        double a,b,c,
+               d,e,f,
+               g,h,i,
+               p,q,r;
+        a=base.p[0].x;b=base.p[0].y;c=base.p[0].z;
+        d=base.p[1].x;e=base.p[1].y;f=base.p[1].z;
+        g=base.p[1].x;h=base.p[1].y;i=base.p[1].z;
+        p=pinnacle.x;q=pinnacle.y;r= pinnacle.z;
+
+        double determinant = (a-p) * ((e-q)*(i-r) - (h-q)*(f-r)) - (d-p) * ((i-r)*(b-q)-(c-r)*(h-q)) + (g-p) * ((b-q)*(f-r)-(e-q)*(c-r));
+
+        return determinant*1/6.0f;
+    }
+
+    public double getSurfaceArea(Triangle t){ //TODO use cross product instead -- //http://darrenirvine.blogspot.com/2011/06/area-of-triangle-given-coordinates.html
         double a = distance3d(t.p[0].x, t.p[0].y, t.p[0].z, t.p[1].x, t.p[1].y, t.p[1].z);
         double b = distance3d(t.p[1].x, t.p[1].y, t.p[1].z, t.p[2].x, t.p[2].y, t.p[2].z);
         double c = distance3d(t.p[2].x, t.p[2].y, t.p[2].z, t.p[0].x, t.p[0].y, t.p[0].z);
