@@ -29,67 +29,6 @@ public final class ShapeAnalyzer extends Kernel{
         int y = getGlobalId(1);
     }
 
-    public double distToLineByIndex(double x, double y, double z, int lineIndex){
-        float X1 = getX1(lineIndex);
-        float Y1 = getY1(lineIndex);
-        float Z1 = getZ1(lineIndex);
-
-        float X2 = getX2(lineIndex);
-        float Y2 = getY2(lineIndex);
-        float Z2 = getZ2(lineIndex);
-
-        return dist_Point_to_Segment(x,y,z,X1,Y1,Z1,X2,Y2,Z2);
-    }
-
-
-    double dot_product(double x0, double y0, double z0, double x1, double y1, double z1){
-        return x0*x1 + y0*y1 + z0*z1;
-    }
-
-
-    // dist_Point_to_Segment(): get the distance of a point to a segment
-    //     Input:  a Point P and a Segment S (in any dimension)
-    //     Return: the shortest distance from P to S
-
-   double dist_Point_to_Segment( double px, double py, double pz, double s0x, double s0y, double s0z, double s1x, double s1y, double s1z)
-    {   //P --> px, etc
-        //S --> s0x, s1x
-        //Vector v = S.P1 - S.P0;
-        double vx = s1x - s0x;
-        double vy = s1y - s0y;
-        double vz = s1z - s0z;
-
-        //Vector w = P - S.P0;
-        double wx = px - s0x;
-        double wy = py - s0y;
-        double wz = pz - s0z;
-
-
-        double c1 = dot_product(wx, wy, wz, vx, vy, vz);
-        if ( c1 <= 0 )
-            return distance3d(px,py,pz, s0x,s0y,s0z);
-
-        double c2 = dot_product(vx, vy, vz, vx, vy, vz);
-        if ( c2 <= c1 )
-            return distance3d(px, py, pz, s1x, s1y, s1z);
-
-        double b = c1 / c2;
-
-        //Point Pb = S.P0 + b * v;
-        double pbx = s0x + b*vx;
-        double pby = s0y + b*vy;
-        double pbz = s0z + b*vz;
-
-        return distance3d(px, py, pz, pbx, pby, pbz);
-    }
-
-    public double potentialFunction(double x, double y, double z){
-        return distance3d(512, 512, 512, x, y, z);
-    }
-
-    private double distance3d(double X1, double Y1, double Z1, double X2, double Y2, double Z2){
-        return sqrt((X2-X1)*(X2-X1)+(Y2-Y1)*(Y2-Y1)+(Z2-Z1)*(Z2-Z1));
-    }
 
     public void updateGeometry(){
         this.put(lineXY1).put(lineZS1).put(lineDI)

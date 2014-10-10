@@ -152,7 +152,7 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
         return new Triangle[12];
     }
 
-    public GridCell generateCell(double x, double y, double z, double size, ShapeAnalyzer sa){
+    public GridCell generateCell(double x, double y, double z, double size, RenderBuffer sa){
         GridCell thisCell = new GridCell();
         thisCell.p[0] = new xyz();
         thisCell.p[1] = new xyz();
