@@ -189,8 +189,9 @@ final class ifsys extends JPanel
         double inc = 4;
         int minX=1024, maxX=0, minY=1024, maxY=0, minZ=1024, maxZ=0;
 
-        //TODO better version -- find rough version of subcubes -- apply "expand" operation to cover stuff missed
         long startTime = System.currentTimeMillis();
+
+        //TODO better version -- find rough version of subcubes -- apply "expand" operation to cover stuff missed
 
         for(x=0; x<1024; x+=inc){
             //System.out.println("estimating obj bounds"+ (int)(100f*x/1024f) + "% ");
@@ -210,7 +211,7 @@ final class ifsys extends JPanel
 
         System.out.println("range " + (maxX-minX));
 
-        inc = 2;
+        inc = 4;
         for(x=minX; x<maxX; x+=inc){
             System.out.println("potential "+ (int)(100f*(x-minX)/(maxX-minX)) + "% " + numPolys + " triangles");
             for(y=minY; y<maxY; y+=inc){

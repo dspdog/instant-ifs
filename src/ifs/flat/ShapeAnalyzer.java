@@ -35,6 +35,8 @@ public final class ShapeAnalyzer extends Kernel{
             .put(lineXY2).put(lineZS2);
     }
 
+
+
     private int getX1(int index){
         return lineXY1[index]>>16;
     }
