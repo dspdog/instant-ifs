@@ -177,7 +177,6 @@ final class ifsys extends JPanel
     }
 
     public void getPotentials(){
-        ShapeAnalyzer sa = new ShapeAnalyzer();
         TetraMarcher tm = new TetraMarcher();
 
         TetraMarcher.Triangle[] tri = tm.generateTriangleArray();
@@ -197,7 +196,7 @@ final class ifsys extends JPanel
             //System.out.println("estimating obj bounds"+ (int)(100f*x/1024f) + "% ");
             for(y=0; y<1024; y+=inc){
                 for(z=0; z<1024; z+=inc){
-                    if(renderBuffer.potentialFunction(x,y,z)<=iso){
+                    if(shapeAnalyzer.potentialFunction(x,y,z)<=iso){
                         minZ=(int)Math.max(Math.min(z-1, minZ),0);
                         maxZ=(int)Math.min(Math.max(z + 1, maxZ), 1024);
                         minY=(int)Math.max(Math.min(y-1, minY),0);
@@ -217,12 +216,14 @@ final class ifsys extends JPanel
             for(y=minY; y<maxY; y+=inc){
                 for(z=minZ; z<maxZ; z+=inc){
                     numPolys += tm.PolygoniseGrid(
-                                tm.generateCell(x,y,z,inc, renderBuffer),
+                                tm.generateCell(x,y,z,inc, shapeAnalyzer),
                                                 iso,
                                                 tri);
                 }
             }
         }
+
+        //TODO fix winding here
 
         System.out.println(tm.triangleList.size() + " TRIS");
 
