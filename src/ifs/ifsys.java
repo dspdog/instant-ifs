@@ -176,109 +176,6 @@ final class ifsys extends JPanel
         theInternalFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
 
-    public void getPotentials(){
-        TetraMarcher tm = new TetraMarcher();
-
-        TetraMarcher.Triangle[] tri = tm.generateTriangleArray();
-
-        double x,y,z;
-        double iso = 1/64d; //make this smaller to make the tube thicker
-        long numPolys=0;
-
-        int inc = 4;
-
-        long startTime = System.currentTimeMillis();
-
-        boolean subvols[][][] = new boolean[(int)(1024/inc)][(int)(1024/inc)][(int)(1024/inc)];
-        boolean subvols_expanded[][][] = new boolean[(int)(1024/inc)][(int)(1024/inc)][(int)(1024/inc)];
-        int totalBlocks = 0;
-        int blocksUsed = 0;
-        for(x=inc; x<1024-inc; x+=inc){
-            for(y=inc; y<1024-inc; y+=inc){
-                for(z=inc; z<1024-inc; z+=inc){
-                    subvols_expanded[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)] = false;
-                    if(shapeAnalyzer.potentialFunction(x,y,z)<=iso){
-                        subvols[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)] = false;
-                    }else{
-                        subvols[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)] = true;
-                        blocksUsed++;
-                    }
-                    totalBlocks++;
-                }
-            }
-        }
-
-        System.out.println("starting at " + blocksUsed + "/" + totalBlocks + "(" + (100.0f*blocksUsed/totalBlocks) + "%)");
-
-        //"expand" operation
-        for(x=inc; x<1024-inc; x+=inc){
-            for(y=inc; y<1024-inc; y+=inc){
-                for(z=inc; z<1024-inc; z+=inc){
-                    if(subvols[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)]){
-                        for(int _x=-1; _x<2; _x++){
-                            for(int _y=-1; _y<2; _y++){
-                                for(int _z=-1; _z<2; _z++){
-                                    subvols_expanded[(int)(x/inc)+_x][(int)(y/inc)+_y][(int)(z/inc)+_z] = true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        blocksUsed=0; totalBlocks=0;
-
-        //final count
-        for(x=inc; x<1024-inc; x+=inc){
-            for(y=inc; y<1024-inc; y+=inc){
-                for(z=inc; z<1024-inc; z+=inc){
-                    if(subvols_expanded[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)]){
-                        blocksUsed++;
-                    }
-                    totalBlocks++;
-                }
-            }
-        }
-
-        System.out.println("expanded to " + blocksUsed + "/" + totalBlocks + "(" + (100.0f*blocksUsed/totalBlocks) + "%)");
-
-        for(x=inc; x<1024-inc; x+=inc){
-            System.out.println("potential "+ (int)(100f*x/1024f) + "% " + numPolys + " triangles");
-            for(y=inc; y<1024-inc; y+=inc){
-                for(z=inc; z<1024-inc; z+=inc){
-                    if(subvols_expanded[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)]){
-
-                        int _inc = 2;
-                        for(int _x=(int)x; _x<x+inc; _x+=_inc){
-                            for(int _y=(int)y; _y<y+inc; _y+=_inc){
-                                for(int _z=(int)z; _z<z+inc; _z+=_inc){
-                                    numPolys += tm.PolygoniseGrid(
-                                            tm.generateCell(x,y,z,inc, shapeAnalyzer),
-                                            iso,
-                                            tri);
-                                }
-                            }
-                        }
-
-                    }
-                }
-            }
-        }
-
-        //TODO fix winding here
-
-        System.out.println(tm.triangleList.size() + " TRIS");
-
-        long buildTime = System.currentTimeMillis() - startTime;
-
-        tm.saveToBinarySTL(tm.triangleList.size());
-
-        long saveTime = (System.currentTimeMillis() - startTime)-buildTime;
-
-        System.out.println("done - built in " + buildTime/1000.0 + "s, saved in " + saveTime/1000.0 + "s");
-    }
-
     public void init() {
 
         frameNo=0;
@@ -1017,8 +914,8 @@ final class ifsys extends JPanel
 
         if(e.getKeyChar() == '6'){
             System.out.println("getting potentials!");
-
-            getPotentials();
+            TetraMarcher tm = new TetraMarcher();
+            tm.getPotentials(shapeAnalyzer);
         }
 
         if(e.getKeyChar() == '3'){
