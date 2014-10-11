@@ -185,7 +185,7 @@ final class ifsys extends JPanel
         double iso = 1/64d; //make this smaller to make the tube thicker
         long numPolys=0;
 
-        double inc = 4;
+        int inc = 4;
 
         long startTime = System.currentTimeMillis();
 
@@ -249,11 +249,10 @@ final class ifsys extends JPanel
                 for(z=inc; z<1024-inc; z+=inc){
                     if(subvols_expanded[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)]){
 
-                        int _inc = 1;
-                        int _x = (int)x; int _y = (int)y; int _z = (int)z;
-                        for(_x=(int)x; _x<x+inc; _x+=_inc){
-                            for(_y=(int)y; _y<y+inc; _y+=_inc){
-                                for(_z=(int)z; _z<z+inc; _z+=_inc){
+                        int _inc = 2;
+                        for(int _x=(int)x; _x<x+inc; _x+=_inc){
+                            for(int _y=(int)y; _y<y+inc; _y+=_inc){
+                                for(int _z=(int)z; _z<z+inc; _z+=_inc){
                                     numPolys += tm.PolygoniseGrid(
                                             tm.generateCell(x,y,z,inc, shapeAnalyzer),
                                             iso,
@@ -266,19 +265,6 @@ final class ifsys extends JPanel
                 }
             }
         }
-
-        /*inc = 4;
-        for(x=minX; x<maxX; x+=inc){
-            System.out.println("potential "+ (int)(100f*(x-minX)/(maxX-minX)) + "% " + numPolys + " triangles");
-            for(y=minY; y<maxY; y+=inc){
-                for(z=minZ; z<maxZ; z+=inc){
-                    numPolys += tm.PolygoniseGrid(
-                                tm.generateCell(x,y,z,inc, shapeAnalyzer),
-                                                iso,
-                                                tri);
-                }
-            }
-        }*/
 
         //TODO fix winding here
 

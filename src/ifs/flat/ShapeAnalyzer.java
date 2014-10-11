@@ -41,7 +41,7 @@ public final class ShapeAnalyzer extends Kernel{
 
     public double metaPotential(double x, double y, double z){
         double potential = 0;
-        for(int i=0; i<5; i++){
+        for(int i=0; i<64; i++){
             potential+=1.0/(distSqToLineByIndex(x, y, z, i));
         }
         return potential;
