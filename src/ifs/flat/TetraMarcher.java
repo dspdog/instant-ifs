@@ -350,7 +350,7 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
                     bb.clear();
 
                     triNo++;
-                    if(triNo%256==0){
+                    if(triNo%10240==0){
                         System.out.println("TRI "+triNo+"/"+totalTriangles + " saved - " + (int)(100.0*triNo/totalTriangles)+"%");
                     }
                 }
@@ -428,7 +428,7 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
         int blocksUsed = 0;
 
         for(z=big_inc; z<1024-big_inc; z+=big_inc){
-            System.out.println("rough scan " + z + "/1024");
+            if(z%10==0)System.out.println("rough scan " + z + "/1024");
             shapeAnalyzer.getAllPotentialsByZ(z,big_inc);
 
             for(x=big_inc; x<1024-big_inc; x+=big_inc){
@@ -472,7 +472,7 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
         System.out.println("expanded to " + blocksUsed + "/" + totalBlocks + "(" + (100.0f*blocksUsed/totalBlocks) + "%)");
 
         for(x=big_inc; x<1024-big_inc; x+=big_inc){
-            System.out.println("potential "+ (int)(100f*x/1024f) + "% " + numPolys + " triangles");
+            if(x%10==0)System.out.println("potential "+ (int)(100f*x/1024f) + "% " + numPolys + " triangles");
             for(y=big_inc; y<1024-big_inc; y+=big_inc){
                 for(z=big_inc; z<1024-big_inc; z+=big_inc){
                     if(subvols_expanded[(int)(x/big_inc)][(int)(y/big_inc)][(int)(z/big_inc)]){
