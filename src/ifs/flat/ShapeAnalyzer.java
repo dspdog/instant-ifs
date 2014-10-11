@@ -1,6 +1,7 @@
 package ifs.flat;
 
 import com.amd.aparapi.Kernel;
+import com.amd.aparapi.Range;
 
 public final class ShapeAnalyzer extends Kernel{
 
@@ -9,8 +10,11 @@ public final class ShapeAnalyzer extends Kernel{
     public final int lineXY2[];
     public final int lineZS2[];
     public final int lineDI[]; //distance, iterations
+    public final double linePot[];
+    final int NUM_LINES = 1024*1024;
 
-    final int NUM_LINES = 1024*1024/2;
+    double myX=0, myY=0, myZ=0;
+    int stepSize=1;
 
     public ShapeAnalyzer(){
 
@@ -19,6 +23,7 @@ public final class ShapeAnalyzer extends Kernel{
         lineXY2 = new int[NUM_LINES];
         lineZS2 = new int[NUM_LINES];
         lineDI = new int[NUM_LINES];
+        linePot = new double[NUM_LINES];
 
         this.setExecutionMode(Kernel.EXECUTION_MODE.GPU);
     }
@@ -27,22 +32,34 @@ public final class ShapeAnalyzer extends Kernel{
     public void run() {
         int x = getGlobalId(0);
         int y = getGlobalId(1);
+        linePot[x*stepSize+y*stepSize*1024] = metaPotential(x*stepSize, y*stepSize, myZ);
     }
 
+    public void getAllPotentialsByZ(double z, int big_inc){
+        this.setExplicit(true);
+
+        myZ = z;
+        stepSize = big_inc;
+
+        Range range = Range.create2D(1024/big_inc,1024/big_inc);
+
+        this.execute(range);
+        this.get(linePot);
+    }
 
     public void updateGeometry(){
         this.put(lineXY1).put(lineZS1).put(lineDI)
             .put(lineXY2).put(lineZS2);
     }
 
-
-
-
+    public double singlePotential(double x, double y, double z, int i){
+        return 1.0/(distSqToLineByIndex(x, y, z, i));
+    }
 
     public double metaPotential(double x, double y, double z){
         double potential = 0;
-        for(int i=0; i<64; i++){
-            potential+=1.0/(distSqToLineByIndex(x, y, z, i));
+        for(int i=0; i<256; i++){
+            potential+=singlePotential(x,y,z,i);
         }
         return potential;
     }
@@ -55,6 +72,8 @@ public final class ShapeAnalyzer extends Kernel{
         float X2 = getX2(lineIndex);
         float Y2 = getY2(lineIndex);
         float Z2 = getZ2(lineIndex);
+
+        if(X1==0)return 1000000d;
 
         return distSq_Point_to_Segment(x, y, z, X1, Y1, Z1, X2, Y2, Z2);
     }

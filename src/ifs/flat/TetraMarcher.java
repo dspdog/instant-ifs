@@ -418,40 +418,38 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
         double iso = 1/64d; //make this smaller to make the tube thicker
         long numPolys=0;
 
-        int inc = 4;
-
+        int big_inc = 4;
+        int small_inc = 4;
         long startTime = System.currentTimeMillis();
 
-        boolean subvols[][][] = new boolean[(int)(1024/inc)][(int)(1024/inc)][(int)(1024/inc)];
-        boolean subvols_expanded[][][] = new boolean[(int)(1024/inc)][(int)(1024/inc)][(int)(1024/inc)];
+        boolean subvols[][][]          = new boolean[1024/big_inc][1024/big_inc][1024/big_inc];
+        boolean subvols_expanded[][][] = new boolean[1024/big_inc][1024/big_inc][1024/big_inc];
         int totalBlocks = 0;
         int blocksUsed = 0;
-        for(x=inc; x<1024-inc; x+=inc){
-            for(y=inc; y<1024-inc; y+=inc){
-                for(z=inc; z<1024-inc; z+=inc){
-                    subvols_expanded[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)] = false;
-                    if(shapeAnalyzer.potentialFunction(x,y,z)<=iso){
-                        subvols[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)] = false;
-                    }else{
-                        subvols[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)] = true;
-                        blocksUsed++;
+
+        for(z=big_inc; z<1024-big_inc; z+=big_inc){
+            System.out.println("rough scan " + z + "/1024");
+            shapeAnalyzer.getAllPotentialsByZ(z,big_inc);
+
+            for(x=big_inc; x<1024-big_inc; x+=big_inc){
+                for(y=big_inc; y<1024-big_inc; y+=big_inc){
+                    if(shapeAnalyzer.linePot[(int)x+(int)y*1024]>iso){
+                        subvols[(int)(x/big_inc)][(int)(y/big_inc)][(int)(z/big_inc)] = true;
                     }
-                    totalBlocks++;
                 }
             }
+            totalBlocks++;
         }
 
-        System.out.println("starting at " + blocksUsed + "/" + totalBlocks + "(" + (100.0f*blocksUsed/totalBlocks) + "%)");
-
         //"expand" operation
-        for(x=inc; x<1024-inc; x+=inc){
-            for(y=inc; y<1024-inc; y+=inc){
-                for(z=inc; z<1024-inc; z+=inc){
-                    if(subvols[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)]){
+        for(x=big_inc; x<1024-big_inc; x+=big_inc){
+            for(y=big_inc; y<1024-big_inc; y+=big_inc){
+                for(z=big_inc; z<1024-big_inc; z+=big_inc){
+                    if(subvols[(int)(x/big_inc)][(int)(y/big_inc)][(int)(z/big_inc)]){
                         for(int _x=-1; _x<2; _x++){
                             for(int _y=-1; _y<2; _y++){
                                 for(int _z=-1; _z<2; _z++){
-                                    subvols_expanded[(int)(x/inc)+_x][(int)(y/inc)+_y][(int)(z/inc)+_z] = true;
+                                    subvols_expanded[(int)(x/big_inc)+_x][(int)(y/big_inc)+_y][(int)(z/big_inc)+_z] = true;
                                 }
                             }
                         }
@@ -460,13 +458,10 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
             }
         }
 
-        blocksUsed=0; totalBlocks=0;
-
-        //final count
-        for(x=inc; x<1024-inc; x+=inc){
-            for(y=inc; y<1024-inc; y+=inc){
-                for(z=inc; z<1024-inc; z+=inc){
-                    if(subvols_expanded[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)]){
+        for(x=big_inc; x<1024-big_inc; x+=big_inc){
+            for(y=big_inc; y<1024-big_inc; y+=big_inc){
+                for(z=big_inc; z<1024-big_inc; z+=big_inc){
+                    if(subvols_expanded[(int)(x/big_inc)][(int)(y/big_inc)][(int)(z/big_inc)]){
                         blocksUsed++;
                     }
                     totalBlocks++;
@@ -476,18 +471,17 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
         System.out.println("expanded to " + blocksUsed + "/" + totalBlocks + "(" + (100.0f*blocksUsed/totalBlocks) + "%)");
 
-        for(x=inc; x<1024-inc; x+=inc){
+        for(x=big_inc; x<1024-big_inc; x+=big_inc){
             System.out.println("potential "+ (int)(100f*x/1024f) + "% " + numPolys + " triangles");
-            for(y=inc; y<1024-inc; y+=inc){
-                for(z=inc; z<1024-inc; z+=inc){
-                    if(subvols_expanded[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)]){
+            for(y=big_inc; y<1024-big_inc; y+=big_inc){
+                for(z=big_inc; z<1024-big_inc; z+=big_inc){
+                    if(subvols_expanded[(int)(x/big_inc)][(int)(y/big_inc)][(int)(z/big_inc)]){
 
-                        int _inc = 2;
-                        for(int _x=(int)x; _x<x+inc; _x+=_inc){
-                            for(int _y=(int)y; _y<y+inc; _y+=_inc){
-                                for(int _z=(int)z; _z<z+inc; _z+=_inc){
+                        for(int _x=(int)x; _x<x+big_inc; _x+=small_inc){
+                            for(int _y=(int)y; _y<y+big_inc; _y+=small_inc){
+                                for(int _z=(int)z; _z<z+big_inc; _z+=small_inc){
                                     numPolys += this.PolygoniseGrid(
-                                            this.generateCell(x, y, z, inc, shapeAnalyzer),
+                                            this.generateCell(x, y, z, big_inc, shapeAnalyzer),
                                             iso,
                                             tri);
                                 }
