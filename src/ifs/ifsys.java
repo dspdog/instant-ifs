@@ -182,35 +182,92 @@ final class ifsys extends JPanel
         TetraMarcher.Triangle[] tri = tm.generateTriangleArray();
 
         double x,y,z;
-        double iso = 0.125d/8d;
+        double iso = 1/64d; //make this smaller to make the tube thicker
         long numPolys=0;
 
         double inc = 4;
-        int minX=1024, maxX=0, minY=1024, maxY=0, minZ=1024, maxZ=0;
 
         long startTime = System.currentTimeMillis();
 
-        //TODO better version -- find rough version of subcubes -- apply "expand" operation to cover stuff missed
-
-        for(x=0; x<1024; x+=inc){
-            //System.out.println("estimating obj bounds"+ (int)(100f*x/1024f) + "% ");
-            for(y=0; y<1024; y+=inc){
-                for(z=0; z<1024; z+=inc){
+        boolean subvols[][][] = new boolean[(int)(1024/inc)][(int)(1024/inc)][(int)(1024/inc)];
+        boolean subvols_expanded[][][] = new boolean[(int)(1024/inc)][(int)(1024/inc)][(int)(1024/inc)];
+        int totalBlocks = 0;
+        int blocksUsed = 0;
+        for(x=inc; x<1024-inc; x+=inc){
+            for(y=inc; y<1024-inc; y+=inc){
+                for(z=inc; z<1024-inc; z+=inc){
+                    subvols_expanded[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)] = false;
                     if(shapeAnalyzer.potentialFunction(x,y,z)<=iso){
-                        minZ=(int)Math.max(Math.min(z-1, minZ),0);
-                        maxZ=(int)Math.min(Math.max(z + 1, maxZ), 1024);
-                        minY=(int)Math.max(Math.min(y-1, minY),0);
-                        maxY=(int)Math.min(Math.max(y+1, maxY),1024);
-                        minX=(int)Math.max(Math.min(x-1, minX),0);
-                        maxX=(int)Math.min(Math.max(x+1, maxX),1024);
+                        subvols[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)] = false;
+                    }else{
+                        subvols[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)] = true;
+                        blocksUsed++;
+                    }
+                    totalBlocks++;
+                }
+            }
+        }
+
+        System.out.println("starting at " + blocksUsed + "/" + totalBlocks + "(" + (100.0f*blocksUsed/totalBlocks) + "%)");
+
+        //"expand" operation
+        for(x=inc; x<1024-inc; x+=inc){
+            for(y=inc; y<1024-inc; y+=inc){
+                for(z=inc; z<1024-inc; z+=inc){
+                    if(subvols[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)]){
+                        for(int _x=-1; _x<2; _x++){
+                            for(int _y=-1; _y<2; _y++){
+                                for(int _z=-1; _z<2; _z++){
+                                    subvols_expanded[(int)(x/inc)+_x][(int)(y/inc)+_y][(int)(z/inc)+_z] = true;
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
 
-        System.out.println("range " + (maxX-minX));
+        blocksUsed=0; totalBlocks=0;
 
-        inc = 4;
+        //final count
+        for(x=inc; x<1024-inc; x+=inc){
+            for(y=inc; y<1024-inc; y+=inc){
+                for(z=inc; z<1024-inc; z+=inc){
+                    if(subvols_expanded[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)]){
+                        blocksUsed++;
+                    }
+                    totalBlocks++;
+                }
+            }
+        }
+
+        System.out.println("expanded to " + blocksUsed + "/" + totalBlocks + "(" + (100.0f*blocksUsed/totalBlocks) + "%)");
+
+        for(x=inc; x<1024-inc; x+=inc){
+            System.out.println("potential "+ (int)(100f*x/1024f) + "% " + numPolys + " triangles");
+            for(y=inc; y<1024-inc; y+=inc){
+                for(z=inc; z<1024-inc; z+=inc){
+                    if(subvols_expanded[(int)(x/inc)][(int)(y/inc)][(int)(z/inc)]){
+
+                        int _inc = 1;
+                        int _x = (int)x; int _y = (int)y; int _z = (int)z;
+                        for(_x=(int)x; _x<x+inc; _x+=_inc){
+                            for(_y=(int)y; _y<y+inc; _y+=_inc){
+                                for(_z=(int)z; _z<z+inc; _z+=_inc){
+                                    numPolys += tm.PolygoniseGrid(
+                                            tm.generateCell(x,y,z,inc, shapeAnalyzer),
+                                            iso,
+                                            tri);
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+
+        /*inc = 4;
         for(x=minX; x<maxX; x+=inc){
             System.out.println("potential "+ (int)(100f*(x-minX)/(maxX-minX)) + "% " + numPolys + " triangles");
             for(y=minY; y<maxY; y+=inc){
@@ -221,7 +278,7 @@ final class ifsys extends JPanel
                                                 tri);
                 }
             }
-        }
+        }*/
 
         //TODO fix winding here
 
