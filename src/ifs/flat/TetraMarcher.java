@@ -422,41 +422,31 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
         double maxDist = 8;
         double x,y,z;
         double iso = 1/(maxDist*maxDist); //make this smaller to make the tube thicker
-        double fariso = 1/(maxDist*maxDist*2.25);
+
         long numPolys=0;
 
-        int big_inc = 4;
+        int big_inc = 2;
 
         long startTime = System.currentTimeMillis();
 
-
-        double[] linePot1 = new double[1024*1024];
-        double[] linePot2 = new double[1024*1024];
+        double[] oldLinePot;
 
         shapeAnalyzer.updateGeometry();
 
         for(z=big_inc; z<1024-big_inc; z+=big_inc){
 
-
-            if(z%10==0)System.out.println("rough scan " + z + "/1024");
-
+            if(z%10==0)System.out.println("scanning " + z + "/1024");
 
             shapeAnalyzer.getAllPotentialsByZ(z,big_inc, (int)maxDist);
-            for(int i=0; i<1024*1024;i++){
-                linePot1[i]=shapeAnalyzer.linePot[i];
-            }
+            oldLinePot = shapeAnalyzer.linePot.clone();
             shapeAnalyzer.getAllPotentialsByZ(z+big_inc,big_inc, (int)maxDist);
-            for(int i=0; i<1024*1024;i++){
-                linePot2[i]=shapeAnalyzer.linePot[i];
-            }
-
 
             for(x=big_inc; x<1024-big_inc; x+=big_inc){
                 for(y=big_inc; y<1024-big_inc; y+=big_inc){
 
                     if(shapeAnalyzer.linePot[(int)x+(int)y*1024]>iso*iso){
                         numPolys += this.PolygoniseGrid(
-                                this.generateCell(x, y, z, big_inc, linePot1, linePot2),
+                                this.generateCell(x, y, z, big_inc, oldLinePot, shapeAnalyzer.linePot),
                                 iso,
                                 tri);
                     }
