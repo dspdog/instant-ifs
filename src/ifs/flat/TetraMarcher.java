@@ -435,7 +435,7 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
         for(z=big_inc; z<1024-big_inc; z+=big_inc){
 
-            if(z%10==0)System.out.println("scanning " + z + "/1024");
+            if(z%10==0)System.out.println("scanning " + z + "/1024  Triangles: " + numPolys);
 
             shapeAnalyzer.getAllPotentialsByZ(z,big_inc, (int)maxDist);
             oldLinePot = shapeAnalyzer.linePot.clone();
