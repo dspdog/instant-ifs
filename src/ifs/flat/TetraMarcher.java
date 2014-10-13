@@ -152,7 +152,7 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
         return new Triangle[12];
     }
 
-    public GridCell generateCell(double x, double y, double z, double size, ShapeAnalyzer sa){
+    public GridCell generateCell(double x, double y, double z, double size, double[] linePot1, double[] linePot2){
         GridCell thisCell = new GridCell();
         thisCell.p[0] = new xyz();
         thisCell.p[1] = new xyz();
@@ -187,14 +187,19 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
         thisCell.p[7].y = y+size;
         thisCell.p[7].z = z+size;
 
-        thisCell.val[0] = sa.potentialFunction(x,y,z);
-        thisCell.val[1] = sa.potentialFunction(x+size,y,z);
-        thisCell.val[2] = sa.potentialFunction(x+size,y,z+size);
-        thisCell.val[3] = sa.potentialFunction(x,y,z+size);
-        thisCell.val[4] = sa.potentialFunction(x,y+size,z);
-        thisCell.val[5] = sa.potentialFunction(x+size,y+size,z);
-        thisCell.val[6] = sa.potentialFunction(x+size,y+size,z+size);
-        thisCell.val[7] = sa.potentialFunction(x,y+size,z+size);
+        int _x = (int)Math.min(1024-size,Math.max(x,size));
+        int _y = (int)Math.min(1024-size,Math.max(y,size));
+        int _z = (int)Math.min(1024-size,Math.max(z,size));
+
+        thisCell.val[0] = linePot1[_x+_y*1024];
+        thisCell.val[1] = linePot1[(_x+(int)size)+_y*1024];
+        thisCell.val[4] = linePot1[_x+(_y+(int)size)*1024];
+        thisCell.val[5] = linePot1[(_x+(int)size)+(_y+(int)size)*1024];
+
+        thisCell.val[3] = linePot2[_x+_y*1024];
+        thisCell.val[2] = linePot2[(_x+(int)size)+_y*1024];
+        thisCell.val[7] = linePot2[_x+(_y+(int)size)*1024];
+        thisCell.val[6] = linePot2[(_x+(int)size)+(_y+(int)size)*1024];
 
         return thisCell;
     }
@@ -417,92 +422,55 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
         double maxDist = 8;
         double x,y,z;
         double iso = 1/(maxDist*maxDist); //make this smaller to make the tube thicker
+        double fariso = 1/(maxDist*maxDist*2.25);
         long numPolys=0;
 
-        int big_inc = 2;
-        int small_inc = 2;
+        int big_inc = 4;
+
         long startTime = System.currentTimeMillis();
 
-        boolean subvols[][][]          = new boolean[1024/big_inc][1024/big_inc][1024/big_inc];
-        boolean subvols_expanded[][][] = new boolean[1024/big_inc][1024/big_inc][1024/big_inc];
-        int totalBlocks = 0;
-        int blocksUsed = 0;
+
+        double[] linePot1 = new double[1024*1024];
+        double[] linePot2 = new double[1024*1024];
 
         shapeAnalyzer.updateGeometry();
 
         for(z=big_inc; z<1024-big_inc; z+=big_inc){
+
+
             if(z%10==0)System.out.println("rough scan " + z + "/1024");
 
 
-
-
             shapeAnalyzer.getAllPotentialsByZ(z,big_inc, (int)maxDist);
+            for(int i=0; i<1024*1024;i++){
+                linePot1[i]=shapeAnalyzer.linePot[i];
+            }
+            shapeAnalyzer.getAllPotentialsByZ(z+big_inc,big_inc, (int)maxDist);
+            for(int i=0; i<1024*1024;i++){
+                linePot2[i]=shapeAnalyzer.linePot[i];
+            }
+
 
             for(x=big_inc; x<1024-big_inc; x+=big_inc){
                 for(y=big_inc; y<1024-big_inc; y+=big_inc){
-                    if(shapeAnalyzer.linePot[(int)x+(int)y*1024]>iso){
-                        subvols[(int)(x/big_inc)][(int)(y/big_inc)][(int)(z/big_inc)] = true;
+
+                    if(shapeAnalyzer.linePot[(int)x+(int)y*1024]>iso*iso){
+                        numPolys += this.PolygoniseGrid(
+                                this.generateCell(x, y, z, big_inc, linePot1, linePot2),
+                                iso,
+                                tri);
                     }
+
                 }
             }
-            totalBlocks++;
+
         }
 
-        //"expand" operation
-        for(x=big_inc; x<1024-big_inc; x+=big_inc){
-            for(y=big_inc; y<1024-big_inc; y+=big_inc){
-                for(z=big_inc; z<1024-big_inc; z+=big_inc){
-                    if(subvols[(int)(x/big_inc)][(int)(y/big_inc)][(int)(z/big_inc)]){
-                        for(int _x=-1; _x<2; _x++){
-                            for(int _y=-1; _y<2; _y++){
-                                for(int _z=-1; _z<2; _z++){
-                                    subvols_expanded[(int)(x/big_inc)+_x][(int)(y/big_inc)+_y][(int)(z/big_inc)+_z] = true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        for(x=big_inc; x<1024-big_inc; x+=big_inc){
-            for(y=big_inc; y<1024-big_inc; y+=big_inc){
-                for(z=big_inc; z<1024-big_inc; z+=big_inc){
-                    if(subvols_expanded[(int)(x/big_inc)][(int)(y/big_inc)][(int)(z/big_inc)]){
-                        blocksUsed++;
-                    }
-                    totalBlocks++;
-                }
-            }
-        }
-
-        System.out.println("expanded to " + blocksUsed + "/" + totalBlocks + "(" + (100.0f*blocksUsed/totalBlocks) + "%)");
-
-        for(x=big_inc; x<1024-big_inc; x+=big_inc){
-            if(x%10==0)System.out.println("potential "+ (int)(100f*x/1024f) + "% " + numPolys + " triangles");
-            for(y=big_inc; y<1024-big_inc; y+=big_inc){
-                for(z=big_inc; z<1024-big_inc; z+=big_inc){
-                    if(subvols_expanded[(int)(x/big_inc)][(int)(y/big_inc)][(int)(z/big_inc)]){
-
-                        for(int _x=(int)x; _x<x+big_inc; _x+=small_inc){
-                            for(int _y=(int)y; _y<y+big_inc; _y+=small_inc){
-                                for(int _z=(int)z; _z<z+big_inc; _z+=small_inc){
-                                    numPolys += this.PolygoniseGrid(
-                                            this.generateCell(x, y, z, big_inc, shapeAnalyzer),
-                                            iso,
-                                            tri);
-                                }
-                            }
-                        }
-
-                    }
-                }
-            }
-        }
+        System.out.println("scan time " + (System.currentTimeMillis() - startTime));
 
         //TODO fix winding here
 
-        System.out.println(this.triangleList.size() + " TRIS");
+        System.out.println(this.triangleList.size() + " TRIS " + numPolys);
 
         long buildTime = System.currentTimeMillis() - startTime;
 

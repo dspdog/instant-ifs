@@ -34,9 +34,16 @@ public final class ShapeAnalyzer extends Kernel{
 
     @Override
     public void run() {
-        int x = getGlobalId(0);
-        int y = getGlobalId(1);
-        linePot[x*stepSize+y*stepSize*1024] = metaPotential(x*stepSize, y*stepSize, myZ, cutoffDist);
+        int x = getGlobalId(0)*stepSize;
+        int y = getGlobalId(1)*stepSize;
+        double res = metaPotential(x, y, myZ, cutoffDist);
+
+        for(int _x=x; _x<x+stepSize;_x++){
+            for(int _y=y; _y<y+stepSize;_y++){
+                //if(_x>0 && _x<1024 && _y>0 && _y<1024)
+                linePot[_x+_y*1024] = res;
+            }
+        }
     }
 
     public void getAllPotentialsByZ(double z, int big_inc, int _maxDist){
