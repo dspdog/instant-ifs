@@ -425,7 +425,7 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
         long numPolys=0;
 
-        int big_inc = 2;
+        int big_inc = 4;
 
         long startTime = System.currentTimeMillis();
 
@@ -444,12 +444,12 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
             for(x=big_inc; x<1024-big_inc; x+=big_inc){
                 for(y=big_inc; y<1024-big_inc; y+=big_inc){
 
-                    if(shapeAnalyzer.linePot[(int)x+(int)y*1024]>iso*iso){
+                    //if(shapeAnalyzer.linePot[(int)x+(int)y*1024]>iso*iso){
                         numPolys += this.PolygoniseGrid(
                                 this.generateCell(x, y, z, big_inc, oldLinePot, shapeAnalyzer.linePot),
                                 iso,
                                 tri);
-                    }
+                    //}
 
                 }
             }

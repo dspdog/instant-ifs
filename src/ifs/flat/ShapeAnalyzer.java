@@ -88,8 +88,10 @@ public final class ShapeAnalyzer extends Kernel{
                     y2 = getY2(_i);
                     _min= min(y1,y2)-maxDist;
                     _max= max(y1,y2)+maxDist;
-                    if(_min<y && _max>y)
-                    potential=max(potential,singlePotential(x,y,z,x1,y1,z1,x2,y2,z2));
+                    if(_min<y && _max>y){
+                        potential+=singlePotential(x,y,z,x1,y1,z1,x2,y2,z2); //"meta balls" mode
+                        //potential=max(potential,singlePotential(x,y,z,x1,y1,z1,x2,y2,z2)); "tubes" mode
+                    }
                 }
             }
         }
