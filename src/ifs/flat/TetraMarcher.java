@@ -414,12 +414,13 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
     public void getPotentials(ShapeAnalyzer shapeAnalyzer){
         TetraMarcher.Triangle[] tri = this.generateTriangleArray();
 
+        double maxDist = 8;
         double x,y,z;
-        double iso = 1/64d; //make this smaller to make the tube thicker
+        double iso = 1/(maxDist*maxDist); //make this smaller to make the tube thicker
         long numPolys=0;
 
-        int big_inc = 4;
-        int small_inc = 4;
+        int big_inc = 2;
+        int small_inc = 2;
         long startTime = System.currentTimeMillis();
 
         boolean subvols[][][]          = new boolean[1024/big_inc][1024/big_inc][1024/big_inc];
@@ -427,9 +428,15 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
         int totalBlocks = 0;
         int blocksUsed = 0;
 
+        shapeAnalyzer.updateGeometry();
+
         for(z=big_inc; z<1024-big_inc; z+=big_inc){
             if(z%10==0)System.out.println("rough scan " + z + "/1024");
-            shapeAnalyzer.getAllPotentialsByZ(z,big_inc);
+
+
+
+
+            shapeAnalyzer.getAllPotentialsByZ(z,big_inc, (int)maxDist);
 
             for(x=big_inc; x<1024-big_inc; x+=big_inc){
                 for(y=big_inc; y<1024-big_inc; y+=big_inc){

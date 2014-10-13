@@ -10,14 +10,18 @@ public final class ShapeAnalyzer extends Kernel{
     public final int lineXY2[];
     public final int lineZS2[];
     public final int lineDI[]; //distance, iterations
+
+    int zListTotal=0;
+
     public final double linePot[];
     final int NUM_LINES = 1024*1024;
 
     double myX=0, myY=0, myZ=0;
     int stepSize=1;
+    int cutoffDist=0;
 
     public ShapeAnalyzer(){
-
+        zListTotal=0;
         lineXY1 = new int[NUM_LINES];
         lineZS1 = new int[NUM_LINES];
         lineXY2 = new int[NUM_LINES];
@@ -32,12 +36,13 @@ public final class ShapeAnalyzer extends Kernel{
     public void run() {
         int x = getGlobalId(0);
         int y = getGlobalId(1);
-        linePot[x*stepSize+y*stepSize*1024] = metaPotential(x*stepSize, y*stepSize, myZ);
+        linePot[x*stepSize+y*stepSize*1024] = metaPotential(x*stepSize, y*stepSize, myZ, cutoffDist);
     }
 
-    public void getAllPotentialsByZ(double z, int big_inc){
+    public void getAllPotentialsByZ(double z, int big_inc, int _maxDist){
         this.setExplicit(true);
 
+        cutoffDist=_maxDist;
         myZ = z;
         stepSize = big_inc;
 
@@ -52,30 +57,37 @@ public final class ShapeAnalyzer extends Kernel{
             .put(lineXY2).put(lineZS2);
     }
 
-    public double singlePotential(double x, double y, double z, int i){
-        return 1.0/(distSqToLineByIndex(x, y, z, i));
+    public double singlePotential(double x, double y, double z, double X1,double  Y1, double Z1, double X2,double  Y2, double Z2){
+        return 1.0/(distSq_Point_to_Segment(x, y, z, X1, Y1, Z1, X2, Y2, Z2));
     }
 
-    public double metaPotential(double x, double y, double z){
+    public double metaPotential(double x, double y, double z, int maxDist){
         double potential = 0;
-        for(int i=0; i<256; i++){
-            potential+=singlePotential(x,y,z,i);
+        int x1,x2,y1,y2,z1,z2, _min, _max;
+
+        for(int i=0; i<1024; i++){
+            int _i = i;
+            z1 = getZ1(_i);
+            z2 = getZ2(_i);
+            _min= min(z1,z2)-maxDist;
+            _max= max(z1,z2)+maxDist;
+            if(_min<z && _max>z){
+                x1 = getX1(_i);
+                x2 = getX2(_i);
+                _min= min(x1,x2)-maxDist;
+                _max= max(x1,x2)+maxDist;
+                if(_min<x && _max>x){
+                    y1 = getY1(_i);
+                    y2 = getY2(_i);
+                    _min= min(y1,y2)-maxDist;
+                    _max= max(y1,y2)+maxDist;
+                    if(_min<y && _max>y)
+                    potential=max(potential,singlePotential(x,y,z,x1,y1,z1,x2,y2,z2));
+                }
+            }
         }
+
         return potential;
-    }
-
-    public double distSqToLineByIndex(double x, double y, double z, int lineIndex){ //
-        float X1 = getX1(lineIndex);
-        float Y1 = getY1(lineIndex);
-        float Z1 = getZ1(lineIndex);
-
-        float X2 = getX2(lineIndex);
-        float Y2 = getY2(lineIndex);
-        float Z2 = getZ2(lineIndex);
-
-        if(X1==0)return 1000000d;
-
-        return distSq_Point_to_Segment(x, y, z, X1, Y1, Z1, X2, Y2, Z2);
     }
 
     double dot_product(double x0, double y0, double z0, double x1, double y1, double z1){
@@ -84,6 +96,7 @@ public final class ShapeAnalyzer extends Kernel{
 
     double distSq_Point_to_Segment(double px, double py, double pz, double s0x, double s0y, double s0z, double s1x, double s1y, double s1z)
     {
+        if(s0x<1)return 1000000d;
         // distSq_Point_to_Segment(): get the distance of a point to a segment
         //     Input:  a Point P and a Segment S (in any dimension)
         //     Return: the shortest distance from P to S
@@ -119,7 +132,7 @@ public final class ShapeAnalyzer extends Kernel{
     }
 
     public double potentialFunction(double x, double y, double z){
-        return metaPotential(x,y,z);
+        return metaPotential(x,y,z, cutoffDist);
         //return distance3d_squared(512, 512, 512, x, y, z);
     }
 
