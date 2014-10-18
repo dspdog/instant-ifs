@@ -64,13 +64,15 @@ public final class ShapeAnalyzer extends Kernel{
             .put(lineXY2).put(lineZS2);
     }
 
-    public double singlePotential(double x, double y, double z, double X1,double  Y1, double Z1, double X2,double  Y2, double Z2){
-        return 1.0/(distSq_Point_to_Segment(x, y, z, X1, Y1, Z1, X2, Y2, Z2));
+    public double singlePotential(double x, double y, double z, double X1,double  Y1, double Z1, double S1, double X2,double  Y2, double Z2, double S2){
+        return 1.0/(distSq_Point_to_Segment(x, y, z, X1, Y1, Z1, S1, X2, Y2, Z2, S2));
     }
 
     public double metaPotential(double x, double y, double z, int maxDist){
         double potential = 0;
         int x1,x2,y1,y2,z1,z2, _min, _max;
+
+        float s1, s2;
 
         for(int i=0; i<1024; i++){
             int _i = i;
@@ -89,8 +91,10 @@ public final class ShapeAnalyzer extends Kernel{
                     _min= min(y1,y2)-maxDist;
                     _max= max(y1,y2)+maxDist;
                     if(_min<y && _max>y){
-                        potential+=singlePotential(x,y,z,x1,y1,z1,x2,y2,z2); //"meta balls" mode
-                        //potential=max(potential,singlePotential(x,y,z,x1,y1,z1,x2,y2,z2)); "tubes" mode
+                        s1 = getS1(_i);
+                        s2 = getS2(_i);
+                        //potential+=singlePotential(x,y,z,x1,y1,z1,x2,y2,z2); //"meta balls" mode
+                        potential=max(potential,singlePotential(x,y,z,x1,y1,z1,s1,x2,y2,z2,s2)); //"tubes" mode
                     }
                 }
             }
@@ -103,7 +107,7 @@ public final class ShapeAnalyzer extends Kernel{
         return x0*x1 + y0*y1 + z0*z1;
     }
 
-    double distSq_Point_to_Segment(double px, double py, double pz, double s0x, double s0y, double s0z, double s1x, double s1y, double s1z)
+    double distSq_Point_to_Segment(double px, double py, double pz, double s0x, double s0y, double s0z, double s0s, double s1x, double s1y, double s1z, double s1s)//todo update name as this also scales
     {
         if(s0x<1)return 1000000d;
         // distSq_Point_to_Segment(): get the distance of a point to a segment
@@ -115,20 +119,20 @@ public final class ShapeAnalyzer extends Kernel{
         double vx = s1x - s0x;
         double vy = s1y - s0y;
         double vz = s1z - s0z;
+        double vs = s1s - s0s;
 
         //Vector w = P - S.P0;
         double wx = px - s0x;
         double wy = py - s0y;
         double wz = pz - s0z;
 
-
         double c1 = dot_product(wx, wy, wz, vx, vy, vz);
         if ( c1 <= 0 )
-            return distance3d_squared(px, py, pz, s0x, s0y, s0z);
+            return scaleDist(distance3d_squared(px, py, pz, s0x, s0y, s0z), s0s);
 
         double c2 = dot_product(vx, vy, vz, vx, vy, vz);
         if ( c2 <= c1 )
-            return distance3d_squared(px, py, pz, s1x, s1y, s1z);
+            return scaleDist(distance3d_squared(px, py, pz, s1x, s1y, s1z), s1s);
 
         double b = c1 / c2;
 
@@ -136,8 +140,13 @@ public final class ShapeAnalyzer extends Kernel{
         double pbx = s0x + b*vx;
         double pby = s0y + b*vy;
         double pbz = s0z + b*vz;
+        double pbs = s0s + b*vs;
 
-        return distance3d_squared(px, py, pz, pbx, pby, pbz);
+        return scaleDist(distance3d_squared(px, py, pz, pbx, pby, pbz), pbs);
+    }
+
+    double scaleDist(double dist, double scale){
+        return dist/scale;
     }
 
     private double distance3d_squared(double X1, double Y1, double Z1, double X2, double Y2, double Z2){ //SQUARED DISTANCE
@@ -164,15 +173,15 @@ public final class ShapeAnalyzer extends Kernel{
         return lineZS1[index]>>16;
     }
 
-    private int getS1(int index){
-        return lineZS1[index]&65535;
+    private float getS1(int index){
+        return (lineZS1[index]&65535)/256f;
     }
 
     private int getZ2(int index){
         return lineZS2[index]>>16;
     }
 
-    private int getS2(int index){
-        return lineZS2[index]&65535;
+    private float getS2(int index){
+        return (lineZS2[index]&65535)/256f;
     }
 }

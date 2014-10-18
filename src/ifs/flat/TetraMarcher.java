@@ -5,6 +5,8 @@ package ifs.flat;
 
 //java version of the algo from http://paulbourke.net/geometry/polygonise/
 
+import com.alee.utils.ArrayUtils;
+
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -30,13 +32,19 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
     public class Triangle{
         public xyz[] p;
-        public long[] edgeHash;
+        //public long[] edgeHash;
         public int[] vertHash;
         public boolean windingProcessed;
+        public boolean flipped;
+
+        public long id = 0;
+
         public Triangle(){
+            id = (int)(Math.random() * 100000) + System.currentTimeMillis();
+            flipped = false;
             windingProcessed=false;
             p = new xyz[3];
-            edgeHash = new long[3];
+            //edgeHash = new long[3];
             vertHash = new int[3];
             p[0] = new xyz();
             p[1] = new xyz();
@@ -58,13 +66,26 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
             return -1;
         }
 
-        public void flipWinding(){
-            //swap points 0 and 2
-            xyz ptTemp = new xyz();
-            ptTemp.setTo(p[0]);
-            p[0].setTo(p[2]);
-            p[2].setTo(ptTemp);
-        }
+        public void flipWinding(int i1, int i2){
+            //reverse pt order
+            if(!flipped && !windingProcessed){
+                xyz ptTemp1 = new xyz(); int hashTemp1 = 0;
+                xyz ptTemp2 = new xyz(); int hashTemp2 = 0;
+                xyz ptTemp3 = new xyz(); int hashTemp3 = 0;
+                ptTemp1.setTo(p[0]); hashTemp1=vertHash[0];
+                ptTemp2.setTo(p[1]); hashTemp2=vertHash[1];
+                ptTemp3.setTo(p[2]); hashTemp3=vertHash[2];
+
+                vertHash[0] = hashTemp3;
+                vertHash[1] = hashTemp2;
+                vertHash[2] = hashTemp1;
+                p[0].setTo(ptTemp3);
+                p[1].setTo(ptTemp2);
+                p[2].setTo(ptTemp1);
+
+                flipped=true;
+            }
+         }
     }
 
     public class GridCell{
@@ -379,6 +400,7 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
             bb.putInt(totalTriangles); // Number of triangles (UINT32)
             int triNo=0;
             for(Triangle tri : triangleList){
+                //if(!tri.flipped)
                 if(triNo<totalTriangles){
                     bb.putFloat(0).putFloat(0).putFloat(0); //TODO normals?
                     bb.putFloat((float)tri.p[0].x).putFloat((float)tri.p[0].y).putFloat((float) tri.p[0].z);
@@ -404,36 +426,62 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
         }
 
     }
-
-    void fixWinding(){
+    long trisProcessed=0;
+    long trisFlipped=0;
+    long trisRemoved=0;
+    void fixWinding(){ //TODO this doesnt work well...
         System.out.println("FIX WINDING...");
         //create list of all triangle edges, removing duplicates
+        trisProcessed=0;
+        trisFlipped=0;
+        trisRemoved=0;
         for(int triIndex=0; triIndex<triangleList.size(); triIndex++){
             Triangle tri = triangleList.get(triIndex);
+
+            tri.flipped=false;
+            tri.windingProcessed=false;
+
+            boolean badTri = false;
+
             for(int v=0;v<3;v++){
                 xyz thisPt = tri.p[v];
                 xyz nextPt = tri.p[(v+1)%3];
-                tri.edgeHash[v] = edgehash(thisPt.x, thisPt.y, thisPt.z, nextPt.x, nextPt.y, nextPt.z);
                 tri.vertHash[v] = vectorhash(thisPt.x, thisPt.y, thisPt.z);
-                addEdge(tri.edgeHash[v], triIndex);
+                tri.vertHash[(v+1)%3] = vectorhash(nextPt.x, nextPt.y, nextPt.z);
+                if(tri.vertHash[v] == tri.vertHash[(v+1)%3]){
+                    badTri=true;
+                }
+            }
+
+            if(badTri){
+                triangleList.remove(triIndex);
+                triIndex--;
+                trisRemoved++;
+            }else{
+                for(int v=0;v<3;v++){
+                    xyz thisPt = tri.p[v];
+                    xyz nextPt = tri.p[(v+1)%3];
+                    addEdge(edgehash(thisPt.x, thisPt.y, thisPt.z, nextPt.x, nextPt.y, nextPt.z), triIndex);
+                }
             }
         }
 
         System.out.println("PROCESSING...");
         trisProcessed=0;
-        processTriangle(triangleList.get(50));
+        processTriangle(triangleList.get((int)(Math.random() * triangleList.size())));
+        System.out.println("tris processed " + trisProcessed + "/" + triangleList.size() + " flipped " + trisFlipped + " removed " + trisRemoved);
     }
 
-    long trisProcessed=0;
+
     void processTriangle(Triangle host){
         //given some "host" triangle:
 
         //mark it as processed
         host.windingProcessed=true;
         trisProcessed++;
-        if(trisProcessed%1000==0){
-            System.out.println("tris processed " + trisProcessed + "/" + triangleList.size());
-        }
+        //if(trisProcessed%1000==0){
+           // System.out.println("tris processed " + trisProcessed + "/" + triangleList.size() + " flipped " + trisFlipped);
+        //}
 
         //for each of the possible bordering triangles
         for(int v=0;v<3;v++){
@@ -451,33 +499,44 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
     }
 
     void triangleFlip(Triangle tri, Triangle host){
-        if(!tri.windingProcessed){
+        if(!tri.windingProcessed && tri.id != host.id){
             //--flip them if they disagree with "host"
 
-            if(AWoundLikeB(tri, host)){
-                tri.flipWinding();
-            }
+            windingAgree(tri, host);
 
             //repeat this function with them as hosts
             processTriangle(tri);
         }
     }
 
-    boolean AWoundLikeB(Triangle A, Triangle B){
+    void windingAgree(Triangle tri, Triangle host){
         int sharedPtA = -1;
         int sharedPtB = -1;
+        int sharedPtAI = -1;
+        int sharedPtBI = -1;
 
         for(int v = 0; v<3; v++){
-            if(A.vertHash[v] == B.vertHash[0] || A.vertHash[v] == B.vertHash[1] || A.vertHash[v] == B.vertHash[2]){
+            if(tri.vertHash[v] == host.vertHash[0] || tri.vertHash[v] == host.vertHash[1] || tri.vertHash[v] == host.vertHash[2]){
                 if(sharedPtA==-1){
-                    sharedPtA = A.vertHash[v];
+                    sharedPtA = tri.vertHash[v];
+                    sharedPtAI=v;
                 }else{
-                    sharedPtB = A.vertHash[v];
+                    sharedPtB = tri.vertHash[v];
+                    sharedPtBI=v;
                 }
             }
         }
 
-        return A.hashesInOrder(sharedPtA, sharedPtB) == B.hashesInOrder(sharedPtA, sharedPtB);
+        if(sharedPtA!=-1 && sharedPtB!=-1){
+            boolean AWoundLikeB = (tri.hashesInOrder(sharedPtA, sharedPtB) == host.hashesInOrder(sharedPtA, sharedPtB));
+
+            if(AWoundLikeB){
+                tri.flipWinding(sharedPtAI, sharedPtBI);
+                trisFlipped++;
+            }
+        }
+
+
     }
 
     void addEdge(long edgeHash, int triIndex){
@@ -498,6 +557,10 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
         int v1 = vectorhash(x1,y1,z1);
         int v2 = vectorhash(x2,y2,z2);
 
+        if(v1 == v2){
+            return -1;
+        }
+
         if(v1<v2){
             return v1<<32 + v2;
         }else{
@@ -507,9 +570,9 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
     private int vectorhash (double x, double y, double z) //via http://forum.devmaster.net/t/removal-of-duplicate-vertices/11550/2
     {
-        int ix = (int)(x*1000000f);
-        int iy = (int)(y*1000000f);
-        int iz = (int)(z*1000000f);
+        int ix = (int)((x-512f)*2000f);
+        int iy = (int)((y-512f)*2000f);
+        int iz = (int)((z-512f)*2000f);
 
         int f = (ix+iy*11-(iz*17))&0x7fffffff;     // avoid problems with +-0
         return (f>>22)^(f>>12)^(f);
@@ -563,7 +626,7 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
     public void getPotentials(ShapeAnalyzer shapeAnalyzer){
         TetraMarcher.Triangle[] tri = this.generateTriangleArray();
 
-        double maxDist = 8;
+        double maxDist = 16;
         double x,y,z;
         double iso = 1/(maxDist*maxDist); //make this smaller to make the tube thicker
 
@@ -602,13 +665,12 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
         System.out.println("scan time " + (System.currentTimeMillis() - startTime));
 
-        //TODO fix winding here
-
         System.out.println(this.triangleList.size() + " TRIS " + numPolys);
 
         long buildTime = System.currentTimeMillis() - startTime;
 
-        this.fixWinding();
+        //this.fixWinding();
+
         this.saveToBinarySTL(this.triangleList.size());
 
         long saveTime = (System.currentTimeMillis() - startTime)-buildTime;
