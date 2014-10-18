@@ -25,13 +25,21 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
     public class Triangle{
         public xyz[] p;
+        public long[] edgeHash;
+        public int[] vertHash;
         public boolean windingProcessed;
         public Triangle(){
             windingProcessed=false;
             p = new xyz[3];
+            edgeHash = new long[3];
+            vertHash = new int[3];
             p[0] = new xyz();
             p[1] = new xyz();
             p[2] = new xyz();
+        }
+
+        public int vertHashOrder(int hash1, int hash2){
+            int ok
         }
     }
 
@@ -379,8 +387,9 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
             for(int v=0;v<3;v++){
                 xyz thisPt = tri.p[v];
                 xyz nextPt = tri.p[(v+1)%3];
-                long edgehash = edgehash(thisPt.x, thisPt.y, thisPt.z, nextPt.x, nextPt.y, nextPt.z);
-                addEdge(edgehash, triIndex);
+                tri.edgeHash[v] = edgehash(thisPt.x, thisPt.y, thisPt.z, nextPt.x, nextPt.y, nextPt.z);
+                tri.vertHash[v] = vectorhash(thisPt.x, thisPt.y, thisPt.z);
+                addEdge(tri.edgeHash[v], triIndex);
             }
         }
 
@@ -422,10 +431,24 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
     }
 
     boolean AWoundLikeB(Triangle A, Triangle B){
-        return false; //TODO
+        int sharedPtA = -1;
+        int sharedPtB = -1;
+
+        for(int v = 0; v<3; v++){
+            if(A.vertHash[v] == B.vertHash[0] || A.vertHash[v] == B.vertHash[1] || A.vertHash[v] == B.vertHash[2]){
+                if(sharedPtA==-1){
+                    sharedPtA = A.vertHash[v];
+                }else{
+                    sharedPtB = A.vertHash[v];
+                }
+            }
+        }
+
+        return A.vertHashOrder(sharedPtA, sharedPtB) == B.vertHashOrder(sharedPtA, sharedPtB);
     }
 
     void flipWinding(Triangle tri){
+        int ok
         //TODO
     }
 
