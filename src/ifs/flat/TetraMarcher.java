@@ -21,6 +21,11 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
         public xyz(){
             x=0;y=0;z=0;
         }
+        public void setTo(xyz target){
+            x=target.x;
+            y=target.y;
+            z=target.z;
+        }
     }
 
     public class Triangle{
@@ -38,8 +43,27 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
             p[2] = new xyz();
         }
 
-        public int vertHashOrder(int hash1, int hash2){
-            int ok
+        public boolean hashesInOrder(int hash1, int hash2){ //AKA "hash1AppearsBeforeHash2"
+            int a = getHashIndex(hash1);
+            int b = getHashIndex(hash2);
+            return ((b-a+3)%3)==1;
+        }
+
+        public int getHashIndex(int hash){
+            for(int i=0; i<3; i++){
+                if(vertHash[i]==hash){
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        public void flipWinding(){
+            //swap points 0 and 2
+            xyz ptTemp = new xyz();
+            ptTemp.setTo(p[0]);
+            p[0].setTo(p[2]);
+            p[2].setTo(ptTemp);
         }
     }
 
@@ -340,6 +364,7 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     public void saveToBinarySTL(int totalTriangles){
+
         Date startDate = Calendar.getInstance().getTime();
         String timeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate)+ ".stl";
         //File logFile = new File(timeLog);
@@ -381,6 +406,7 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
     }
 
     void fixWinding(){
+        System.out.println("FIX WINDING...");
         //create list of all triangle edges, removing duplicates
         for(int triIndex=0; triIndex<triangleList.size(); triIndex++){
             Triangle tri = triangleList.get(triIndex);
@@ -393,14 +419,21 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
             }
         }
 
+        System.out.println("PROCESSING...");
+        trisProcessed=0;
         processTriangle(triangleList.get(50));
     }
 
+    long trisProcessed=0;
     void processTriangle(Triangle host){
         //given some "host" triangle:
 
         //mark it as processed
         host.windingProcessed=true;
+        trisProcessed++;
+        if(trisProcessed%1000==0){
+            System.out.println("tris processed " + trisProcessed + "/" + triangleList.size());
+        }
 
         //for each of the possible bordering triangles
         for(int v=0;v<3;v++){
@@ -422,7 +455,7 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
             //--flip them if they disagree with "host"
 
             if(AWoundLikeB(tri, host)){
-                flipWinding(tri);
+                tri.flipWinding();
             }
 
             //repeat this function with them as hosts
@@ -444,12 +477,7 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
             }
         }
 
-        return A.vertHashOrder(sharedPtA, sharedPtB) == B.vertHashOrder(sharedPtA, sharedPtB);
-    }
-
-    void flipWinding(Triangle tri){
-        int ok
-        //TODO
+        return A.hashesInOrder(sharedPtA, sharedPtB) == B.hashesInOrder(sharedPtA, sharedPtB);
     }
 
     void addEdge(long edgeHash, int triIndex){
@@ -580,6 +608,7 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
         long buildTime = System.currentTimeMillis() - startTime;
 
+        this.fixWinding();
         this.saveToBinarySTL(this.triangleList.size());
 
         long saveTime = (System.currentTimeMillis() - startTime)-buildTime;
