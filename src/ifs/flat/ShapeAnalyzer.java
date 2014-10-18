@@ -16,7 +16,7 @@ public final class ShapeAnalyzer extends Kernel{
     public final double linePot[];
     final int NUM_LINES = 1024*1024;
 
-    double myX=0, myY=0, myZ=0;
+    double myZ=0;
     int stepSize=1;
     int cutoffDist=0;
 
@@ -99,6 +99,27 @@ public final class ShapeAnalyzer extends Kernel{
         return potential;
     }
 
+    long edgehash(float x1, float y1, float z1, float x2, float y2, float z2){ //returns a long hash value unique for each edge
+        int v1 = vectorhash(x1,y1,z1);
+        int v2 = vectorhash(x2,y2,z2);
+
+        if(v1<v2){
+            return v1<<32 + v2;
+        }else{
+            return v2<<32 + v1;
+        }
+    }
+
+    private int vectorhash (float x, float y, float z) //via http://forum.devmaster.net/t/removal-of-duplicate-vertices/11550/2
+    {
+        int ix = (int)(x*1000000f);
+        int iy = (int)(y*1000000f);
+        int iz = (int)(z*1000000f);
+
+        int f = (ix+iy*11-(iz*17))&0x7fffffff;     // avoid problems with +-0
+        return (f>>22)^(f>>12)^(f);
+    }
+
     double dot_product(double x0, double y0, double z0, double x1, double y1, double z1){
         return x0*x1 + y0*y1 + z0*z1;
     }
@@ -140,18 +161,9 @@ public final class ShapeAnalyzer extends Kernel{
         return distance3d_squared(px, py, pz, pbx, pby, pbz);
     }
 
-    public double potentialFunction(double x, double y, double z){
-        return metaPotential(x,y,z, cutoffDist);
-        //return distance3d_squared(512, 512, 512, x, y, z);
-    }
-
     private double distance3d_squared(double X1, double Y1, double Z1, double X2, double Y2, double Z2){ //SQUARED DISTANCE
-        return ((X2-X1)*(X2-X1)+(Y2-Y1)*(Y2-Y1)+(Z2-Z1)*(Z2-Z1));
+        return (X2-X1)*(X2-X1)+(Y2-Y1)*(Y2-Y1)+(Z2-Z1)*(Z2-Z1);
     }
-
-
-
-
 
     private int getX1(int index){
         return lineXY1[index]>>16;
