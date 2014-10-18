@@ -10,11 +10,11 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 
 public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/geometry/polygonise/
+
+    public Map<Long, Integer[]> theEdges = new HashMap<Long, Integer[]>();
 
     public class xyz {
         public double x,y,z;
@@ -25,7 +25,9 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
     public class Triangle{
         public xyz[] p;
+        public boolean windingProcessed;
         public Triangle(){
+            windingProcessed=false;
             p = new xyz[3];
             p[0] = new xyz();
             p[1] = new xyz();
@@ -47,6 +49,7 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
     public TetraMarcher(){
         triangleList = new ArrayList<Triangle>();
+        theEdges = new HashMap<Long, Integer[]>();
     }
 
     /*
@@ -363,12 +366,102 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
             ch.close();
 
             System.out.println("done! " + timeLog);
-
-
         }catch(Exception e){
             e.printStackTrace();
         }
 
+    }
+
+    void fixWinding(){
+        //create list of all triangle edges, removing duplicates
+        for(int triIndex=0; triIndex<triangleList.size(); triIndex++){
+            Triangle tri = triangleList.get(triIndex);
+            for(int v=0;v<3;v++){
+                xyz thisPt = tri.p[v];
+                xyz nextPt = tri.p[(v+1)%3];
+                long edgehash = edgehash(thisPt.x, thisPt.y, thisPt.z, nextPt.x, nextPt.y, nextPt.z);
+                addEdge(edgehash, triIndex);
+            }
+        }
+
+        processTriangle(triangleList.get(50));
+    }
+
+    void processTriangle(Triangle host){
+        //given some "host" triangle:
+
+        //mark it as processed
+        host.windingProcessed=true;
+
+        //for each of the possible bordering triangles
+        for(int v=0;v<3;v++){
+            xyz thisPt = host.p[v];
+            xyz nextPt = host.p[(v+1)%3];
+
+            long edgehash = edgehash(thisPt.x, thisPt.y, thisPt.z, nextPt.x, nextPt.y, nextPt.z);
+            Integer[] edgeTris = theEdges.get(edgehash);
+
+            triangleFlip(triangleList.get(edgeTris[0]), host);
+            if(edgeTris[1]!=-1){
+                triangleFlip(triangleList.get(edgeTris[1]), host);
+            }
+        }
+    }
+
+    void triangleFlip(Triangle tri, Triangle host){
+        if(!tri.windingProcessed){
+            //--flip them if they disagree with "host"
+
+            if(AWoundLikeB(tri, host)){
+                flipWinding(tri);
+            }
+
+            //repeat this function with them as hosts
+            processTriangle(tri);
+        }
+    }
+
+    boolean AWoundLikeB(Triangle A, Triangle B){
+        return false; //TODO
+    }
+
+    void flipWinding(Triangle tri){
+        //TODO
+    }
+
+    void addEdge(long edgeHash, int triIndex){
+        Integer[] theList = theEdges.get(edgeHash);
+
+        if (theList != null) {
+            theList[1]=triIndex;
+        } else {
+            theList = new Integer[2];
+            theList[0]=triIndex;
+            theList[1]=-1;
+        }
+
+        theEdges.put(edgeHash, theList);
+    }
+
+    long edgehash(double x1, double y1, double z1, double x2, double y2, double z2){ //returns a long hash value unique for each edge
+        int v1 = vectorhash(x1,y1,z1);
+        int v2 = vectorhash(x2,y2,z2);
+
+        if(v1<v2){
+            return v1<<32 + v2;
+        }else{
+            return v2<<32 + v1;
+        }
+    }
+
+    private int vectorhash (double x, double y, double z) //via http://forum.devmaster.net/t/removal-of-duplicate-vertices/11550/2
+    {
+        int ix = (int)(x*1000000f);
+        int iy = (int)(y*1000000f);
+        int iz = (int)(z*1000000f);
+
+        int f = (ix+iy*11-(iz*17))&0x7fffffff;     // avoid problems with +-0
+        return (f>>22)^(f>>12)^(f);
     }
 
     public double tetraVolume(Triangle base, xyz pinnacle){ //http://www.had2know.com/academics/tetrahedron-volume-4-vertices.html
