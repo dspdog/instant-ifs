@@ -7,7 +7,7 @@ package ifs.flat;
 
 import com.alee.utils.ArrayUtils;
 
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
@@ -384,10 +384,11 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    public void saveToBinarySTL(int totalTriangles){
+    public String saveToBinarySTL(int totalTriangles){
 
         Date startDate = Calendar.getInstance().getTime();
-        String timeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate)+ ".stl";
+        String timeLog1 = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate);
+        String timeLog = timeLog1+ ".stl";
         //File logFile = new File(timeLog);
 
         System.out.println("saving stl...");
@@ -425,7 +426,9 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
             e.printStackTrace();
         }
 
+        return timeLog1;
     }
+
     long trisProcessed=0;
     long trisFlipped=0;
     long trisRemoved=0;
@@ -671,11 +674,32 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
         //this.fixWinding();
 
-        this.saveToBinarySTL(this.triangleList.size());
+        String fileName = this.saveToBinarySTL(this.triangleList.size());
+
+
+        this.meshLabFix(fileName);
+
 
         long saveTime = (System.currentTimeMillis() - startTime)-buildTime;
 
         System.out.println("done - built in " + buildTime/1000.0 + "s, saved in " + saveTime/1000.0 + "s");
       
+    }
+
+    public void meshLabFix(String fileName){
+        try {
+            Runtime runTime = Runtime.getRuntime();
+            Process process = runTime.exec("C:\\Program Files\\VCG\\MeshLab\\meshlabserver.exe -s myscript.mlx -i "+fileName+".stl -o " + fileName + "B.stl");
+
+            InputStream inputStream = process.getInputStream();
+            InputStreamReader isr = new InputStreamReader(inputStream);
+            BufferedReader br = new BufferedReader(isr);
+            String line = null;
+            while ( (line = br.readLine()) != null)
+                System.out.println(line);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
