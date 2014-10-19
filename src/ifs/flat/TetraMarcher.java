@@ -678,26 +678,33 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
 
         this.meshLabFix(fileName);
-
+        System.out.println("SURFACE " + theSurfaceArea + " VOLUME " + theVolume);
 
         long saveTime = (System.currentTimeMillis() - startTime)-buildTime;
 
         System.out.println("done - built in " + buildTime/1000.0 + "s, saved in " + saveTime/1000.0 + "s");
       
     }
-
+    double theVolume=0;
+    double theSurfaceArea=0;
     public void meshLabFix(String fileName){
         try {
             Runtime runTime = Runtime.getRuntime();
-            Process process = runTime.exec("C:\\Program Files\\VCG\\MeshLab\\meshlabserver.exe -s myscript.mlx -i "+fileName+".stl -o " + fileName + "B.stl");
+            Process process = runTime.exec("C:\\Program Files\\VCG\\MeshLab\\meshlabserver.exe -s ./instant-ifs/myscript2.mlx -i "+fileName+".stl -o " + fileName + "B.stl");
 
             InputStream inputStream = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(inputStream);
             BufferedReader br = new BufferedReader(isr);
             String line = null;
-            while ( (line = br.readLine()) != null)
+            while ( (line = br.readLine()) != null){
                 System.out.println(line);
-
+                if(line.indexOf("Mesh Volume") != -1){
+                    theVolume = Double.parseDouble(line.substring(line.lastIndexOf(" "),line.length()));
+                }
+                if(line.indexOf("Mesh Surface") != -1){
+                    theSurfaceArea = Double.parseDouble(line.substring(line.lastIndexOf(" "),line.length()));
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,0 +1,5 @@
+<!DOCTYPE FilterScript>
+<FilterScript>
+ <filter name="Remove Duplicated Vertex"/>
+ <xmlfilter name="Compute Geometric Measures"/>
+</FilterScript>
