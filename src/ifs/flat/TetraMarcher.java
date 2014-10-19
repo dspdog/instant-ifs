@@ -678,7 +678,7 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
 
         this.meshLabFix(fileName);
-        System.out.println("SURFACE " + theSurfaceArea + " VOLUME " + theVolume);
+        System.out.println("SURFACE " + theSurfaceArea + " VOLUME " + theVolume + " RATIO s/v " + (theSurfaceArea/(theVolume+0.00001d)));
 
         long saveTime = (System.currentTimeMillis() - startTime)-buildTime;
 
@@ -687,6 +687,7 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
     }
     double theVolume=0;
     double theSurfaceArea=0;
+    boolean shapeInvalid = false;
     public void meshLabFix(String fileName){
         try {
             Runtime runTime = Runtime.getRuntime();
@@ -698,6 +699,9 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
             String line = null;
             while ( (line = br.readLine()) != null){
                 System.out.println(line);
+                if(line.indexOf("watertight") != -1){
+                    shapeInvalid=true;
+                }
                 if(line.indexOf("Mesh Volume") != -1){
                     theVolume = Double.parseDouble(line.substring(line.lastIndexOf(" "),line.length()));
                 }

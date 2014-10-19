@@ -1,5 +1,6 @@
 <!DOCTYPE FilterScript>
 <FilterScript>
  <filter name="Remove Duplicated Vertex"/>
+ <filter name="Re-Orient all faces coherentely"/>
  <xmlfilter name="Compute Geometric Measures"/>
 </FilterScript>
