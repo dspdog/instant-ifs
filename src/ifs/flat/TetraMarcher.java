@@ -397,12 +397,11 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
 
         try(FileChannel ch=new RandomAccessFile(timeLog , "rw").getChannel())
         {
-            ByteBuffer bb= ByteBuffer.allocate(10000).order(ByteOrder.LITTLE_ENDIAN);
+            ByteBuffer bb= ByteBuffer.allocate(1000000).order(ByteOrder.LITTLE_ENDIAN);
             bb.put(title); // Header (80 bytes)
             bb.putInt(totalTriangles); // Number of triangles (UINT32)
             int triNo=0;
             for(Triangle tri : triangleList){
-                //if(!tri.flipped)
                 if(triNo<totalTriangles){
                     bb.putFloat(0).putFloat(0).putFloat(0); //TODO normals?
                     bb.putFloat((float)tri.p[0].x).putFloat((float)tri.p[0].y).putFloat((float) tri.p[0].z);
@@ -415,7 +414,7 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
                     bb.clear();
 
                     triNo++;
-                    if(triNo%10240==0){
+                    if(triNo%102400==0){
                         System.out.println("TRI "+triNo+"/"+totalTriangles + " saved - " + (int)(100.0*triNo/totalTriangles)+"%");
                     }
                 }
@@ -432,86 +431,7 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
 
     long trisProcessed=0;
     long trisFlipped=0;
-    long trisRemoved=0;
-    void fixWinding(){ //TODO this doesnt work well...
-        System.out.println("FIX WINDING...");
-        //create list of all triangle edges, removing duplicates
-        trisProcessed=0;
-        trisFlipped=0;
-        trisRemoved=0;
-        for(int triIndex=0; triIndex<triangleList.size(); triIndex++){
-            Triangle tri = triangleList.get(triIndex);
 
-            tri.flipped=false;
-            tri.windingProcessed=false;
-
-            boolean badTri = false;
-
-            for(int v=0;v<3;v++){
-                xyz thisPt = tri.p[v];
-                xyz nextPt = tri.p[(v+1)%3];
-                tri.vertHash[v] = vectorhash(thisPt.x, thisPt.y, thisPt.z);
-                tri.vertHash[(v+1)%3] = vectorhash(nextPt.x, nextPt.y, nextPt.z);
-                if(tri.vertHash[v] == tri.vertHash[(v+1)%3]){
-                    badTri=true;
-                }
-            }
-
-            if(badTri){
-                triangleList.remove(triIndex);
-                triIndex--;
-                trisRemoved++;
-            }else{
-                for(int v=0;v<3;v++){
-                    xyz thisPt = tri.p[v];
-                    xyz nextPt = tri.p[(v+1)%3];
-                    addEdge(edgehash(thisPt.x, thisPt.y, thisPt.z, nextPt.x, nextPt.y, nextPt.z), triIndex);
-                }
-            }
-        }
-
-        System.out.println("PROCESSING...");
-        trisProcessed=0;
-        processTriangle(triangleList.get((int)(Math.random() * triangleList.size())));
-        System.out.println("tris processed " + trisProcessed + "/" + triangleList.size() + " flipped " + trisFlipped + " removed " + trisRemoved);
-    }
-
-
-    void processTriangle(Triangle host){
-        //given some "host" triangle:
-
-        //mark it as processed
-        host.windingProcessed=true;
-        trisProcessed++;
-        //if(trisProcessed%1000==0){
-           // System.out.println("tris processed " + trisProcessed + "/" + triangleList.size() + " flipped " + trisFlipped);
-        //}
-
-        //for each of the possible bordering triangles
-        for(int v=0;v<3;v++){
-            xyz thisPt = host.p[v];
-            xyz nextPt = host.p[(v+1)%3];
-
-            long edgehash = edgehash(thisPt.x, thisPt.y, thisPt.z, nextPt.x, nextPt.y, nextPt.z);
-            Integer[] edgeTris = theEdges.get(edgehash);
-
-            triangleFlip(triangleList.get(edgeTris[0]), host);
-            if(edgeTris[1]!=-1){
-                triangleFlip(triangleList.get(edgeTris[1]), host);
-            }
-        }
-    }
-
-    void triangleFlip(Triangle tri, Triangle host){
-        if(!tri.windingProcessed && tri.id != host.id){
-            //--flip them if they disagree with "host"
-
-            windingAgree(tri, host);
-
-            //repeat this function with them as hosts
-            processTriangle(tri);
-        }
-    }
 
     void windingAgree(Triangle tri, Triangle host){
         int sharedPtA = -1;
@@ -543,20 +463,6 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
 
     }
 
-    void addEdge(long edgeHash, int triIndex){
-        Integer[] theList = theEdges.get(edgeHash);
-
-        if (theList != null) {
-            theList[1]=triIndex;
-        } else {
-            theList = new Integer[2];
-            theList[0]=triIndex;
-            theList[1]=-1;
-        }
-
-        theEdges.put(edgeHash, theList);
-    }
-
     long edgehash(double x1, double y1, double z1, double x2, double y2, double z2){ //returns a long hash value unique for each edge
         int v1 = vectorhash(x1,y1,z1);
         int v2 = vectorhash(x2,y2,z2);
@@ -580,55 +486,6 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
 
         int f = (ix+iy*11-(iz*17))&0x7fffffff;     // avoid problems with +-0
         return (f>>22)^(f>>12)^(f);
-    }
-
-    public double tetraVolume(Triangle base, xyz pinnacle){ //http://www.had2know.com/academics/tetrahedron-volume-4-vertices.html
-        double a,b,c,
-               d,e,f,
-               g,h,i,
-               p,q,r;
-        a=base.p[0].x;b=base.p[0].y;c=base.p[0].z;
-        d=base.p[1].x;e=base.p[1].y;f=base.p[1].z;
-        g=base.p[1].x;h=base.p[1].y;i=base.p[1].z;
-        p=pinnacle.x;q=pinnacle.y;r= pinnacle.z;
-
-        double determinant = (a-p) * ((e-q)*(i-r) - (h-q)*(f-r)) - (d-p) * ((i-r)*(b-q)-(c-r)*(h-q)) + (g-p) * ((b-q)*(f-r)-(e-q)*(c-r));
-
-        return determinant*1/6.0f;
-    }
-
-    public double getSurfaceArea(Triangle t){
-        //TODO use cross product instead -- //http://darrenirvine.blogspot.com/2011/06/area-of-triangle-given-coordinates.html
-        // http://math.stackexchange.com/questions/128991/how-to-calculate-area-of-3d-triangle
-        double a = distance3d(t.p[0].x, t.p[0].y, t.p[0].z, t.p[1].x, t.p[1].y, t.p[1].z);
-        double b = distance3d(t.p[1].x, t.p[1].y, t.p[1].z, t.p[2].x, t.p[2].y, t.p[2].z);
-        double c = distance3d(t.p[2].x, t.p[2].y, t.p[2].z, t.p[0].x, t.p[0].y, t.p[0].z);
-        return surfaceArea(a,b,c);
-    }
-
-    private double distance3d(double X1, double Y1, double Z1, double X2, double Y2, double Z2){
-        return Math.sqrt((X2 - X1) * (X2 - X1) + (Y2 - Y1) * (Y2 - Y1) + (Z2 - Z1)*(Z2 - Z1));
-    }
-
-    double surfaceArea(double a, double b, double c){
-        double s = (a+b+c)/2;
-        return Math.sqrt(s*(s-a)*(s-b)*(s-c));
-    }
-
-    double dot_product(double x0, double y0, double z0, double x1, double y1, double z1){
-        return x0*x1 + y0*y1 + z0*z1;
-    }
-
-    xyz cross_product(double x0, double y0, double z0, double x1, double y1, double z1){
-        xyz res = new xyz();
-        res.x = y0*z1 - z0*y1;
-        res.y = z0*x1 - x0*z1;
-        res.z = x0*y1 - y0*x1;
-        return res;
-    }
-
-    public void setZList(){
-
     }
 
     public static void setArrayUsingList(List<Integer> integers, int[] array)

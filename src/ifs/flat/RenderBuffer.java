@@ -35,9 +35,6 @@ public final class RenderBuffer extends Kernel{
 
     public float camPitch, camYaw, camRoll, camScale, camCenterX, camCenterY, camCenterZ;
 
-    private static long time = System.currentTimeMillis();
-    private static long frameStartTime = System.currentTimeMillis();
-
     public long frameNum=0;
 
     public static int shutterSpeed = 50;
@@ -82,8 +79,8 @@ public final class RenderBuffer extends Kernel{
     }
 
     public void updateTime(long _time){
-        time = System.currentTimeMillis();
-        frameStartTime=_time;
+        long time = System.currentTimeMillis();
+        long frameStartTime = _time;
     }
 
     private boolean withinBounds(float x, float y, float x2, float y2){

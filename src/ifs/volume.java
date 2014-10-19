@@ -1,9 +1,5 @@
 package ifs;
 
-import com.alee.extended.colorchooser.WebGradientColorChooser;
-import ifs.flat.RenderBuffer;
-
-import java.awt.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -23,10 +19,6 @@ final class volume {
     long drawTime = 0;
     long totalSamples = 0;
 
-    float totalSamplesAlpha =0;
-
-    public long dataPoints = 0;
-
     float camRoll;
     float camYaw;
     float camPitch;
@@ -38,14 +30,8 @@ final class volume {
     float savedYaw;
     float savedRoll;
 
-    ifsPt centroid;
-    ifsPt highPt;
-    ifsPt highPtVolumetric;
-
     boolean antiAliasing;
     boolean usePerspective;
-
-    boolean useZBuffer = true;
 
     float zDarkenScaler;
 
@@ -93,8 +79,6 @@ final class volume {
 
         zDarkenScaler=512f;
 
-        colorPeriod = 512;
-
         reset();
     }
 
@@ -102,7 +86,6 @@ final class volume {
 
         drawTime=System.currentTimeMillis();
         totalSamples=1;
-        totalSamplesAlpha =1;
 
         if(renderMode == renderMode.VOLUMETRIC){
             mySurfaceArea=0;
@@ -121,12 +104,6 @@ final class volume {
         changed=false;
         doneClearing=true;
      }
-
-    public void contributeToAverageDistance(double dist){
-        accumilatedDistance+=dist;
-        averageDistanceSamples++;
-        averageDistance = accumilatedDistance/averageDistanceSamples;
-    }
 
     public float getScore(ScoreParams sp){
         float avD = (float)averageDistance;
@@ -147,13 +124,7 @@ final class volume {
         return (pt.x>1 && pt.y>1 && pt.z>1 && pt.x<width-1 && pt.y<height-1);
     }
 
-    public boolean croppedVolumeContains(ifsPt pt, RenderParams rp){
-        return (pt.x>=rp.xMin && pt.y>=rp.yMin && pt.z>=rp.zMin && pt.x<=rp.xMax && pt.y<=rp.yMax && pt.z<=rp.zMax);
-    }
-
     final static float PFf = (float)Math.PI;
-
-    float colorPeriod = 0;
 
     public ifsPt getCameraDistortedPt(ifsPt _pt, boolean rightEye, float perspectiveScale){
         ifsPt pt;
@@ -195,58 +166,6 @@ final class volume {
         savedPitch = camPitch;
         savedYaw = camYaw;
         savedRoll = camRoll;
-    }
-
-    protected void addCubeTriangles(int x, int y, int z) {
-
-        myVolume++;
-
-        boolean x1Valid=true;
-        boolean y1Valid=true;
-        boolean z1Valid=true;
-
-        boolean xn1Valid=true;
-        boolean yn1Valid=true;
-        boolean zn1Valid=true;
-
-        if(x1Valid && y1Valid && z1Valid && xn1Valid && yn1Valid && zn1Valid){}//skip "surrounded" cubes
-        else{
-            if(!zn1Valid){   //XY plane1
-                mySurfaceArea++;
-                theTriangles.add(new ifsTriangle(new ifsPt(x,y,z), new ifsPt(x,y+1,z), new ifsPt(x+1,y+1,z)));
-                theTriangles.add(new ifsTriangle(new ifsPt(x,y,z), new ifsPt(x+1,y,z), new ifsPt(x+1,y+1,z)));
-            }
-
-            if(!z1Valid){   //XY plane2
-                mySurfaceArea++;
-                theTriangles.add(new ifsTriangle(new ifsPt(x,y,z+1), new ifsPt(x,y+1,z+1), new ifsPt(x+1,y+1,z+1)));
-                theTriangles.add(new ifsTriangle(new ifsPt(x,y,z+1), new ifsPt(x+1,y,z+1), new ifsPt(x+1,y+1,z+1)));
-            }
-
-            if(!yn1Valid){   //XZ plane1
-                mySurfaceArea++;
-                theTriangles.add(new ifsTriangle(new ifsPt(x,y,z), new ifsPt(x+1,y,z), new ifsPt(x+1,y,z+1)));
-                theTriangles.add(new ifsTriangle(new ifsPt(x,y,z), new ifsPt(x+1,y,z+1), new ifsPt(x,y,z+1)));
-            }
-
-            if(!y1Valid){   //XZ plane2
-                mySurfaceArea++;
-                theTriangles.add(new ifsTriangle(new ifsPt(x,y+1,z), new ifsPt(x+1,y+1,z), new ifsPt(x+1,y+1,z+1)));
-                theTriangles.add(new ifsTriangle(new ifsPt(x,y+1,z), new ifsPt(x+1,y+1,z+1), new ifsPt(x,y+1,z+1)));
-            }
-
-            if(!xn1Valid){   //ZY plane1
-                mySurfaceArea++;
-                theTriangles.add(new ifsTriangle(new ifsPt(x,y,z), new ifsPt(x,y,z+1), new ifsPt(x,y+1,z+1)));
-                theTriangles.add(new ifsTriangle(new ifsPt(x,y,z), new ifsPt(x,y+1,z), new ifsPt(x,y+1,z+1)));
-            }
-
-            if(!x1Valid){   //ZY plane2
-                mySurfaceArea++;
-                theTriangles.add(new ifsTriangle(new ifsPt(x+1,y,z), new ifsPt(x+1,y,z+1), new ifsPt(x+1,y+1,z+1)));
-                theTriangles.add(new ifsTriangle(new ifsPt(x+1,y,z), new ifsPt(x+1,y+1,z), new ifsPt(x+1,y+1,z+1)));
-            }
-        }
     }
 
     public class ifsTriangle {
