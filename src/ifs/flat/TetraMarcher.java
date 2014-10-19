@@ -650,7 +650,7 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
 
         long numPolys=0;
 
-        int big_inc = 4;
+        int big_inc = 1;
 
         long startTime = System.currentTimeMillis();
 

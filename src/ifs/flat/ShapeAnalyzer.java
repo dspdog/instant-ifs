@@ -12,7 +12,7 @@ public final class ShapeAnalyzer extends Kernel{
     public final int lineDI[]; //distance, iterations
 
     int zListTotal=0;
-    public final int ZList[];
+    public final int ZList[]; //ZList denotes which lines (index) affect current z plane
 
     public final double linePot[];
     final int NUM_LINES = 1024*1024;
@@ -81,28 +81,24 @@ public final class ShapeAnalyzer extends Kernel{
 
         float s1, s2;
 
-        for(int i=0; i<1024; i++){
-            int _i = i;
+        for(int i=0; i<zListTotal; i++){
+            int _i = ZList[i];
             z1 = getZ1(_i);
             z2 = getZ2(_i);
-            _min= min(z1,z2)-maxDist;
-            _max= max(z1,z2)+maxDist;
-            if(_min<z && _max>z){
-                x1 = getX1(_i);
-                x2 = getX2(_i);
-                _min= min(x1,x2)-maxDist;
-                _max= max(x1,x2)+maxDist;
-                if(_min<x && _max>x){
-                    y1 = getY1(_i);
-                    y2 = getY2(_i);
-                    _min= min(y1,y2)-maxDist;
-                    _max= max(y1,y2)+maxDist;
-                    if(_min<y && _max>y){
-                        s1 = getS1(_i);
-                        s2 = getS2(_i);
-                        //potential+=singlePotential(x,y,z,x1,y1,z1,x2,y2,z2); //"meta balls" mode
-                        potential=max(potential,singlePotential(x,y,z,x1,y1,z1,s1,x2,y2,z2,s2)); //"tubes" mode
-                    }
+            x1 = getX1(_i);
+            x2 = getX2(_i);
+            _min= min(x1,x2)-maxDist;
+            _max= max(x1,x2)+maxDist;
+            if(_min<x && _max>x){
+                y1 = getY1(_i);
+                y2 = getY2(_i);
+                _min= min(y1,y2)-maxDist;
+                _max= max(y1,y2)+maxDist;
+                if(_min<y && _max>y){
+                    s1 = getS1(_i);
+                    s2 = getS2(_i);
+                    //potential+=singlePotential(x,y,z,x1,y1,z1,x2,y2,z2); //"meta balls" mode
+                    potential=max(potential,singlePotential(x,y,z,x1,y1,z1,s1,x2,y2,z2,s2)); //"tubes" mode
                 }
             }
         }
