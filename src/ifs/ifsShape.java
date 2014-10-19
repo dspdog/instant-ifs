@@ -90,7 +90,7 @@ final class ifsShape implements java.io.Serializable {
             out.writeObject(this);
             out.close();
             fileOut.close();
-            System.out.println("saved to "+filename);
+            System.out.println("ifsShape saved to "+filename);
         }catch(Exception i){
             i.printStackTrace();
         }

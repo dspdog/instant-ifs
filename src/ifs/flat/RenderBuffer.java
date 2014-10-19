@@ -347,9 +347,9 @@ public final class RenderBuffer extends Kernel{
 
         frameNum++;
 
-        if(frameNum%1000==0){
-            System.out.println(this.getExecutionMode().toString() + " " + this.getExecutionTime() + " lines: " + totalLines);
-        }
+        //if(frameNum%1000==0){
+        //    System.out.println(this.getExecutionMode().toString() + " " + this.getExecutionTime() + " lines: " + totalLines);
+        //}
     }
 
     @Override

@@ -6,6 +6,7 @@ package ifs.flat;
 //java version of the algo from http://paulbourke.net/geometry/polygonise/
 
 import com.alee.utils.ArrayUtils;
+import ifs.recordsKeeper;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -14,7 +15,7 @@ import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/geometry/polygonise/
+public class TetraMarcher implements Serializable{ //marching tetrahedrons as in http://paulbourke.net/geometry/polygonise/
 
     public Map<Long, Integer[]> theEdges = new HashMap<Long, Integer[]>();
 
@@ -674,20 +675,24 @@ public class TetraMarcher { //marching tetrahedrons as in http://paulbourke.net/
 
         //this.fixWinding();
 
-        String fileName = this.saveToBinarySTL(this.triangleList.size());
+        theFileName = this.saveToBinarySTL(this.triangleList.size());
 
 
-        this.meshLabFix(fileName);
+        this.meshLabFix(theFileName);
         System.out.println("SURFACE " + theSurfaceArea + " VOLUME " + theVolume + " RATIO s/v " + (theSurfaceArea/(theVolume+0.00001d)));
 
         long saveTime = (System.currentTimeMillis() - startTime)-buildTime;
-
+        totalTime = (System.currentTimeMillis() - startTime);
         System.out.println("done - built in " + buildTime/1000.0 + "s, saved in " + saveTime/1000.0 + "s");
-      
+
     }
-    double theVolume=0;
-    double theSurfaceArea=0;
-    boolean shapeInvalid = false;
+
+    public double theVolume=0;
+    public double theSurfaceArea=0;
+    public boolean shapeInvalid = false;
+    public String theFileName = "";
+    public long totalTime =0;
+
     public void meshLabFix(String fileName){
         try {
             Runtime runTime = Runtime.getRuntime();

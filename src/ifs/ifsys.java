@@ -80,7 +80,13 @@ final class ifsys extends JPanel
     MemoryImageSource renderImageSource;
     Image misImage;
 
+    recordsKeeper rk;
+
     public ifsys(){
+
+        rk = new recordsKeeper();
+        rk = rk.loadFromFile(rk.defaultName);
+
         evolutionDescSelected=false;
         iterationDescSelected=false;
         rp = new RenderParams();
@@ -916,6 +922,12 @@ final class ifsys extends JPanel
             System.out.println("getting potentials!");
             TetraMarcher tm = new TetraMarcher();
             tm.getPotentials(shapeAnalyzer);
+            if(tm.shapeInvalid){
+                System.out.println("shape invalid, ignoring...");
+            }else{
+                System.out.println("saving shape to records...");
+                rk.submit(theShape, tm);
+            }
         }
 
         if(e.getKeyChar() == '3'){
