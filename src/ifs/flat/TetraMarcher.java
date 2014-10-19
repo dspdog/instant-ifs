@@ -636,34 +636,41 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
 
         long numPolys=0;
 
-        int big_inc = 8;
+        int big_inc = 4;
 
         long startTime = System.currentTimeMillis();
 
         double[] oldLinePot;
 
         shapeAnalyzer.updateGeometry();
-
+        long t1=0,t2=0,t3=0,t4=0;
         for(z=big_inc; z<1024-big_inc; z+=big_inc){
 
-            if(z%10==0)System.out.println("scanning " + z + "/1024  Triangles: " + numPolys);
+            if(z%10==0)System.out.println("scanning " + z + "/1024  Triangles: " + numPolys + "  zPots " + (t3-t1) + " polygonize " + (t4-t3));
 
+            t1 = System.currentTimeMillis();
             shapeAnalyzer.getAllPotentialsByZ(z,big_inc, (int)maxDist);
+            t2 = System.currentTimeMillis();
             oldLinePot = shapeAnalyzer.linePot.clone();
             shapeAnalyzer.getAllPotentialsByZ(z+big_inc,big_inc, (int)maxDist);
+
+            t3 = System.currentTimeMillis();
+            float edgeThresh = 1.0f;
 
             for(x=big_inc; x<1024-big_inc; x+=big_inc){
                 for(y=big_inc; y<1024-big_inc; y+=big_inc){
 
-                    //if(shapeAnalyzer.linePot[(int)x+(int)y*1024]>iso*iso){
+                    if(Math.abs(shapeAnalyzer.linePot[(int)x+(int)y*1024]-iso)<edgeThresh){ //"edges only"
                         numPolys += this.PolygoniseGrid(
                                 this.generateCell(x, y, z, big_inc, oldLinePot, shapeAnalyzer.linePot),
                                 iso,
                                 tri);
-                    //}
+                    }
 
                 }
             }
+
+            t4 = System.currentTimeMillis();
 
         }
 
