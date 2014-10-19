@@ -627,7 +627,21 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
         return res;
     }
 
-    public void getPotentials(ShapeAnalyzer shapeAnalyzer){
+    public void setZList(){
+
+    }
+
+    public static void setArrayUsingList(List<Integer> integers, int[] array)
+    {
+        int len = integers.size();
+        Iterator<Integer> iterator = integers.iterator();
+        for (int i = 0; i < len; i++)
+        {
+            array[i] = iterator.next().intValue();
+        }
+    }
+
+    public void getPotentials(ShapeAnalyzer shapeAnalyzer, ArrayList<Integer>[] zLists){
         TetraMarcher.Triangle[] tri = this.generateTriangleArray();
 
         double maxDist = 16;
@@ -645,6 +659,8 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
         shapeAnalyzer.updateGeometry();
         long t1=0,t2=0,t3=0,t4=0;
         for(z=big_inc; z<1024-big_inc; z+=big_inc){
+            setArrayUsingList(zLists[(int)z], shapeAnalyzer.ZList);
+            shapeAnalyzer.updateZList(zLists[(int)z].size());
 
             if(z%10==0)System.out.println("scanning " + z + "/1024  Triangles: " + numPolys + "  zPots " + (t3-t1) + " polygonize " + (t4-t3));
 
@@ -660,12 +676,12 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
             for(x=big_inc; x<1024-big_inc; x+=big_inc){
                 for(y=big_inc; y<1024-big_inc; y+=big_inc){
 
-                    if(Math.abs(shapeAnalyzer.linePot[(int)x+(int)y*1024]-iso)<edgeThresh){ //"edges only"
+                    //if(Math.abs(shapeAnalyzer.linePot[(int)x+(int)y*1024]-iso)<edgeThresh){ //"edges only" -- little effect on speed
                         numPolys += this.PolygoniseGrid(
                                 this.generateCell(x, y, z, big_inc, oldLinePot, shapeAnalyzer.linePot),
                                 iso,
                                 tri);
-                    }
+                    //}
 
                 }
             }

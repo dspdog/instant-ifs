@@ -84,6 +84,8 @@ final class ifsys extends JPanel
 
     public ifsys(){
 
+        initZLists();
+
         rk = new recordsKeeper();
         rk = rk.loadFromFile(rk.defaultName);
 
@@ -439,7 +441,35 @@ final class ifsys extends JPanel
         Random rnd = new Random();
         rnd.setSeed(rp.randomSeed);
         indexCount=0;
+        clearZLists();
         indexFunction(0, rp.iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd, rp.randomScale, (short)0);
+    }
+
+    ArrayList<Integer>[] zLists = new ArrayList[1024];
+
+    public void initZLists(){
+        for(int i=0; i<1024; i++){
+            zLists[i]= new ArrayList<Integer>();
+        }
+    }
+
+    public void clearZLists(){
+        for(int i=0; i<1024; i++){
+            zLists[i].clear();
+        }
+    }
+    long count=0;
+    public void addLineToZList(int index, int z1, int z2){
+        int _z1 = Math.max(Math.min(z1, z2), 1);
+        int _z2 = Math.min(Math.max(z1, z2), 1023);
+        for(int i=_z1; i<_z2; i++){
+            zLists[i].add(index);
+            count++;
+        }
+
+        if(count%10000==0){
+            System.out.println(count);
+        }
     }
 
     public void gamefunc(){
@@ -479,6 +509,8 @@ final class ifsys extends JPanel
         renderBuffer.lineZS1[renderBuffer.lineIndex]=(((short)(dpt.z))<<16) + ((short)(256f *_cumulativeScale*thePt.scale/centerPt.scale));
         renderBuffer.lineXY2[renderBuffer.lineIndex]=(((short)(odp.x))<<16) + ((short)odp.y);
         renderBuffer.lineZS2[renderBuffer.lineIndex]=(((short)(odp.z))<<16) + ((short)(256f * _cumulativeScale));
+
+        addLineToZList(renderBuffer.lineIndex, (int)odp.z, (int)dpt.z);
 
         if(shapeAnalyzing){
             shapeAnalyzer.lineXY1[renderBuffer.lineIndex] = renderBuffer.lineDI[renderBuffer.lineIndex];
@@ -921,7 +953,7 @@ final class ifsys extends JPanel
         if(e.getKeyChar() == '6'){
             System.out.println("getting potentials!");
             TetraMarcher tm = new TetraMarcher();
-            tm.getPotentials(shapeAnalyzer);
+            tm.getPotentials(shapeAnalyzer, zLists);
             if(tm.shapeInvalid){
                 System.out.println("shape invalid, ignoring...");
             }else{

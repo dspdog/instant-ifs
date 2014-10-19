@@ -12,6 +12,7 @@ public final class ShapeAnalyzer extends Kernel{
     public final int lineDI[]; //distance, iterations
 
     int zListTotal=0;
+    public final int ZList[];
 
     public final double linePot[];
     final int NUM_LINES = 1024*1024;
@@ -28,6 +29,7 @@ public final class ShapeAnalyzer extends Kernel{
         lineZS2 = new int[NUM_LINES];
         lineDI = new int[NUM_LINES];
         linePot = new double[NUM_LINES];
+        ZList = new int[NUM_LINES];
 
         this.setExecutionMode(Kernel.EXECUTION_MODE.GPU);
     }
@@ -57,6 +59,11 @@ public final class ShapeAnalyzer extends Kernel{
 
         this.execute(range);
         this.get(linePot);
+    }
+
+    public void updateZList(int total){
+        this.put(ZList);
+        zListTotal = total;
     }
 
     public void updateGeometry(){
