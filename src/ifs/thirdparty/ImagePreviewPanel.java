@@ -2,7 +2,6 @@ package ifs.thirdparty;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.beans.*;
 import java.io.File;
 

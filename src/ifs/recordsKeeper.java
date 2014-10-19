@@ -13,11 +13,11 @@ import java.util.Date;
 
 public class recordsKeeper implements java.io.Serializable{
 
-    public ArrayList<row> records = new ArrayList<row>();
+    public ArrayList<row> records = new ArrayList<>();
     public final String defaultName = "recordskeeper.shapes";
 
     public recordsKeeper(){
-        records = new ArrayList<row>();
+        records = new ArrayList<>();
     }
 
     public class row implements java.io.Serializable{

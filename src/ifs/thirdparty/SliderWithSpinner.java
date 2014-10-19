@@ -1,7 +1,6 @@
 package ifs.thirdparty;
 
 import com.alee.laf.slider.WebSlider;
-import com.alee.laf.spinner.WebSpinner;
 
 import java.awt.*;
 import java.util.Hashtable;
@@ -138,7 +137,7 @@ public final class SliderWithSpinner extends JPanel {
         slider.setAlignmentY(Component.TOP_ALIGNMENT);
 
         if (drawLabels) {
-            Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
+            Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
             labelTable.put(new Integer((Integer) model.getMinimum()), new JLabel(((Integer) model.getMinimum()).toString()));
             labelTable.put(new Integer((Integer) model.getMaximum()), new JLabel(((Integer) model.getMaximum()).toString()));
             slider.setLabelTable(labelTable);

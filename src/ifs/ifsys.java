@@ -455,7 +455,7 @@ final class ifsys extends JPanel
 
     public void initZLists(){
         for(int i=0; i<1024; i++){
-            zLists[i]= new ArrayList<Integer>();
+            zLists[i]= new ArrayList<>();
         }
     }
 

@@ -44,8 +44,8 @@ final class EvolvingShape {
         historyIndex=0;
         alwaysNewShape = true; //set to false to always spawn from the "record-holding" shape rather than just the best member of this generation
 
-        familyHistory = new ArrayList<ArrayList<ifsShape>>();
-        shapeList = new ArrayList<ifsShape>();
+        familyHistory = new ArrayList<>();
+        shapeList = new ArrayList<>();
         baseShape=_baseShape;
         shapeIndex=0;
         evolving=false;
@@ -130,10 +130,10 @@ final class EvolvingShape {
     }
 
     public ArrayList<ifsShape> shapeListCopy(){
-        ArrayList<ifsShape> newList = new ArrayList<ifsShape>();
+        ArrayList<ifsShape> newList = new ArrayList<>();
 
-        for (int i = 0; i < shapeList.size(); i++) {
-            newList.add(new ifsShape(shapeList.get(i)));
+        for (ifsShape aShapeList : shapeList) {
+            newList.add(new ifsShape(aShapeList));
         }
 
         return newList;

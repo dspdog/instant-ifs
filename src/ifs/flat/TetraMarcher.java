@@ -5,9 +5,6 @@ package ifs.flat;
 
 //java version of the algo from http://paulbourke.net/geometry/polygonise/
 
-import com.alee.utils.ArrayUtils;
-import ifs.recordsKeeper;
-
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -16,8 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class TetraMarcher implements Serializable{ //marching tetrahedrons as in http://paulbourke.net/geometry/polygonise/
-
-    public Map<Long, Integer[]> theEdges = new HashMap<Long, Integer[]>();
 
     public class xyz {
         public double x,y,z;
@@ -38,10 +33,7 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
         public boolean windingProcessed;
         public boolean flipped;
 
-        public long id = 0;
-
         public Triangle(){
-            id = (int)(Math.random() * 100000) + System.currentTimeMillis();
             flipped = false;
             windingProcessed=false;
             p = new xyz[3];
@@ -50,12 +42,6 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
             p[0] = new xyz();
             p[1] = new xyz();
             p[2] = new xyz();
-        }
-
-        public boolean hashesInOrder(int hash1, int hash2){ //AKA "hash1AppearsBeforeHash2"
-            int a = getHashIndex(hash1);
-            int b = getHashIndex(hash2);
-            return ((b-a+3)%3)==1;
         }
 
         public int getHashIndex(int hash){
@@ -67,26 +53,6 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
             return -1;
         }
 
-        public void flipWinding(int i1, int i2){
-            //reverse pt order
-            if(!flipped && !windingProcessed){
-                xyz ptTemp1 = new xyz(); int hashTemp1 = 0;
-                xyz ptTemp2 = new xyz(); int hashTemp2 = 0;
-                xyz ptTemp3 = new xyz(); int hashTemp3 = 0;
-                ptTemp1.setTo(p[0]); hashTemp1=vertHash[0];
-                ptTemp2.setTo(p[1]); hashTemp2=vertHash[1];
-                ptTemp3.setTo(p[2]); hashTemp3=vertHash[2];
-
-                vertHash[0] = hashTemp3;
-                vertHash[1] = hashTemp2;
-                vertHash[2] = hashTemp1;
-                p[0].setTo(ptTemp3);
-                p[1].setTo(ptTemp2);
-                p[2].setTo(ptTemp1);
-
-                flipped=true;
-            }
-         }
     }
 
     public class GridCell{
@@ -102,8 +68,7 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
     public ArrayList<Triangle> triangleList;
 
     public TetraMarcher(){
-        triangleList = new ArrayList<Triangle>();
-        theEdges = new HashMap<Long, Integer[]>();
+        triangleList = new ArrayList<>();
     }
 
     /*
@@ -429,64 +394,6 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
         return timeLog1;
     }
 
-    long trisProcessed=0;
-    long trisFlipped=0;
-
-
-    void windingAgree(Triangle tri, Triangle host){
-        int sharedPtA = -1;
-        int sharedPtB = -1;
-        int sharedPtAI = -1;
-        int sharedPtBI = -1;
-
-        for(int v = 0; v<3; v++){
-            if(tri.vertHash[v] == host.vertHash[0] || tri.vertHash[v] == host.vertHash[1] || tri.vertHash[v] == host.vertHash[2]){
-                if(sharedPtA==-1){
-                    sharedPtA = tri.vertHash[v];
-                    sharedPtAI=v;
-                }else{
-                    sharedPtB = tri.vertHash[v];
-                    sharedPtBI=v;
-                }
-            }
-        }
-
-        if(sharedPtA!=-1 && sharedPtB!=-1){
-            boolean AWoundLikeB = (tri.hashesInOrder(sharedPtA, sharedPtB) == host.hashesInOrder(sharedPtA, sharedPtB));
-
-            if(AWoundLikeB){
-                tri.flipWinding(sharedPtAI, sharedPtBI);
-                trisFlipped++;
-            }
-        }
-
-
-    }
-
-    long edgehash(double x1, double y1, double z1, double x2, double y2, double z2){ //returns a long hash value unique for each edge
-        int v1 = vectorhash(x1,y1,z1);
-        int v2 = vectorhash(x2,y2,z2);
-
-        if(v1 == v2){
-            return -1;
-        }
-
-        if(v1<v2){
-            return v1<<32 + v2;
-        }else{
-            return v2<<32 + v1;
-        }
-    }
-
-    private int vectorhash (double x, double y, double z) //via http://forum.devmaster.net/t/removal-of-duplicate-vertices/11550/2
-    {
-        int ix = (int)((x-512f)*2000f);
-        int iy = (int)((y-512f)*2000f);
-        int iz = (int)((z-512f)*2000f);
-
-        int f = (ix+iy*11-(iz*17))&0x7fffffff;     // avoid problems with +-0
-        return (f>>22)^(f>>12)^(f);
-    }
 
     public static void setArrayUsingList(List<Integer> integers, int[] array)
     {

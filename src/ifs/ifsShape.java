@@ -117,7 +117,7 @@ final class ifsShape implements java.io.Serializable {
     public ArrayList<ifsShape> getPerturbedVersions(int total, ifsPt intensityDescriptor, boolean staySymmetric){
         ArrayList<ifsShape> _perturbedVersions;
 
-        _perturbedVersions = new ArrayList<ifsShape>();
+        _perturbedVersions = new ArrayList<>();
         for(int i=0; i<total; i++){
             _perturbedVersions.add(this.getPerturbedShape(intensityDescriptor, staySymmetric));
         }

@@ -76,9 +76,7 @@ public final class OneDBuffer implements Serializable{
             vals2[i] = (vals[i]+vals[i-1])/2;
         }
 
-        for(int i=0; i<segs; i++){
-            vals[i] = vals2[i];
-        }
+        System.arraycopy(vals2, 0, vals, 0, segs);
     }
 
     public void add(OneDBuffer od, float scaleDown){

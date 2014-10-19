@@ -54,7 +54,7 @@ final class volume {
         myVolumeOneSecondAgo=0;
         myVolumeChange = 0;
         changed=false;
-        theTriangles = new LinkedList<ifsTriangle>();
+        theTriangles = new LinkedList<>();
         myVolume=0;
         mySurfaceArea=0;
 

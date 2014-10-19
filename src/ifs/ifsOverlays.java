@@ -25,12 +25,6 @@ final class ifsOverlays {
         selectedAxis = DragAxis.X;
     }
 
-    /*public void drawArcs(Graphics rg){
-        for(int i=0;i<myIfsSys.theShape.pointsInUse;i++){
-            drawArc(rg, myIfsSys.theShape.pts[i], i == myIfsSys.theShape.pointNearest, myIfsSys.isDragging, i == 0);
-        }
-    }*/
-
     public void drawRegularPolygon(Graphics rg, int x, int y, int rad, int sides, double rotation){
         for(int i=0; i<sides; i++){
             rg.drawLine(
@@ -49,127 +43,6 @@ final class ifsOverlays {
         _rg.setColor(Color.YELLOW);
         drawRegularPolygon(_rg, x - width / 2, y - height / 2, radius, 3, -Math.PI / 2); //upward pointd triangle
     }
-
-    public void drawCentroid(Graphics _rg, int x, int y){
-        int width = 15;
-        int height = 15;
-        _rg.setColor(Color.CYAN);
-        _rg.drawOval(x - width / 2, y - height / 2, width, height);
-    }
-
-    /*public void drawSpecialPoints(Graphics _rg){//centroid and maximum
-        if(myIfsSys.theVolume.totalSamplesAlpha >5000){
-            ifsPt projectedCentroid = myIfsSys.theVolume.getCameraDistortedPt(myIfsSys.theVolume.getCentroid());
-            ifsPt projectedHighPt;
-
-            if(myIfsSys.theVolume.renderMode == volume.RenderMode.PROJECT_ONLY){
-                projectedHighPt =  myIfsSys.theVolume.getCameraDistortedPt(myIfsSys.theVolume.highPt);
-            }else{
-                projectedHighPt = myIfsSys.theVolume.getCameraDistortedPt(myIfsSys.theVolume.highPtVolumetric);
-            }
-
-            int x=(int)projectedCentroid.x;
-            int y=(int)projectedCentroid.y;
-            drawCentroid(_rg,x,y);
-            x=(int)projectedHighPt.x;
-            y=(int)projectedHighPt.y;
-            drawHighPt(_rg, x, y);
-        }
-    }*/
-
-    /*public void drawArc(Graphics _rg, ifsPt pt, boolean isSelected, boolean dragging, boolean isCenter){
-        int steps = 50;
-
-        int[] xPts1 = new int[steps];
-        int[] yPts1 = new int[steps];
-        int[] zPts1 = new int[steps];
-
-        int[] xPts2 = new int[steps];
-        int[] yPts2 = new int[steps];
-        int[] zPts2 = new int[steps];
-
-        double d1=999,d2=999,d3=999, min_d; //distances from arcs to mouse cursor
-        int selectedD=1;
-
-        min_d=100000;
-
-        ifsPt centerPt = myIfsSys.theVolume.getCameraDistortedPt(pt);
-
-        xPts1[0] = (int)centerPt.x;
-        yPts1[0] = (int)centerPt.y;
-        zPts1[0] = (int)centerPt.z;
-
-        xPts2[0] = (int)centerPt.x;
-        yPts2[0] = (int)centerPt.y;
-        zPts2[0] = (int)centerPt.z;
-
-        for(int i=1; i<steps; i++){
-            //yaw
-            xPts1[i] = (int)((Math.cos(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
-            yPts1[i] = (int)((Math.sin(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
-            zPts1[i] = 10*i/steps;
-
-            //pitch
-            xPts2[i] = (int)((Math.cos(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
-            yPts2[i] = 10*i/steps;
-            zPts2[i] = (int)((Math.sin(i*2*Math.PI/(steps-1))*pt.scale*pt.radius));
-
-            ifsPt rotatedPt1 = new ifsPt(xPts1[i],yPts1[i],zPts1[i]).getRotatedPt_Right(0, -pt.rotationYaw,0).add(pt);
-            ifsPt rotatedPt2 = new ifsPt(xPts2[i],yPts2[i],zPts2[i]).getRotatedPt_Right(-pt.rotationPitch, -pt.rotationYaw,0).add(pt);
-
-            rotatedPt1 = myIfsSys.theVolume.getCameraDistortedPt(rotatedPt1);
-            rotatedPt2 = myIfsSys.theVolume.getCameraDistortedPt(rotatedPt2);
-
-            xPts1[i] = (int)(rotatedPt1.x);
-            yPts1[i] = (int)(rotatedPt1.y);
-            zPts1[i] = (int)(rotatedPt1.z);
-
-            xPts2[i] = (int)(rotatedPt2.x);
-            yPts2[i] = (int)(rotatedPt2.y);
-            zPts2[i] = (int)(rotatedPt2.z);
-
-            d1 = distance(myIfsSys.mousex - rotatedPt1.x - pt.x, myIfsSys.mousey - rotatedPt1.y - pt.y);
-            d2 = distance(myIfsSys.mousex - rotatedPt2.x - pt.x, myIfsSys.mousey - rotatedPt2.y - pt.y);
-
-            if(d1<min_d){
-                min_d=d1;
-                selectedD=0;
-            }
-            if(d2<min_d){
-                min_d=d2;
-                selectedD=1;
-            }
-            //if(d3<min_d){
-            //    min_d=d3;
-            //   selectedD=2;
-            //}
-        }
-
-        //pt = myIfsSys.theVolume.getCameraDistortedPt(pt);
-
-        xPts1[steps-1] = (int)centerPt.x;
-        yPts1[steps-1] = (int)centerPt.y;
-        xPts2[steps-1] = (int)centerPt.x;
-        yPts2[steps-1] = (int)centerPt.y;
-
-        if(isSelected){
-            if(!dragging){
-                myIfsSys.rotateMode = selectedD;
-            }
-
-            _rg.setColor(Color.red);
-            drawPolylineBolded(_rg, xPts1, yPts1, zPts1, steps, myIfsSys.rotateMode==0);
-            _rg.setColor(Color.green);
-            drawPolylineBolded(_rg, xPts2, yPts2, zPts2, steps, myIfsSys.rotateMode==1);
-        }else{
-            _rg.setColor(Color.darkGray);
-            if(isCenter){
-                _rg.setColor(Color.BLUE);
-            }
-            drawPolyLineRotated(xPts1, yPts1, zPts1, _rg, steps);
-            drawPolyLineRotated(xPts2, yPts2, zPts2, _rg, steps);
-        }
-    }*/
 
     public void drawPolyLineRotated(int[] xPts1, int[] yPts1, int[] zPts1, Graphics _rg, int steps){
         drawPolyline(xPts1, yPts1, zPts1, steps, _rg);
@@ -423,9 +296,5 @@ final class ifsOverlays {
 
     public String log10String(String title, float value){
         return title + " 10^" + df.format(Math.log10(value));// + " (" + value + ")";
-    }
-
-    public double distance(double x, double y){
-        return Math.sqrt(x * x + y * y);
     }
 }
