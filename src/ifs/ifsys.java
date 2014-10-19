@@ -442,6 +442,12 @@ final class ifsys extends JPanel
         rnd.setSeed(rp.randomSeed);
         indexCount=0;
         clearZLists();
+        xMin = 1024;
+        yMin = 1024;
+        zMin = 1024;
+        xMax = 0;
+        yMax = 0;
+        zMax = 0;
         indexFunction(0, rp.iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd, rp.randomScale, (short)0);
     }
 
@@ -459,9 +465,9 @@ final class ifsys extends JPanel
         }
     }
     long count=0;
-    public void addLineToZList(int index, int z1, int z2){
-        int _z1 = Math.max(Math.min(z1, z2), 1);
-        int _z2 = Math.min(Math.max(z1, z2), 1023);
+    public void addLineToZList(int index, int z1, int z2, int max){
+        int _z1 = Math.max(Math.min(z1, z2)-max, 1);
+        int _z2 = Math.min(Math.max(z1, z2)+max, 1023);
         for(int i=_z1; i<_z2; i++){
             zLists[i].add(index);
             count++;
@@ -485,6 +491,9 @@ final class ifsys extends JPanel
     }
 
     long lastIndex = System.currentTimeMillis();
+
+    int zMin, zMax, xMin, xMax, yMin, yMax;
+
     private void indexFunction(int _index, int _iterations, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt, Random _rnd, float rndScale, short dist){
         ifsPt dpt = new ifsPt(_dpt);
         ifsPt cumulativeRotation = new ifsPt(_cumulativeRotation);
@@ -510,7 +519,17 @@ final class ifsys extends JPanel
         renderBuffer.lineXY2[renderBuffer.lineIndex]=(((short)(odp.x))<<16) + ((short)odp.y);
         renderBuffer.lineZS2[renderBuffer.lineIndex]=(((short)(odp.z))<<16) + ((short)(256f * _cumulativeScale));
 
-        addLineToZList(renderBuffer.lineIndex, (int)odp.z, (int)dpt.z);
+        int maxDist = 16+1;
+
+        addLineToZList(renderBuffer.lineIndex, (int)odp.z, (int)dpt.z, maxDist);
+
+        xMin = (int)Math.max(0,Math.min(Math.min(xMin,odp.x-maxDist),Math.min(xMin,dpt.x-maxDist)));
+        yMin = (int)Math.max(0,Math.min(Math.min(yMin,odp.y-maxDist),Math.min(yMin,dpt.y-maxDist)));
+        zMin = (int)Math.max(0,Math.min(Math.min(zMin,odp.z-maxDist),Math.min(zMin,dpt.z-maxDist)));
+
+        xMax = (int)Math.min(1023,Math.max(Math.max(xMax,odp.x+maxDist),Math.max(xMax,dpt.x+maxDist)));
+        yMax = (int)Math.min(1023,Math.max(Math.max(yMax,odp.y+maxDist),Math.max(yMax,dpt.y+maxDist)));
+        zMax = (int)Math.min(1023,Math.max(Math.max(zMax,odp.z+maxDist),Math.max(zMax,dpt.z+maxDist)));
 
         if(shapeAnalyzing){
             shapeAnalyzer.lineXY1[renderBuffer.lineIndex] = renderBuffer.lineDI[renderBuffer.lineIndex];
@@ -953,7 +972,7 @@ final class ifsys extends JPanel
         if(e.getKeyChar() == '6'){
             System.out.println("getting potentials!");
             TetraMarcher tm = new TetraMarcher();
-            tm.getPotentials(shapeAnalyzer, zLists);
+            tm.getPotentials(shapeAnalyzer, zLists, xMin, xMax, yMin, yMax, zMin, zMax);
             if(tm.shapeInvalid){
                 System.out.println("shape invalid, ignoring...");
             }else{

@@ -641,16 +641,24 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
         }
     }
 
-    public void getPotentials(ShapeAnalyzer shapeAnalyzer, ArrayList<Integer>[] zLists){
+    public void getPotentials(ShapeAnalyzer shapeAnalyzer, ArrayList<Integer>[] zLists, int xMin, int xMax, int yMin, int yMax, int zMin, int zMax){
         TetraMarcher.Triangle[] tri = this.generateTriangleArray();
 
         double maxDist = 16;
         double x,y,z;
         double iso = 1/(maxDist*maxDist); //make this smaller to make the tube thicker
 
+        //xMin-=maxDist+1;
+        //yMin-=maxDist+1;
+        //zMin-=maxDist+1;
+
+        //xMax+=maxDist+1;
+        //yMax+=maxDist+1;
+        //zMax+=maxDist+1;
+
         long numPolys=0;
 
-        int big_inc = 1;
+        int big_inc = 2;
 
         long startTime = System.currentTimeMillis();
 
@@ -658,11 +666,15 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
 
         shapeAnalyzer.updateGeometry();
         long t1=0,t2=0,t3=0,t4=0;
-        for(z=big_inc; z<1024-big_inc; z+=big_inc){
+        System.out.println("ZMINMAX " + zMin + " " + zMax);
+        int _zmin = Math.max(big_inc, zMin);
+        int _zmax = Math.min(1024 - big_inc, zMax);
+
+        for(z=_zmin; z<_zmax; z+=big_inc){
             setArrayUsingList(zLists[(int)z], shapeAnalyzer.ZList);
             shapeAnalyzer.updateZList(zLists[(int)z].size());
 
-            if(z%10==0)System.out.println("scanning " + z + "/1024  Triangles: " + numPolys + "  zPots " + (t3-t1) + " polygonize " + (t4-t3));
+            if((z-_zmin)%10==0)System.out.println("scanning " + z + "/1024  Triangles: " + numPolys + "  zPots " + (t3-t1) + " polygonize " + (t4-t3));
 
             t1 = System.currentTimeMillis();
             shapeAnalyzer.getAllPotentialsByZ(z,big_inc, (int)maxDist);
@@ -673,16 +685,18 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
             t3 = System.currentTimeMillis();
             float edgeThresh = 1.0f;
 
-            for(x=big_inc; x<1024-big_inc; x+=big_inc){
-                for(y=big_inc; y<1024-big_inc; y+=big_inc){
+            int _xmin = Math.max(big_inc, xMin);
+            int _xmax = Math.min(1024-big_inc, xMax);
 
-                    //if(Math.abs(shapeAnalyzer.linePot[(int)x+(int)y*1024]-iso)<edgeThresh){ //"edges only" -- little effect on speed
-                        numPolys += this.PolygoniseGrid(
-                                this.generateCell(x, y, z, big_inc, oldLinePot, shapeAnalyzer.linePot),
-                                iso,
-                                tri);
-                    //}
+            int _ymin = Math.max(big_inc, yMin);
+            int _ymax = Math.min(1024-big_inc, yMax);
 
+            for(x=_xmin; x<_xmax; x+=big_inc){
+                for(y=_ymin; y<_ymax; y+=big_inc){
+                    numPolys += this.PolygoniseGrid(
+                            this.generateCell(x, y, z, big_inc, oldLinePot, shapeAnalyzer.linePot),
+                            iso,
+                            tri);
                 }
             }
 
