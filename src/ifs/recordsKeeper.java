@@ -23,7 +23,6 @@ public class recordsKeeper implements java.io.Serializable{
     public class row implements java.io.Serializable{
         public double theVolume=0;
         public double theSurfaceArea=0;
-        public boolean shapeInvalid = false;
         public String theFileName = "";
         public String timeStamp;
         public long totalTime =0;

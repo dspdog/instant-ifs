@@ -636,7 +636,7 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
 
         long numPolys=0;
 
-        int big_inc = 4;
+        int big_inc = 8;
 
         long startTime = System.currentTimeMillis();
 
@@ -706,6 +706,7 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
                 System.out.println(line);
                 if(line.indexOf("watertight") != -1){
                     shapeInvalid=true;
+                    break;
                 }
                 if(line.indexOf("Mesh Volume") != -1){
                     theVolume = Double.parseDouble(line.substring(line.lastIndexOf(" "),line.length()));
