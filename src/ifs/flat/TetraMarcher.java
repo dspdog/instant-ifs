@@ -412,17 +412,9 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
         double x,y,z;
         double iso = 1/(maxDist*maxDist); //make this smaller to make the tube thicker
 
-        //xMin-=maxDist+1;
-        //yMin-=maxDist+1;
-        //zMin-=maxDist+1;
-
-        //xMax+=maxDist+1;
-        //yMax+=maxDist+1;
-        //zMax+=maxDist+1;
-
         long numPolys=0;
 
-        int big_inc = 2;
+        int big_inc = 5;
 
         long startTime = System.currentTimeMillis();
 
@@ -434,11 +426,17 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
         int _zmin = Math.max(big_inc, zMin);
         int _zmax = Math.min(1024 - big_inc, zMax);
 
+        long totalPolyTime = 0;
+        long totalZTime = 0;
+
         for(z=_zmin; z<_zmax; z+=big_inc){
             setArrayUsingList(zLists[(int)z], shapeAnalyzer.ZList);
             shapeAnalyzer.updateZList(zLists[(int)z].size());
 
-            if((z-_zmin)%10==0)System.out.println("scanning " + z + "/1024  Triangles: " + numPolys + "  zPots " + (t3-t1) + " polygonize " + (t4-t3));
+            if((z-_zmin)%160==0)System.out.println("scanning " + z + "/1024  Triangles: " + numPolys + "  zPots " + (t3-t1) + " polygonize " + (t4-t3));
+
+            totalZTime+=(t3-t1);
+            totalPolyTime+=(t4-t3);
 
             t1 = System.currentTimeMillis();
             shapeAnalyzer.getAllPotentialsByZ(z,big_inc, (int)maxDist);
@@ -475,17 +473,20 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
         long buildTime = System.currentTimeMillis() - startTime;
 
         //this.fixWinding();
-
+        long saveStartTime = System.currentTimeMillis();
         theFileName = this.saveToBinarySTL(this.triangleList.size());
 
+        long saveTime = (System.currentTimeMillis() - saveStartTime);
 
+        long meshStartTime = System.currentTimeMillis();
         this.meshLabFix(theFileName);
+        long meshSaveTime = System.currentTimeMillis()-meshStartTime;
         System.out.println("SURFACE " + theSurfaceArea + " VOLUME " + theVolume + " RATIO s/v " + (theSurfaceArea/(theVolume+0.00001d)));
 
-        long saveTime = (System.currentTimeMillis() - startTime)-buildTime;
         totalTime = (System.currentTimeMillis() - startTime);
-        System.out.println("done - built in " + buildTime/1000.0 + "s, saved in " + saveTime/1000.0 + "s");
-
+        System.out.println("done - built in " + buildTime/1000.0 + "s, saved in " + saveTime/1000.0 + "s, meshlabeded in " + meshSaveTime/1000.0 + "s" );
+        System.out.println("build:gpu potn time elapsed " + totalZTime/1000.0 + "s");
+        System.out.println("build:cpu poly time elapsed " + totalPolyTime/1000.0 + "s");
     }
 
     public double theVolume=0;
@@ -497,7 +498,7 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
     public void meshLabFix(String fileName){
         try {
             Runtime runTime = Runtime.getRuntime();
-            Process process = runTime.exec("C:\\Program Files\\VCG\\MeshLab\\meshlabserver.exe -s ./instant-ifs/myscript2.mlx -i "+fileName+".stl -o " + fileName + "B.stl");
+            Process process = runTime.exec("C:\\Program Files\\VCG\\MeshLab\\meshlabserver.exe -s ./instant-ifs/myscript2.mlx -i "+fileName+".stl -o " + fileName + "B.obj");
 
             InputStream inputStream = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(inputStream);
