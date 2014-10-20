@@ -258,21 +258,6 @@ final class ifsOverlays {
         rg.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         rg.setColor(Color.white);
 
-        if(myIfsSys.theVolume.renderMode == volume.RenderMode.VOLUMETRIC){
-            drawStringOverlay(rg, log10String("Volume ", myIfsSys.theVolume.myVolume) + "U^3 Δ" + myIfsSys.theVolume.myVolumeChange);
-            drawStringOverlay(rg, log10String("Surface", myIfsSys.theVolume.mySurfaceArea) + "U^2");
-            drawStringOverlay(rg, log10String("AvDist ", (float) myIfsSys.theVolume.averageDistance) + "U^1");
-            drawStringOverlay(rg, log10String("AvD/S  ", (float) myIfsSys.theVolume.averageDistance / (float) myIfsSys.theVolume.mySurfaceArea) + "U-1");
-            drawStringOverlay(rg, log10String("AvD/V  ", (float) myIfsSys.theVolume.averageDistance / (float) myIfsSys.theVolume.myVolume) + "U-1");
-            drawStringOverlay(rg, log10String("S/V    ", (float) myIfsSys.theVolume.mySurfaceArea / (float) myIfsSys.theVolume.myVolume) + "U-1");
-            drawStringOverlay(rg, "Score   " + myIfsSys.theVolume.getScore(myIfsSys.rp.scoreParams));
-
-            drawStringOverlay(rg, " ");
-            if(myIfsSys.eShape.evolving){
-                drawStringOverlay(rg, "Generation " + myIfsSys.eShape.familyHistory.size() + " Sibling " + (myIfsSys.eShape.evolvedSibs) + "/" + myIfsSys.eShape.shapeList.size());
-            }
-        }
-
         drawStringOverlay(rg, log10String("Dots   ", myIfsSys.theVolume.totalSamples));
 
         double memoryUsedMB = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024*1024);

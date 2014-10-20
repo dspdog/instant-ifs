@@ -28,31 +28,14 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
 
     public class Triangle{
         public xyz[] p;
-        //public long[] edgeHash;
-        public int[] vertHash;
-        public boolean windingProcessed;
-        public boolean flipped;
-
         public Triangle(){
-            flipped = false;
-            windingProcessed=false;
             p = new xyz[3];
             //edgeHash = new long[3];
-            vertHash = new int[3];
+
             p[0] = new xyz();
             p[1] = new xyz();
             p[2] = new xyz();
         }
-
-        public int getHashIndex(int hash){
-            for(int i=0; i<3; i++){
-                if(vertHash[i]==hash){
-                    return i;
-                }
-            }
-            return -1;
-        }
-
     }
 
     public class GridCell{
@@ -405,7 +388,7 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
         }
     }
 
-    public void getPotentials(ShapeAnalyzer shapeAnalyzer, ArrayList<Integer>[] zLists, int xMin, int xMax, int yMin, int yMax, int zMin, int zMax){
+    public void getPotentials(ShapeAnalyzer shapeAnalyzer, ArrayList<Integer>[] zLists, int xMin, int xMax, int yMin, int yMax, int zMin, int zMax, int stepSize){
         TetraMarcher.Triangle[] tri = this.generateTriangleArray();
 
         double maxDist = 16;
@@ -414,8 +397,6 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
 
         long numPolys=0;
 
-        int big_inc = 5;
-
         long startTime = System.currentTimeMillis();
 
         double[] oldLinePot;
@@ -423,13 +404,13 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
         shapeAnalyzer.updateGeometry();
         long t1=0,t2=0,t3=0,t4=0;
         System.out.println("ZMINMAX " + zMin + " " + zMax);
-        int _zmin = Math.max(big_inc, zMin);
-        int _zmax = Math.min(1024 - big_inc, zMax);
+        int _zmin = Math.max(stepSize, zMin);
+        int _zmax = Math.min(1024 - stepSize, zMax);
 
         long totalPolyTime = 0;
         long totalZTime = 0;
 
-        for(z=_zmin; z<_zmax; z+=big_inc){
+        for(z=_zmin; z<_zmax; z+=stepSize){
             setArrayUsingList(zLists[(int)z], shapeAnalyzer.ZList);
             shapeAnalyzer.updateZList(zLists[(int)z].size());
 
@@ -439,24 +420,24 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
             totalPolyTime+=(t4-t3);
 
             t1 = System.currentTimeMillis();
-            shapeAnalyzer.getAllPotentialsByZ(z,big_inc, (int)maxDist);
+            shapeAnalyzer.getAllPotentialsByZ(z,stepSize, (int)maxDist);
             t2 = System.currentTimeMillis();
             oldLinePot = shapeAnalyzer.linePot.clone();
-            shapeAnalyzer.getAllPotentialsByZ(z+big_inc,big_inc, (int)maxDist);
+            shapeAnalyzer.getAllPotentialsByZ(z+stepSize,stepSize, (int)maxDist);
 
             t3 = System.currentTimeMillis();
             float edgeThresh = 1.0f;
 
-            int _xmin = Math.max(big_inc, xMin);
-            int _xmax = Math.min(1024-big_inc, xMax);
+            int _xmin = Math.max(stepSize, xMin);
+            int _xmax = Math.min(1024-stepSize, xMax);
 
-            int _ymin = Math.max(big_inc, yMin);
-            int _ymax = Math.min(1024-big_inc, yMax);
+            int _ymin = Math.max(stepSize, yMin);
+            int _ymax = Math.min(1024-stepSize, yMax);
 
-            for(x=_xmin; x<_xmax; x+=big_inc){
-                for(y=_ymin; y<_ymax; y+=big_inc){
+            for(x=_xmin; x<_xmax; x+=stepSize){
+                for(y=_ymin; y<_ymax; y+=stepSize){
                     numPolys += this.PolygoniseGrid(
-                            this.generateCell(x, y, z, big_inc, oldLinePot, shapeAnalyzer.linePot),
+                            this.generateCell(x, y, z, stepSize, oldLinePot, shapeAnalyzer.linePot),
                             iso,
                             tri);
                 }
@@ -498,7 +479,7 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
     public void meshLabFix(String fileName){
         try {
             Runtime runTime = Runtime.getRuntime();
-            Process process = runTime.exec("C:\\Program Files\\VCG\\MeshLab\\meshlabserver.exe -s ./instant-ifs/myscript2.mlx -i "+fileName+".stl -o " + fileName + "B.obj");
+            Process process = runTime.exec("C:\\Program Files\\VCG\\MeshLab\\meshlabserver.exe -s ./instant-ifs/myscript2.mlx -i "+fileName+".stl -o " + fileName + "_processed.obj");
 
             InputStream inputStream = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(inputStream);

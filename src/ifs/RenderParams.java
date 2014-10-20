@@ -61,8 +61,6 @@ final class RenderParams implements java.io.Serializable {
     boolean rightEye;
     boolean postProcess;
 
-    ScoreParams scoreParams;
-
     int dotsPerPDF;
 
     int smearWobbleIntensity;
@@ -108,7 +106,6 @@ final class RenderParams implements java.io.Serializable {
         odbZ = new OneDBuffer(50, smearSmooth,wobbleRandomSeed);
         rightEye=true;
         bgColor = new Color(0,112/2,184/2); //half darkened spanish blue
-        scoreParams = new ScoreParams(ScoreParams.Presets.MIN_DistSurface);
 
         cartoonMode=true;
         savedDots=0;

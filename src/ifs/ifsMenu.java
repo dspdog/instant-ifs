@@ -99,7 +99,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
                 ifsPt editPt = new ifsPt();
                 if(myIfsSys.evolutionDescSelected){
-                    editPt = myIfsSys.eShape.mutationDescriptorPt;
+                    editPt = myIfsSys.mutationDescriptorPt;
                 }else{
                     editPt = myIfsSys.theShape.selectedPt;
                 }
@@ -284,8 +284,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         panel.setLayout(layout);
         layout.putConstraint(SpringLayout.NORTH, ptLabel, topPad, SpringLayout.NORTH, panel);
 
-        generationLabel = new JLabel("0 Sibling 0/"+myIfsSys.eShape.sibsPerGen);
-
         //((JLabel)addLabeled(generationLabel, layout, "Generation", panel)).addComponentListener(null);
 
         WebButton ParentsButton = new WebButton("", new ImageIcon("./instant-ifs/icons/parents.png"));
@@ -324,38 +322,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 LockButton, PlayButton );
         ((WebButtonGroup)addLabeled(iconsGroup, layout, "", panel, true)).addComponentListener(null);
 
-        String[] modeStrings = {
-                ScoreParams.Presets.MAX_SURFACE.toString(),
-                ScoreParams.Presets.MAX_SurfaceVolume.toString(),
-                ScoreParams.Presets.MAX_TRAVEL.toString(),
-                ScoreParams.Presets.MAX_VOLUME.toString(),
-                ScoreParams.Presets.MIN_DistSurface.toString(),
-                ScoreParams.Presets.MIN_DistVolume.toString(),
-                "_CUSTOM"
-        };
-
-        evolveModeCombo = new JComboBox(modeStrings);
         ((JLabel)addLabeled(new JLabel(), layout, "", panel, true)).addComponentListener(null);
-        ((JComboBox)addLabeled(evolveModeCombo, layout, "Score By", panel)).addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JComboBox cb = (JComboBox) e.getSource();
-                if (cb.getSelectedItem() == ScoreParams.Presets.MAX_SURFACE.toString()) {
-                    myIfsSys.rp.scoreParams = new ScoreParams(ScoreParams.Presets.MAX_SURFACE);
-                } else if (cb.getSelectedItem() == ScoreParams.Presets.MAX_SurfaceVolume.toString()) {
-                    myIfsSys.rp.scoreParams = new ScoreParams(ScoreParams.Presets.MAX_SurfaceVolume);
-                }else if (cb.getSelectedItem() == ScoreParams.Presets.MAX_TRAVEL.toString()) {
-                    myIfsSys.rp.scoreParams = new ScoreParams(ScoreParams.Presets.MAX_TRAVEL);
-                }else if (cb.getSelectedItem() == ScoreParams.Presets.MAX_VOLUME.toString()) {
-                    myIfsSys.rp.scoreParams = new ScoreParams(ScoreParams.Presets.MAX_VOLUME);
-                }else if (cb.getSelectedItem() == ScoreParams.Presets.MIN_DistSurface.toString()) {
-                    myIfsSys.rp.scoreParams = new ScoreParams(ScoreParams.Presets.MIN_DistSurface);
-                }else if (cb.getSelectedItem() == ScoreParams.Presets.MIN_DistVolume.toString()) {
-                    myIfsSys.rp.scoreParams = new ScoreParams(ScoreParams.Presets.MIN_DistVolume);
-                }
-
-                myIfsSys.eShape.myScoreParams = myIfsSys.rp.scoreParams;
-            }
-        });
 
         evolveIntensitySpinner=new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000));
         evolveSpeedSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 1000));
@@ -626,13 +593,13 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
     public void updateSideMenu(){
         autoChange = true;
-        generationLabel.setText(myIfsSys.eShape.familyHistory.size() + " Sibling " + myIfsSys.eShape.shapeIndex+"/"+myIfsSys.eShape.sibsPerGen);
+        //generationLabel.setText(myIfsSys.eShape.familyHistory.size() + " Sibling " + myIfsSys.eShape.shapeIndex+"/"+myIfsSys.eShape.sibsPerGen);
         ptLabel.setText(myIfsSys.theShape.pointSelected+"");
         if(inited && System.currentTimeMillis()-lastUiChange>100){
             if(myIfsSys.theShape.pointSelected !=-1){
                 ifsPt editPt;
                 if(myIfsSys.evolutionDescSelected){
-                    editPt = myIfsSys.eShape.mutationDescriptorPt;
+                    editPt = myIfsSys.mutationDescriptorPt;
                     ptLabel.setText("Evolution Mutation");
                 }else if(myIfsSys.iterationDescSelected){
                     editPt = myIfsSys.theShape.iterationDescriptorPt;
@@ -714,37 +681,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 break;
         }*/
 
-        switch (myIfsSys.eShape.myScoreParams.myPreset){
-            case MAX_SURFACE:
-                //if(evolveModeCombo.getSelectedIndex()!=0)
-                    evolveModeCombo.setSelectedIndex(0);
-                break;
-            case MAX_SurfaceVolume:
-                //if(evolveModeCombo.getSelectedIndex()!=1)
-                    evolveModeCombo.setSelectedIndex(1);
-                break;
-            case MAX_TRAVEL:
-                //if(evolveModeCombo.getSelectedIndex()!=2)
-                    evolveModeCombo.setSelectedIndex(2);
-                break;
-            case MAX_VOLUME:
-                //if(evolveModeCombo.getSelectedIndex()!=3)
-                    evolveModeCombo.setSelectedIndex(3);
-                break;
-            case MIN_DistSurface:
-                //if(evolveModeCombo.getSelectedIndex()!=4)
-                    evolveModeCombo.setSelectedIndex(4);
-                break;
-            case MIN_DistVolume:
-                //if(evolveModeCombo.getSelectedIndex()!=5)
-                    evolveModeCombo.setSelectedIndex(5);
-                break;
-            default:
-                //if(evolveModeCombo.getSelectedIndex()!=6)
-                    evolveModeCombo.setSelectedIndex(6);
-                break;
-        }
-
         autoChange = false;
     }
 
@@ -792,13 +728,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         }catch (Exception _e){
 
         }
-        if(wb.getName()=="parents"){
-            myIfsSys.eShape.parents(myIfsSys.theShape);
-        }else if(wb.getName()=="offspring"){
-            myIfsSys.eShape.offSpring(myIfsSys.theShape, myIfsSys.rp.evolveIntensity);
-        }else if(wb.getName()=="prevsib"){
-            myIfsSys.theShape=myIfsSys.eShape.prevShape(0);
-        }else if(wb.getName()=="lock"){
+        if(wb.getName()=="lock"){
             myIfsSys.theShape.saveToFile("locked.shape");
             myIfsSys.theAnimationThread.shapeReload=!myIfsSys.theAnimationThread.shapeReload;
             if(myIfsSys.theAnimationThread.shapeReload){
@@ -816,8 +746,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 PlayButton.setIcon(new ImageIcon("./instant-ifs/icons/invader_big.png"));
             }
 
-        }else if(wb.getName()=="nextsib"){
-            myIfsSys.theShape=myIfsSys.eShape.nextShape(0);
         }else if(mc.getActionCommand()=="Save Shape..."){
             pdfZImgFile = fc.showSaveDialog(this);
             if(pdfZImgFile == JFileChooser.APPROVE_OPTION){

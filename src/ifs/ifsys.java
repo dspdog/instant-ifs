@@ -22,7 +22,7 @@ final class ifsys extends JPanel
     animationThread theAnimationThread;
     paintThread thePaintThread;
     mainthread[] threads;
-    evolutionThread theEvolutionThread;
+
     int numThreads = 1;//Runtime.getRuntime().availableProcessors()/2;
     boolean quit;
 
@@ -51,7 +51,9 @@ final class ifsys extends JPanel
     RenderBuffer renderBuffer;
     RenderParams rp;
     ifsShape theShape;
-    EvolvingShape eShape;
+
+    ifsPt mutationDescriptorPt = new ifsPt(1,1,1, 1,1,1);
+
     ifsMenu theMenu;
     ifsOverlays overlays;
 
@@ -111,17 +113,12 @@ final class ifsys extends JPanel
 
         thePaintThread = new paintThread();
         theAnimationThread = new animationThread();
-        theEvolutionThread = new evolutionThread();
 
         theShape = new ifsShape();
 
         theVolume = new volume(1024, 1024, 1024);
         theVolume.clear();
 
-
-        //thePdf.thePdfComboMode = pdf3D.comboMode.MIN;
-
-        eShape = new EvolvingShape(theShape, this);
         System.out.println("dubbuff?" + this.isDoubleBuffered());
 
         this.setDoubleBuffered(true);
@@ -250,7 +247,7 @@ final class ifsys extends JPanel
                         }
                         //renderBuffer.totalLines=0;
                         theVolume.changed=true;
-                        theShape = theShape.getPerturbedShape(eShape.mutationDescriptorPt.intensify(rp.evolveIntensity/100f), false);
+                        theShape = theShape.getPerturbedShape(mutationDescriptorPt.intensify(rp.evolveIntensity/100f), false);
                         rp.odbScale.smooth();
                         rp.odbRotationRoll.smooth();
                         rp.odbX.smooth();
@@ -275,47 +272,6 @@ final class ifsys extends JPanel
         }
 
         public animationThread(){
-        }
-    }
-
-    public class evolutionThread extends  Thread{
-        public void run(){
-            while(!quit)
-                try{
-                    if(eShape.evolving){
-                        if(theVolume.myVolumeChange < 5000){
-                            if(theVolume.doneClearing){
-                                if(theShape.disqualified){
-                                    theShape.evolutionDisqualified = true;
-                                }else{
-                                    theShape.score = theVolume.getScore(rp.scoreParams);
-                                }
-
-                                float oldScore = theShape.score+0;
-                                eShape.evolvedSibs++;
-                                System.out.println("new sib! score " + oldScore + " - highscore " + eShape.getHighestScoreShape().score);
-
-                                theShape = eShape.nextShape(theShape.score);
-                                if(eShape.genRollOver){
-                                    System.out.println("new generation...");
-                                    imageUtils.saveImg(startTimeLog, rp.screenwidth, rp.screenheight, renderBuffer.pixels);
-                                    eShape.offSpring(eShape.getHighestScoreShape(), rp.evolveIntensity);
-                                }else{
-                                    //theMenu.updateEvolutionTable();
-                                }
-
-                                clearframe();
-                                gamefunc();
-                                theVolume.clear();
-                                theVolume.myVolumeChange=9999999;
-                            }
-                        }
-                    }
-                    sleep(eShape.evolvePeriod);
-                }
-                catch(InterruptedException e) {
-                    e.printStackTrace();
-                }
         }
     }
 
@@ -357,7 +313,7 @@ final class ifsys extends JPanel
         started = true;
 
         thePaintThread.start();
-        theEvolutionThread.start();
+
         theAnimationThread.start();
         clearframe();
     }
@@ -916,42 +872,10 @@ final class ifsys extends JPanel
                 break;
         }
 
-        if(e.getKeyChar() == 'w'){
-            eShape.parents(theShape);
-        }
-
-        if(e.getKeyChar() == 'e'){
-            eShape.offSpring(theShape, rp.evolveIntensity);
-            clearframe();
-            gamefunc();
-        }
-
-        if(e.getKeyChar() == 'z'){
-            theShape=eShape.nextShape(0);
-            clearframe();
-            gamefunc();
-        }
-
-        if(e.getKeyChar() == 'x'){
-            theShape=eShape.prevShape(0);
-            clearframe();
-            gamefunc();
-        }
-
         if(e.getKeyChar() == 'p'){
             rp.postProcess=!rp.postProcess;
             clearframe();
             gamefunc();
-        }
-
-        if(e.getKeyChar() == 'r'){
-            rp.savingDots=!rp.savingDots;
-            //rp.savedDots=0;
-            if(!rp.savingDots){
-                theVolume._saveToBinarySTL();
-            }
-            theVolume.renderMode = rp.savingDots ? volume.RenderMode.VOLUMETRIC : volume.RenderMode.PROJECT_ONLY;
-            System.out.println("render mode: " + theVolume.renderMode);
         }
 
         if(e.getKeyChar() == 't'){
@@ -972,7 +896,7 @@ final class ifsys extends JPanel
         if(e.getKeyChar() == '6'){
             System.out.println("getting potentials!");
             TetraMarcher tm = new TetraMarcher();
-            tm.getPotentials(shapeAnalyzer, zLists, xMin, xMax, yMin, yMax, zMin, zMax);
+            tm.getPotentials(shapeAnalyzer, zLists, xMin, xMax, yMin, yMax, zMin, zMax, 5);
             if(tm.shapeInvalid){
                 System.out.println("shape invalid, ignoring...");
             }else{
@@ -986,26 +910,6 @@ final class ifsys extends JPanel
             clearframe();
             gamefunc();
             System.out.println("3d projection: " + rp.threeD);
-        }
-
-        if(e.getKeyChar() == 'q'){
-            //rp.zMin = 512;rp.zMax=1024;
-            //rp.drawGrid=false;
-            //theShape.setToPreset(0);
-            theShape.setToPreset(9);
-            theVolume.clear();
-            rp.iterations=8;
-            rp.cartoonMode =true;
-            rp.brightnessMultiplier=1;
-            rp.smearPDF=true;
-            rp.renderThrottling=true;
-            rp.shutterPeriod =500;
-            rp.savingDots=true;
-            rp.savedDots=0;
-            theVolume.renderMode = volume.RenderMode.VOLUMETRIC;
-            eShape.offSpring(theShape, rp.evolveIntensity);
-            eShape.evolving=!eShape.evolving;
-            System.out.println("evolving: " + eShape.evolving);
         }
     }
 

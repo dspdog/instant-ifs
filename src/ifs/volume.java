@@ -1,10 +1,5 @@
 package ifs;
 
-import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.channels.FileChannel;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 final class volume {
@@ -37,7 +32,6 @@ final class volume {
 
     double accumilatedDistance = 0;
     long averageDistanceSamples = 0;
-    double averageDistance = 0;
 
     Date startDate;
 
@@ -105,21 +99,6 @@ final class volume {
         doneClearing=true;
      }
 
-    public float getScore(ScoreParams sp){
-        float avD = (float)averageDistance;
-        float AvDS = (float)averageDistance/mySurfaceArea;
-        float AvDV = (float)averageDistance/myVolume;
-        float SV = (float)mySurfaceArea/myVolume;
-
-        float score = myVolume * sp.volumeScale +
-                      mySurfaceArea * sp.surfaceScale +
-                      avD*sp.avD_Scale +
-                      AvDS * sp.AvDS_Scale +
-                      AvDV * sp.AvDV_Scale +
-                      SV * sp.SV_Scale;
-        return score;
-    }
-
     public boolean volumeContains(ifsPt pt){
         return (pt.x>1 && pt.y>1 && pt.z>1 && pt.x<width-1 && pt.y<height-1);
     }
@@ -175,70 +154,5 @@ final class volume {
             pts[1]=new ifsPt(p2);
             pts[2]=new ifsPt(p3);
         }
-    }
-
-    public void _saveToBinarySTL(){
-        mySurfaceArea=0;
-        myVolume=0;
-
-        String timeLog = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate)+ ".stl";
-        //File logFile = new File(timeLog);
-
-        for(int _x=1; _x<width-1;_x++){
-            for(int _y=1; _y<height-1;_y++){
-                for(int _z=1; _z<depth-1;_z++){
-                    //boolean currentValid=volume.isNotEmpty(_x,_y,_z);
-                    //if(currentValid){
-                    //    addCubeTriangles( _x, _y, _z);
-                    //}
-                }
-            }
-
-            if(_x%16==0){
-                System.out.println(_x + "/" + width + " generated - " + (int)(100.0*_x/width)+"%");
-            }
-        }
-
-        System.out.println("saving stl...");
-        byte[] title = new byte[80];
-
-        try(FileChannel ch=new RandomAccessFile(timeLog , "rw").getChannel())
-        {
-            int totalTriangles = theTriangles.size();
-
-            ByteBuffer bb= ByteBuffer.allocate(10000).order(ByteOrder.LITTLE_ENDIAN);
-            bb.put(title); // Header (80 bytes)
-            bb.putInt(totalTriangles); // Number of triangles (UINT32)
-            int triNo=0;
-            for(ifsTriangle tri : theTriangles){
-                if(triNo<totalTriangles){
-                    bb.putFloat(0).putFloat(0).putFloat(0); //TODO normals?
-                    bb.putFloat(tri.pts[0].x).putFloat(tri.pts[0].y).putFloat(tri.pts[0].z);
-                    bb.putFloat(tri.pts[1].x).putFloat(tri.pts[1].y).putFloat(tri.pts[1].z);
-                    bb.putFloat(tri.pts[2].x).putFloat(tri.pts[2].y).putFloat(tri.pts[2].z);
-                    bb.putShort((short)12); //TODO colors?
-
-                    bb.flip();
-                    ch.write(bb);
-                    bb.clear();
-
-                    triNo++;
-                    if(triNo%256==0){
-                        System.out.println("TRI "+triNo+"/"+totalTriangles + " saved - " + (int)(100.0*triNo/totalTriangles)+"%");
-                    }
-                }
-            }
-            ch.close();
-
-            System.out.println("done! " + timeLog);
-
-            System.out.println("SURFACE " + mySurfaceArea);
-            System.out.println("VOLUME " + myVolume);
-            System.out.println("TRIANGLES " + theTriangles.size());
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
     }
 }
