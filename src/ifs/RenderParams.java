@@ -25,6 +25,8 @@ final class RenderParams implements java.io.Serializable {
     int samplesPerFrame;
     int iterations;
 
+    int maxBranchDist;
+
     float jitter;
 
     double brightnessMultiplier;
@@ -84,6 +86,9 @@ final class RenderParams implements java.io.Serializable {
     OneDBuffer odbY = new OneDBuffer(40,1,1);
     OneDBuffer odbZ = new OneDBuffer(50,1,1);
     public RenderParams(){
+
+        maxBranchDist = 100;
+
         pruneThresh=0;
         randomSeed=System.currentTimeMillis()%(65535);
         randomScale=5;

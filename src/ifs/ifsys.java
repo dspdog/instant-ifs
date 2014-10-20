@@ -399,7 +399,7 @@ final class ifsys extends JPanel
         xMax = 0;
         yMax = 0;
         zMax = 0;
-        indexFunction(0, rp.iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd, rp.randomScale, (short)0);
+        indexFunction(0, (int)(rp.iterations/10)+1, rp.iterations%10,  1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd, rp.randomScale, (short)0, rp.maxBranchDist);
     }
 
     ArrayList<Integer>[] zLists = new ArrayList[1024];
@@ -423,10 +423,6 @@ final class ifsys extends JPanel
             zLists[i].add(index);
             count++;
         }
-
-        if(count%10000==0){
-            System.out.println(count);
-        }
     }
 
     public void gamefunc(){
@@ -445,7 +441,8 @@ final class ifsys extends JPanel
 
     int zMin, zMax, xMin, xMax, yMin, yMax;
 
-    private void indexFunction(int _index, int _iterations, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt, Random _rnd, float rndScale, short dist){
+    private void indexFunction(int _index, int _iterations, int _subiters, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt, Random _rnd, float rndScale, short dist, int maxBranchDist){
+
         ifsPt dpt = new ifsPt(_dpt);
         ifsPt cumulativeRotation = new ifsPt(_cumulativeRotation);
         ifsPt thePt = theShape.pts[_index];
@@ -509,7 +506,7 @@ final class ifsys extends JPanel
                 indexCount++;
                 if(branchRandom.nextDouble()>branchThresh){
                     dist+=_cumulativeScale*256; //256 is arbitrary
-                    indexFunction(i, _iterations-1, _cumulativeScale, cumulativeRotation, dpt, _rnd, rndScale, dist);
+                    indexFunction(i, _iterations-1, _subiters, _cumulativeScale, cumulativeRotation, dpt, _rnd, rndScale, dist, maxBranchDist);
                 }
             }
         }
@@ -738,19 +735,7 @@ final class ifsys extends JPanel
         }
     }
 
-    public void getPotentials(){
-        System.out.println("getting potentials!");
-        TetraMarcher tm = new TetraMarcher();
-        tm.getPotentials(shapeAnalyzer, zLists, xMin, xMax, yMin, yMax, zMin, zMax, (int)theShape.isoStepSize);
-        if(tm.shapeInvalid){
-            System.out.println("shape invalid, ignoring...");
-        }else{
-            System.out.println("saving shape to records...");
 
-            recordsKeeper rk = new recordsKeeper().loadFromFile(recordsKeeper.defaultName);
-            rk.submit(theShape, tm);
-        }
-    }
 
     public void keyReleased(KeyEvent e){
         if(e.getKeyCode()==KeyEvent.VK_ALT)
@@ -903,7 +888,8 @@ final class ifsys extends JPanel
         }
 
         if(e.getKeyChar() == '6'){
-            getPotentials();
+            recordsKeeper rk = new recordsKeeper();
+            rk.getPotentials(this);
         }
 
         if(e.getKeyChar() == '3'){

@@ -377,7 +377,6 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
         return timeLog1;
     }
 
-
     public static void setArrayUsingList(List<Integer> integers, int[] array)
     {
         int len = integers.size();
@@ -489,7 +488,7 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
             String line = null;
             while ( (line = br.readLine()) != null){
                 System.out.println(line);
-                if(line.contains("watertight")){
+                if(line.contains("watertight") || line.contains("Failed")){
                     shapeInvalid=true;
                     break;
                 }

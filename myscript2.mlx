@@ -2,5 +2,8 @@
 <FilterScript>
  <filter name="Remove Duplicated Vertex"/>
  <filter name="Re-Orient all faces coherentely"/>
+ <filter name="Compute Vertex Normals">
+  <Param enum_cardinality="4" type="RichEnum" value="0" enum_val0="None (avg)" name="weightMode" enum_val1="By Angle" enum_val2="By Area" enum_val3="As defined by N. Max" description="Weighting Mode:" tooltip=""/>
+ </filter>
  <xmlfilter name="Compute Geometric Measures"/>
 </FilterScript>

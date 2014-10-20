@@ -28,6 +28,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     SliderWithSpinner brightnessSpinner;
     SliderWithSpinner samplesSpinner;
     SliderWithSpinner iterationsSpinner;
+    SliderWithSpinner maxDistSpinner;
 
     SliderWithSpinner potentialSpinner;
     SliderWithSpinner delaySpinner;
@@ -115,6 +116,8 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 editPt.rotationRoll = (float)(Double.parseDouble(rollSpinner.getValue()+"")/180.0*Math.PI);
 
                 myIfsSys.rp.iterations = Integer.parseInt(iterationsSpinner.getValue() + "");
+                myIfsSys.rp.maxBranchDist = Integer.parseInt(maxDistSpinner.getValue() + "");
+
                 //myIfsSys.rp.dotSize = Integer.parseInt(dotSizeSpinner.getValue().toString());
                 myIfsSys.rp.brightnessMultiplier = Double.parseDouble(brightnessSpinner.getValue()+"");
                 myIfsSys.rp.samplesPerFrame = (int)Double.parseDouble(samplesSpinner.getValue()+"");
@@ -303,8 +306,12 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
 
 
-        iterationsSpinner =new SliderWithSpinner(new SliderWithSpinnerModel(3, 0, 10));
+        iterationsSpinner =new SliderWithSpinner(new SliderWithSpinnerModel(30, 0, 100));
         ((SliderWithSpinner)addLabeled(iterationsSpinner, layout, "Iterations", panel)).addChangeListener(updateAndClear);
+
+        maxDistSpinner =new SliderWithSpinner(new SliderWithSpinnerModel(30, 0, 1000));
+        ((SliderWithSpinner)addLabeled(maxDistSpinner, layout, "MaxDist", panel)).addChangeListener(updateAndClear);
+
 
         pruneThreshSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(10, 0, 100));
         ((SliderWithSpinner)addLabeled(pruneThreshSpinner, layout, "Prune", panel)).addChangeListener(updateAndClear);
@@ -634,6 +641,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 brightnessSpinner.setValue((int)myIfsSys.rp.brightnessMultiplier);
                 samplesSpinner.setValue(myIfsSys.rp.samplesPerFrame);
                 iterationsSpinner.setValue(myIfsSys.rp.iterations);
+                maxDistSpinner.setValue(myIfsSys.rp.maxBranchDist);
                 potentialSpinner.setValue(myIfsSys.rp.potentialRadius);
                 delaySpinner.setValue((int)myIfsSys.rp.shutterPeriod);
 

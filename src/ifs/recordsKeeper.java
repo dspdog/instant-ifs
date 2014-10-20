@@ -47,6 +47,21 @@ public class recordsKeeper implements java.io.Serializable{
         System.out.println("total records: " + records.size());
     }
 
+    public void getPotentials(ifsys is){
+        int res = (1024/(int)is.theShape.isoStepSize);
+        System.out.println("getting potentials! step size " + (int)is.theShape.isoStepSize + " res " + res);
+        TetraMarcher tm = new TetraMarcher();
+        tm.getPotentials(is.shapeAnalyzer, is.zLists, is.xMin, is.xMax, is.yMin, is.yMax, is.zMin, is.zMax, (int)is.theShape.isoStepSize);
+        if(tm.shapeInvalid){
+            System.out.println("shape invalid, ignoring...");
+        }else{
+            System.out.println("saving shape to records...");
+
+            loadFromFile(recordsKeeper.defaultName);
+            submit(is.theShape, tm);
+        }
+    }
+
     public void saveToFile(String filename){
         try{
             FileOutputStream fileOut =
