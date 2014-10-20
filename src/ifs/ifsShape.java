@@ -2,6 +2,7 @@ package ifs;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 final class ifsShape implements java.io.Serializable {
     public ifsPt pts[];
@@ -13,6 +14,8 @@ final class ifsShape implements java.io.Serializable {
     public boolean stateSaved;
     public boolean autoScale;
     public boolean evolutionDisqualified;
+
+    public double isoStepSize ;
 
     public RenderParams rp;
 
@@ -27,6 +30,9 @@ final class ifsShape implements java.io.Serializable {
     boolean hasDrawList = false;
 
     public ifsShape(){
+
+        isoStepSize = 5;
+
         hasDrawList = false;
         evolutionDisqualified=false;
         disqualified=false;
@@ -126,6 +132,10 @@ final class ifsShape implements java.io.Serializable {
 
     public ifsShape getPerturbedShape(ifsPt intensityDescriptor, boolean staySymmetric){
         ifsShape pShape = new ifsShape();
+
+        pShape.isoStepSize += new Random().nextGaussian();
+        pShape.isoStepSize = Math.max(2d, pShape.isoStepSize);
+
         pShape.pointsInUse=this.pointsInUse;
         long seed = (long)(Math.random()*Long.MAX_VALUE);
 

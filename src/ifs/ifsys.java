@@ -82,14 +82,9 @@ final class ifsys extends JPanel
     MemoryImageSource renderImageSource;
     Image misImage;
 
-    recordsKeeper rk;
-
     public ifsys(){
 
         initZLists();
-
-        rk = new recordsKeeper();
-        rk = rk.loadFromFile(rk.defaultName);
 
         evolutionDescSelected=false;
         iterationDescSelected=false;
@@ -743,6 +738,20 @@ final class ifsys extends JPanel
         }
     }
 
+    public void getPotentials(){
+        System.out.println("getting potentials!");
+        TetraMarcher tm = new TetraMarcher();
+        tm.getPotentials(shapeAnalyzer, zLists, xMin, xMax, yMin, yMax, zMin, zMax, (int)theShape.isoStepSize);
+        if(tm.shapeInvalid){
+            System.out.println("shape invalid, ignoring...");
+        }else{
+            System.out.println("saving shape to records...");
+
+            recordsKeeper rk = new recordsKeeper().loadFromFile(recordsKeeper.defaultName);
+            rk.submit(theShape, tm);
+        }
+    }
+
     public void keyReleased(KeyEvent e){
         if(e.getKeyCode()==KeyEvent.VK_ALT)
             altDown=false;
@@ -894,15 +903,7 @@ final class ifsys extends JPanel
         }
 
         if(e.getKeyChar() == '6'){
-            System.out.println("getting potentials!");
-            TetraMarcher tm = new TetraMarcher();
-            tm.getPotentials(shapeAnalyzer, zLists, xMin, xMax, yMin, yMax, zMin, zMax, 5);
-            if(tm.shapeInvalid){
-                System.out.println("shape invalid, ignoring...");
-            }else{
-                System.out.println("saving shape to records...");
-                rk.submit(theShape, tm);
-            }
+            getPotentials();
         }
 
         if(e.getKeyChar() == '3'){

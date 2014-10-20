@@ -462,16 +462,18 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
         long meshStartTime = System.currentTimeMillis();
         this.meshLabFix(theFileName);
         long meshSaveTime = System.currentTimeMillis()-meshStartTime;
-        System.out.println("SURFACE " + theSurfaceArea + " VOLUME " + theVolume + " RATIO s/v " + (theSurfaceArea/(theVolume+0.00001d)));
+        System.out.println("\n\n\tSURFACE " + theSurfaceArea + " VOLUME " + theVolume + " RATIO s/v " + (theSurfaceArea/(theVolume+0.00001d))
+                + "\n\tDIAG " + theDiagonal + " RATIO s/(vd) " + (theSurfaceArea/(theVolume+0.00001d)/theDiagonal)+"\n\n");
 
         totalTime = (System.currentTimeMillis() - startTime);
-        System.out.println("done - built in " + buildTime/1000.0 + "s, saved in " + saveTime/1000.0 + "s, meshlabeded in " + meshSaveTime/1000.0 + "s" );
-        System.out.println("build:gpu potn time elapsed " + totalZTime/1000.0 + "s");
-        System.out.println("build:cpu poly time elapsed " + totalPolyTime/1000.0 + "s");
+        System.out.println("\tdone - built in " + buildTime/1000.0 + "s, saved in " + saveTime/1000.0 + "s, meshlabeded in " + meshSaveTime/1000.0 + "s" );
+        System.out.println("\t\tbuild: gpu potn time elapsed " + totalZTime/1000.0 + "s");
+        System.out.println("\t\tbuild: cpu poly time elapsed " + totalPolyTime/1000.0 + "s\n");
     }
 
     public double theVolume=0;
     public double theSurfaceArea=0;
+    public double theDiagonal=0;
     public boolean shapeInvalid = false;
     public String theFileName = "";
     public long totalTime =0;
@@ -487,15 +489,18 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
             String line = null;
             while ( (line = br.readLine()) != null){
                 System.out.println(line);
-                if(line.indexOf("watertight") != -1){
+                if(line.contains("watertight")){
                     shapeInvalid=true;
                     break;
                 }
-                if(line.indexOf("Mesh Volume") != -1){
+                if(line.contains("Mesh Volume")){
                     theVolume = Double.parseDouble(line.substring(line.lastIndexOf(" "),line.length()));
                 }
-                if(line.indexOf("Mesh Surface") != -1){
+                if(line.contains("Mesh Surface")){
                     theSurfaceArea = Double.parseDouble(line.substring(line.lastIndexOf(" "),line.length()));
+                }
+                if(line.contains("Bounding Box Diag")){
+                    theDiagonal = Double.parseDouble(line.substring(line.lastIndexOf("Diag ")+5,line.length()));
                 }
             }
         } catch (IOException e) {

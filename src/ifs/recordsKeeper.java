@@ -14,7 +14,7 @@ import java.util.Date;
 public class recordsKeeper implements java.io.Serializable{
 
     public ArrayList<row> records = new ArrayList<>();
-    public final String defaultName = "recordskeeper.shapes";
+    public static final String defaultName = "recordskeeper.shapes";
 
     public recordsKeeper(){
         records = new ArrayList<>();
