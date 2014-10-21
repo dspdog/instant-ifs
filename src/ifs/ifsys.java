@@ -399,7 +399,7 @@ final class ifsys extends JPanel
         xMax = 0;
         yMax = 0;
         zMax = 0;
-        indexFunction(0, (int)(rp.iterations/10)+1, rp.iterations%10,  1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd, rp.randomScale, (short)0, rp.maxBranchDist);
+        indexFunction(0, (int)(rp.iterations/100)+1, rp.iterations%100,  1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd, rp.randomScale, (short)0, rp.maxBranchDist);
     }
 
     ArrayList<Integer>[] zLists = new ArrayList[1024];
@@ -452,6 +452,10 @@ final class ifsys extends JPanel
                 new ifsPt(thePt.rotationPitch+(float)(_rnd.nextGaussian())*rndScale/1000f,
                             thePt.rotationYaw+(float)(_rnd.nextGaussian())*rndScale/1000f,
                             thePt.rotationRoll+(float)(_rnd.nextGaussian())*rndScale/1000f));
+
+        if(_iterations==1){
+            _cumulativeScale = _cumulativeScale * _subiters/100.0f;
+        }
 
         ifsPt rpt = thePt.subtract(centerPt).scale(_cumulativeScale).getRotatedPt(cumulativeRotation);
         ifsPt odp = new ifsPt(dpt);

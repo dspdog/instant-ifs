@@ -306,7 +306,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
 
 
-        iterationsSpinner =new SliderWithSpinner(new SliderWithSpinnerModel(30, 0, 100));
+        iterationsSpinner =new SliderWithSpinner(new SliderWithSpinnerModel(30, 0, 1000));
         ((SliderWithSpinner)addLabeled(iterationsSpinner, layout, "Iterations", panel)).addChangeListener(updateAndClear);
 
         maxDistSpinner =new SliderWithSpinner(new SliderWithSpinnerModel(30, 0, 1000));

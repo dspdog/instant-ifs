@@ -145,7 +145,7 @@ final class RenderParams implements java.io.Serializable {
         infoHidden = false;
         usePDFSamples = true;
         guidesHidden = false;
-        iterations = 3;
+        iterations = 450;
         brightnessMultiplier = 2;
         holdFrame=false;
         samplesPerFrame = 8;
