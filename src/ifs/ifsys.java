@@ -441,7 +441,9 @@ final class ifsys extends JPanel
 
     int zMin, zMax, xMin, xMax, yMin, yMax;
 
-    private void indexFunction(int _index, int _iterations, int _subiters, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt, Random _rnd, float rndScale, short dist, int maxBranchDist){
+    private void indexFunction(int _index, int _iterations, int _subiters, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt, Random _rnd, float rndScale, int dist, int distRemaining){
+
+        double WORLD_UNIT_SCALE = 256;
 
         ifsPt dpt = new ifsPt(_dpt);
         ifsPt cumulativeRotation = new ifsPt(_cumulativeRotation);
@@ -501,16 +503,21 @@ final class ifsys extends JPanel
 
             double branchThresh=rp.pruneThresh*0.01d;
             Random branchRandom = new Random();
-
             _cumulativeScale *= thePt.scale/centerPt.scale;
             _cumulativeScale *= (float)(1.0f - _rnd.nextGaussian()*rndScale/3000f);
-            for(int i=1; i<theShape.pointsInUse; i++){
 
+            for(int i=1; i<theShape.pointsInUse; i++){
                 branchRandom.setSeed(indexCount*rp.randomSeed*i);
                 indexCount++;
                 if(branchRandom.nextDouble()>branchThresh){
-                    dist+=_cumulativeScale*256; //256 is arbitrary
-                    indexFunction(i, _iterations-1, _subiters, _cumulativeScale, cumulativeRotation, dpt, _rnd, rndScale, dist, maxBranchDist);
+                    int inc = (int)(_cumulativeScale*WORLD_UNIT_SCALE);
+                    if(distRemaining>inc){
+                        indexFunction(i, _iterations-1, _subiters, _cumulativeScale, cumulativeRotation, dpt, _rnd, rndScale, dist, distRemaining-inc);
+                    }else{
+                        _subiters = 100*distRemaining/inc;
+                        indexFunction(i, 1, _subiters, _cumulativeScale, cumulativeRotation, dpt, _rnd, rndScale, dist, 0);
+                    }
+
                 }
             }
         }
