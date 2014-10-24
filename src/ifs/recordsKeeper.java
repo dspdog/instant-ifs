@@ -7,9 +7,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 
 public class recordsKeeper implements java.io.Serializable{
 
@@ -25,29 +23,54 @@ public class recordsKeeper implements java.io.Serializable{
         public double theSurfaceArea=0;
         public String theFileName = "";
         public String timeStamp;
+        public long ltimeStamp;
         public long totalTime =0;
+        public long generation;
         public String theShapeFile;
 
-        public row(double vol, double surface, String fileName, long time, ifsShape shape){
+        public row(double vol, double surface, String fileName, long time, ifsShape shape, long gen, long sib){
+            ltimeStamp = System.currentTimeMillis();
             theVolume=vol;
             theSurfaceArea=surface;
             theFileName=fileName;
             totalTime=time;
+            generation=gen;
             Date startDate = Calendar.getInstance().getTime();
             timeStamp = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate);
-            theShapeFile=System.currentTimeMillis()+"_"+(int)((Math.random()*10000)%10000)+".shape";
+            theShapeFile="gen" + gen + "_" + System.currentTimeMillis()%1000+"_"+(int)((Math.random()*1000)%1000)+".shape";
             shape.saveToFile(theShapeFile);
+        }
+
+        public double evolutionScore(){ //TODO use diagonal
+            return theSurfaceArea/theVolume;
         }
     }
 
-    public void submit(ifsShape theShape, TetraMarcher tm){
-        row newrow = new row(tm.theVolume, tm.theSurfaceArea, tm.theFileName, tm.totalTime, theShape);
+    public void submit(ifsShape theShape, TetraMarcher tm, int generationNo, int sibNo){
+        row newrow = new row(tm.theVolume, tm.theSurfaceArea, tm.theFileName, tm.totalTime, theShape, generationNo, sibNo);
         records.add(newrow);
         saveToFile(defaultName);
         System.out.println("total records: " + records.size());
     }
 
-    public void getPotentials(ifsys is){
+    public void sortRecordsBySuitability(){
+        Collections.sort(records, new Comparator<row>() {
+            @Override
+            public int compare(row o1, row o2) {
+                double d1 = o1.evolutionScore();
+                double d2 = o2.evolutionScore();
+                if(d1>d2){
+                    return 1;
+                }
+                if(d2>d1){
+                    return -1;
+                }
+                return 0;
+            }
+        });
+    }
+
+    public void getPotentials(ifsys is, int generationNo, int sibNo){
         int res = (1024/(int)is.theShape.isoStepSize);
         System.out.println("getting potentials! step size " + (int)is.theShape.isoStepSize + " res " + res);
         TetraMarcher tm = new TetraMarcher();
@@ -58,7 +81,7 @@ public class recordsKeeper implements java.io.Serializable{
             System.out.println("saving shape to records...");
 
             loadFromFile(recordsKeeper.defaultName);
-            submit(is.theShape, tm);
+            submit(is.theShape, tm, generationNo, sibNo);
         }
     }
 
