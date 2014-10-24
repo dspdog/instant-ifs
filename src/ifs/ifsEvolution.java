@@ -64,22 +64,27 @@ public class ifsEvolution {
         }
     }
 
+    String currentRecord="";
     public void recordHistory(int g, int totalGens, recordsKeeper rk){
         rk.sortRecordsBySuitability();
         String addition = rk.records.get(0).timeStamp + ": generation " + g + "/" + totalGens + ": best "
                            + rk.records.get(0).theShapeFile + " score " + rk.records.get(0).evolutionScore() + "<br/>\t\r\n";
-        historyString = historyString + addition;
 
-        PrintWriter historyOut = null;
-        try {
-            historyOut = new PrintWriter("history.html");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        if(currentRecord!=rk.records.get(0).theShapeFile){
+            currentRecord = rk.records.get(0).theShapeFile;
+
+            historyString = historyString + addition;
+
+            PrintWriter historyOut = null;
+            try {
+                historyOut = new PrintWriter("history.html");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            historyOut.write(historyString);
+            historyOut.close();
+            System.out.println("HISTORY: " + addition);
         }
-
-        historyOut.write(historyString);
-        historyOut.close();
-        System.out.println("HISTORY: " + addition);
     }
-
 }
