@@ -43,7 +43,7 @@ public class recordsKeeper implements java.io.Serializable{
             shape.saveToFile(theShapeFile);
         }
 
-        public double evolutionScore(){ 
+        public double evolutionScore(){
             return theSurfaceArea/theVolume/theDiagonal;
         }
     }
@@ -81,7 +81,6 @@ public class recordsKeeper implements java.io.Serializable{
             System.out.println("shape invalid, ignoring...");
         }else{
             System.out.println("saving shape to records...");
-
             submit(theShape, tm, generationNo, sibNo);
         }
     }

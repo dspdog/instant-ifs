@@ -133,18 +133,18 @@ final class ifsShape implements java.io.Serializable {
 
         _perturbedVersions = new ArrayList<>();
         for(int i=0; i<total; i++){
-            _perturbedVersions.add(this._getPerturbedShape(intensityDescriptor, staySymmetric));
+            _perturbedVersions.add(this.getPerturbedShape(intensityDescriptor, staySymmetric));
         }
         return  _perturbedVersions;
     }
 
-    public ifsShape getPerturbedShape(ifsPt intensityDescriptor, boolean staySymmetric){
+    /*public ifsShape _getPerturbedShape(ifsPt intensityDescriptor, boolean staySymmetric){
         Random rnd = new Random();
         rnd.setSeed(System.currentTimeMillis());
         return getPerturbedVersions(100,intensityDescriptor,staySymmetric).get((int)(rnd.nextDouble()*100f));
-    }
+    }*/
 
-    public ifsShape _getPerturbedShape(ifsPt intensityDescriptor, boolean staySymmetric){
+    public ifsShape getPerturbedShape(ifsPt intensityDescriptor, boolean staySymmetric){
 
         ifsShape pShape = new ifsShape(this);
 

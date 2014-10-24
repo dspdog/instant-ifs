@@ -29,8 +29,11 @@ public class ifsEvolution {
 
         System.out.println("start of evolution...");
 
-        int totalSibs = 3;
+        int totalSibs = 10;
         int totalGens = 10000;
+
+        Random rnd = new Random();
+        deleteOldFiles.deleteFilesOlderThanNMin(5, ".");
 
         for(int g=0; g<totalGens; g++){
 
@@ -47,7 +50,7 @@ public class ifsEvolution {
             }
             for(int i=0; i<totalSibs; i++){
                 if(seed!="")theShape = new ifsShape().loadFromFile(seed);
-                theShape = theShape.getPerturbedShape(mutationDescriptor.intensify(evolveIntensity), false);
+                theShape = theShape.getPerturbedShape(mutationDescriptor.intensify((float)(Math.abs(evolveIntensity*rnd.nextGaussian()))), false);
                 is.theShape = theShape;
                 is.reIndex();
                 is.clearframe();

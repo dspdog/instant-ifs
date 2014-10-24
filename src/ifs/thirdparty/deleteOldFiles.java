@@ -17,8 +17,9 @@ public class deleteOldFiles {
             //System.out.println(" Directory Exists");
             final File[] listFiles = directory.listFiles(new FilenameFilter() {
                 public boolean accept(File dir, String name) {
-                    return name.toLowerCase().endsWith(".stl") || //3d models only...
-                           name.toLowerCase().endsWith(".ply");
+                    return name.toLowerCase().endsWith(".stl") ||
+                           name.toLowerCase().endsWith(".ply") ||
+                            name.toLowerCase().endsWith(".shapes");
                 }
             });
             final long purgeTime =
