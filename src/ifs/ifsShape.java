@@ -19,6 +19,8 @@ final class ifsShape implements java.io.Serializable {
 
     public RenderParams rp;
 
+    public int iterations; //iterations x 100
+
     int pointNearest, pointSelected;
     ifsPt selectedPt;
 
@@ -30,8 +32,12 @@ final class ifsShape implements java.io.Serializable {
     boolean hasDrawList = false;
 
     public ifsShape(){
+        resetShape();
+    }
 
-        isoStepSize = 5;
+    public void resetShape(){
+        iterations = 250;
+        isoStepSize = 4;
 
         hasDrawList = false;
         evolutionDisqualified=false;
@@ -131,12 +137,17 @@ final class ifsShape implements java.io.Serializable {
     }
 
     public ifsShape getPerturbedShape(ifsPt intensityDescriptor, boolean staySymmetric){
-        ifsShape pShape = new ifsShape();
+        ifsShape pShape = new ifsShape(); //TODO make this a proper copy of the current shape...
 
-        pShape.isoStepSize += new Random().nextGaussian();
-        pShape.isoStepSize = Math.max(2d, pShape.isoStepSize);
+        //pShape.isoStepSize += new Random().nextGaussian();
+        //pShape.isoStepSize = Math.max(2d, pShape.isoStepSize);
 
+        pShape.isoStepSize = this.isoStepSize;
         pShape.pointsInUse=this.pointsInUse;
+        pShape.iterations=this.iterations;
+
+        pShape.iterations += new Random().nextGaussian() * 10;
+
         long seed = (long)(Math.random()*Long.MAX_VALUE);
 
         for(int i=0; i<pShape.pointsInUse; i++){
@@ -257,6 +268,7 @@ final class ifsShape implements java.io.Serializable {
     }
 
     public void setToPreset(int preset){
+        resetShape();
         switch(preset){
             case 0: // '\000'
                 clearPts();

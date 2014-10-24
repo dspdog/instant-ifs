@@ -3,7 +3,7 @@ package ifs;
 import ifs.flat.OneDBuffer;
 import ifs.flat.RenderBuffer;
 import ifs.flat.ShapeAnalyzer;
-import ifs.flat.TetraMarcher;
+import ifs.thirdparty.deleteOldFiles;
 import ifs.utils.ImageUtils;
 
 import javax.swing.*;
@@ -243,16 +243,16 @@ final class ifsys extends JPanel
                         //renderBuffer.totalLines=0;
                         theVolume.changed=true;
                         theShape = theShape.getPerturbedShape(mutationDescriptorPt.intensify(rp.evolveIntensity/100f), false);
-                        rp.odbScale.smooth();
-                        rp.odbRotationRoll.smooth();
-                        rp.odbX.smooth();
-                        rp.odbY.smooth();
-                        rp.odbZ.smooth();
-                        rp.odbScale.add(new OneDBuffer(10, rp.smearSmooth, System.currentTimeMillis()), 30); //scale
-                        rp.odbRotationRoll.add(new OneDBuffer(20, rp.smearSmooth, System.currentTimeMillis()), 20); //rotation
-                        rp.odbX.add(new OneDBuffer(30, rp.smearSmooth, System.currentTimeMillis()), 20); //offsetX
-                        rp.odbY.add(new OneDBuffer(40, rp.smearSmooth, System.currentTimeMillis()), 20); //offsetY
-                        rp.odbZ.add(new OneDBuffer(50, rp.smearSmooth, System.currentTimeMillis()), 20); //offsetZ
+                       //rp.odbScale.smooth();
+                       // rp.odbRotationRoll.smooth();
+                       // rp.odbX.smooth();
+                       //  rp.odbY.smooth();
+                       // rp.odbZ.smooth();
+                       // rp.odbScale.add(new OneDBuffer(10, rp.smearSmooth, System.currentTimeMillis()), 30); //scale
+                       // rp.odbRotationRoll.add(new OneDBuffer(20, rp.smearSmooth, System.currentTimeMillis()), 20); //rotation
+                       // rp.odbX.add(new OneDBuffer(30, rp.smearSmooth, System.currentTimeMillis()), 20); //offsetX
+                       // rp.odbY.add(new OneDBuffer(40, rp.smearSmooth, System.currentTimeMillis()), 20); //offsetY
+                       // rp.odbZ.add(new OneDBuffer(50, rp.smearSmooth, System.currentTimeMillis()), 20); //offsetZ
                         //if(!rp.renderThrottling || theVolume.totalSamples>rp.shutterPeriod *1000){
                             clearframe();
                             gamefunc();
@@ -399,7 +399,7 @@ final class ifsys extends JPanel
         xMax = 0;
         yMax = 0;
         zMax = 0;
-        indexFunction(0, (int)(rp.iterations/100)+1, rp.iterations%100,  1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd, rp.randomScale, (short)0, rp.maxBranchDist);
+        indexFunction(0, (int)(theShape.iterations/100)+1, theShape.iterations%100,  1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd, rp.randomScale, (short)0, rp.maxBranchDist);
     }
 
     ArrayList<Integer>[] zLists = new ArrayList[1024];
@@ -426,7 +426,7 @@ final class ifsys extends JPanel
     }
 
     public void gamefunc(){
-        gamefunc(rp.iterations);
+        gamefunc(theShape.iterations);
     }
 
     public void gamefunc(int _iterations){
@@ -734,11 +734,9 @@ final class ifsys extends JPanel
         }else{
             theShape = theShape.loadFromFile(filename);
         }
-        //rp = theShape.rp;
     }
 
     public void saveStuff(String filename){
-        //theShape.rp = rp;
         if(filename==""){
             theShape.saveToFile("locked.shape");
         }else{
@@ -746,7 +744,10 @@ final class ifsys extends JPanel
         }
     }
 
-
+    public void startEvolution(){
+        ifsEvolution ie = new ifsEvolution(theShape, mutationDescriptorPt, rp.evolveIntensity/100f, new recordsKeeper(), this);
+        ie.start();
+    }
 
     public void keyReleased(KeyEvent e){
         if(e.getKeyCode()==KeyEvent.VK_ALT)
@@ -787,24 +788,15 @@ final class ifsys extends JPanel
             rp.shapeVibrating = !rp.shapeVibrating;
         }
 
-      //  if(e.getKeyChar() == 's'){
-           // ifs.volume.saveToAscii(theVolume.ifs.volume);
-     //   }
-
         if(e.getKeyChar() == '0'){
-            rp.smearPDF=true;
             theShape.setToPreset(0);
             theVolume.clear();
-            rp.iterations=8;
             clearframe();
             gamefunc();
         }
 
         if(e.getKeyChar() == '9'){
-            rp.smearPDF=true;
             theShape.setToPreset(9);
-            theVolume.clear();
-            rp.iterations=8;
             clearframe();
             gamefunc();
         }
@@ -899,8 +891,7 @@ final class ifsys extends JPanel
         }
 
         if(e.getKeyChar() == '6'){
-            recordsKeeper rk = new recordsKeeper();
-            rk.getPotentials(this);
+            startEvolution();
         }
 
         if(e.getKeyChar() == '3'){

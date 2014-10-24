@@ -23,7 +23,7 @@ final class RenderParams implements java.io.Serializable {
     boolean usePDFSamples;
     boolean guidesHidden;
     int samplesPerFrame;
-    int iterations;
+    int _iterations;
 
     int maxBranchDist;
 
@@ -87,7 +87,7 @@ final class RenderParams implements java.io.Serializable {
     OneDBuffer odbZ = new OneDBuffer(50,1,1);
     public RenderParams(){
 
-        maxBranchDist = 100;
+        maxBranchDist = 10000;
 
         pruneThresh=0;
         randomSeed=System.currentTimeMillis()%(65535);
@@ -145,7 +145,7 @@ final class RenderParams implements java.io.Serializable {
         infoHidden = false;
         usePDFSamples = true;
         guidesHidden = false;
-        iterations = 450;
+        //iterations = 450;
         brightnessMultiplier = 2;
         holdFrame=false;
         samplesPerFrame = 8;
