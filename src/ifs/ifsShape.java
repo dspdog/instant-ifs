@@ -151,7 +151,7 @@ final class ifsShape implements java.io.Serializable {
         //pShape.isoStepSize += new Random().nextGaussian();
         //pShape.isoStepSize = Math.max(2d, pShape.isoStepSize);
 
-        //pShape.iterations += new Random().nextGaussian() * 10;
+        pShape.iterations += new Random().nextGaussian() * 10;
 
         long seed = (long)(Math.random()*Long.MAX_VALUE);
 

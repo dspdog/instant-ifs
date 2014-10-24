@@ -1,7 +1,6 @@
-package ifs;
+package ifs.flat;
 
 import ifs.flat.ShapeAnalyzer;
-import ifs.ifsShape;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -388,10 +387,8 @@ public class TetraMarcher implements Serializable { //marching tetrahedrons as i
             }
         }
 
-        public void getPotentials(ShapeAnalyzer shapeAnalyzer, ArrayList<Integer>[] zLists, int xMin, int xMax, int yMin, int yMax, int zMin, int zMax, ifsShape theShape){
+        public void getPotentials(ShapeAnalyzer shapeAnalyzer, ArrayList<Integer>[] zLists, int xMin, int xMax, int yMin, int yMax, int zMin, int zMax, int stepSize){
             Triangle[] tri = this.generateTriangleArray();
-
-            int stepSize = (int)theShape.isoStepSize;
 
             double maxDist = 16;
             double x,y,z;

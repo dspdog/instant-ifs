@@ -15,7 +15,7 @@ public class ifsEvolution {
     String historyString = "";
 
     public ifsEvolution(ifsShape _theShape, ifsPt _mutationDescriptor, float intensity, recordsKeeper _rk, ifsys _is){
-        theShape = new ifsShape(_theShape);
+        theShape = _theShape;
         mutationDescriptor = _mutationDescriptor;
         evolveIntensity = intensity;
         rk = _rk;
@@ -29,22 +29,18 @@ public class ifsEvolution {
 
         System.out.println("start of evolution...");
 
-        int totalSibs = 2;
+        int totalSibs = 3;
         int totalGens = 1000;
 
-        deleteOldFiles.deleteFilesOlderThanNMin(5, "./models/");
-
         for(int g=0; g<totalGens; g++){
+
+            deleteOldFiles.deleteFilesOlderThanNMin(5, "./models/");
 
             String seed = "";
 
             if(g>0){
                 //TODO use simulated annealing?
                 rk.sortRecordsBySuitability();
-                System.out.println("=====================================================ALLROWS");
-                for(recordsKeeper.row row : rk.records){
-                    System.out.println(row.timeStamp + " -- " + row.theSurfaceArea + " " + row.theVolume + " " + row.evolutionScore());
-                }
                 seed = "./shapes/" + rk.records.get(0).theShapeFile;
                 theShape = new ifsShape().loadFromFile(seed);
                 recordHistory(g, totalGens, rk);

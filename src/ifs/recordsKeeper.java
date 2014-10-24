@@ -1,5 +1,7 @@
 package ifs;
 
+import ifs.flat.TetraMarcher;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
@@ -45,8 +47,6 @@ public class recordsKeeper implements java.io.Serializable{
     }
 
     public void submit(ifsShape theShape, TetraMarcher tm, int generationNo, int sibNo){
-        //System.out.println("================================================================================SURFACE VOL" + tm.theSurfaceArea  + "  " + tm.theVolume);
-
         row newrow = new row(tm.theVolume * 1.0, tm.theSurfaceArea, tm.theFileName, tm.totalTime, theShape, generationNo, sibNo);
         records.add(newrow);
         saveToFile(defaultName);
@@ -74,7 +74,7 @@ public class recordsKeeper implements java.io.Serializable{
         int res = (1024/(int)theShape.isoStepSize);
         System.out.println("getting potentials! step size " + (int)theShape.isoStepSize + " res " + res);
         TetraMarcher tm = new TetraMarcher();
-        tm.getPotentials(is.shapeAnalyzer, is.zLists, is.xMin, is.xMax, is.yMin, is.yMax, is.zMin, is.zMax, theShape);
+        tm.getPotentials(is.shapeAnalyzer, is.zLists, is.xMin, is.xMax, is.yMin, is.yMax, is.zMin, is.zMax, (int)theShape.isoStepSize);
         if(tm.shapeInvalid){
             System.out.println("shape invalid, ignoring...");
         }else{
