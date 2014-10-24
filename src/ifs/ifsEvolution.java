@@ -29,16 +29,18 @@ public class ifsEvolution {
 
         System.out.println("start of evolution...");
 
-        int totalSibs = 10;
+        int totalSibs = 2;
         int totalGens = 10000;
 
         Random rnd = new Random();
         deleteOldFiles.deleteFilesOlderThanNMin(5, ".");
+        currentRecordScore=0;
+        currentRecord="";
 
         for(int g=0; g<totalGens; g++){
 
             deleteOldFiles.deleteFilesOlderThanNMin(5, "./models/");
-
+            System.out.println("GENERATION " + g);
             String seed = "";
 
             if(g>0){
@@ -65,14 +67,20 @@ public class ifsEvolution {
     }
 
     String currentRecord="";
+    double currentRecordScore=0;
+    double currentRecordTime=0;
+
     public void recordHistory(int g, int totalGens, recordsKeeper rk){
         rk.sortRecordsBySuitability();
         String addition = rk.records.get(0).timeStamp + ": generation " + g + "/" + totalGens + ": best "
-                           + rk.records.get(0).theShapeFile + " score " + rk.records.get(0).evolutionScore() + "<br/>\t\r\n";
+                           + rk.records.get(0).theShapeFile + " score " + rk.records.get(0).evolutionScore() + " (DELTA " + (rk.records.get(0).evolutionScore() - currentRecordScore) + " pts, " +
+                            (System.currentTimeMillis() - currentRecordScore)/1000+"s)<br/>\t\r\n";
 
         if(currentRecord!=rk.records.get(0).theShapeFile){
             currentRecord = rk.records.get(0).theShapeFile;
-
+            currentRecordScore = rk.records.get(0).evolutionScore();
+            currentRecordTime=System.currentTimeMillis();
+            
             historyString = historyString + addition;
 
             PrintWriter historyOut = null;

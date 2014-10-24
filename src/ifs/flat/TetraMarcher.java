@@ -402,7 +402,7 @@ public class TetraMarcher implements Serializable { //marching tetrahedrons as i
 
             shapeAnalyzer.updateGeometry();
             long t1=0,t2=0,t3=0,t4=0;
-            System.out.println("ZMINMAX " + zMin + " " + zMax);
+
             int _zmin = Math.max(stepSize, zMin);
             int _zmax = Math.min(1024 - stepSize, zMax);
 
