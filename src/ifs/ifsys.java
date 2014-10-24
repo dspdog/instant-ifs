@@ -745,7 +745,7 @@ final class ifsys extends JPanel
     }
 
     public void startEvolution(){
-        ifsEvolution ie = new ifsEvolution(theShape, mutationDescriptorPt, rp.evolveIntensity/100f, new recordsKeeper(), this);
+        ifsEvolution ie = new ifsEvolution(theShape, mutationDescriptorPt, rp.evolveIntensity, new recordsKeeper(), this);
         ie.start();
     }
 

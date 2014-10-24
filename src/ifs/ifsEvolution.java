@@ -1,18 +1,21 @@
 package ifs;
 
+import ifs.flat.ShapeAnalyzer;
 import ifs.thirdparty.deleteOldFiles;
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class ifsEvolution {
     ifsShape theShape; ifsPt mutationDescriptor; float evolveIntensity; recordsKeeper rk; ifsys is;
     String historyString = "";
 
     public ifsEvolution(ifsShape _theShape, ifsPt _mutationDescriptor, float intensity, recordsKeeper _rk, ifsys _is){
-        theShape = _theShape;
+        theShape = new ifsShape(_theShape);
         mutationDescriptor = _mutationDescriptor;
         evolveIntensity = intensity;
         rk = _rk;
@@ -21,31 +24,40 @@ public class ifsEvolution {
     }
 
     public void start(){
-        recordsKeeper rk = new recordsKeeper();
+        recordsKeeper rk = new recordsKeeper().loadFromFile(recordsKeeper.defaultName);
         long startTime = System.currentTimeMillis();
 
         System.out.println("start of evolution...");
-        System.out.println("generation 1");
 
-        int totalSibs = 4;
+        int totalSibs = 2;
         int totalGens = 1000;
 
         deleteOldFiles.deleteFilesOlderThanNMin(5, "./models/");
 
         for(int g=0; g<totalGens; g++){
+
+            String seed = "";
+
             if(g>0){
                 //TODO use simulated annealing?
                 rk.sortRecordsBySuitability();
-                theShape = new ifsShape().loadFromFile("./shapes/" + rk.records.get(0).theShapeFile);
+                System.out.println("=====================================================ALLROWS");
+                for(recordsKeeper.row row : rk.records){
+                    System.out.println(row.timeStamp + " -- " + row.theSurfaceArea + " " + row.theVolume + " " + row.evolutionScore());
+                }
+                seed = "./shapes/" + rk.records.get(0).theShapeFile;
+                theShape = new ifsShape().loadFromFile(seed);
                 recordHistory(g, totalGens, rk);
             }
             for(int i=0; i<totalSibs; i++){
-                theShape.resetShape();
-                theShape.updateCenterOnce();
+                if(seed!="")theShape = new ifsShape().loadFromFile(seed);
                 theShape = theShape.getPerturbedShape(mutationDescriptor.intensify(evolveIntensity), false);
+                is.theShape = theShape;
+                is.reIndex();
                 is.clearframe();
                 is.gamefunc();
-                rk.getPotentials(is, 0, i);
+
+                rk.getPotentials(is, g, i, theShape);
 
                 System.out.println("sibling " + (i+1) + "/" + totalSibs + " submitted.");
                 System.out.println("Elapsed time: " + (int)((System.currentTimeMillis() - startTime)/60000) + "m " + ((System.currentTimeMillis() - startTime)/1000)%60 + "s");
@@ -54,8 +66,9 @@ public class ifsEvolution {
     }
 
     public void recordHistory(int g, int totalGens, recordsKeeper rk){
-        String addition = "generation " + g + "/" + totalGens + ": best "
-                            + rk.records.get(0).theShapeFile + " score " + rk.records.get(0).evolutionScore() + "<br/>\t\r\n";
+        rk.sortRecordsBySuitability();
+        String addition = rk.records.get(0).timeStamp + ": generation " + g + "/" + totalGens + ": best "
+                           + rk.records.get(0).theShapeFile + " score " + rk.records.get(0).evolutionScore() + "<br/>\t\r\n";
         historyString = historyString + addition;
 
         PrintWriter historyOut = null;
@@ -67,7 +80,7 @@ public class ifsEvolution {
 
         historyOut.write(historyString);
         historyOut.close();
-        System.out.println("HISTORY: " + historyString);
+        System.out.println("HISTORY: " + addition);
     }
 
 }
