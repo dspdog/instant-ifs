@@ -343,7 +343,7 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
         System.out.println("saving stl...");
         byte[] title = new byte[80];
 
-        try(FileChannel ch=new RandomAccessFile(timeLog , "rw").getChannel())
+        try(FileChannel ch=new RandomAccessFile("./models/"+timeLog , "rw").getChannel())
         {
             ByteBuffer bb= ByteBuffer.allocate(1000000).order(ByteOrder.LITTLE_ENDIAN);
             bb.put(title); // Header (80 bytes)
@@ -459,7 +459,7 @@ public class TetraMarcher implements Serializable{ //marching tetrahedrons as in
         long saveTime = (System.currentTimeMillis() - saveStartTime);
 
         long meshStartTime = System.currentTimeMillis();
-        this.meshLabFix(theFileName);
+        this.meshLabFix("./models/"+theFileName);
         long meshSaveTime = System.currentTimeMillis()-meshStartTime;
         System.out.println("\n\n\tSURFACE " + theSurfaceArea + " VOLUME " + theVolume + " RATIO s/v " + (theSurfaceArea/(theVolume+0.00001d))
                 + "\n\tDIAG " + theDiagonal + " RATIO s/(vd) " + (theSurfaceArea/(theVolume+0.00001d)/theDiagonal)+"\n\n");

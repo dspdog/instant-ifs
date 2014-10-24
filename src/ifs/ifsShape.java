@@ -97,7 +97,7 @@ final class ifsShape implements java.io.Serializable {
     public void saveToFile(String filename){
         try{
             FileOutputStream fileOut =
-                    new FileOutputStream(filename);
+                    new FileOutputStream("./shapes/"+filename);
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
             out.writeObject(this);
             out.close();
