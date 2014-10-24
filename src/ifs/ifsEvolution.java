@@ -30,7 +30,7 @@ public class ifsEvolution {
         System.out.println("start of evolution...");
 
         int totalSibs = 3;
-        int totalGens = 1000;
+        int totalGens = 10000;
 
         for(int g=0; g<totalGens; g++){
 

@@ -21,6 +21,7 @@ public class recordsKeeper implements java.io.Serializable{
     public class row implements java.io.Serializable{
         public double theVolume=0;
         public double theSurfaceArea=0;
+        public double theDiagonal=0;
         public String theFileName = "";
         public String timeStamp;
         public long ltimeStamp;
@@ -28,9 +29,10 @@ public class recordsKeeper implements java.io.Serializable{
         public long generation;
         public String theShapeFile;
 
-        public row(double vol, double surface, String fileName, long time, ifsShape shape, long gen, long sib){
+        public row(double vol, double surface, double diag, String fileName, long time, ifsShape shape, long gen, long sib){
             ltimeStamp = System.currentTimeMillis();
             theVolume=vol+0;
+            theDiagonal = diag;
             theSurfaceArea=surface+0;
             theFileName=fileName+"";
             totalTime=time+0;
@@ -41,13 +43,13 @@ public class recordsKeeper implements java.io.Serializable{
             shape.saveToFile(theShapeFile);
         }
 
-        public double evolutionScore(){ //TODO use diagonal
-            return theSurfaceArea/theVolume;
+        public double evolutionScore(){ 
+            return theSurfaceArea/theVolume/theDiagonal;
         }
     }
 
     public void submit(ifsShape theShape, TetraMarcher tm, int generationNo, int sibNo){
-        row newrow = new row(tm.theVolume * 1.0, tm.theSurfaceArea, tm.theFileName, tm.totalTime, theShape, generationNo, sibNo);
+        row newrow = new row(tm.theVolume * 1.0, tm.theSurfaceArea, tm.theDiagonal, tm.theFileName, tm.totalTime, theShape, generationNo, sibNo);
         records.add(newrow);
         saveToFile(defaultName);
         System.out.println("total records: " + records.size());
