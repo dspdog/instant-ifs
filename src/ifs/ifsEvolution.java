@@ -1,13 +1,8 @@
 package ifs;
 
-import ifs.flat.ShapeAnalyzer;
 import ifs.thirdparty.deleteOldFiles;
 
 import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.channels.FileChannel;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ifsEvolution {
@@ -52,7 +47,7 @@ public class ifsEvolution {
             }
             for(int i=0; i<totalSibs; i++){
                 if(seed!="")theShape = new ifsShape().loadFromFile(seed);
-                theShape = theShape.getPerturbedShape(mutationDescriptor.intensify((float)(Math.abs(evolveIntensity*rnd.nextGaussian()/4f))), false);
+                theShape = theShape.getPerturbedShape(mutationDescriptor.intensify((float)(rnd.nextGaussian()*evolveIntensity)), false);
                 is.theShape = theShape;
                 is.reIndex();
                 is.clearframe();
@@ -60,8 +55,8 @@ public class ifsEvolution {
 
                 rk.getPotentials(is, g, i, theShape);
 
-                System.out.println("sibling " + (i+1) + "/" + totalSibs + " submitted.");
-                System.out.println("Elapsed time: " + (int)((System.currentTimeMillis() - startTime)/60000) + "m " + ((System.currentTimeMillis() - startTime)/1000)%60 + "s");
+                System.out.println("thread: sibling " + (i+1) + "/" + totalSibs + " submitted.");
+                System.out.println("thread: Elapsed time: " + (int)((System.currentTimeMillis() - startTime)/60000) + "m " + ((System.currentTimeMillis() - startTime)/1000)%60 + "s");
             }
         }
     }

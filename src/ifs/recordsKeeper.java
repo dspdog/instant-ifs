@@ -1,6 +1,6 @@
 package ifs;
 
-import ifs.flat.TetraMarcher;
+import ifs.flat.CubeMarcher;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -44,11 +44,11 @@ public class recordsKeeper implements java.io.Serializable{
         }
 
         public double evolutionScore(){
-            return theSurfaceArea/theVolume/theDiagonal;
+            return theSurfaceArea/theVolume;
         }
     }
 
-    public void submit(ifsShape theShape, TetraMarcher tm, int generationNo, int sibNo){
+    public void submit(ifsShape theShape, CubeMarcher tm, int generationNo, int sibNo){
         row newrow = new row(tm.theVolume * 1.0, tm.theSurfaceArea, tm.theDiagonal, tm.theFileName, tm.totalTime, theShape, generationNo, sibNo);
         records.add(newrow);
         saveToFile(defaultName);
@@ -75,7 +75,7 @@ public class recordsKeeper implements java.io.Serializable{
     public void getPotentials(ifsys is, int generationNo, int sibNo, ifsShape theShape){
 
         System.out.println("getting potentials! step size " + (int)(1024/is.shapeAnalyzer.width) + " res " + is.shapeAnalyzer.width);
-        TetraMarcher tm = new TetraMarcher();
+        CubeMarcher tm = new CubeMarcher();
         tm.getPotentials(is.shapeAnalyzer, is.zLists, is.xMin, is.xMax, is.yMin, is.yMax, is.zMin, is.zMax);
         if(tm.shapeInvalid){
             //System.out.println("shape invalid, ignoring...");

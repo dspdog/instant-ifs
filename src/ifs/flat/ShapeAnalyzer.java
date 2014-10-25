@@ -19,7 +19,7 @@ public final class ShapeAnalyzer extends Kernel{
 
     public final int width = 1024/4;
 
-    final int NUM_LINES = width*width;
+    public final int NUM_LINES = width*width;
 
     double myZ=0;
     int cutoffDist=0;

@@ -2,9 +2,9 @@
 <FilterScript>
  <filter name="Remove Duplicated Vertex"/>
  <filter name="Select Faces with edges longer than...">
-  <Param name="Threshold" tooltip="All the faces with an edge &lt;b>longer&lt;/b> than this threshold will be deleted. Useful for removing long skinny faces obtained by bad triangulation of range maps." min="0" max="159.795" type="RichDynamicFloat" description="Edge Threshold" value="32"/>
+  <Param name="Threshold" tooltip="All the faces with an edge &lt;b>longer&lt;/b> than this threshold will be deleted. Useful for removing long skinny faces obtained by bad triangulation of range maps." min="0" max="159.795" type="RichDynamicFloat" description="Edge Threshold" value="10"/>
  </filter>
- <filter name="Delete Selected Faces"/>
+ <filter name="Delete Selected Faces and Vertices"/>
  <filter name="Re-Orient all faces coherentely"/>
  <filter name="Close Holes">
   <Param name="MaxHoleSize" tooltip="The size is expressed as number of edges composing the hole boundary" type="RichInt" description="Max size to be closed " value="16"/>

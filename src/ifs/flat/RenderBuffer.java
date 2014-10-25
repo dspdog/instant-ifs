@@ -44,7 +44,7 @@ public final class RenderBuffer extends Kernel{
     public boolean addSamples=true;
     public boolean usePerspective = true;
 
-    final int NUM_LINES = 1024*1024/2;
+    public final int NUM_LINES = 1024*1024/2;
 
     public int totalLines;
 

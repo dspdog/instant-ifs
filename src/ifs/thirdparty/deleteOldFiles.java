@@ -19,6 +19,7 @@ public class deleteOldFiles {
                 public boolean accept(File dir, String name) {
                     return name.toLowerCase().endsWith(".stl") ||
                            name.toLowerCase().endsWith(".ply") ||
+                            name.toLowerCase().endsWith(".obj") ||
                             name.toLowerCase().endsWith(".shapes");
                 }
             });

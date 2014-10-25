@@ -486,11 +486,11 @@ final class ifsys extends JPanel
         zMax = (int)Math.min(1023,Math.max(Math.max(zMax,odp.z+maxDist),Math.max(zMax,dpt.z+maxDist)));
 
         if(shapeAnalyzing){
-            shapeAnalyzer.lineXY1[renderBuffer.lineIndex] = renderBuffer.lineDI[renderBuffer.lineIndex];
-            shapeAnalyzer.lineXY1[renderBuffer.lineIndex] = renderBuffer.lineXY1[renderBuffer.lineIndex];
-            shapeAnalyzer.lineZS1[renderBuffer.lineIndex] = renderBuffer.lineZS1[renderBuffer.lineIndex];
-            shapeAnalyzer.lineXY2[renderBuffer.lineIndex] = renderBuffer.lineXY2[renderBuffer.lineIndex];
-            shapeAnalyzer.lineZS2[renderBuffer.lineIndex] = renderBuffer.lineZS2[renderBuffer.lineIndex];
+            shapeAnalyzer.lineXY1[renderBuffer.lineIndex%shapeAnalyzer.NUM_LINES] = renderBuffer.lineDI[renderBuffer.lineIndex%renderBuffer.NUM_LINES];
+            shapeAnalyzer.lineXY1[renderBuffer.lineIndex%shapeAnalyzer.NUM_LINES] = renderBuffer.lineXY1[renderBuffer.lineIndex%renderBuffer.NUM_LINES];
+            shapeAnalyzer.lineZS1[renderBuffer.lineIndex%shapeAnalyzer.NUM_LINES] = renderBuffer.lineZS1[renderBuffer.lineIndex%renderBuffer.NUM_LINES];
+            shapeAnalyzer.lineXY2[renderBuffer.lineIndex%shapeAnalyzer.NUM_LINES] = renderBuffer.lineXY2[renderBuffer.lineIndex%renderBuffer.NUM_LINES];
+            shapeAnalyzer.lineZS2[renderBuffer.lineIndex%shapeAnalyzer.NUM_LINES] = renderBuffer.lineZS2[renderBuffer.lineIndex%renderBuffer.NUM_LINES];
         }
 
         renderBuffer.lineIndex++;
@@ -517,7 +517,6 @@ final class ifsys extends JPanel
                         _subiters = 100*distRemaining/inc;
                         indexFunction(i, 1, _subiters, _cumulativeScale, cumulativeRotation, dpt, _rnd, rndScale, dist, 0);
                     }
-
                 }
             }
         }
@@ -745,8 +744,24 @@ final class ifsys extends JPanel
     }
 
     public void startEvolution(){
-        ifsEvolution ie = new ifsEvolution(theShape, mutationDescriptorPt, rp.evolveIntensity, new recordsKeeper(), this);
-        ie.start();
+        evolveThread et1 = new evolveThread(this, 1); //TODO need separate instances of objs to have this make a difference
+        et1.run();
+    }
+
+    private class evolveThread
+            implements Runnable {
+        ifsys theifsys;
+        int number=0;
+
+        public evolveThread(ifsys is, int no){
+            number=no;
+            theifsys=is;
+        }
+
+        public void run() {
+            ifsEvolution ie = new ifsEvolution(theShape, mutationDescriptorPt, rp.evolveIntensity, new recordsKeeper(), theifsys);
+            ie.start();
+        }
     }
 
     public void keyReleased(KeyEvent e){
