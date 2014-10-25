@@ -15,6 +15,7 @@ public final class ShapeAnalyzer extends Kernel{
     public final int ZList[]; //ZList denotes which lines (index) affect current z plane
 
     public final double linePot[];
+    //public final double nextLinePot[];
 
     public final int width = 1024/4;
 
@@ -31,6 +32,7 @@ public final class ShapeAnalyzer extends Kernel{
         lineZS2 = new int[NUM_LINES];
         lineDI = new int[NUM_LINES];
         linePot = new double[NUM_LINES];
+       // nextLinePot = new double[NUM_LINES];
         ZList = new int[NUM_LINES];
 
         this.setExecutionMode(Kernel.EXECUTION_MODE.GPU);
@@ -45,6 +47,9 @@ public final class ShapeAnalyzer extends Kernel{
 
         double res = metaPotential(x*stepSize, y*stepSize, myZ, cutoffDist/stepSize);
         linePot[x+y*width] = res;
+
+        // res = metaPotential(x*stepSize, y*stepSize, myZ+stepSize, cutoffDist/stepSize);
+        //extLinePot[x+y*width] = res;
     }
 
     public void getAllPotentialsByZ(double z, int _maxDist){
@@ -56,7 +61,7 @@ public final class ShapeAnalyzer extends Kernel{
         Range range = Range.create2D(width,width);
 
         this.execute(range);
-        this.get(linePot);
+        this.get(linePot);//.get(nextLinePot);
     }
 
     public void updateZList(int total){
