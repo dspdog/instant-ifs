@@ -15,8 +15,6 @@ final class ifsShape implements java.io.Serializable {
     public boolean autoScale;
     public boolean evolutionDisqualified;
 
-    public double isoStepSize ;
-
     public RenderParams rp;
 
     public int iterations; //iterations x 100
@@ -37,7 +35,6 @@ final class ifsShape implements java.io.Serializable {
 
     public void resetShape(){
         iterations = 250;
-        isoStepSize = 4;
 
         hasDrawList = false;
         evolutionDisqualified=false;
@@ -78,7 +75,6 @@ final class ifsShape implements java.io.Serializable {
         pointsInUse = _oldShape.pointsInUse;
         unitScale = _oldShape.unitScale; //distance from center to one of the points in preset #1
         autoScale = _oldShape.autoScale;
-        isoStepSize = _oldShape.isoStepSize;
         iterations= _oldShape.iterations;
 
         freshPoints();

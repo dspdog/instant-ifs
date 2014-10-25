@@ -9,8 +9,8 @@ import java.io.FilenameFilter;
 public class deleteOldFiles {
     public static void deleteFilesOlderThanNMin(final int minutesBack, final String dirWay) { //modified from http://stackoverflow.com/questions/6866694/java-delete-files-older-than-n-days
 
-        System.out.println(dirWay);
-        System.out.println(minutesBack);
+        //System.out.println(dirWay);
+        //System.out.println(minutesBack);
 
         final File directory = new File(dirWay);
         if(directory.exists()){
@@ -33,7 +33,7 @@ public class deleteOldFiles {
 
                 if(listFile.lastModified() < purgeTime) {
                     if(listFile.delete()){
-                        System.out.println("deleted old file " + listFile.getName());
+                        //System.out.println("deleted old file " + listFile.getName());
                     }
                 }
             }

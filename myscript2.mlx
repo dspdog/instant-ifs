@@ -2,8 +2,14 @@
 <FilterScript>
  <filter name="Remove Duplicated Vertex"/>
  <filter name="Re-Orient all faces coherentely"/>
+ <filter name="Close Holes">
+  <Param name="MaxHoleSize" description="Max size to be closed " value="4" tooltip="The size is expressed as number of edges composing the hole boundary" type="RichInt"/>
+  <Param name="Selected" description="Close holes with selected faces" value="false" tooltip="Only the holes with at least one of the boundary faces selected are closed" type="RichBool"/>
+  <Param name="NewFaceSelected" description="Select the newly created faces" value="true" tooltip="After closing a hole the faces that have been created are left selected. Any previous selection is lost. Useful for example for smoothing the newly created holes." type="RichBool"/>
+  <Param name="SelfIntersection" description="Prevent creation of selfIntersecting faces" value="true" tooltip="When closing an holes it tries to prevent the creation of faces that intersect faces adjacent to the boundary of the hole. It is an heuristic, non intersetcting hole filling can be NP-complete." type="RichBool"/>
+ </filter>
  <filter name="Compute Vertex Normals">
-  <Param enum_cardinality="4" type="RichEnum" value="0" enum_val0="None (avg)" name="weightMode" enum_val1="By Angle" enum_val2="By Area" enum_val3="As defined by N. Max" description="Weighting Mode:" tooltip=""/>
+  <Param name="weightMode" description="Weighting Mode:" value="0" enum_cardinality="4" enum_val0="None (avg)" tooltip="" enum_val1="By Angle" enum_val2="By Area" type="RichEnum" enum_val3="As defined by N. Max"/>
  </filter>
  <xmlfilter name="Compute Geometric Measures"/>
 </FilterScript>

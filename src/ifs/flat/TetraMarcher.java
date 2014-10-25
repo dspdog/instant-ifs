@@ -24,6 +24,12 @@ public class TetraMarcher implements Serializable { //marching tetrahedrons as i
                 y=target.y;
                 z=target.z;
             }
+
+            public void setTo(double _x, double _y, double _z){
+                x=_x;
+                y=_y;
+                z=_z;
+            }
         }
 
         public class Triangle{
@@ -36,6 +42,17 @@ public class TetraMarcher implements Serializable { //marching tetrahedrons as i
                 p[1] = new xyz();
                 p[2] = new xyz();
             }
+
+            public Triangle(Triangle tri){
+                p = new xyz[3];
+                //edgeHash = new long[3];
+                p[0] = new xyz();
+                p[1] = new xyz();
+                p[2] = new xyz();
+                p[0].setTo(tri.p[0]);
+                p[1].setTo(tri.p[1]);
+                p[2].setTo(tri.p[2]);
+            }
         }
 
         public class GridCell{
@@ -45,6 +62,9 @@ public class TetraMarcher implements Serializable { //marching tetrahedrons as i
             public GridCell(){
                 p = new xyz[8];
                 val = new double[8];
+                for(int i=0; i<8; i++){
+                    p[i] = new xyz();
+                }
             }
         }
 
@@ -96,41 +116,12 @@ public class TetraMarcher implements Serializable { //marching tetrahedrons as i
                 case 0:
                     return 0;
                 case 1:
-                    triangles[triIndex] = new Triangle();
-                    triangles[triIndex].p[0].x = temp_tris[0].p[0].x;
-                    triangles[triIndex].p[0].y = temp_tris[0].p[0].y;
-                    triangles[triIndex].p[0].z = temp_tris[0].p[0].z;
-                    triangles[triIndex].p[1].x = temp_tris[0].p[1].x;
-                    triangles[triIndex].p[1].y = temp_tris[0].p[1].y;
-                    triangles[triIndex].p[1].z = temp_tris[0].p[1].z;
-                    triangles[triIndex].p[2].x = temp_tris[0].p[2].x;
-                    triangles[triIndex].p[2].y = temp_tris[0].p[2].y;
-                    triangles[triIndex].p[2].z = temp_tris[0].p[2].z;
-
+                    triangles[triIndex] = new Triangle(temp_tris[0]);
                     triangleList.add(triangles[triIndex]);
                     return 1;
                 case 2:
-                    triangles[triIndex] = new Triangle();
-                    triangles[triIndex+1] = new Triangle();
-                    triangles[triIndex].p[0].x = temp_tris[0].p[0].x;
-                    triangles[triIndex].p[0].y = temp_tris[0].p[0].y;
-                    triangles[triIndex].p[0].z = temp_tris[0].p[0].z;
-                    triangles[triIndex].p[1].x = temp_tris[0].p[1].x;
-                    triangles[triIndex].p[1].y = temp_tris[0].p[1].y;
-                    triangles[triIndex].p[1].z = temp_tris[0].p[1].z;
-                    triangles[triIndex].p[2].x = temp_tris[0].p[2].x;
-                    triangles[triIndex].p[2].y = temp_tris[0].p[2].y;
-                    triangles[triIndex].p[2].z = temp_tris[0].p[2].z;
-
-                    triangles[triIndex+1].p[0].x = temp_tris[1].p[0].x;
-                    triangles[triIndex+1].p[0].y = temp_tris[1].p[0].y;
-                    triangles[triIndex+1].p[0].z = temp_tris[1].p[0].z;
-                    triangles[triIndex+1].p[1].x = temp_tris[1].p[1].x;
-                    triangles[triIndex+1].p[1].y = temp_tris[1].p[1].y;
-                    triangles[triIndex+1].p[1].z = temp_tris[1].p[1].z;
-                    triangles[triIndex+1].p[2].x = temp_tris[1].p[2].x;
-                    triangles[triIndex+1].p[2].y = temp_tris[1].p[2].y;
-                    triangles[triIndex+1].p[2].z = temp_tris[1].p[2].z;
+                    triangles[triIndex] = new Triangle(temp_tris[0]);
+                    triangles[triIndex+1] = new Triangle(temp_tris[1]);
 
                     triangleList.add(triangles[triIndex]);
                     triangleList.add(triangles[triIndex+1]);
@@ -157,60 +148,37 @@ public class TetraMarcher implements Serializable { //marching tetrahedrons as i
             return new Triangle[12];
         }
 
-        public GridCell generateCell(double x, double y, double z, double size, double[] linePot1, double[] linePot2){
+        public GridCell generateCell(double x, double y, double z, double[] linePot1, double[] linePot2, int gridWidth){
             GridCell thisCell = new GridCell();
-            thisCell.p[0] = new xyz();
-            thisCell.p[1] = new xyz();
-            thisCell.p[2] = new xyz();
-            thisCell.p[3] = new xyz();
-            thisCell.p[4] = new xyz();
-            thisCell.p[5] = new xyz();
-            thisCell.p[6] = new xyz();
-            thisCell.p[7] = new xyz();
-            thisCell.p[0].x = x;
-            thisCell.p[0].y = y;
-            thisCell.p[0].z = z;
-            thisCell.p[1].x = x+size;
-            thisCell.p[1].y = y;
-            thisCell.p[1].z = z;
-            thisCell.p[2].x = x+size;
-            thisCell.p[2].y = y;
-            thisCell.p[2].z = z+size;
-            thisCell.p[3].x = x;
-            thisCell.p[3].y = y;
-            thisCell.p[3].z = z+size;
-            thisCell.p[4].x = x;
-            thisCell.p[4].y = y+size;
-            thisCell.p[4].z = z;
-            thisCell.p[5].x = x+size;
-            thisCell.p[5].y = y+size;
-            thisCell.p[5].z = z;
-            thisCell.p[6].x = x+size;
-            thisCell.p[6].y = y+size;
-            thisCell.p[6].z = z+size;
-            thisCell.p[7].x = x;
-            thisCell.p[7].y = y+size;
-            thisCell.p[7].z = z+size;
 
-            int _x = (int)Math.min(1024-size,Math.max(x,size));
-            int _y = (int)Math.min(1024-size,Math.max(y,size));
-            int _z = (int)Math.min(1024-size,Math.max(z,size));
+            thisCell.p[0].setTo(x,y,z);
+            thisCell.p[1].setTo(x+1,y,z);
+            thisCell.p[2].setTo(x+1,y,z+1);
+            thisCell.p[3].setTo(x,y,z+1);
+            thisCell.p[4].setTo(x,y+1,z);
+            thisCell.p[5].setTo(x+1,y+1,z);
+            thisCell.p[6].setTo(x+1,y+1,z+1);
+            thisCell.p[7].setTo(x,y+1,z+1);
 
-            thisCell.val[0] = linePot1[_x+_y*1024];
-            thisCell.val[1] = linePot1[(_x+(int)size)+_y*1024];
-            thisCell.val[4] = linePot1[_x+(_y+(int)size)*1024];
-            thisCell.val[5] = linePot1[(_x+(int)size)+(_y+(int)size)*1024];
+            int _x = (int)Math.min(gridWidth-1,Math.max(x,1));
+            int _y = (int)Math.min(gridWidth-1,Math.max(y,1));
+            int _z = (int)Math.min(gridWidth-1,Math.max(z,1));
 
-            thisCell.val[3] = linePot2[_x+_y*1024];
-            thisCell.val[2] = linePot2[(_x+(int)size)+_y*1024];
-            thisCell.val[7] = linePot2[_x+(_y+(int)size)*1024];
-            thisCell.val[6] = linePot2[(_x+(int)size)+(_y+(int)size)*1024];
+            thisCell.val[0] = linePot1[_x+_y*gridWidth];
+            thisCell.val[1] = linePot1[(_x+1)+_y*gridWidth];
+            thisCell.val[4] = linePot1[_x+(_y+1)*gridWidth];
+            thisCell.val[5] = linePot1[(_x+1)+(_y+1)*gridWidth];
+
+            thisCell.val[3] = linePot2[_x+_y*gridWidth];
+            thisCell.val[2] = linePot2[(_x+1)+_y*gridWidth];
+            thisCell.val[7] = linePot2[_x+(_y+1)*gridWidth];
+            thisCell.val[6] = linePot2[(_x+1)+(_y+1)*gridWidth];
 
             return thisCell;
         }
 
-        int PolygoniseTri(GridCell g,double iso,
-                          Triangle[] tri,int v0,int v1,int v2,int v3)
+        private int PolygoniseTri(GridCell g, double iso,
+                                        Triangle[] tri, int v0, int v1, int v2, int v3)
         {
             int ntri = 0;
             int triindex;
@@ -312,7 +280,7 @@ public class TetraMarcher implements Serializable { //marching tetrahedrons as i
            Linearly interpolate the position where an isosurface cuts
            an edge between two vertices, each with their own scalar value
         */
-        xyz VertexInterp(double isolevel, xyz p1, xyz p2, double valp1, double valp2)
+        private final xyz VertexInterp(double isolevel, xyz p1, xyz p2, double valp1, double valp2)
         {
             double mu;
             xyz p = new xyz();
@@ -340,7 +308,7 @@ public class TetraMarcher implements Serializable { //marching tetrahedrons as i
             String timeLog = timeLog1+ ".stl";
             //File logFile = new File(timeLog);
 
-            System.out.println("saving stl...");
+            //System.out.println("saving stl...");
             byte[] title = new byte[80];
 
             try(FileChannel ch=new RandomAccessFile("./models/"+timeLog , "rw").getChannel())
@@ -387,7 +355,10 @@ public class TetraMarcher implements Serializable { //marching tetrahedrons as i
             }
         }
 
-        public void getPotentials(ShapeAnalyzer shapeAnalyzer, ArrayList<Integer>[] zLists, int xMin, int xMax, int yMin, int yMax, int zMin, int zMax, int stepSize){
+        public void getPotentials(ShapeAnalyzer shapeAnalyzer, ArrayList<Integer>[] zLists, int xMin, int xMax, int yMin, int yMax, int zMin, int zMax){
+
+            int gridWidth = shapeAnalyzer.width;
+            int stepSize = (1024/shapeAnalyzer.width);
             Triangle[] tri = this.generateTriangleArray();
 
             double maxDist = 16;
@@ -413,16 +384,16 @@ public class TetraMarcher implements Serializable { //marching tetrahedrons as i
                 setArrayUsingList(zLists[(int)z], shapeAnalyzer.ZList);
                 shapeAnalyzer.updateZList(zLists[(int)z].size());
 
-                if((z-_zmin)%160==0)System.out.println("scanning " + z + "/1024  Triangles: " + numPolys + "  zPots " + (t3-t1) + " polygonize " + (t4-t3));
+                //if((z-_zmin)%160==0)System.out.println("scanning " + z + "/1024  Triangles: " + numPolys + "  zPots " + (t3-t1) + " polygonize " + (t4-t3));
 
                 totalZTime+=(t3-t1);
                 totalPolyTime+=(t4-t3);
 
                 t1 = System.currentTimeMillis();
-                shapeAnalyzer.getAllPotentialsByZ(z,stepSize, (int)maxDist);
+                shapeAnalyzer.getAllPotentialsByZ(z,(int)maxDist);
                 t2 = System.currentTimeMillis();
                 oldLinePot = shapeAnalyzer.linePot.clone();
-                shapeAnalyzer.getAllPotentialsByZ(z+stepSize,stepSize, (int)maxDist);
+                shapeAnalyzer.getAllPotentialsByZ(z+stepSize,(int)maxDist);
 
                 t3 = System.currentTimeMillis();
                 float edgeThresh = 1.0f;
@@ -436,7 +407,7 @@ public class TetraMarcher implements Serializable { //marching tetrahedrons as i
                 for(x=_xmin; x<_xmax; x+=stepSize){
                     for(y=_ymin; y<_ymax; y+=stepSize){
                         numPolys += this.PolygoniseGrid(
-                                this.generateCell(x, y, z, stepSize, oldLinePot, shapeAnalyzer.linePot),
+                                this.generateCell(x/stepSize, y/stepSize, z/stepSize, oldLinePot, shapeAnalyzer.linePot, gridWidth),
                                 iso,
                                 tri);
                     }
@@ -446,7 +417,7 @@ public class TetraMarcher implements Serializable { //marching tetrahedrons as i
 
             }
 
-            System.out.println("scan time " + (System.currentTimeMillis() - startTime));
+            System.out.println("scan time " + (System.currentTimeMillis() - startTime)/1000 + "s");
 
             System.out.println(this.triangleList.size() + " TRIS " + numPolys);
 
@@ -461,13 +432,13 @@ public class TetraMarcher implements Serializable { //marching tetrahedrons as i
             long meshStartTime = System.currentTimeMillis();
             this.meshLabFix("./models/"+theFileName);
             long meshSaveTime = System.currentTimeMillis()-meshStartTime;
-            System.out.println("\n\n\tSURFACE " + theSurfaceArea + " VOLUME " + theVolume + " RATIO s/v " + (theSurfaceArea/(theVolume+0.00001d))
-                    + "\n\tDIAG " + theDiagonal + " RATIO s/(vd) " + (theSurfaceArea/(theVolume+0.00001d)/theDiagonal)+"\n\n");
+            System.out.println("SURFACE " + theSurfaceArea + " VOLUME " + theVolume + " RATIO s/v " + (theSurfaceArea/(theVolume+0.00001d))
+                    + " DIAG " + theDiagonal + " RATIO s/(vd) " + (theSurfaceArea/(theVolume+0.00001d)/theDiagonal)+"\n");
 
             totalTime = (System.currentTimeMillis() - startTime);
-            System.out.println("\tdone - built in " + buildTime/1000.0 + "s, saved in " + saveTime/1000.0 + "s, meshlabeded in " + meshSaveTime/1000.0 + "s" );
-            System.out.println("\t\tbuild: gpu potn time elapsed " + totalZTime/1000.0 + "s");
-            System.out.println("\t\tbuild: cpu poly time elapsed " + totalPolyTime/1000.0 + "s\n");
+            System.out.println("done - built in " + buildTime/1000.0 + "s, saved in " + saveTime/1000.0 + "s, meshlabeded in " + meshSaveTime/1000.0 + "s" );
+            //System.out.println("build: gpu potn time elapsed " + totalZTime/1000.0 + "s");
+            //System.out.println("tbuild: cpu poly time elapsed " + totalPolyTime/1000.0 + "s\n");
         }
 
         public double theVolume=0;
@@ -487,7 +458,7 @@ public class TetraMarcher implements Serializable { //marching tetrahedrons as i
                 BufferedReader br = new BufferedReader(isr);
                 String line = null;
                 while ( (line = br.readLine()) != null){
-                    System.out.println(line);
+                    //System.out.println(line);
                     if(line.contains("watertight") || line.contains("Failed")){
                         shapeInvalid=true;
                         break;

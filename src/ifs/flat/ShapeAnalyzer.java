@@ -15,10 +15,12 @@ public final class ShapeAnalyzer extends Kernel{
     public final int ZList[]; //ZList denotes which lines (index) affect current z plane
 
     public final double linePot[];
-    final int NUM_LINES = 1024*1024;
+
+    public final int width = 1024/4;
+
+    final int NUM_LINES = width*width;
 
     double myZ=0;
-    int stepSize=1;
     int cutoffDist=0;
 
     public ShapeAnalyzer(){
@@ -36,26 +38,22 @@ public final class ShapeAnalyzer extends Kernel{
 
     @Override
     public void run() {
-        int x = getGlobalId(0)*stepSize;
-        int y = getGlobalId(1)*stepSize;
-        double res = metaPotential(x, y, myZ, cutoffDist);
+        int x = getGlobalId(0);
+        int y = getGlobalId(1);
 
-        for(int _x=x; _x<x+stepSize;_x++){
-            for(int _y=y; _y<y+stepSize;_y++){
-                //if(_x>0 && _x<1024 && _y>0 && _y<1024)
-                linePot[_x+_y*1024] = res;
-            }
-        }
+        int stepSize = 1024/width;
+
+        double res = metaPotential(x*stepSize, y*stepSize, myZ, cutoffDist);
+        linePot[x+y*width] = res;
     }
 
-    public void getAllPotentialsByZ(double z, int big_inc, int _maxDist){
+    public void getAllPotentialsByZ(double z, int _maxDist){
         this.setExplicit(true);
 
         cutoffDist=_maxDist;
         myZ = z;
-        stepSize = big_inc;
 
-        Range range = Range.create2D(1024/big_inc,1024/big_inc);
+        Range range = Range.create2D(width,width);
 
         this.execute(range);
         this.get(linePot);
