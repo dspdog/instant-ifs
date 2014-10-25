@@ -93,23 +93,25 @@ public final class ShapeAnalyzer extends Kernel{
         int zlistmax = zListTotal%NUM_LINES;
 
         for(int i=0; i<zlistmax; i++){
-            int _i = ZList[i]%NUM_LINES;
-            z1 = getZ1(_i);
-            z2 = getZ2(_i);
-            x1 = getX1(_i);
-            x2 = getX2(_i);
-            _min= min(x1,x2)-maxDist;
-            _max= max(x1,x2)+maxDist;
-            if(_min<x && _max>x){
-                y1 = getY1(_i);
-                y2 = getY2(_i);
-                _min= min(y1,y2)-maxDist;
-                _max= max(y1,y2)+maxDist;
-                if(_min<y && _max>y){
-                    s1 = getS1(_i);
-                    s2 = getS2(_i);
-                    //potential+=singlePotential(x,y,z,x1,y1,z1,s1,x2,y2,z2,s2); //"meta balls" mode
-                    potential=max(potential,singlePotential(x,y,z,x1,y1,z1,s1,x2,y2,z2,s2)); //"tubes" mode
+            int _i = ZList[i];
+            if(_i<NUM_LINES){
+                z1 = getZ1(_i);
+                z2 = getZ2(_i);
+                x1 = getX1(_i);
+                x2 = getX2(_i);
+                _min= min(x1,x2)-maxDist;
+                _max= max(x1,x2)+maxDist;
+                if(_min<x && _max>x){
+                    y1 = getY1(_i);
+                    y2 = getY2(_i);
+                    _min= min(y1,y2)-maxDist;
+                    _max= max(y1,y2)+maxDist;
+                    if(_min<y && _max>y){
+                        s1 = getS1(_i);
+                        s2 = getS2(_i);
+                        //potential+=singlePotential(x,y,z,x1,y1,z1,s1,x2,y2,z2,s2); //"meta balls" mode
+                        potential=max(potential,singlePotential(x,y,z,x1,y1,z1,s1,x2,y2,z2,s2)); //"tubes" mode
+                    }
                 }
             }
         }

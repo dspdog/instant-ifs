@@ -487,11 +487,13 @@ final class ifsys extends JPanel
 
         if(shapeAnalyzing){
             int ri = renderBuffer.lineIndex%shapeAnalyzer.NUM_LINES;
-            shapeAnalyzer.lineXY1[ri] = renderBuffer.lineDI[ri];
-            shapeAnalyzer.lineXY1[ri] = renderBuffer.lineXY1[ri];
-            shapeAnalyzer.lineZS1[ri] = renderBuffer.lineZS1[ri];
-            shapeAnalyzer.lineXY2[ri] = renderBuffer.lineXY2[ri];
-            shapeAnalyzer.lineZS2[ri] = renderBuffer.lineZS2[ri];
+            if(renderBuffer.lineIndex<shapeAnalyzer.NUM_LINES){
+                shapeAnalyzer.lineXY1[ri] = renderBuffer.lineDI[ri];
+                shapeAnalyzer.lineXY1[ri] = renderBuffer.lineXY1[ri];
+                shapeAnalyzer.lineZS1[ri] = renderBuffer.lineZS1[ri];
+                shapeAnalyzer.lineXY2[ri] = renderBuffer.lineXY2[ri];
+                shapeAnalyzer.lineZS2[ri] = renderBuffer.lineZS2[ri];
+            }
         }
 
         renderBuffer.lineIndex++;
