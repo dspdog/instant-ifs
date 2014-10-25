@@ -59,21 +59,12 @@ public class recordsKeeper implements java.io.Serializable{
         Collections.sort(records, new Comparator<row>() {
             @Override
             public int compare(row o1, row o2) {
-                double d1 = o1.evolutionScore();
-                double d2 = o2.evolutionScore();
-                if(d1>d2){
-                    return -1;
-                }
-                if(d2>d1){
-                    return 1;
-                }
-                return 0;
+                return new Double(o2.evolutionScore()).compareTo(new Double(o1.evolutionScore()));
             }
         });
     }
 
     public void getPotentials(ifsys is, int generationNo, int sibNo, ifsShape theShape){
-
         System.out.println("getting potentials! step size " + (int)(1024/is.shapeAnalyzer.width) + " res " + is.shapeAnalyzer.width);
         CubeMarcher tm = new CubeMarcher();
         tm.getPotentials(is.shapeAnalyzer, is.zLists, is.xMin, is.xMax, is.yMin, is.yMax, is.zMin, is.zMax);

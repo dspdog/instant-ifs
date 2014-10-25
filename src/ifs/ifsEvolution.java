@@ -24,7 +24,7 @@ public class ifsEvolution {
 
         System.out.println("start of evolution...");
 
-        int totalSibs = 10;
+        int totalSibs = 2;
         int totalGens = 10000;
 
         Random rnd = new Random();
@@ -35,7 +35,7 @@ public class ifsEvolution {
         for(int g=0; g<totalGens; g++){
 
             deleteOldFiles.deleteFilesOlderThanNMin(5, "./models/");
-            System.out.println("GENERATION " + g);
+            System.out.println("///////////////////////////////GENERATION " + g);
             String seed = "";
 
             if(g>0){
@@ -55,8 +55,8 @@ public class ifsEvolution {
 
                 rk.getPotentials(is, g, i, theShape);
 
-                System.out.println("thread: sibling " + (i+1) + "/" + totalSibs + " submitted.");
-                System.out.println("thread: Elapsed time: " + (int)((System.currentTimeMillis() - startTime)/60000) + "m " + ((System.currentTimeMillis() - startTime)/1000)%60 + "s");
+                System.out.println("sibling " + (i+1) + "/" + totalSibs + " submitted.");
+                System.out.println("Elapsed time: " + (int)((System.currentTimeMillis() - startTime)/60000) + "m " + ((System.currentTimeMillis() - startTime)/1000)%60 + "s");
             }
         }
     }

@@ -13,8 +13,8 @@ public final class ShapeAnalyzer extends Kernel{
 
     int zListTotal=0;
     public final int ZList[]; //ZList denotes which lines (index) affect current z plane
-
     public final double linePot[];
+    public final double linePot2[];
     //public final double nextLinePot[];
 
     public final int width = 1024/4;
@@ -32,7 +32,7 @@ public final class ShapeAnalyzer extends Kernel{
         lineZS2 = new int[NUM_LINES];
         lineDI = new int[NUM_LINES];
         linePot = new double[NUM_LINES];
-       // nextLinePot = new double[NUM_LINES];
+        linePot2 = new double[NUM_LINES];
         ZList = new int[NUM_LINES];
 
         this.setExecutionMode(Kernel.EXECUTION_MODE.GPU);
@@ -45,8 +45,14 @@ public final class ShapeAnalyzer extends Kernel{
 
         int stepSize = 1024/width;
 
-        double res = metaPotential(x*stepSize, y*stepSize, myZ, cutoffDist/stepSize);
-        linePot[x+y*width] = res;
+        if(x<width){
+            double res = metaPotential(x*stepSize, y*stepSize, myZ, cutoffDist/stepSize);
+            linePot[x+y*width] = res;
+        }else{
+            x=x%width;
+            double res = metaPotential(x*stepSize, y*stepSize, myZ+stepSize, cutoffDist/stepSize);
+            linePot2[x+y*width] = res;
+        }
 
         // res = metaPotential(x*stepSize, y*stepSize, myZ+stepSize, cutoffDist/stepSize);
         //extLinePot[x+y*width] = res;
@@ -58,10 +64,10 @@ public final class ShapeAnalyzer extends Kernel{
         cutoffDist=_maxDist;
         myZ = z;
 
-        Range range = Range.create2D(width,width);
+        Range range = Range.create2D(width*2,width);
 
         this.execute(range);
-        this.get(linePot);//.get(nextLinePot);
+        this.get(linePot).get(linePot2);
     }
 
     public void updateZList(int total){
@@ -84,7 +90,9 @@ public final class ShapeAnalyzer extends Kernel{
 
         float s1, s2;
 
-        for(int i=0; i<zListTotal; i++){
+        int zlistmax = zListTotal%NUM_LINES;
+
+        for(int i=0; i<zlistmax; i++){
             int _i = ZList[i];
             z1 = getZ1(_i);
             z2 = getZ2(_i);

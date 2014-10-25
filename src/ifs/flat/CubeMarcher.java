@@ -626,9 +626,6 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
                 t1 = System.currentTimeMillis();
                 shapeAnalyzer.getAllPotentialsByZ(z,(int)maxDist);
 
-                oldLinePot = shapeAnalyzer.linePot.clone();
-                shapeAnalyzer.getAllPotentialsByZ(z+stepSize,(int)maxDist);
-
                 t3 = System.currentTimeMillis();
                 float edgeThresh = 1.0f;
 
@@ -641,7 +638,7 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
                 for(x=_xmin; x<_xmax; x+=stepSize){
                     for(y=_ymin; y<_ymax; y+=stepSize){
                         numPolys += this.Polygonise(
-                                this.generateCell(x / stepSize, y / stepSize, z / stepSize, oldLinePot, shapeAnalyzer.linePot, gridWidth),
+                                this.generateCell(x / stepSize, y / stepSize, z / stepSize, shapeAnalyzer.linePot, shapeAnalyzer.linePot2, gridWidth),
                                 iso,
                                 tri);
                     }
@@ -696,12 +693,10 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
             totalsubBuildTimeCPU+=totalPolyTime;
             totalsubBuildTimeGPU+=totalZTime;
 
-
-
             totalTime = (System.currentTimeMillis() - startTime);
-            System.out.println("done - built in " + buildTime/1000.0 + "s, saved in " + saveTime/1000.0 + "s, meshlabeded in " + meshSaveTime/1000.0 + "s" );
+            System.out.println("done - built in " + buildTime/1000.0 + "s, cpu " + totalPolyTime + " gpu " + totalZTime );
 
-            System.out.println("\nTOTALS: meshlab " + totalMeshLabTime/1000.0 + " build " + totalBuildTime/1000.0 + " (cpu "+totalsubBuildTimeCPU/1000.0 + ", gpu " + totalsubBuildTimeGPU/1000.0 + ") save " + totalSaveTime/1000.0+"\n");
+            System.out.println("\nTOTALS: build " + totalBuildTime/1000.0 + " (cpu "+totalsubBuildTimeCPU/1000.0 + ", gpu " + totalsubBuildTimeGPU/1000.0 + ") save " + totalSaveTime/1000.0+"\n");
 
             //System.out.println("build: gpu potn time elapsed " + totalZTime/1000.0 + "s");
             //System.out.println("tbuild: cpu poly time elapsed " + totalPolyTime/1000.0 + "s\n");
