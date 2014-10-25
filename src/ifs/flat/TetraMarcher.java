@@ -391,7 +391,7 @@ public class TetraMarcher implements Serializable { //marching tetrahedrons as i
 
                 t1 = System.currentTimeMillis();
                 shapeAnalyzer.getAllPotentialsByZ(z,(int)maxDist);
-                t2 = System.currentTimeMillis();
+
                 oldLinePot = shapeAnalyzer.linePot.clone();
                 shapeAnalyzer.getAllPotentialsByZ(z+stepSize,(int)maxDist);
 

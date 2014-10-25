@@ -43,7 +43,7 @@ public final class ShapeAnalyzer extends Kernel{
 
         int stepSize = 1024/width;
 
-        double res = metaPotential(x*stepSize, y*stepSize, myZ, cutoffDist);
+        double res = metaPotential(x*stepSize, y*stepSize, myZ, cutoffDist/stepSize);
         linePot[x+y*width] = res;
     }
 
