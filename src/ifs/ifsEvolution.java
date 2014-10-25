@@ -24,7 +24,7 @@ public class ifsEvolution {
 
         System.out.println("start of evolution...");
 
-        int totalSibs = 2;
+        int totalSibs = 10;
         int totalGens = 10000;
 
         Random rnd = new Random();
