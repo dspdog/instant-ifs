@@ -486,11 +486,11 @@ final class ifsys extends JPanel
         zMax = (int)Math.min(1023,Math.max(Math.max(zMax,odp.z+maxDist),Math.max(zMax,dpt.z+maxDist)));
 
         if(shapeAnalyzing){
-            shapeAnalyzer.lineXY1[renderBuffer.lineIndex%shapeAnalyzer.NUM_LINES] = renderBuffer.lineDI[renderBuffer.lineIndex%renderBuffer.NUM_LINES];
-            shapeAnalyzer.lineXY1[renderBuffer.lineIndex%shapeAnalyzer.NUM_LINES] = renderBuffer.lineXY1[renderBuffer.lineIndex%renderBuffer.NUM_LINES];
-            shapeAnalyzer.lineZS1[renderBuffer.lineIndex%shapeAnalyzer.NUM_LINES] = renderBuffer.lineZS1[renderBuffer.lineIndex%renderBuffer.NUM_LINES];
-            shapeAnalyzer.lineXY2[renderBuffer.lineIndex%shapeAnalyzer.NUM_LINES] = renderBuffer.lineXY2[renderBuffer.lineIndex%renderBuffer.NUM_LINES];
-            shapeAnalyzer.lineZS2[renderBuffer.lineIndex%shapeAnalyzer.NUM_LINES] = renderBuffer.lineZS2[renderBuffer.lineIndex%renderBuffer.NUM_LINES];
+            shapeAnalyzer.lineXY1[renderBuffer.lineIndex] = renderBuffer.lineDI[renderBuffer.lineIndex];
+            shapeAnalyzer.lineXY1[renderBuffer.lineIndex] = renderBuffer.lineXY1[renderBuffer.lineIndex];
+            shapeAnalyzer.lineZS1[renderBuffer.lineIndex] = renderBuffer.lineZS1[renderBuffer.lineIndex];
+            shapeAnalyzer.lineXY2[renderBuffer.lineIndex] = renderBuffer.lineXY2[renderBuffer.lineIndex];
+            shapeAnalyzer.lineZS2[renderBuffer.lineIndex] = renderBuffer.lineZS2[renderBuffer.lineIndex];
         }
 
         renderBuffer.lineIndex++;

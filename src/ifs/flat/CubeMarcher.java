@@ -342,11 +342,36 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
                 p[0] = new xyz();
                 p[1] = new xyz();
                 p[2] = new xyz();
-                p[0].setTo(tri.p[0]);
+                p[2].setTo(tri.p[0]); //flipped to fix winding from marching cubes...
                 p[1].setTo(tri.p[1]);
-                p[2].setTo(tri.p[2]);
+                p[0].setTo(tri.p[2]);
+            }
+
+            public double mySignedVolume(){
+                double v321 = p[2].x*p[1].y*p[0].z;
+                double v231 = p[1].x*p[2].y*p[0].z;
+                double v312 = p[2].x*p[0].y*p[1].z;
+                double v132 = p[0].x*p[2].y*p[1].z;
+                double v213 = p[1].x*p[0].y*p[2].z;
+                double v123 = p[0].x*p[1].y*p[2].z;
+                return (1.0f/6.0f)*(-v321 + v231 + v312 - v132 - v213 + v123);
+            }
+
+            public double mySurface(){ //see explanation at http://www.iquilezles.org/blog/?p=1579
+                double a = sideLenSquared(0);
+                double b = sideLenSquared(1);
+                double c = sideLenSquared(2);
+
+                return Math.sqrt((2*a*b + 2*b*c + 2*c*a - a*a - b*b - c*c)/16d);
+            }
+
+            public double sideLenSquared(int i){
+                return    (p[i].x-p[(i+2)%3].x)*(p[i].x-p[(i+2)%3].x)
+                        + (p[i].y-p[(i+2)%3].y)*(p[i].y-p[(i+2)%3].y)
+                        + (p[i].z-p[(i+2)%3].z)*(p[i].z-p[(i+2)%3].z);
             }
         }
+
 
         public class GridCell{
             public xyz[] p;
@@ -483,105 +508,6 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
 
         return(ntriang);
     }
-
-        private int PolygoniseTri(GridCell g, double iso,
-                                        Triangle[] tri, int v0, int v1, int v2, int v3)
-        {
-            int ntri = 0;
-            int triindex;
-
-       /*
-          Determine which of the 16 cases we have given which vertices
-          are above or below the isosurface
-       */
-            triindex = 0;
-            if (g.val[v0] < iso) triindex |= 1;
-            if (g.val[v1] < iso) triindex |= 2;
-            if (g.val[v2] < iso) triindex |= 4;
-            if (g.val[v3] < iso) triindex |= 8;
-
-       /* Form the vertices of the triangles for each case */
-            switch (triindex) {
-                case 0b0000: //completely above iso value - "empty"
-                case 0b1111: //completely below iso value - "full"
-                    break;
-                case 0b1110: //same as 0001 but reversed
-                case 0b0001:
-                    tri[0] = new Triangle();
-                    tri[0].p[0] = VertexInterp(iso,g.p[v0],g.p[v1],g.val[v0],g.val[v1]);
-                    tri[0].p[1] = VertexInterp(iso,g.p[v0],g.p[v2],g.val[v0],g.val[v2]);
-                    tri[0].p[2] = VertexInterp(iso,g.p[v0],g.p[v3],g.val[v0],g.val[v3]);
-                    ntri++;
-                    break;
-                case 0b1101: //same as 0010 but reversed
-                case 0b0010:
-                    tri[0] = new Triangle();
-                    tri[0].p[0] = VertexInterp(iso,g.p[v1],g.p[v0],g.val[v1],g.val[v0]);
-                    tri[0].p[1] = VertexInterp(iso,g.p[v1],g.p[v3],g.val[v1],g.val[v3]);
-                    tri[0].p[2] = VertexInterp(iso,g.p[v1],g.p[v2],g.val[v1],g.val[v2]);
-                    ntri++;
-                    break;
-                case 0b1100: //same as 0011 but reversed
-                case 0b0011:
-                    tri[0] = new Triangle();
-                    tri[1] = new Triangle();
-                    tri[0].p[0] = VertexInterp(iso,g.p[v0],g.p[v3],g.val[v0],g.val[v3]);
-                    tri[0].p[1] = VertexInterp(iso,g.p[v0],g.p[v2],g.val[v0],g.val[v2]);
-                    tri[0].p[2] = VertexInterp(iso,g.p[v1],g.p[v3],g.val[v1],g.val[v3]);
-                    ntri++;
-                    tri[1].p[0] = tri[0].p[2];
-                    tri[1].p[1] = VertexInterp(iso,g.p[v1],g.p[v2],g.val[v1],g.val[v2]);
-                    tri[1].p[2] = tri[0].p[1];
-                    ntri++;
-                    break;
-                case 0b1011: //same as 0100 but reversed
-                case 0b0100:
-                    tri[0] = new Triangle();
-                    tri[0].p[0] = VertexInterp(iso,g.p[v2],g.p[v0],g.val[v2],g.val[v0]);
-                    tri[0].p[1] = VertexInterp(iso,g.p[v2],g.p[v1],g.val[v2],g.val[v1]);
-                    tri[0].p[2] = VertexInterp(iso,g.p[v2],g.p[v3],g.val[v2],g.val[v3]);
-                    ntri++;
-                    break;
-                case 0b1010: //same as 0101 but reversed
-                case 0b0101:
-                    tri[0] = new Triangle();
-                    tri[1] = new Triangle();
-                    tri[0].p[0] = VertexInterp(iso,g.p[v0],g.p[v1],g.val[v0],g.val[v1]);
-                    tri[0].p[1] = VertexInterp(iso,g.p[v2],g.p[v3],g.val[v2],g.val[v3]);
-                    tri[0].p[2] = VertexInterp(iso,g.p[v0],g.p[v3],g.val[v0],g.val[v3]);
-                    ntri++;
-                    tri[1].p[0] = tri[0].p[0];
-                    tri[1].p[1] = VertexInterp(iso,g.p[v1],g.p[v2],g.val[v1],g.val[v2]);
-                    tri[1].p[2] = tri[0].p[1];
-                    ntri++;
-                    break;
-                case 0b1001: //same as 0110 but reversed
-                case 0b0110:
-                    tri[0] = new Triangle();
-                    tri[1] = new Triangle();
-                    tri[0].p[0] = VertexInterp(iso,g.p[v0],g.p[v1],g.val[v0],g.val[v1]);
-                    tri[0].p[1] = VertexInterp(iso,g.p[v1],g.p[v3],g.val[v1],g.val[v3]);
-                    tri[0].p[2] = VertexInterp(iso,g.p[v2],g.p[v3],g.val[v2],g.val[v3]);
-                    ntri++;
-                    tri[1].p[0] = tri[0].p[0];
-                    tri[1].p[1] = VertexInterp(iso,g.p[v0],g.p[v2],g.val[v0],g.val[v2]);
-                    tri[1].p[2] = tri[0].p[2];
-                    ntri++;
-                    break;
-                case 0b1000: //same as 1000 but reversed
-                case 0b0111:
-                    tri[0] = new Triangle();
-                    tri[0].p[0] = VertexInterp(iso,g.p[v3],g.p[v0],g.val[v3],g.val[v0]);
-                    tri[0].p[1] = VertexInterp(iso,g.p[v3],g.p[v2],g.val[v3],g.val[v2]);
-                    tri[0].p[2] = VertexInterp(iso,g.p[v3],g.p[v1],g.val[v3],g.val[v1]);
-                    ntri++;
-                    break;
-            }
-
-            return(ntri);
-        }
-
-
 
         /*
            Linearly interpolate the position where an isosurface cuts
@@ -728,12 +654,33 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
             System.out.println("scan time " + (System.currentTimeMillis() - startTime) + "ms");
 
             System.out.println(this.triangleList.size() + " TRIS " + numPolys);
+            t4 = System.currentTimeMillis();
+
+            double myVolume =0;
+            double mySurface=0;
+            for(Triangle _tri: triangleList){
+                if(!(Double.isNaN(_tri.mySignedVolume()) || Double.isNaN(_tri.mySignedVolume()))){ //TODO figure out where the NaNs come from...
+                    myVolume += _tri.mySignedVolume();
+                    mySurface += _tri.mySurface();
+                }else{
+                    //System.out.println("bad triangle!");
+                }
+
+            }
+
+            System.out.println("found volume surface in "  + (System.currentTimeMillis() - t4));
+
+            myVolume=Math.abs(myVolume);
+
+            theSurfaceArea = mySurface;
+            theVolume = myVolume;
+
 
             long buildTime = System.currentTimeMillis() - startTime;
 
             //this.fixWinding();
             long saveStartTime = System.currentTimeMillis();
-            theFileName = this.saveToBinarySTL(this.triangleList.size());
+           // theFileName = this.saveToBinarySTL(this.triangleList.size());
 
             long saveTime = (System.currentTimeMillis() - saveStartTime);
 
@@ -759,6 +706,8 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
             //System.out.println("build: gpu potn time elapsed " + totalZTime/1000.0 + "s");
             //System.out.println("tbuild: cpu poly time elapsed " + totalPolyTime/1000.0 + "s\n");
         }
+
+
 
         public static long totalMeshLabTime = 0;
         public static long totalBuildTime = 0;
