@@ -675,9 +675,8 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
 
             long buildTime = System.currentTimeMillis() - startTime;
 
-            //this.fixWinding();
             long saveStartTime = System.currentTimeMillis();
-           // theFileName = this.saveToBinarySTL(this.triangleList.size());
+            // theFileName = this.saveToBinarySTL(this.triangleList.size());
 
             long saveTime = (System.currentTimeMillis() - saveStartTime);
 
@@ -697,12 +696,7 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
             System.out.println("done - built in " + buildTime/1000.0 + "s, cpu " + totalPolyTime + " gpu " + totalZTime );
 
             System.out.println("\nTOTALS: build " + totalBuildTime/1000.0 + " (cpu "+totalsubBuildTimeCPU/1000.0 + ", gpu " + totalsubBuildTimeGPU/1000.0 + ") save " + totalSaveTime/1000.0+"\n");
-
-            //System.out.println("build: gpu potn time elapsed " + totalZTime/1000.0 + "s");
-            //System.out.println("tbuild: cpu poly time elapsed " + totalPolyTime/1000.0 + "s\n");
         }
-
-
 
         public static long totalMeshLabTime = 0;
         public static long totalBuildTime = 0;

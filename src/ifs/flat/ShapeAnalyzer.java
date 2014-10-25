@@ -19,7 +19,7 @@ public final class ShapeAnalyzer extends Kernel{
 
     public final int width = 1024/4;
 
-    public final int NUM_LINES = width*width;
+    public final int NUM_LINES = width*width-1;
 
     double myZ=0;
     int cutoffDist=0;
@@ -93,7 +93,7 @@ public final class ShapeAnalyzer extends Kernel{
         int zlistmax = zListTotal%NUM_LINES;
 
         for(int i=0; i<zlistmax; i++){
-            int _i = ZList[i];
+            int _i = ZList[i]%NUM_LINES;
             z1 = getZ1(_i);
             z2 = getZ2(_i);
             x1 = getX1(_i);

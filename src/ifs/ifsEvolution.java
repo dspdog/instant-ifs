@@ -35,7 +35,7 @@ public class ifsEvolution {
         for(int g=0; g<totalGens; g++){
 
             deleteOldFiles.deleteFilesOlderThanNMin(5, "./models/");
-            System.out.println("///////////////////////////////GENERATION " + g);
+            System.out.println("\n\n///////////////////////////////GENERATION " + g);
             String seed = "";
 
             if(g>0){
