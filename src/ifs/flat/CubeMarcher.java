@@ -1,5 +1,7 @@
 package ifs.flat;
 
+import ifs.recordsKeeper;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -22,8 +24,8 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
 
-        public String saveToBinarySTL(int totalTriangles){
-
+        public String saveToBinarySTL(){
+            int totalTriangles = triangleList.size();
             Date startDate = Calendar.getInstance().getTime();
             String timeLog1 = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate);
             String timeLog = timeLog1+ ".stl";
@@ -136,7 +138,7 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
 
             System.out.println("scan time " + (System.currentTimeMillis() - startTime) + "ms");
 
-            System.out.println(triangleList.size() + " TRIS " + numPolys);
+            //System.out.println(triangleList.size() + " TRIS " + numPolys);
             t4 = System.currentTimeMillis();
 
             double myVolume =0;
@@ -163,7 +165,6 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
 
             long saveStartTime = System.currentTimeMillis();
 
-            //theFileName = saveToBinarySTL(triangleList.size());
 
             long saveTime = (System.currentTimeMillis() - saveStartTime);
 

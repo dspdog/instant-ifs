@@ -4,7 +4,6 @@ package ifs.flat;
  * Created by user on 10/25/14.
  */
 public class Polygoniser {
-
     private final static int[] edgeTable=new int[]{
             0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
             0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
@@ -377,7 +376,6 @@ public class Polygoniser {
         }
     }
 
-    public static Triangle[] temp_triangles = new Triangle[12];
     public Polygoniser(){
         for(int _i=0;_i<12;_i++){
             vertlist[_i]=new xyz();
@@ -414,8 +412,9 @@ public class Polygoniser {
         return thisCell;
     }
 
-    private static xyz vertlist[] = new xyz[12];
+    private static final xyz vertlist[] = new xyz[12];
     private static GridCell grid;
+    public static final Triangle[] temp_triangles = new Triangle[12];
 
     public int Polygonise(double x, double y, double z, double[] linePot1, double[] linePot2, int gridWidth, double isolevel)
     {
@@ -494,7 +493,7 @@ public class Polygoniser {
        Linearly interpolate the position where an isosurface cuts
        an edge between two vertices, each with their own scalar value
     */
-    private final xyz VertexInterp(double isolevel, xyz p1, xyz p2, double valp1, double valp2)
+    private xyz VertexInterp(double isolevel, xyz p1, xyz p2, double valp1, double valp2)
     {
         double mu;
         xyz p = new xyz();

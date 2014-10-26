@@ -25,7 +25,7 @@ public class ifsEvolution {
         System.out.println("start of evolution...");
 
         int totalSibs = 2;
-        int totalGens = 10000;
+        int totalGens = 400;
 
         Random rnd = new Random();
         deleteOldFiles.deleteFilesOlderThanNMin(1, ".");
@@ -53,7 +53,7 @@ public class ifsEvolution {
                 is.clearframe();
                 is.gamefunc();
 
-                rk.getPotentials(is, g, i, theShape);
+                rk.getPotentials(is, g, i, theShape, currentRecordScore);
 
                 System.out.println("sibling " + (i+1) + "/" + totalSibs + " submitted.");
                 System.out.println("Elapsed time: " + (int)((System.currentTimeMillis() - startTime)/60000) + "m " + ((System.currentTimeMillis() - startTime)/1000)%60 + "s");

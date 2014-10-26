@@ -48,11 +48,15 @@ public class recordsKeeper implements java.io.Serializable{
         }
     }
 
-    public void submit(ifsShape theShape, CubeMarcher tm, int generationNo, int sibNo){
+    public row submit(ifsShape theShape, CubeMarcher tm, int generationNo, int sibNo, double recordScore){
         row newrow = new row(tm.theVolume * 1.0, tm.theSurfaceArea, tm.theDiagonal, tm.theFileName, tm.totalTime, theShape, generationNo, sibNo);
-        records.add(newrow);
-        saveToFile(defaultName);
+
+        if(!tm.shapeInvalid && newrow.evolutionScore() > recordScore){
+            records.add(newrow);
+            saveToFile(defaultName);
+        }
         System.out.println("total records: " + records.size());
+        return newrow;
     }
 
     public void sortRecordsBySuitability(){
@@ -64,15 +68,14 @@ public class recordsKeeper implements java.io.Serializable{
         });
     }
 
-    public void getPotentials(ifsys is, int generationNo, int sibNo, ifsShape theShape){
+    public void getPotentials(ifsys is, int generationNo, int sibNo, ifsShape theShape, double recordScore){
         System.out.println("getting potentials! step size " + (int)(1024/is.shapeAnalyzer.width) + " res " + is.shapeAnalyzer.width);
         CubeMarcher tm = new CubeMarcher();
         tm.getPotentials(is.shapeAnalyzer, is.zLists, is.xMin, is.xMax, is.yMin, is.yMax, is.zMin, is.zMax);
-        if(tm.shapeInvalid){
-            //System.out.println("shape invalid, ignoring...");
-        }else{
-            //System.out.println("saving shape to records...");
-            submit(theShape, tm, generationNo, sibNo);
+        row newRow = submit(theShape, tm, generationNo, sibNo, recordScore);
+
+        if(newRow.evolutionScore() > recordScore){
+            tm.saveToBinarySTL();
         }
     }
 
