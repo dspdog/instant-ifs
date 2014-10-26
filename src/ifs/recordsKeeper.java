@@ -51,7 +51,7 @@ public class recordsKeeper implements java.io.Serializable{
     public row submit(ifsShape theShape, CubeMarcher tm, int generationNo, int sibNo, double recordScore){
         row newrow = new row(tm.theVolume * 1.0, tm.theSurfaceArea, tm.theDiagonal, tm.theFileName, tm.totalTime, theShape, generationNo, sibNo);
 
-        if(!tm.shapeInvalid && newrow.evolutionScore() > recordScore){
+        if(!tm.shapeInvalid && newrow.evolutionScore() > recordScore && Math.abs(tm.theVolume - 30000)<5000){
             records.add(newrow);
             saveToFile(defaultName);
         }
