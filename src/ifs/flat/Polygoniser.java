@@ -365,8 +365,8 @@ public class Polygoniser {
     }
 
     private class GridCell{
-        public xyz[] p;
-        public double[] val;
+        private xyz[] p;
+        private double[] val;
 
         public GridCell(){
             p = new xyz[8];
@@ -377,21 +377,15 @@ public class Polygoniser {
         }
     }
 
-    public Triangle[] generateTriangleArray(){
-        Triangle tris [] = new Triangle[12];
-        for(int i=0;i<12;i++){
-            tris[i]=new Triangle();
-        }
-        return tris;
-    }
-
-    public Triangle[] temp_triangles;
-
+    public static Triangle[] temp_triangles = new Triangle[12];
     public Polygoniser(){
-        temp_triangles = generateTriangleArray();
+        for(int _i=0;_i<12;_i++){
+            vertlist[_i]=new xyz();
+            temp_triangles[_i]= new Triangle();
+        }
     }
 
-    public GridCell generateCell(double x, double y, double z, double[] linePot1, double[] linePot2, int gridWidth){
+    public GridCell generateCell(double x, double y, double z, double[] isoGrid0, double[] isoGrid1, int gridWidth){
         GridCell thisCell = new GridCell();
 
         thisCell.p[0].setTo(x,y,z);
@@ -407,30 +401,27 @@ public class Polygoniser {
         int _y = (int)Math.min(gridWidth-1,Math.max(y,1));
         int _z = (int)Math.min(gridWidth-1,Math.max(z,1));
 
-        thisCell.val[0] = linePot1[_x+_y*gridWidth];
-        thisCell.val[1] = linePot1[(_x+1)+_y*gridWidth];
-        thisCell.val[4] = linePot1[_x+(_y+1)*gridWidth];
-        thisCell.val[5] = linePot1[(_x+1)+(_y+1)*gridWidth];
+        thisCell.val[0] = isoGrid0[_x+_y*gridWidth];
+        thisCell.val[1] = isoGrid0[(_x+1)+_y*gridWidth];
+        thisCell.val[4] = isoGrid0[_x+(_y+1)*gridWidth];
+        thisCell.val[5] = isoGrid0[(_x+1)+(_y+1)*gridWidth];
 
-        thisCell.val[3] = linePot2[_x+_y*gridWidth];
-        thisCell.val[2] = linePot2[(_x+1)+_y*gridWidth];
-        thisCell.val[7] = linePot2[_x+(_y+1)*gridWidth];
-        thisCell.val[6] = linePot2[(_x+1)+(_y+1)*gridWidth];
+        thisCell.val[3] = isoGrid1[_x+_y*gridWidth];
+        thisCell.val[2] = isoGrid1[(_x+1)+_y*gridWidth];
+        thisCell.val[7] = isoGrid1[_x+(_y+1)*gridWidth];
+        thisCell.val[6] = isoGrid1[(_x+1)+(_y+1)*gridWidth];
 
         return thisCell;
     }
 
+    private static xyz vertlist[] = new xyz[12];
+    private static GridCell grid;
+
     public int Polygonise(double x, double y, double z, double[] linePot1, double[] linePot2, int gridWidth, double isolevel)
     {
-        GridCell grid = generateCell(x, y, z, linePot1, linePot2, gridWidth);
-        int i,ntriang;
+        grid = generateCell(x, y, z, linePot1, linePot2, gridWidth);
+        int ntriang;
         int cubeindex;
-        xyz vertlist[] = new xyz[12];
-
-        for(int _i=0;_i<12;_i++){
-            vertlist[_i]=new xyz();
-        }
-
    /*
       Determine the index into the edge table which
       tells us which vertices are inside of the surface
