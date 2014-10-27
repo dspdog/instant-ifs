@@ -173,8 +173,11 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
             long meshSaveTime = System.currentTimeMillis()-meshStartTime;
 
             if(theVolume==0){
-                System.exit(1);
-                throw new Exception();
+                System.out.println("////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ZERO VOL");
+                System.out.println("////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ZERO VOL");
+                System.out.println("////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ZERO VOL");
+                //System.exit(1);
+                //throw new Exception();
             }
 
             System.out.println("SURFACE " + theSurfaceArea + " VOLUME " + theVolume + " RATIO s/v " + (theSurfaceArea/(theVolume+0.00001d))

@@ -301,6 +301,13 @@ public class Polygoniser {
         public xyz(){
             x=0;y=0;z=0;
         }
+
+        public xyz(double _x, double _y, double _z){
+            x=_x;
+            y=_y;
+            z=_z;
+        }
+
         public void setTo(xyz target){
             x=target.x;
             y=target.y;
@@ -323,9 +330,9 @@ public class Polygoniser {
         }
 
         public Triangle(Triangle tri){
-            p0x=tri.p2x; p0y=tri.p2y; p0z=tri.p2z;
-            p1x=tri.p1x; p1y=tri.p1y; p1z=tri.p1z;
-            p2x=tri.p0x; p2y=tri.p0y; p2z=tri.p0z;
+            setPoint0(new xyz(tri.p2x, tri.p2y, tri.p2z));
+            setPoint1(new xyz(tri.p1x, tri.p1y, tri.p1z));
+            setPoint2(new xyz(tri.p0x, tri.p0y, tri.p0z));
         }
 
         public Triangle copy(){
@@ -348,18 +355,34 @@ public class Polygoniser {
             p0x=(float)val.x;
             p0y=(float)val.y;
             p0z=(float)val.z;
+
+            if(new Double(p0x).isNaN() || new Double(p0y).isNaN() || new Double(p0z).isNaN()){
+                reset();
+            }
         }
 
         public void setPoint1(xyz val){
             p1x=(float)val.x;
             p1y=(float)val.y;
             p1z=(float)val.z;
+
+            if(new Double(p1x).isNaN() || new Double(p1y).isNaN() || new Double(p1z).isNaN()){
+                reset();
+            }
         }
 
         public void setPoint2(xyz val){
             p2x=(float)val.x;
             p2y=(float)val.y;
             p2z=(float)val.z;
+
+            if(new Double(p2x).isNaN() || new Double(p2y).isNaN() || new Double(p2z).isNaN()){
+                reset();
+            }
+        }
+
+        public void reset(){
+            setPoint0(new xyz());setPoint1(new xyz());setPoint2(new xyz());
         }
     }
 

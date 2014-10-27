@@ -590,48 +590,12 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
                 delaySpinner.setValue((int)myIfsSys.rp.shutterPeriod);
 
                 perspectiveCheck.setSelected(!myIfsSys.theVolume.usePerspective);
-                //frameHoldCheck.setSelected(myIfsSys.rp.holdFrame);
-                //gridCheck.setSelected(myIfsSys.rp.drawGrid);
-                //delayCheck.setSelected(myIfsSys.rp.renderThrottling);
-                //cartoonCheck.setSelected(myIfsSys.rp.cartoonMode);
 
                 smearCheck.setSelected(myIfsSys.rp.smearPDF);
 
-                //System.out.println(renderModeCombo.setse);
                 renderModeCombo.setSelectedIndex(myIfsSys.theVolume.renderMode == volume.RenderMode.PROJECT_ONLY ? 1 : 0);
-                //dotSizeSpinner.setValue(myIfsSys.rp.dotSize);
-
-                //xMinSpinner.setValue(myIfsSys.rp.xMin);
-                //xMaxSpinner.setValue(myIfsSys.rp.xMax);
-                //yMinSpinner.setValue(myIfsSys.rp.yMin);
-                //yMaxSpinner.setValue(myIfsSys.rp.yMax);
-                //zMinSpinner.setValue(myIfsSys.rp.zMin);
-                //zMaxSpinner.setValue(myIfsSys.rp.zMax);
             }
         }
-        /*
-        switch (myIfsSys.thePdf.thePdfComboMode){
-            case ADD:
-                if(pdfModeCombo.getSelectedIndex()!=0)
-                    pdfModeCombo.setSelectedIndex(0);
-                break;
-            case AVERAGE:
-                if(pdfModeCombo.getSelectedIndex()!=1)
-                    pdfModeCombo.setSelectedIndex(1);
-                break;
-            case MULTIPLY:
-                if(pdfModeCombo.getSelectedIndex()!=2)
-                    pdfModeCombo.setSelectedIndex(2);
-                break;
-            case MAX:
-                if(pdfModeCombo.getSelectedIndex()!=3)
-                    pdfModeCombo.setSelectedIndex(3);
-                break;
-            case MIN:
-                if(pdfModeCombo.getSelectedIndex()!=4)
-                    pdfModeCombo.setSelectedIndex(4);
-                break;
-        }*/
 
         autoChange = false;
     }

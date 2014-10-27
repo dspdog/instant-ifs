@@ -145,7 +145,7 @@ final class ifsys extends JPanel
         //desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
         JFrame parentFrame = new JFrame();
         parentFrame.getContentPane().add(desktop, BorderLayout.CENTER);
-        parentFrame.setSize(is.rp.screenwidth+400+16, is.rp.screenheight);
+        parentFrame.setSize(is.rp.screenwidth+200+16, is.rp.screenheight);
         parentFrame.setVisible(true);
         parentFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -153,7 +153,7 @@ final class ifsys extends JPanel
 
         is.init();
         setupMiniFrame(is.theMenu.shapeProperties, 200, 350,   is.rp.screenwidth, 300, "Shape", "invader.png", desktop);
-        setupMiniFrame(is.theMenu.renderProperties, 200, 300,   is.rp.screenwidth+200,0, "Camera", "camera.png", desktop);
+        setupMiniFrame(is.theMenu.renderProperties, 200, 300,   is.rp.screenwidth,650, "Camera", "camera.png", desktop);
         //setupMiniFrame(is.theMenu.pdfProperties,    200, 150,   is.rp.screenwidth,300, "Kernel", "cloud.png", desktop);
         setupMiniFrame(is.theMenu.pointProperties,  200, 300,   is.rp.screenwidth,0, "IFS Point", "anchors.png", desktop);
     }

@@ -258,8 +258,6 @@ final class ifsOverlays {
         rg.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         rg.setColor(Color.white);
 
-        drawStringOverlay(rg, log10String("Dots   ", myIfsSys.theVolume.totalSamples));
-
         double memoryUsedMB = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024*1024);
         double memoryMaxMB = Runtime.getRuntime().maxMemory()/(1024*1024);
 
@@ -268,8 +266,6 @@ final class ifsOverlays {
         double time = (System.currentTimeMillis()-myIfsSys.theVolume.drawTime)/1000.0;
 
         drawStringOverlay(rg, "FPS " + String.valueOf(myIfsSys.fps));
-        drawStringOverlay(rg, "RenderTime " + df.format(time) + "s");
-        drawStringOverlay(rg, log10String("Dots/s", (float) (myIfsSys.theVolume.totalSamples / time)));
     }
 
     public void drawStringOverlay(Graphics rg, String s){
