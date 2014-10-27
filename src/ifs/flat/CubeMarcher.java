@@ -78,7 +78,7 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
             }
         }
 
-        public void getPotentials(ShapeAnalyzer shapeAnalyzer, ArrayList<Integer>[] zLists, int xMin, int xMax, int yMin, int yMax, int zMin, int zMax) throws Exception {
+        public void getPotentials(ShapeAnalyzer shapeAnalyzer, ArrayList<Integer>[] zLists, int xMin, int xMax, int yMin, int yMax, int zMin, int zMax) {
             int gridWidth = shapeAnalyzer.width;
             int stepSize = (1024/shapeAnalyzer.width);
 
@@ -90,43 +90,42 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
 
             long startTime = System.currentTimeMillis();
 
-            double[] oldLinePot;
-
             shapeAnalyzer.updateGeometry();
             long t1=0,t2=0,t3=0,t4=0;
 
             int _zmin = Math.max(stepSize, zMin);
             int _zmax = Math.min(1024 - stepSize, zMax);
-
             long totalPolyTime = 0;
             long totalZTime = 0;
+            int _xmin,_xmax;
+            int _ymin,_ymax;
+            int newTris;
+            int i;
 
             for(z=_zmin; z<_zmax; z+=stepSize){
                 setArrayUsingList(zLists[(int)z], shapeAnalyzer.ZList);
                 shapeAnalyzer.updateZList(zLists[(int)z].size());
 
-                //if((z-_zmin)%1==0)System.out.println("scanning " + z + "/1024  Triangles: " + numPolys + "  zPots " + (t3-t1) + " polygonize " + (t4-t3));
-
                 totalZTime+=(t3-t1);
                 totalPolyTime+=(t4-t3);
 
                 t1 = System.currentTimeMillis();
-                shapeAnalyzer.getAllPotentialsByZ(z,(int)maxDist);
+                shapeAnalyzer.getAllPotentialsByZ(z,(int)maxDist,iso);
 
                 t3 = System.currentTimeMillis();
 
-                int _xmin = Math.max(stepSize, xMin);
-                int _xmax = Math.min(1024-stepSize, xMax);
+                _xmin = Math.max(Math.max(stepSize, xMin), shapeAnalyzer.border[0]);
+                _xmax = Math.min(Math.min(1024-stepSize, xMax), shapeAnalyzer.border[1]);
 
-                int _ymin = Math.max(stepSize, yMin);
-                int _ymax = Math.min(1024-stepSize, yMax);
+                _ymin = Math.max(Math.max(stepSize, yMin), shapeAnalyzer.border[2]);
+                _ymax = Math.min(Math.min(1024-stepSize, yMax),shapeAnalyzer.border[3]);
 
-                for(x=_xmin; x<_xmax; x+=stepSize){
-                    for(y=_ymin; y<_ymax; y+=stepSize){
-                        int newTris = myPolygoniser.Polygonise(x / stepSize, y / stepSize, z / stepSize, shapeAnalyzer.linePot, shapeAnalyzer.linePot2, gridWidth, iso);
+                for(x=_xmin/stepSize; x<_xmax/stepSize; x++){
+                    for(y=_ymin/stepSize; y<_ymax/stepSize; y++){
+                        newTris = myPolygoniser.Polygonise(x, y, z / stepSize, shapeAnalyzer.linePot, shapeAnalyzer.linePot2, gridWidth, iso);
                         numPolys += newTris;
 
-                        for(int i=0; i<newTris; i++){
+                        for(i=0; i<newTris; i++){
                             triangleList.add(myPolygoniser.temp_triangles[i].copy());
                         }
                     }
@@ -138,13 +137,12 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
 
             System.out.println("scan time " + (System.currentTimeMillis() - startTime) + "ms");
 
-            //System.out.println(triangleList.size() + " TRIS " + numPolys);
             t4 = System.currentTimeMillis();
 
             double myVolume =0;
             double mySurface=0;
             for(Polygoniser.Triangle _tri: triangleList){
-                if(!(Double.isNaN(_tri.mySignedVolume()) || Double.isNaN(_tri.mySignedVolume()))){ //TODO figure out where the NaNs come from...
+                if(!(Double.isNaN(_tri.mySignedVolume()) || Double.isNaN(_tri.mySurface()))){ //TODO figure out where the NaNs come from...
                     myVolume += _tri.mySignedVolume();
                     mySurface += _tri.mySurface();
                 }else{
@@ -153,7 +151,7 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
 
             }
 
-            System.out.println("found volume surface in "  + (System.currentTimeMillis() - t4));
+            System.out.println(triangleList.size() + "--" + numPolys + " TRIS -- found volume surface in "  + (System.currentTimeMillis() - t4) );
 
             myVolume=Math.abs(myVolume);
 
@@ -172,12 +170,13 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
             //this.meshLabFix("./models/"+theFileName);
             long meshSaveTime = System.currentTimeMillis()-meshStartTime;
 
-            if(theVolume==0){
+            shapeInvalid=(theVolume==0);
+            if(shapeInvalid){
+
                 System.out.println("////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ZERO VOL");
                 System.out.println("////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ZERO VOL");
                 System.out.println("////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ZERO VOL");
                 //System.exit(1);
-                //throw new Exception();
             }
 
             System.out.println("SURFACE " + theSurfaceArea + " VOLUME " + theVolume + " RATIO s/v " + (theSurfaceArea/(theVolume+0.00001d))

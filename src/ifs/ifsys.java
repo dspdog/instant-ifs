@@ -444,6 +444,8 @@ final class ifsys extends JPanel
 
     private void indexFunction(int _index, int _iterations, int _subiters, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt, Random _rnd, float rndScale, int dist, int distRemaining, long idNum){
 
+        indexCount++;
+
         double WORLD_UNIT_SCALE = 256;
 
         ifsPt dpt = new ifsPt(_dpt);

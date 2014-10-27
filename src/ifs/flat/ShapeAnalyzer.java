@@ -21,10 +21,16 @@ public final class ShapeAnalyzer extends Kernel{
 
     public final int NUM_LINES = width*width-1;
 
+    double myIso=0;
     double myZ=0;
     int cutoffDist=0;
 
+    //int xmin, xmax, ymin, ymax;
+
+    public final int border[];
+
     public ShapeAnalyzer(){
+        border = new int[4];
         zListTotal=0;
         lineXY1 = new int[NUM_LINES];
         lineZS1 = new int[NUM_LINES];
@@ -44,21 +50,34 @@ public final class ShapeAnalyzer extends Kernel{
         int y = getGlobalId(1);
 
         int stepSize = 1024/width;
+        double res = 0d;
 
         if(x<width){
-            double res = metaPotential(x*stepSize, y*stepSize, myZ, cutoffDist/stepSize);
+            res = metaPotential(x*stepSize, y*stepSize, myZ, cutoffDist/stepSize);
             linePot[x+y*width] = res;
         }else{
             x=x%width;
-            double res = metaPotential(x*stepSize, y*stepSize, myZ+stepSize, cutoffDist/stepSize);
+            res = metaPotential(x*stepSize, y*stepSize, myZ+stepSize, cutoffDist/stepSize);
             linePot2[x+y*width] = res;
         }
 
-        // res = metaPotential(x*stepSize, y*stepSize, myZ+stepSize, cutoffDist/stepSize);
-        //extLinePot[x+y*width] = res;
+        if(res>=myIso*0.7){
+            //xmin = min(xmin, x);
+            //xmax = max(xmax, x);
+            //ymin = min(ymin,y);
+            //ymax = max(ymax, y);
+            border[0] = min(border[0], x*stepSize);
+            border[1] = max(border[1], x*stepSize);
+            border[2] = min(border[2], y*stepSize);
+            border[3] = max(border[3], y*stepSize);
+        }
     }
 
-    public void getAllPotentialsByZ(double z, int _maxDist){
+    public void getAllPotentialsByZ(double z, int _maxDist, double iso){
+        myIso=iso;
+        border[1] = 0; border[0]=width;
+        border[3] = 0; border[2]=width;
+
         this.setExplicit(true);
 
         cutoffDist=_maxDist;
@@ -67,7 +86,7 @@ public final class ShapeAnalyzer extends Kernel{
         Range range = Range.create2D(width*2,width);
 
         this.execute(range);
-        this.get(linePot).get(linePot2);
+        this.get(linePot).get(linePot2).get(border);
     }
 
     public void updateZList(int total){
