@@ -71,11 +71,14 @@ public class recordsKeeper implements java.io.Serializable{
     public void getPotentials(ifsys is, int generationNo, int sibNo, ifsShape theShape, double recordScore){
         System.out.println("getting potentials! step size " + (int)(1024/is.shapeAnalyzer.width) + " res " + is.shapeAnalyzer.width);
         CubeMarcher tm = new CubeMarcher();
-        tm.getPotentials(is.shapeAnalyzer, is.zLists, is.xMin, is.xMax, is.yMin, is.yMax, is.zMin, is.zMax);
-        row newRow = submit(theShape, tm, generationNo, sibNo, recordScore);
-
-        if(newRow.evolutionScore() > recordScore){
-            tm.saveToBinarySTL();
+        try {
+            tm.getPotentials(is.shapeAnalyzer, is.zLists, is.xMin, is.xMax, is.yMin, is.yMax, is.zMin, is.zMax);
+            row newRow = submit(theShape, tm, generationNo, sibNo, recordScore);
+            if(newRow.evolutionScore() > recordScore){
+                tm.saveToBinarySTL();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

@@ -242,7 +242,7 @@ final class ifsys extends JPanel
                         }
                         //renderBuffer.totalLines=0;
                         theVolume.changed=true;
-                        theShape = theShape.getPerturbedShape(mutationDescriptorPt.intensify(rp.evolveIntensity/100f), false);
+                        theShape = theShape.getPerturbedShape(mutationDescriptorPt.intensify(rp.evolveIntensity/100f), false, false);
                        //rp.odbScale.smooth();
                        // rp.odbRotationRoll.smooth();
                        // rp.odbX.smooth();
@@ -399,7 +399,7 @@ final class ifsys extends JPanel
         xMax = 0;
         yMax = 0;
         zMax = 0;
-        indexFunction(0, (int)(theShape.iterations/100)+1, theShape.iterations%100,  1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd, rp.randomScale, (short)0, rp.maxBranchDist);
+        indexFunction(0, (int)(theShape.iterations/100)+1, theShape.iterations%100,  1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd, rp.randomScale, (short)0, rp.maxBranchDist, 0);
     }
 
     ArrayList<Integer>[] zLists = new ArrayList[1024];
@@ -440,8 +440,9 @@ final class ifsys extends JPanel
     long lastIndex = System.currentTimeMillis();
 
     int zMin, zMax, xMin, xMax, yMin, yMax;
+    Random branchRandom = new Random();
 
-    private void indexFunction(int _index, int _iterations, int _subiters, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt, Random _rnd, float rndScale, int dist, int distRemaining){
+    private void indexFunction(int _index, int _iterations, int _subiters, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt, Random _rnd, float rndScale, int dist, int distRemaining, long idNum){
 
         double WORLD_UNIT_SCALE = 256;
 
@@ -504,22 +505,22 @@ final class ifsys extends JPanel
 
         if(_iterations>1){
 
-            double branchThresh=rp.pruneThresh*0.01d;
-            Random branchRandom = new Random();
+            double branchThresh=rp.pruneThresh;
+
             _cumulativeScale *= thePt.scale/centerPt.scale;
             _cumulativeScale *= (float)(1.0f - _rnd.nextGaussian()*rndScale/3000f);
 
+            branchRandom.setSeed(idNum+rp.randomSeed);
             for(int i=1; i<theShape.pointsInUse; i++){
-                branchRandom.setSeed(indexCount*rp.randomSeed*i);
-                indexCount++;
-                if(branchRandom.nextDouble()>branchThresh){
-                    int inc = (int)(_cumulativeScale*WORLD_UNIT_SCALE);
-                    if(distRemaining>inc){
-                        indexFunction(i, _iterations-1, _subiters, _cumulativeScale, cumulativeRotation, dpt, _rnd, rndScale, dist, distRemaining-inc);
-                    }else{
-                        _subiters = 100*distRemaining/inc;
-                        indexFunction(i, 1, _subiters, _cumulativeScale, cumulativeRotation, dpt, _rnd, rndScale, dist, 0);
-                    }
+                if(rp.pruneThresh<500)
+                distRemaining *= (1.0d-branchRandom.nextDouble()/(branchThresh/50d));
+
+                int inc = (int)(_cumulativeScale*WORLD_UNIT_SCALE);
+                if(distRemaining>inc){
+                    indexFunction(i, _iterations-1, _subiters, _cumulativeScale, cumulativeRotation, dpt, _rnd, rndScale, dist, (int)(distRemaining-inc), idNum*theShape.pointsInUse+i);
+                }else{
+                    _subiters = 100*distRemaining/inc;
+                    indexFunction(i, 1, _subiters, _cumulativeScale, cumulativeRotation, dpt, _rnd, rndScale, dist, 0, idNum*theShape.pointsInUse+i);
                 }
             }
         }

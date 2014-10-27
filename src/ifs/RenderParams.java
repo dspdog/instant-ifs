@@ -89,7 +89,7 @@ final class RenderParams implements java.io.Serializable {
 
         maxBranchDist = 10000;
 
-        pruneThresh=0;
+        pruneThresh=500;
         randomSeed=System.currentTimeMillis()%(65535);
         randomScale=5;
         perspectiveScale = 200;

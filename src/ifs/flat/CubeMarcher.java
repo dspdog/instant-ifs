@@ -78,7 +78,7 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
             }
         }
 
-        public void getPotentials(ShapeAnalyzer shapeAnalyzer, ArrayList<Integer>[] zLists, int xMin, int xMax, int yMin, int yMax, int zMin, int zMax){
+        public void getPotentials(ShapeAnalyzer shapeAnalyzer, ArrayList<Integer>[] zLists, int xMin, int xMax, int yMin, int yMax, int zMin, int zMax) throws Exception {
             int gridWidth = shapeAnalyzer.width;
             int stepSize = (1024/shapeAnalyzer.width);
 
@@ -171,6 +171,12 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
             long meshStartTime = System.currentTimeMillis();
             //this.meshLabFix("./models/"+theFileName);
             long meshSaveTime = System.currentTimeMillis()-meshStartTime;
+
+            if(theVolume==0){
+                System.exit(1);
+                throw new Exception();
+            }
+
             System.out.println("SURFACE " + theSurfaceArea + " VOLUME " + theVolume + " RATIO s/v " + (theSurfaceArea/(theVolume+0.00001d))
                     + " DIAG " + theDiagonal + " RATIO s/(vd) " + (theSurfaceArea/(theVolume+0.00001d)/theDiagonal)+"\n");
 

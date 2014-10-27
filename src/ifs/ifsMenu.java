@@ -32,8 +32,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
     SliderWithSpinner potentialSpinner;
     SliderWithSpinner delaySpinner;
-    //JSpinner dotSizeSpinner;
-
 
     SliderWithSpinner pitchSpinner;
     SliderWithSpinner yawSpinner;
@@ -63,9 +61,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
     JCheckBox smearCheck;
 
     JComboBox renderModeCombo;
-    JComboBox evolveModeCombo;
-    JComboBox pdfModeCombo;
-
     WebTable evolutionTable;
 
     WebGradientColorChooser colorChooser;
@@ -81,8 +76,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
     Frame parentFrame = new Frame();
 
-    int pdfXImgFile = 0;
-    int pdfYImgFile = 0;
     int pdfZImgFile = 0;
 
     JFileChooser fc;
@@ -313,7 +306,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         ((SliderWithSpinner)addLabeled(maxDistSpinner, layout, "MaxDist", panel)).addChangeListener(updateAndClear);
 
 
-        pruneThreshSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(10, 0, 100));
+        pruneThreshSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(450, 50, 500));
         ((SliderWithSpinner)addLabeled(pruneThreshSpinner, layout, "Prune", panel)).addChangeListener(updateAndClear);
 
         randomSeedSpinner=new SliderWithSpinner(new SliderWithSpinnerModel(1000, 0, 100_000));
@@ -404,14 +397,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
         potentialSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 360));
         delaySpinner = new SliderWithSpinner(new SliderWithSpinnerModel(50, 0, 100));
-        //dotSizeSpinner = new JSpinner();
-
-        //frameHoldCheck = new JCheckBox();
-
-        //gridCheck = new JCheckBox();
-        //cartoonCheck = new JCheckBox();
-
-        //delayCheck = new JCheckBox();
 
         String[] renderModeStrings = {volume.RenderMode.VOLUMETRIC.toString(), volume.RenderMode.PROJECT_ONLY.toString()};
 
@@ -420,47 +405,9 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         SpringLayout layout = new SpringLayout();
         panel.setLayout(layout);
 
-        ((JComboBox)addLabeled(renderModeCombo, layout, "Mode", panel)).addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JComboBox cb = (JComboBox) e.getSource();
-                if (cb.getSelectedItem() == volume.RenderMode.VOLUMETRIC.toString()) {
-                    myIfsSys.theVolume.renderMode = volume.RenderMode.VOLUMETRIC;
-                } else if (cb.getSelectedItem() == volume.RenderMode.PROJECT_ONLY.toString()) {
-                    myIfsSys.theVolume.renderMode = volume.RenderMode.PROJECT_ONLY;
-                }
-            }
-        });
-
-        ((SliderWithSpinner)addLabeled(brightnessSpinner, layout, "Brightness", panel)).addChangeListener(updateAndClear);
-        //((SliderWithSpinner)addLabeled(samplesSpinner, layout, "Dots/Frame", panel)).addChangeListener(updateAndClear);
-
-        //((JSpinner)addLabeled(potentialSpinner, layout, "Blur", panel)).addChangeListener(updateAndClear);
-        //((JCheckBox)addLabeled(cartoonCheck, layout, "Cartoon", panel)).addChangeListener(updateAndClear);
-
-        //((JCheckBox)addLabeled(gridCheck, layout, "Grid", panel)).addChangeListener(updateAndClear);
-        //((JCheckBox)addLabeled(frameHoldCheck, layout, "Hold Frame", panel)).addChangeListener(updateAndClear);
-
-        //((JCheckBox)addLabeled(delayCheck, layout, "Throttle", panel)).addChangeListener(updateAndClear);
         ((SliderWithSpinner)addLabeled(delaySpinner, layout, "Shutter", panel)).addChangeListener(updateAndClear);
-        //((JSpinner)addLabeled(dotSizeSpinner, layout, "Dot Size", panel)).addChangeListener(updateAndClear);
-
-        //xMaxSpinner=new JSpinner();
-        //xMinSpinner=new JSpinner();
-        //yMaxSpinner=new JSpinner();
-        //yMinSpinner=new JSpinner();
-        //zMaxSpinner=new JSpinner();
-        //zMinSpinner=new JSpinner();
-
-        //((JSpinner)addLabeled(xMinSpinner, layout, "Xmin", panel)).addChangeListener(updateAndClear);
-        //((JSpinner)addLabeled(xMaxSpinner, layout, "Xmax", panel)).addChangeListener(updateAndClear);
-        //((JSpinner)addLabeled(yMinSpinner, layout, "Ymin", panel)).addChangeListener(updateAndClear);
-        //((JSpinner)addLabeled(yMaxSpinner, layout, "Ymax", panel)).addChangeListener(updateAndClear);
-        //((JSpinner)addLabeled(zMinSpinner, layout, "Zmin", panel)).addChangeListener(updateAndClear);
-        //((JSpinner)addLabeled(zMaxSpinner, layout, "Zmax", panel)).addChangeListener(updateAndClear);
 
         colorChooser = new WebGradientColorChooser();
-        //colorChooser.setPreferredWidth(350);
-        // ((WebGradientColorChooser)addLabeled(colorChooser, layout, "Color", panel)).addChangeListener(updateAndClear);
 
         camScaleSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(60, 1, 300));
         camJitterSpinner = new SliderWithSpinner(new SliderWithSpinnerModel(2, 0, 32));
@@ -584,9 +531,6 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
             infoButton.addItemListener(this);
             guidesMenu.add(infoButton);
 
-            //menuBar.add(renderMenu);
-            //menuBar.add(shapeMenu);
-            //menuBar.add(guidesMenu);
             menuBar.add(fileMenu);
 
             f.setMenuBar(menuBar);

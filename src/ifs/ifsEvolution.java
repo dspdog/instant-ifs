@@ -24,8 +24,8 @@ public class ifsEvolution {
 
         System.out.println("start of evolution...");
 
-        int totalSibs = 5;
-        int totalGens = 400;
+        int totalSibs = 4;
+        int totalGens = 4000;
 
         Random rnd = new Random();
         deleteOldFiles.deleteFilesOlderThanNMin(1, ".");
@@ -47,7 +47,7 @@ public class ifsEvolution {
             }
             for(int i=0; i<totalSibs; i++){
                 if(seed!="")theShape = new ifsShape().loadFromFile(seed);
-                theShape = theShape.getPerturbedShape(mutationDescriptor.intensify((float)(rnd.nextGaussian()*evolveIntensity)), false);
+                theShape = theShape.getPerturbedShape(mutationDescriptor.intensify((float)(rnd.nextGaussian()*evolveIntensity)), false, true);
                 is.theShape = theShape;
                 is.reIndex();
                 is.clearframe();
@@ -55,7 +55,7 @@ public class ifsEvolution {
 
                 rk.getPotentials(is, g, i, theShape, currentRecordScore);
 
-                System.out.println("sibling " + (i+1) + "/" + totalSibs + " submitted.");
+                System.out.println("sibling " + (i+1) + "/" + totalSibs + " submitted. iters " + theShape.iterations/100f);
                 System.out.println("Elapsed time: " + (int)((System.currentTimeMillis() - startTime)/60000) + "m " + ((System.currentTimeMillis() - startTime)/1000)%60 + "s");
             }
         }
@@ -68,7 +68,7 @@ public class ifsEvolution {
     public void recordHistory(int g, int totalGens, recordsKeeper rk){
         rk.sortRecordsBySuitability();
         String addition = rk.records.get(0).timeStamp + ": generation " + g + "/" + totalGens + ": best "
-                           + rk.records.get(0).theShapeFile + " score " + rk.records.get(0).evolutionScore() + " (delt " + (1.0f*rk.records.get(0).evolutionScore()/currentRecordScore) + "% pts, " +
+                           + rk.records.get(0).theShapeFile + " score " + rk.records.get(0).evolutionScore() + " (delt " + (100.0f*rk.records.get(0).evolutionScore()/currentRecordScore) + "% pts, " +
                 (int)(System.currentTimeMillis() - currentRecordTime)/60000+"m "+ (int)((System.currentTimeMillis() - currentRecordTime)/1000)%60+"s)<br/>\t\r\n";
 
         if(currentRecord!=rk.records.get(0).theShapeFile){
