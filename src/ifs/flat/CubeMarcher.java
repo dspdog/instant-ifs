@@ -74,11 +74,27 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
             Iterator<Integer> iterator = integers.iterator();
             for (int i = 0; i < len; i++)
             {
-                array[i] = iterator.next().intValue();
+                array[i] = Math.min(iterator.next().intValue(), 65533);
             }
         }
 
+        public int sumLists(ArrayList<Integer>[] zLists){
+            int sum=0;
+            int max = 0;
+            for(int i=0; i<zLists.length; i++){
+                for(Integer y : zLists[i]){
+                    sum+=y;
+                    max = Math.max(y,max);
+                }
+            }
+            System.out.println("MAXIMUM " +max);
+            return sum;
+        }
+
         public void getPotentials(ShapeAnalyzer shapeAnalyzer, ArrayList<Integer>[] zLists, int xMin, int xMax, int yMin, int yMax, int zMin, int zMax) {
+            triangleList = new ArrayList<>();
+            myPolygoniser = new Polygoniser();
+
             int gridWidth = shapeAnalyzer.width;
             int stepSize = (1024/shapeAnalyzer.width);
 
@@ -101,6 +117,8 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
             int _ymin,_ymax;
             int newTris;
             int i;
+
+            System.out.println("total zs " + zLists.length + " rows totalling " + sumLists(zLists));
 
             for(z=_zmin; z<_zmax; z+=stepSize){
                 setArrayUsingList(zLists[(int)z], shapeAnalyzer.ZList);
@@ -135,16 +153,20 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
 
             }
 
-            System.out.println("scan time " + (System.currentTimeMillis() - startTime) + "ms");
+            System.out.println("scan time " + (System.currentTimeMillis() - startTime) + "ms " + triangleList.size() + " " + xMin + "-" + xMax+ " " + yMin + "-" + yMax + " " +zMin + "-" + zMax);
 
             t4 = System.currentTimeMillis();
+
+            boolean badTriangleFound = false;
 
             double myVolume =0;
             double mySurface=0;
             for(Polygoniser.Triangle _tri: triangleList){
+                if(_tri.invalid){badTriangleFound=true;}
                 if(!(Double.isNaN(_tri.mySignedVolume()) || Double.isNaN(_tri.mySurface()))){ //TODO figure out where the NaNs come from...
                     myVolume += _tri.mySignedVolume();
                     mySurface += _tri.mySurface();
+                    //badTriangleFound=true;
                 }else{
                     //System.out.println("bad triangle!");
                 }
@@ -170,18 +192,6 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
             //this.meshLabFix("./models/"+theFileName);
             long meshSaveTime = System.currentTimeMillis()-meshStartTime;
 
-            shapeInvalid=(theVolume==0);
-            if(shapeInvalid){
-
-                System.out.println("////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ZERO VOL");
-                System.out.println("////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ZERO VOL");
-                System.out.println("////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ZERO VOL");
-                //System.exit(1);
-            }
-
-            System.out.println("SURFACE " + theSurfaceArea + " VOLUME " + theVolume + " RATIO s/v " + (theSurfaceArea/(theVolume+0.00001d))
-                    + " DIAG " + theDiagonal + " RATIO s/(vd) " + (theSurfaceArea/(theVolume+0.00001d)/theDiagonal)+"\n");
-
             totalMeshLabTime+=meshSaveTime;
             totalBuildTime+=buildTime;
             totalSaveTime+=saveTime;
@@ -190,6 +200,16 @@ public class CubeMarcher implements Serializable { //marching tetrahedrons as in
 
             totalTime = (System.currentTimeMillis() - startTime);
             System.out.println("done - built in " + buildTime/1000.0 + "s, cpu " + totalPolyTime + " gpu " + totalZTime );
+
+            shapeInvalid= badTriangleFound;
+            if(shapeInvalid){
+                System.out.println("SHAPE INVALID");
+            }
+
+            System.out.println("SURFACE " + theSurfaceArea + " VOLUME " + theVolume + " RATIO s/v " + (theSurfaceArea/(theVolume+0.00001d))
+                    + " DIAG " + theDiagonal + " RATIO s/(vd) " + (theSurfaceArea/(theVolume+0.00001d)/theDiagonal)+"\n");
+
+
 
             System.out.println("\nTOTALS: build " + totalBuildTime/1000.0 + " (cpu "+totalsubBuildTimeCPU/1000.0 + ", gpu " + totalsubBuildTimeGPU/1000.0 + ") save " + totalSaveTime/1000.0+"\n");
         }

@@ -43,7 +43,6 @@ final class ifsys extends JPanel
 
     long lastPostProcessTime;
 
-    long indexCount;
 
     volume theVolume;
 
@@ -84,7 +83,7 @@ final class ifsys extends JPanel
 
     public ifsys(){
 
-        initZLists();
+        //initZLists();
 
         evolutionDescSelected=false;
         iterationDescSelected=false;
@@ -120,6 +119,7 @@ final class ifsys extends JPanel
         this.setSize(this.rp.screenwidth, this.rp.screenheight); // same size as defined in the HTML APPLET
     }
 
+    Canvas theGameCanvas;
     public static void main(String[] args) {
 
         try {
@@ -152,6 +152,10 @@ final class ifsys extends JPanel
         is.theMenu = new ifsMenu(parentFrame, is);
 
         is.init();
+        is.theGameCanvas = new Canvas();
+        is.theGameCanvas.setSize(400,400);
+        is.theMenu.renderPanel.add(is.theGameCanvas);
+        setupMiniFrame(is.theMenu.renderPanel, 200, 350, is.rp.screenwidth, 300, "RENDER", "invader.png", desktop);
         setupMiniFrame(is.theMenu.shapeProperties, 200, 350,   is.rp.screenwidth, 300, "Shape", "invader.png", desktop);
         setupMiniFrame(is.theMenu.renderProperties, 200, 300,   is.rp.screenwidth,650, "Camera", "camera.png", desktop);
         //setupMiniFrame(is.theMenu.pdfProperties,    200, 150,   is.rp.screenwidth,300, "Kernel", "cloud.png", desktop);
@@ -372,56 +376,19 @@ final class ifsys extends JPanel
             if(theVolume.changed && theVolume.doneClearing){
                 theVolume.clear();
 
-                if(System.currentTimeMillis()-lastIndex>50){
+                if(System.currentTimeMillis()-theShape.lastIndex>50){
                     renderBuffer.totalLines =renderBuffer.lineIndex;
                     renderBuffer.lineIndex=0;
-                    reIndex();
+                    theShape.reIndex(renderBuffer, shapeAnalyzer, rp);
                     renderBuffer.updateGeometry();
                     if(shapeAnalyzing){
                         shapeAnalyzer.updateGeometry();
                     }
-                    lastIndex = System.currentTimeMillis();
+                    theShape.lastIndex = System.currentTimeMillis();
                 }
             }
 
             lastClearTime=System.currentTimeMillis();
-        }
-    }
-
-    public void reIndex(){
-        Random rnd = new Random();
-        rnd.setSeed(rp.randomSeed);
-        indexCount=0;
-        clearZLists();
-        xMin = 1024;
-        yMin = 1024;
-        zMin = 1024;
-        xMax = 0;
-        yMax = 0;
-        zMax = 0;
-        indexFunction(0, (int)(theShape.iterations/100)+1, theShape.iterations%100,  1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]), rnd, rp.randomScale, (short)0, rp.maxBranchDist, 0);
-    }
-
-    ArrayList<Integer>[] zLists = new ArrayList[1024];
-
-    public void initZLists(){
-        for(int i=0; i<1024; i++){
-            zLists[i]= new ArrayList<>();
-        }
-    }
-
-    public void clearZLists(){
-        for(int i=0; i<1024; i++){
-            zLists[i].clear();
-        }
-    }
-    long count=0;
-    public void addLineToZList(int index, int z1, int z2, int max){
-        int _z1 = Math.max(Math.min(z1, z2)-max, 1);
-        int _z2 = Math.min(Math.max(z1, z2)+max, 1023);
-        for(int i=_z1; i<_z2; i++){
-            zLists[i].add(index);
-            count++;
         }
     }
 
@@ -431,102 +398,9 @@ final class ifsys extends JPanel
 
     public void gamefunc(int _iterations){
         rp.guidesHidden = System.currentTimeMillis() - lastMoveTime > rp.linesHideTime;
-        //if(System.currentTimeMillis()-lastIndex>50){
-        //    indexFunction(0, _iterations, 1.0f, new ifsPt(0,0,0), new ifsPt(theShape.pts[0]));
-        //    lastIndex = System.currentTimeMillis();
-        //}
     }
 
-    long lastIndex = System.currentTimeMillis();
 
-    int zMin, zMax, xMin, xMax, yMin, yMax;
-    Random branchRandom = new Random();
-
-    private void indexFunction(int _index, int _iterations, int _subiters, float _cumulativeScale, ifsPt _cumulativeRotation, ifsPt _dpt, Random _rnd, float rndScale, int dist, int distRemaining, long idNum){
-
-        indexCount++;
-
-        double WORLD_UNIT_SCALE = 256;
-
-        ifsPt dpt = new ifsPt(_dpt);
-        ifsPt cumulativeRotation = new ifsPt(_cumulativeRotation);
-        ifsPt thePt = theShape.pts[_index];
-        ifsPt centerPt = theShape.pts[0];
-
-        cumulativeRotation = cumulativeRotation.add(
-                new ifsPt(thePt.rotationPitch+(float)(_rnd.nextGaussian())*rndScale/1000f,
-                            thePt.rotationYaw+(float)(_rnd.nextGaussian())*rndScale/1000f,
-                            thePt.rotationRoll+(float)(_rnd.nextGaussian())*rndScale/1000f));
-
-        if(_iterations==1){
-            _cumulativeScale = _cumulativeScale * _subiters/100.0f;
-        }
-
-        ifsPt rpt = thePt.subtract(centerPt).scale(_cumulativeScale).getRotatedPt(cumulativeRotation);
-        ifsPt odp = new ifsPt(dpt);
-        dpt._add(rpt);
-
-        //ifsPt proj_odp = odp; //theVolume.getCameraDistortedPt(odp, rp.rightEye);
-        //ifsPt proj_dpt = dpt; //theVolume.getCameraDistortedPt(dpt, rp.rightEye);
-
-        renderBuffer.lineDI[renderBuffer.lineIndex]=(((short)(dist))<<16) + ((short)_iterations);
-
-        renderBuffer.lineXY1[renderBuffer.lineIndex]=(((short)(dpt.x))<<16) + ((short)dpt.y);
-        renderBuffer.lineZS1[renderBuffer.lineIndex]=(((short)(dpt.z))<<16) + ((short)(256f *_cumulativeScale*thePt.scale/centerPt.scale));
-        renderBuffer.lineXY2[renderBuffer.lineIndex]=(((short)(odp.x))<<16) + ((short)odp.y);
-        renderBuffer.lineZS2[renderBuffer.lineIndex]=(((short)(odp.z))<<16) + ((short)(256f * _cumulativeScale));
-
-        int maxDist = 16+1;
-
-        addLineToZList(renderBuffer.lineIndex, (int)odp.z, (int)dpt.z, maxDist);
-
-        xMin = (int)Math.max(0,Math.min(Math.min(xMin,odp.x-maxDist),Math.min(xMin,dpt.x-maxDist)));
-        yMin = (int)Math.max(0,Math.min(Math.min(yMin,odp.y-maxDist),Math.min(yMin,dpt.y-maxDist)));
-        zMin = (int)Math.max(0,Math.min(Math.min(zMin,odp.z-maxDist),Math.min(zMin,dpt.z-maxDist)));
-
-        xMax = (int)Math.min(1023,Math.max(Math.max(xMax,odp.x+maxDist),Math.max(xMax,dpt.x+maxDist)));
-        yMax = (int)Math.min(1023,Math.max(Math.max(yMax,odp.y+maxDist),Math.max(yMax,dpt.y+maxDist)));
-        zMax = (int)Math.min(1023,Math.max(Math.max(zMax,odp.z+maxDist),Math.max(zMax,dpt.z+maxDist)));
-
-        if(shapeAnalyzing){
-            int ri = renderBuffer.lineIndex%shapeAnalyzer.NUM_LINES;
-            if(renderBuffer.lineIndex<shapeAnalyzer.NUM_LINES){
-                shapeAnalyzer.lineXY1[ri] = renderBuffer.lineDI[ri];
-                shapeAnalyzer.lineXY1[ri] = renderBuffer.lineXY1[ri];
-                shapeAnalyzer.lineZS1[ri] = renderBuffer.lineZS1[ri];
-                shapeAnalyzer.lineXY2[ri] = renderBuffer.lineXY2[ri];
-                shapeAnalyzer.lineZS2[ri] = renderBuffer.lineZS2[ri];
-            }
-        }
-
-        renderBuffer.lineIndex++;
-        renderBuffer.lineIndex=Math.min(renderBuffer.lineIndex, renderBuffer.lineXY1.length-1);
-
-        //theVolume.putPdfSample(dpt, cumulativeRotation, _cumulativeScale, thePt, theShape.pts[0], odp,
-        //                        0, 0, 0, rp, thePdf, renderBuffer, rpt.magnitude(), theMenu.colorChooser, 1.0f);
-
-        if(_iterations>1){
-
-            double branchThresh=rp.pruneThresh;
-
-            _cumulativeScale *= thePt.scale/centerPt.scale;
-            _cumulativeScale *= (float)(1.0f - _rnd.nextGaussian()*rndScale/3000f);
-
-            branchRandom.setSeed(idNum+rp.randomSeed);
-            for(int i=1; i<theShape.pointsInUse; i++){
-                if(rp.pruneThresh<500)
-                distRemaining *= (1.0d-branchRandom.nextDouble()/(branchThresh/50d));
-
-                int inc = (int)(_cumulativeScale*WORLD_UNIT_SCALE);
-                if(distRemaining>inc){
-                    indexFunction(i, _iterations-1, _subiters, _cumulativeScale, cumulativeRotation, dpt, _rnd, rndScale, dist, (int)(distRemaining-inc), idNum*theShape.pointsInUse+i);
-                }else{
-                    _subiters = 100*distRemaining/inc;
-                    indexFunction(i, 1, _subiters, _cumulativeScale, cumulativeRotation, dpt, _rnd, rndScale, dist, 0, idNum*theShape.pointsInUse+i);
-                }
-            }
-        }
-    }
 
     public void mouseClicked(MouseEvent mouseevent){
 
@@ -766,7 +640,11 @@ final class ifsys extends JPanel
 
         public void run() {
             ifsEvolution ie = new ifsEvolution(theShape, mutationDescriptorPt, rp.evolveIntensity, new recordsKeeper(), theifsys);
-            ie.start();
+            try {
+                ie.start();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

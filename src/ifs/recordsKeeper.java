@@ -28,8 +28,10 @@ public class recordsKeeper implements java.io.Serializable{
         public long totalTime =0;
         public long generation;
         public String theShapeFile;
+        public ifsShape theShape;
 
         public row(double vol, double surface, double diag, String fileName, long time, ifsShape shape, long gen, long sib){
+            theShape = new ifsShape(shape);
             ltimeStamp = System.currentTimeMillis();
             theVolume=vol+0;
             theDiagonal = diag;
@@ -40,7 +42,7 @@ public class recordsKeeper implements java.io.Serializable{
             Date startDate = Calendar.getInstance().getTime();
             timeStamp = new SimpleDateFormat("yyyy_MM_dd_HHmmss").format(startDate);
             theShapeFile="gen" + gen + "_" + System.currentTimeMillis()%1000+"_"+(int)((Math.random()*1000)%1000)+".shape";
-            shape.saveToFile(theShapeFile);
+            //shape.saveToFile(theShapeFile);
         }
 
         public double evolutionScore(){
@@ -53,7 +55,7 @@ public class recordsKeeper implements java.io.Serializable{
 
         if(!tm.shapeInvalid && newrow.evolutionScore() > recordScore && Math.abs(tm.theVolume - 30000)<5000){
             records.add(newrow);
-            saveToFile(defaultName);
+            //saveToFile(defaultName);
         }
         System.out.println("total records: " + records.size());
         return newrow;
@@ -69,15 +71,20 @@ public class recordsKeeper implements java.io.Serializable{
     }
 
     public void getPotentials(ifsys is, int generationNo, int sibNo, ifsShape theShape, double recordScore){
-        System.out.println("getting potentials! step size " + (int)(1024/is.shapeAnalyzer.width) + " res " + is.shapeAnalyzer.width + " iters " + theShape.iterations + " lines " + is.indexCount);
+        System.out.println("getting potentials! step size " + (int)(1024/is.shapeAnalyzer.width) + " res " + is.shapeAnalyzer.width + " iters " + theShape.iterations + " lines " + is.theShape.indexCount);
         CubeMarcher tm = new CubeMarcher();
         try {
-            tm.getPotentials(is.shapeAnalyzer, is.zLists, is.xMin, is.xMax, is.yMin, is.yMax, is.zMin, is.zMax);
-            row newRow = submit(theShape, tm, generationNo, sibNo, recordScore);
-            if(newRow.evolutionScore() > recordScore){
-                tm.saveToBinarySTL();
+            tm.getPotentials(is.shapeAnalyzer, is.theShape.zLists, is.theShape.xMin, is.theShape.xMax, is.theShape.yMin, is.theShape.yMax, is.theShape.zMin, is.theShape.zMax);
+            if(generationNo>0){
+                row newRow = submit(theShape, tm, generationNo, sibNo, recordScore);
+
+                if(newRow.evolutionScore() > recordScore){
+                    tm.saveToBinarySTL();
+                }
             }
+
         } catch (Exception e) {
+            System.out.println("something bad happened");
             e.printStackTrace();
         }
     }

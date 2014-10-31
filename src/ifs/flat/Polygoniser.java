@@ -323,13 +323,18 @@ public class Polygoniser {
 
     public class Triangle{
         public float p0x, p0y, p0z, p1x, p1y, p1z, p2x, p2y, p2z;
+
+        public boolean invalid=false;
+
         public Triangle(){
+            invalid=false;
             p0x=0; p0y=0; p0z=0;
             p1x=0; p1y=0; p1z=0;
             p2x=0; p2y=0; p2z=0;
         }
 
         public Triangle(Triangle tri){
+            invalid=false;
             setPoint0(new xyz(tri.p2x, tri.p2y, tri.p2z));
             setPoint1(new xyz(tri.p1x, tri.p1y, tri.p1z));
             setPoint2(new xyz(tri.p0x, tri.p0y, tri.p0z));
@@ -357,7 +362,7 @@ public class Polygoniser {
             p0z=(float)val.z;
 
             if(new Double(p0x).isNaN() || new Double(p0y).isNaN() || new Double(p0z).isNaN()){
-                reset();
+                reset();invalid=true;
             }
         }
 
@@ -367,7 +372,7 @@ public class Polygoniser {
             p1z=(float)val.z;
 
             if(new Double(p1x).isNaN() || new Double(p1y).isNaN() || new Double(p1z).isNaN()){
-                reset();
+                reset();invalid=true;
             }
         }
 
@@ -377,7 +382,7 @@ public class Polygoniser {
             p2z=(float)val.z;
 
             if(new Double(p2x).isNaN() || new Double(p2y).isNaN() || new Double(p2z).isNaN()){
-                reset();
+                reset();invalid=true;
             }
         }
 

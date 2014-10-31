@@ -70,6 +70,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
 
     JPanel pointProperties = new JPanel();
     JPanel renderProperties = new JPanel();
+    JPanel renderPanel = new JPanel();
     JPanel pdfProperties = new JPanel();
 
     JPanel shapeProperties = new JPanel();
@@ -478,6 +479,7 @@ final class ifsMenu extends Component implements ItemListener, ChangeListener, A
         pointProperties = new JPanel();
         renderProperties = new JPanel();
         pdfProperties = new JPanel();
+        renderPanel = new JPanel();
         //cameraProperties = new JPanel();
         shapeProperties = new JPanel();
 
